@@ -14,6 +14,14 @@ gate" runs after every render, on the actual rendered PNG; each visual flaw caug
 converted into an automated check so the engine needs the eye less over time. See
 [`CLAUDE.md`](CLAUDE.md) for the full protocol — read it first, it is the entry point.
 
+## Claude Code skill
+
+[`.claude/skills/aq-design-engine/SKILL.md`](.claude/skills/aq-design-engine/SKILL.md) is a
+Claude Code skill wrapping this repo — it triggers automatically on AQ/AQUATERRA poster requests
+and points into `CLAUDE.md` (the actual source of truth) rather than duplicating it. Drop the
+`.claude/` folder into any Claude Code project root, or copy `aq-design-engine/` into
+`~/.claude/skills/`, to make it available.
+
 ## Quick start
 
 ```bash
