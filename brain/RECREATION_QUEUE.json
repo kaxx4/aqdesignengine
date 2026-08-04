@@ -1,0 +1,313 @@
+{
+  "accept_score": 0.16,
+  "items": {
+    "091944e282ce11": {
+      "file": "091944e282ce11698315cf95a78615e2.jpg",
+      "status": "done",
+      "score": 0.142,
+      "iters": 6,
+      "note": "v6 ACCEPTED: white card (was cream, invisible under content_mask tol), 6 packed rows w/ overlapping date/label pills, nav row moved onto a black bar (reference detail missed in v2 inventory), title nowrap fixed headline overflow collision w/ nav. Score 0.328->0.142, no blocking critiques, looking gate passed."
+    },
+    "10f1b8a9789261": {
+      "file": "10f1b8a9789261fc73570521bf63db74.jpg",
+      "status": "blocked",
+      "score": 0.21,
+      "iters": 3,
+      "note": "Parked, not a true blocker: v3.png (out/versions/10f1b8a978926/v3.png) scores 0.21, no blocking critique, solid on the looking gate. 5 rebuild sub-iterations this session (original script lost) oscillated 0.29-0.31 chasing the hand-size/position region critique without beating v3. Needs a fresh session with budget for a full grid-ruler rebuild rather than incremental nudges. Revisit before final queue sweep."
+    },
+    "11e7d9a3ff6761": {
+      "file": "11e7d9a3ff676116583e8aa245e9bce6.jpg",
+      "status": "blocked",
+      "score": 0.545,
+      "iters": 1,
+      "note": "v4 rebuild (script preserved this time at out/versions/11e7d9a3ff6761/v4.py). Fixed 2 real bugs: CONTENT TOO SMALL blocking critique resolved (0.67x->1.03x area), and shapes.capsule(w,h) w==h degenerating to a circle instead of rounded-square keycaps. Score 0.507->0.353. DETAIL TOO LOW remains blocking: a kind=both interior (dots) fix cleared the metric threshold but made keys look busy vs reference's clean flat faces -- reverted per looking-gate-overrides-metric (logged in DECISIONS.md). Needs a fresh pass adding REAL richer silhouette detail (not halftone) plus fixing 3 region deltas (row7col1 dots-card overfill, row9col8 pencil/hand underfill, row6col6 center gap)."
+    },
+    "17c7de5509caae": {
+      "file": "17c7de5509caaed992f2de7b720ec8b4.jpg",
+      "status": "blocked",
+      "score": 0.506,
+      "iters": 1,
+      "note": "REFERENCE IS A 6-TILE MOODBOARD (six unrelated 'PORTFOLIO' wordmark treatments + a title footer), not a single-mechanism poster -- CLAUDE.md section 5 says pick ONE mechanism, but compare.py scores against the FULL moodboard image regardless, so its numeric targets (detail, missing-colour, per-region fill) are structurally unreachable here without literally recreating all 6 unrelated illustration styles. This is a known compare.py limitation (no semantic axis, per DECISIONS.md), not a real gap.\n\nv1 (script lost) picked one isolated tile in isolation and scored 1.207. Recovered the actually-intended scene (contact_sheet() in gen_showcase5d.py, written but never routed to out/versions/) which instead recreates the reference's OWN grid mechanism -- 7 mini-compositions of one word unified by a caption strip -- the more faithful 'one mechanism' choice. v2->v3 fixed: grid raised to close a top-row gap, 3 restrained single-doodle accents added (kind=inner only, learned from 11e7d9a3ff6761 not to dot-pattern), and a real header/logo collision bug caught by the looking gate (logo/eyebrow were never preflight-tracked, same class of bug as friendship_day's masthead). Score 1.207->0.481. Looking gate: PASSED, clean composition, no collisions.\n\nScript preserved at out/versions/17c7de5509caae/v3.py. Parking rather than chasing <=0.16: the remaining gaps (detail, near-neutral/dark missing colours) are inherent to the mismatch, not fixable by iterating this mechanism further."
+    },
+    "1d518d2bc5d3dd": {
+      "file": "1d518d2bc5d3dd93934dbea4cf14984d.jpg",
+      "status": "blocked",
+      "score": 0.641,
+      "iters": 1,
+      "note": "v4 (script lost, 4th occurrence this session -- see standing lesson in DECISIONS.md re: preserving scripts) is a strong recreation of the LinkedIn-recap calendar+polaroid mechanism, real AQ content (Food Drive/Shikshaq/Promotion/Paradox Night/Growth Tactics/Winter Drive). Score 0.53: CONTENT TOO LARGE 1.52x, DETAIL TOO LOW borderline-blocking 0.718x (threshold 0.72). Real visual defect confirmed by looking gate: the pink Shikshaq and orange Promotion polaroids overlap the calendar's Saturday column, clipping the 7/14/21/28 dates. Needs: scale composition down ~25% about the centroid (fixes CONTENT TOO LARGE), reposition the two right-side polaroids clear of the calendar's date column, and richer photo-frame silhouettes (torn-edge or double-mat) to close the detail gap. No script survives to iterate from -- next session should rebuild from the PNG with a grid overlay for proportions, and preserve the script in out/versions/ this time."
+    },
+    "2022ebef4ffad5": {
+      "file": "2022ebef4ffad554b42b3d6c5c6c914a.jpg",
+      "status": "in_progress",
+      "score": 0.424,
+      "iters": 1,
+      "note": "showcase5c dense build; word_boxes+checker+extrude primitives added"
+    },
+    "23bb507f6ec978": {
+      "file": "23bb507f6ec97814dc8fceeee2392803.jpg",
+      "status": "in_progress",
+      "score": 0.339,
+      "iters": 2,
+      "note": "showcase5e; detail<->area tension found"
+    },
+    "25d39cb69b3684": {
+      "file": "25d39cb69b368495069455246a545187.jpg",
+      "status": "in_progress",
+      "score": 0.392,
+      "iters": 2,
+      "note": "showcase5: new shapes.py silhouettes, blocking critiques cleared"
+    },
+    "29c6a858911dab": {
+      "file": "29c6a858911dab0fa25ef134785d64ba.jpg",
+      "status": "in_progress",
+      "score": 0.382,
+      "iters": 2,
+      "note": "showcase5: new shapes.py silhouettes, blocking critiques cleared"
+    },
+    "3bb3f9582d5cac": {
+      "file": "3bb3f9582d5cac37437cb9e049cf5c4a.jpg",
+      "status": "in_progress",
+      "score": 0.384,
+      "iters": 1,
+      "note": "showcase5d granularity test; small-type density drives detail_ratio"
+    },
+    "487e8003509b03": {
+      "file": "487e8003509b031fab66b15b992c50c5.jpg",
+      "status": "in_progress",
+      "score": 0.519,
+      "iters": 2,
+      "note": "showcase5b; NOTE compare.py over-reports area on riso/textured refs"
+    },
+    "4c6df2b4797a32": {
+      "file": "4c6df2b4797a32d0423eb1e41420900e.jpg",
+      "status": "in_progress",
+      "score": 0.342,
+      "iters": 1,
+      "note": "showcase5d granularity test; small-type density drives detail_ratio"
+    },
+    "502e07d0ebae6c": {
+      "file": "502e07d0ebae6cb98924795f0df95826.jpg",
+      "status": "in_progress",
+      "score": 0.716,
+      "iters": 2,
+      "note": "showcase5b; NOTE compare.py over-reports area on riso/textured refs"
+    },
+    "51010a5e1a5625": {
+      "file": "51010a5e1a5625cd72aa26fed559bc1b.jpg",
+      "status": "in_progress",
+      "score": 0.351,
+      "iters": 2,
+      "note": "showcase5g; per-critique fixes, 34 fully non-blocking"
+    },
+    "620d62f101b97c": {
+      "file": "620d62f101b97c666749fa48d17d26c8.jpg",
+      "status": "in_progress",
+      "score": 0.43,
+      "iters": 2,
+      "note": "showcase5e; detail<->area tension found"
+    },
+    "64b2248475fe76": {
+      "file": "64b2248475fe76b84841a08c6d99b0e3.jpg",
+      "status": "in_progress",
+      "score": 0.928,
+      "iters": 2,
+      "note": "showcase5b; NOTE compare.py over-reports area on riso/textured refs"
+    },
+    "67805068493b45": {
+      "file": "67805068493b4522f5c3944723bee7d2.jpg",
+      "status": "in_progress",
+      "score": 0.328,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "67b12a3cd48f43": {
+      "file": "67b12a3cd48f435e3583b8ba56db8c2a.jpg",
+      "status": "in_progress",
+      "score": 0.661,
+      "iters": 2,
+      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+    },
+    "684fb8df556d3a": {
+      "file": "684fb8df556d3a241e6dfcc0a9d11c2f.jpg",
+      "status": "in_progress",
+      "score": 0.498,
+      "iters": 2,
+      "note": "showcase5g; per-critique fixes, 34 fully non-blocking"
+    },
+    "73c29f4cc5c838": {
+      "file": "73c29f4cc5c838c0888e8d6abba42fde.jpg",
+      "status": "in_progress",
+      "score": 0.4,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "772b9a5b29d391": {
+      "file": "772b9a5b29d3917c12bbe50a7f1470db.jpg",
+      "status": "in_progress",
+      "score": 0.808,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "7d4fa0d720fa7f": {
+      "file": "7d4fa0d720fa7f49dded1e854599c4e0.jpg",
+      "status": "in_progress",
+      "score": 1.082,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "841552212f857b": {
+      "file": "841552212f857b7ca02fafe6dfc5d879.jpg",
+      "status": "in_progress",
+      "score": 0.901,
+      "iters": 2,
+      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+    },
+    "87525f70ad66d8": {
+      "file": "87525f70ad66d82bf7c9457ad6765a62.jpg",
+      "status": "in_progress",
+      "score": 0.645,
+      "iters": 2,
+      "note": "showcase5g; per-critique fixes, 34 fully non-blocking"
+    },
+    "878f95ff7b7cbc": {
+      "file": "878f95ff7b7cbcf53356c7dace319a9b.jpg",
+      "status": "in_progress",
+      "score": 0.638,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "8988345ad4963e": {
+      "file": "8988345ad4963ec66e5754c8c5441f56.jpg",
+      "status": "in_progress",
+      "score": 0.316,
+      "iters": 2,
+      "note": "showcase5g; per-critique fixes, 34 fully non-blocking"
+    },
+    "a99a4af4caa8fc": {
+      "file": "a99a4af4caa8fcca981b3e5efca87fcf.jpg",
+      "status": "in_progress",
+      "score": 0.397,
+      "iters": 2,
+      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+    },
+    "abb2ab5d1194e2": {
+      "file": "abb2ab5d1194e22f4dfbda71dcd98d9f.jpg",
+      "status": "in_progress",
+      "score": 0.574,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "abd472f264528c": {
+      "file": "abd472f264528c60d34cd7bce0e17617.jpg",
+      "status": "in_progress",
+      "score": 0.514,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "b075bc30db0422": {
+      "file": "b075bc30db04223fc1086b86d92ba2b4.jpg",
+      "status": "in_progress",
+      "score": 0.627,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "b2d4cc55d7fdbb": {
+      "file": "b2d4cc55d7fdbbc7294249e7c4d48b27.jpg",
+      "status": "in_progress",
+      "score": 0.442,
+      "iters": 1,
+      "note": "showcase5c dense build; word_boxes+checker+extrude primitives added"
+    },
+    "bf31ba49142543": {
+      "file": "bf31ba491425433b3af84cb75022d1f9.jpg",
+      "status": "in_progress",
+      "score": 0.435,
+      "iters": 2,
+      "note": "showcase5: new shapes.py silhouettes, blocking critiques cleared"
+    },
+    "c10cb35dfa09cd": {
+      "file": "c10cb35dfa09cdaa54d4d9911add468c.jpg",
+      "status": "in_progress",
+      "score": 0.413,
+      "iters": 1,
+      "note": "showcase5d granularity test; small-type density drives detail_ratio"
+    },
+    "c42f94a09f07cd": {
+      "file": "c42f94a09f07cda39df8afe51cde9098.jpg",
+      "status": "in_progress",
+      "score": 0.246,
+      "iters": 2,
+      "note": "showcase5: new shapes.py silhouettes, blocking critiques cleared"
+    },
+    "ca484173fb5287": {
+      "file": "ca484173fb52871d5f058102020b036c.jpg",
+      "status": "in_progress",
+      "score": 0.749,
+      "iters": 2,
+      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+    },
+    "ce6fdd94f81b3e": {
+      "file": "ce6fdd94f81b3e6018bc80724ae4508e.jpg",
+      "status": "in_progress",
+      "score": 0.442,
+      "iters": 1,
+      "note": "showcase5d granularity test; small-type density drives detail_ratio"
+    },
+    "cfec9bd415fff2": {
+      "file": "cfec9bd415fff2e8fc3ebd264932e783.jpg",
+      "status": "in_progress",
+      "score": 0.27,
+      "iters": 2,
+      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+    },
+    "d252704dc5e5f3": {
+      "file": "d252704dc5e5f32f202f854401f845fe.jpg",
+      "status": "in_progress",
+      "score": 0.444,
+      "iters": 1,
+      "note": "showcase5c dense build; word_boxes+checker+extrude primitives added"
+    },
+    "d2add78f901cbf": {
+      "file": "d2add78f901cbf3b892742fb5669ea47.jpg",
+      "status": "in_progress",
+      "score": 0.389,
+      "iters": 2,
+      "note": "showcase5h final batch"
+    },
+    "d375fd7dbcf69c": {
+      "file": "d375fd7dbcf69cfcaeef11a6be81b2b9.jpg",
+      "status": "in_progress",
+      "score": 0.821,
+      "iters": 2,
+      "note": "showcase5b; NOTE compare.py over-reports area on riso/textured refs"
+    },
+    "e9d82bbdf040cf": {
+      "file": "e9d82bbdf040cf13b8d261baa678f1e3.jpg",
+      "status": "in_progress",
+      "score": 0.399,
+      "iters": 2,
+      "note": "showcase5e; detail<->area tension found"
+    },
+    "eaad68d6305fba": {
+      "file": "eaad68d6305fbaca52c0a830906bc783.jpg",
+      "status": "in_progress",
+      "score": 1.02,
+      "iters": 2,
+      "note": "showcase5b; NOTE compare.py over-reports area on riso/textured refs"
+    },
+    "fc9ff902078e20": {
+      "file": "fc9ff902078e2044e28b7356e3015f71.jpg",
+      "status": "in_progress",
+      "score": 0.51,
+      "iters": 2,
+      "note": "showcase5g; per-critique fixes, 34 fully non-blocking"
+    },
+    "ffc106f26f584a": {
+      "file": "ffc106f26f584a842250c4235bcd368e.jpg",
+      "status": "in_progress",
+      "score": 0.75,
+      "iters": 2,
+      "note": "showcase5e; detail<->area tension found"
+    }
+  }
+}

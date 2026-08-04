@@ -1,0 +1,30 @@
+# AQ Poster Engine — code + brain + reference data only.
+# Rendered output (out/) and scratch working images are LOCAL WORK PRODUCT, not engine source.
+# Every PNG here is regenerable from the code + the composition notes in brain/RECREATION_AUDIT.md.
+
+# All generated posters — fresh generations (Workflow A) and recreation iterations (Workflow B)
+out/
+
+# Scratchpad: keep the bespoke build SCRIPTS (the actual "how it was built" record),
+# drop their rendered/source image outputs and debug dumps.
+scratchpad/*.png
+scratchpad/*.jpg
+scratchpad/*.jpeg
+scratchpad/*.pdf
+scratchpad/carousel_sunderbans8/
+scratchpad/events_photos/
+scratchpad/format_test/
+scratchpad/proof/
+scratchpad/vision_debug/
+scratchpad/yearbook/
+scratchpad/yearbook_src/
+
+# Python / OS / editor noise
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Obsidian vault workspace state (not part of the note content)
+AQ Design Engine/.obsidian/workspace*.json
