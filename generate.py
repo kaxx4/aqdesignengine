@@ -44,6 +44,11 @@ JOBS = [
       number="534", label="drives", big="six ways to<br>show up.",
       orbit=[("food",3),("trees",1),("books",4),("dogs",0),("clothes",5),("health",6)],
       chips=["pick any. or all six.","no fees, ever"], footer="@ngo.aquaterra → pick your lane"), 2),
+  ("independence_day", "giant_type", dict(
+      meta="15 aug · kolkata", word="azaad", tags=["no vip culture","no red tape","no boring ngo talk"],
+      big="freedom from<br>boring ngo talk.", band="teenagers running real change since 2021.",
+      body="76 years free from the british. still working on free from bureaucracy.",
+      footer="@ngo.aquaterra · happy independence day"), 4),
 ]
 
 async def main():
