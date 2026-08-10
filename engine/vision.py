@@ -19,6 +19,7 @@ Dependencies: PIL + numpy only (no cv2/scipy in this environment — deliberatel
 Coordinates are CANVAS space (e.g. 1080x1350), matching what the bespoke scripts and build.render
 use, so returned (x,y,size) can be passed straight to a doodle helper.
 """
+import os
 import numpy as np
 from PIL import Image
 from collections import deque
@@ -251,6 +252,38 @@ def plan_spots(path, W, H, n=4, exclude=None, min_size=26, max_size=90,
         out.append(dict(x=x, y=y, size=size, clearance_px=clear_px,
                         lum=float(a["lum"][r, c]), dark_bg=bool(a["lum"][r, c] < 118)))
     return out
+
+
+def plan_spots_relaxed(path, W, H, n=4, exclude=None, seed=0, want=2,
+                       ladder=(BUSY_PCTL, 55, 65, 75), **kw):
+    """plan_spots with an escalating busy-percentile ladder, and a hard warning when it still
+    comes up empty.
+
+    WHY (bug found 2026-08-07, 2026 workshop carousel batch). plan_spots returns [] on a dense
+    photo — every cell fails the clearance floor — and a caller that just does `for s in spots`
+    then renders a slide with NO doodles at all. The whole craft layer vanishes SILENTLY: the
+    preflight gate passes (nothing is off-canvas or colliding, because nothing exists), and only
+    the looking gate catches it. That is precisely the class of flaw CLAUDE.md §8 says to convert
+    into a rule.
+
+    Two things are encoded here:
+      1. Escalate busy_pctl before giving up. The default 45 is tuned for outdoor photos with real
+         sky; indoor workshop shots (walls, crowded rooms) legitimately need a looser flatness bar
+         to expose the same amount of genuinely-free wall. Subject safety is NOT relaxed — the
+         topology test in background_grid and the skin veto in plan_spots still run at every rung.
+      2. Return the ladder rung actually used, and warn on total failure, so "this slide has no
+         decoration" is reported rather than silently shipped.
+
+    Returns (spots, info) where info = {'busy_pctl': int|None, 'starved': bool}.
+    """
+    for pct in ladder:
+        spots = plan_spots(path, W, H, n=n, exclude=exclude, seed=seed, busy_pctl=pct, **kw)
+        if len(spots) >= want:
+            return spots, dict(busy_pctl=pct, starved=False)
+    # last rung's result (possibly 1 spot, possibly none) — surfaced, never silently swallowed
+    print(f"  [vision] WARNING starved: {os.path.basename(path)} yielded {len(spots)} spot(s) "
+          f"even at busy_pctl={ladder[-1]} — slide will be under-decorated")
+    return spots, dict(busy_pctl=ladder[-1], starved=True)
 
 
 def best_band(path, W, H, band_h=140, exclude=None, cell=CELL):

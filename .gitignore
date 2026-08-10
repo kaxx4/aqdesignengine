@@ -13,6 +13,15 @@ scratchpad/*.jpeg
 scratchpad/*.pdf
 scratchpad/carousel_sunderbans8/
 scratchpad/events_photos/
+# carousel_2026: keep build_carousel.py / jobs.py / fill_images.py (the build record), drop every
+# image. These are real photographs of identifiable children from AQ workshops and this repo is
+# PUBLIC — source photos and contact sheets must never be pushed. Same intent as the
+# carousel_sunderbans8 exclusion above, expressed per-file so the scripts survive.
+scratchpad/carousel_2026/**/src_images/
+scratchpad/carousel_2026/**/*.jpg
+scratchpad/carousel_2026/**/*.jpeg
+scratchpad/carousel_2026/**/*.png
+scratchpad/carousel_2026/*.jpg
 scratchpad/format_test/
 scratchpad/proof/
 scratchpad/vision_debug/

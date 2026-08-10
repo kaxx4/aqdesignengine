@@ -382,6 +382,10 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `doodles.py` builder nested inside a bespoke art `<svg>` → inherits the PARENT viewBox, renders ~3x oversized and off-canvas | friendship_day | rule: inline the path inside art SVGs; only ever call `doodle()` at the HTML layer in its own div |
 | Faint (.13–.26 opacity) rings/hatch/checker "fields" read as dirt and smear through body copy | friendship_day | rule: decoration is SOLID + ink-outlined + hard-shadowed, never a low-opacity wash |
 | `try: fn(fill=..) except TypeError` **silently discards the colour** for the 5 stroke-drawn doodles (ring/arrow/squiggle/zigzag/spiral) → they render their hard-coded default | friendship_day | **`doodles.stamp()`** resolves the colour kwarg by introspection; §6 template updated. Self-test: `scratchpad/test_doodle_stamp.py` |
+| `vision.plan_spots` returns `[]` on a dense photo → slide renders with **NO craft layer at all**, and every gate still prints CLEAN because nothing exists to fail | 2026 workshop batch | **`vision.plan_spots_relaxed()`** — escalating busy_pctl ladder + explicit `starved` warning. Self-test: `scratchpad/test_vision_starve.py` |
+| Full-width top exclude band severs every free region from the top edge `background_grid` requires → photo starved to `free_fraction` 0.004 | 2026 workshop batch | rule: shape excludes like the UI (logo box, dots box), never as a full-width stripe. Covered by the same self-test |
+| `pick_visible([accent, white, ink])` ranks by luminance delta → picks near-black ink on every bright wall; thin dark stroke on texture reads as **dirt** | 2026 workshop batch | rule: test the accent ALONE against local luminance, fall back only on failure; + `drop-shadow` on every photo doodle (`CAROUSEL_PLAYBOOK` 10-11) |
+| Dark smooth **hair** scores as low-busy background → doodle lands on a child's head, gate says CLEAN | 2026 workshop batch | rule: per-photo `extra_exclude` box on tight portraits, **measured off a render, never estimated** (`CAROUSEL_PLAYBOOK` 12) |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -424,7 +428,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   auto-runs in `render`; `render(..., elements=…)` runs the full preflight at render time.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
   `test_layout_rules.py` (28) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
-  `test_doodle_stamp.py` (25), all in `scratchpad/`. Run them before trusting the gate stack.
+  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13, added 2026-08-07), all in
+  `scratchpad/`. Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim.)
 - Collision auto-nudge is now encoded (§10) — no pending fix-rules remain from the §10 catalog.

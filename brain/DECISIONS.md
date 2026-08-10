@@ -680,3 +680,70 @@ only in the ephemeral scratchpad.**
 Score: 0.353 (not yet <=0.16, DETAIL still blocking after the revert). Parked rather than forced
 further — same reasoning as 10f1b8a9789261: diminishing returns after a real-bug-fixing pass,
 better used by a fresh session with the preserved v4 script as a known-good starting point.
+
+---
+
+## 2026-08-07 — 2026 workshop carousel batch (8 carousels, 36 slides)
+
+**Context.** First batch built from a CSV export + live Google Drive folders rather than from
+`training_samples/`. 171 photos pulled from 10 public Drive folders; 8 carousels shipped.
+
+**Encoded fix — `vision.plan_spots_relaxed()` (new, in `engine/vision.py`).**
+`plan_spots` returned `[]` on dense indoor photos. A caller iterating the result then rendered a
+slide with NO doodles at all — and the entire gate stack printed `CLEAN ✓`, because nothing was
+off-canvas, colliding, or invisible: nothing *existed*. The craft layer vanished silently and only
+the looking gate caught it. This is exactly the failure shape §8 exists to eliminate, so it is now
+a rule: an escalating `busy_pctl` ladder (45 → 55 → 65 → 75) plus an explicit `starved` warning
+when even the loosest rung fails. Subject safety is not traded away — the topology test and the
+skin veto run unchanged at every rung. Self-test: `scratchpad/test_vision_starve.py` (13
+assertions, each reproducing the real failure).
+
+**Root cause worth remembering.** The starvation was *caused by the caller*, not by the photos:
+a full-width `(0,0,W,190)` exclude band for the logo strip. `background_grid` keeps only free
+regions that TOUCH THE TOP EDGE, so a full-width top band severs every candidate region from the
+edge it must touch — measured `free_fraction` 0.004 on a photo with obvious free wall. **Shape
+excludes like the UI (a logo box, a dots box), never as a stripe.**
+
+**Two craft rules.** (a) `pick_visible([accent, white, ink])` ranks purely by luminance delta, so
+it chose near-black ink on every bright wall — and a thin dark stroke on textured concrete reads
+as *dirt*, the §10 failure again. Test the accent ALONE and fall back only if it fails. (b) Photo
+doodles need a hard `drop-shadow` or they read as a scuff on the photograph rather than an object
+placed on it.
+
+**Unencoded, deliberately.** Dark smooth *hair* scores as low-busy background, so a doodle landed
+on a child's head with the gate clean. vision's skin veto cannot see hair. Rather than bolt on a
+risky global luminance heuristic that would false-positive on every dark garment, this stays a
+per-photo `extra_exclude` box — **measured off a render, never estimated** (the first estimate
+missed and the doodles landed on hair a second time). A noisy auto-check is worse than no check.
+
+**Non-engine judgement calls.** One Drive folder is linked from three different CSV rows and
+contains at least two unrelated sessions — no honest attribution is possible, so that workshop
+was parked for a human decision rather than guessed at. One card slide shipped with its greeting
+reading backwards (reverse-side ink bleeding through the paper) while the caption pointed straight
+at it: **read the text inside a photo before writing copy about it.**
+
+---
+
+## 2026-08-08 — blue-green palette bias across the 2026 workshop batch
+
+**Direction:** "more blue green across all pages." Applied as a rule change in
+`scratchpad/carousel_2026/build_carousel.py` + `scratchpad/gen_quiet_census.py`, not as a recolour
+of rendered files — regenerating reproduces it.
+
+**Two rotations, split by AREA.** The first attempt simply re-weighted the single `ACCENT_ORDER`
+toward cool. That left one warm rung in the rotation, which is correct for doodles — but the same
+rotation also drives scrim tints and the type slide's 600×300 accent field, so `sentence_secrets`
+came out with a full lemon block: a warm poster, straight against the brief. Split into:
+
+- `COOL_ORDER` (sky/teal/mint/grape) → everything large or structural: scrim tint, active dot,
+  caption rule, index tag, type-slide field.
+- `ACCENT_ORDER` (cool + one lemon rung) → doodles and stickers only.
+
+**Why keep any warm at all.** Removing it entirely was tested mentally and rejected: across 43
+slides a single hue stops reading as a decision and starts reading as a colour cast over the
+photographs. One warm rung at punctuation scale keeps the brand's ~30%-accent rule intact while
+the cool range carries the mood. The general principle worth reusing: **a palette bias is a
+constraint on LARGE areas; punctuation should retain contrast or the bias becomes a cast.**
+
+`mintbright #00E5A0` lives in `core.py`'s CSS tokens but not in `ACCENTS`; it is pulled in
+explicitly for doodle fills and for the census legend to give the cool range a high-key note.
