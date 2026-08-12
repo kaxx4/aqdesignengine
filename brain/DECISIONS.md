@@ -747,3 +747,53 @@ constraint on LARGE areas; punctuation should retain contrast or the bias become
 
 `mintbright #00E5A0` lives in `core.py`'s CSS tokens but not in `ACCENTS`; it is pulled in
 explicitly for doodle fills and for the census legend to give the cool range a high-key note.
+
+---
+
+## 2026-08-12 — Independence Day carousel (fresh build, not a reference recreation)
+
+**What this is.** A NEW 4-slide Workflow B carousel (`out/versions/independence_day_2026/`,
+script `gen_independence_day_2026_v3.py`), made for real content, not trained against a
+reference image — there was no reference to recreate, so this entry documents the build
+decisions instead of a composition-match writeup. Slug `independence_day_2026`. Curiosity-hook
+structure per the brief: slides 1-3 close with an arrow doodle + "swipe" mono label + 4-dot page
+indicator; slide 4 is the closer (dots show 4/4, no swipe cue).
+
+**Palette ruling.** Tomato (`A[3]`) is the hero/warmth accent, present on every slide (slide 1
+headline underline + doodles, slide 2's full field, slide 4's headline break + a star). Mint
+(`A[1]`) is the secondary punctuation, rotating in per the standing "supporting palette rotates
+with hero accent" rule (§4). No literal tricolor/flag — the patriotic feeling is carried by the
+warm-accent choice alone, per brief.
+
+**Real bugs the looking gate caught, now worth remembering as a general pattern (not just this
+piece):**
+1. **Colour tokens must be a function of the FIELD they render on, not a global constant.**
+   The swipe-cue arrow and the active page-dot were both hard-coded TOMATO. On slide 2 (a full
+   tomato field) that put a tomato-on-tomato fill straight into `same_as_bg_scan`'s failure mode
+   — invisible fill, only the drop-shadow visible. This is the exact same class of bug as
+   `outline_of(dark)` from the friendship_day session (§10), just for accent fills instead of
+   outlines: `arrow_color = MINT if on_tomato else TOMATO` / same for the active dot. Any
+   carousel with a rotating field colour needs its punctuation colours threaded the same way.
+2. **A furniture element's assumed bbox width must match the real rendered asset, not a guess.**
+   The logo element was declared 140px wide (a guess); the real embedded wordmark renders closer
+   to 300px, so the eyebrow line placed immediately after it ran directly into the logo letters
+   on all 4 slides (both unreadable). Fixed by measuring generously (300px) and, more robustly,
+   moving the eyebrow to its own row below the logo rather than relying on a precise width at
+   all — the safer fix when in doubt.
+3. **A doodle repositioned to clear one collision can land on a DIFFERENT element that isn't in
+   the static elements list yet** (slide 1's burst doodle: moved off the headline bbox, landed
+   directly on the swipe-cue's "SWIPE" text, which is composited by a helper called after the
+   doodle's own placement code runs). `preflight` only catches this if every element -- including
+   ones added by shared furniture helpers like `swipe_cue()` -- is in the same bbox list before
+   the gate runs. Discipline restated from CLAUDE.md's "stale bbox" bug class (§10, sample 6):
+   append the SWIPE/dots bboxes to `elements` from the same call site, in the same order as the
+   HTML is assembled, not after the fact.
+
+**Not encoded as a new engine rule** — these are all instances of two rules already in `layout.py`
+(`same_as_bg_scan`, `collision_check`) working correctly; the fix was in the bespoke script's
+discipline, not a gap in the gate stack. No new automated check was needed or added.
+
+**Final state:** all 4 slides pass `layout.preflight` clean (slide 3's `edu_photo`/`photo_tag`
+overlap is an intentional pinned-caption-on-photo design, whitelisted via `collision_ignore` —
+the same pattern as friendship_day's tags-on-hero). Companion `/canvas-design` piece not run in
+this session — flagged for the user to invoke separately per the standing rule.
