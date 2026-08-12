@@ -797,3 +797,50 @@ discipline, not a gap in the gate stack. No new automated check was needed or ad
 overlap is an intentional pinned-caption-on-photo design, whitelisted via `collision_ignore` —
 the same pattern as friendship_day's tags-on-hero). Companion `/canvas-design` piece not run in
 this session — flagged for the user to invoke separately per the standing rule.
+
+---
+
+## 2026-08-12 — Independence Day JOKE carousel (comedic companion, distinct from the sincere build same day)
+
+**What this is.** A second, deliberately different 4-slide Workflow B carousel
+(`out/versions/independence_day_joke_2026/`, script `gen_independence_day_joke_2026_v1.py`),
+built the same day as the sincere `independence_day_2026` carousel above but NOT a replacement
+for it — a companion meme/comedy post for the broader student community. Slug
+`independence_day_joke_2026`.
+
+**The bit (escalating across slides, setup -> escalation -> punchline -> tag):** students
+"declaring independence" from the group-project freeloader who joins the WhatsApp group but
+only shows up for the presentation photo (slide 1) -> the full mock-legal list of other tyrants:
+8am classes, hostel wifi, mess food, the untouched syllabus, mom's 10pm call, 847 unread
+notifications (slide 2, pink field, checklist rows) -> the punchline: a mock rubber-stamp seal
+reading "FREEDOM GRANTED" next to "IT LASTED 4 HOURS" because someone sent "hey quick q" (slide
+3, ink field) -> sign-off: "HAPPY REAL INDEPENDENCE DAY" + a wink line tying back to AQ's real
+mission (group projects "where every kid actually gets picked"), footer + logo, dots 4/4
+(slide 4, cream field).
+
+**Deliberate palette split from the sincere carousel, so the two are never confusable.** Hero
+accent is LEMON (`A[2]`) with PINK (`A[0]`) secondary, instead of the sincere carousel's TOMATO/
+MINT — same "supporting palette rotates with hero accent" discipline (swipe-arrow/active-dot
+tokens flip to PINK on a lemon field, mirroring `outline_of(dark)`), just anchored to a different
+hero so the visual signature itself signals "this is the other one." Register is comedic
+throughout (mock-legal declaration voice, a stamp graphic, a parenthetical joke aside on slide 4)
+— never sentimental — so it cannot be mistaken for the sincere post at a glance or in copy.
+
+**Real issues the looking gate + `preflight` caught, both fixed in the same session (no new
+engine rule needed — same bug classes already covered by existing checks, per CLAUDE.md §8's
+"locate the right layer" step landing on 'the script's own discipline' not a gate gap):**
+1. A pink lightning-bolt doodle initially placed at (W-130, 300) clipped the top-right corner of
+   slide 1's giant headline bbox — caught by `layout.collision_check` before render. Fixed by
+   moving it to sit above the headline's start y (with the star), the standard "measure the real
+   bbox, don't eyeball" discipline from the bug catalog.
+2. Slide 3's mock rubber-stamp (`ring` doodle + "FREEDOM GRANTED" text centered inside it) is a
+   BY-DESIGN overlap — the text is meant to sit inside the seal, exactly like `photo_tag` on
+   `edu_photo` in the sincere carousel. Whitelisted via `collision_ignore={"stamp_ring",
+   "stamp_text"}` rather than treated as a bug, per the same tags-on-hero precedent.
+
+**Final state:** all 4 slides pass `layout.preflight` clean (`under_filled_quadrants` is the only
+remaining flag, advisory-only, on slide 2's intentionally airy checklist layout — same status as
+the sincere carousel's whitelisted design overlap). Looking gate confirmed the joke reads clearly
+as comedy, not sentimental, on every slide — no further iteration needed past v1. Companion
+`/canvas-design` piece not run in this session (the skill was not available) — flagged for the
+user to invoke separately per the standing rule.
