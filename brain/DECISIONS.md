@@ -844,3 +844,44 @@ the sincere carousel's whitelisted design overlap). Looking gate confirmed the j
 as comedy, not sentimental, on every slide — no further iteration needed past v1. Companion
 `/canvas-design` piece not run in this session (the skill was not available) — flagged for the
 user to invoke separately per the standing rule.
+
+---
+
+## 2026-08-13 — Independence Day "THEN VS NOW" freedoms carousel (third IND-Day post of the batch)
+
+**What this is.** A THIRD, distinct Independence Day Workflow B carousel
+(`out/versions/independence_day_freedoms_2026/`, script
+`gen_independence_day_freedoms_2026_v1.py`), 6 slides, built the same week as the sincere
+`independence_day_2026` (tomato/mint) and comedic `independence_day_joke_2026` (lemon/pink)
+carousels. Distinct format from both: a straight satirical "THEN vs NOW" pairing bit, not an
+escalating declaration. Slug `independence_day_freedoms_2026`.
+
+**The format.** Slide 1: cover/hook ("THE FREEDOMS WE FOUGHT FOR VS. THE FREEDOMS WE ACTUALLY
+USE"). Slides 2-5: one constitutional/historical freedom struck through under a "THEN" chip, a
+down-arrow, then its watered-down modern equivalent in oversized accent type under a "NOW" chip,
+plus a dry parenthetical tag line — Right to Vote -> WhatsApp group polls; Freedom of the Press ->
+Instagram captions; Right to Assembly -> house parties; Freedom of Movement -> skipping class for
+momos, in that fixed order. Slide 6: punchline ("OUR ANCESTORS DIDN'T RISK IT ALL FOR THIS.") plus
+a wink acknowledging AQ's real work, footer, dots 6/6, no swipe cue.
+
+**Deliberate palette split from BOTH prior carousels.** Hero accent SKY (`A[4]`) with GRAPE
+(`A[5]`) secondary and a sparing TOMATO tertiary marker for the strikethrough/NOW punctuation on
+cream fields — neither pairing used by the sincere (tomato/mint) or joke (lemon/pink) carousels,
+so all three read as separate posts at a glance. The 4 pairing slides alternate field (sky, cream,
+sky, cream) to keep the run visually varied while the THEN/struck vs NOW/huge-and-colored
+contrast device stays the constant "joke engine" across all 4 — swipe-arrow/active-dot/strike
+colour tokens are threaded per-field (`GRAPE`/`SKY` swap on sky vs cream) per the standing
+`outline_of(dark)`-style discipline, not hard-coded.
+
+**Looking gate.** All 6 slides read clean on first full pass — one real catch: slide 1's eyebrow
+read "A HONEST AUDIT" (should be "AN"), fixed and re-rendered before finalizing; no other visual
+flaws. Each THEN/NOW pairing reads instantly: the struck-through historical freedom sits at a
+visibly smaller, muted weight than the huge saturated NOW line, so the deflation lands as a single
+glance, not a read. No new engine rule needed — same bug classes already covered by existing
+checks (this was a copy-eyeball catch, not a layout/collision/invisible-colour bug).
+
+**Final state:** all 6 slides pass `layout.preflight` clean (`under_filled_quadrants` advisory-only
+on every slide, consistent with both prior carousels' status — these are deliberately airy
+typographic layouts, not dense ones). Companion `/canvas-design` piece not run in this session
+(the skill was not available in this session's toolset) — flagged for the user to invoke
+separately per the standing rule.
