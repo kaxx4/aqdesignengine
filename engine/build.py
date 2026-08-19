@@ -8,6 +8,8 @@ OPTIONAL and chosen per piece. Variety = different choices, including leaving th
 Pipeline:  spec -> html_from_spec() -> render_and_audit()  (audit is the gate)
 """
 import asyncio, importlib.util, os, re
+_CHROME = "/opt/pw-browsers/chromium"
+_LAUNCH_KW = {"executable_path": _CHROME} if os.path.exists(_CHROME) else {}
 HERE = os.path.dirname(os.path.abspath(__file__))
 def _load(name):
     s = importlib.util.spec_from_file_location(name, os.path.join(HERE, name+".py"))
@@ -102,7 +104,7 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
         layout.preflight(W, H, elements, html=None, color_pairs=color_pairs,
                          page_bg=page_bg, core=core, expect_hero=expect_hero)
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        b = await p.chromium.launch(**_LAUNCH_KW)
         pg = await b.new_page(viewport={"width":W,"height":H}, device_scale_factor=2)
         await pg.set_content(html, wait_until="load"); await pg.wait_for_timeout(1500)
         await pg.locator(".p").screenshot(path=out_png); await b.close()
@@ -112,7 +114,7 @@ async def measure_free(html, W, H):
     """Return bounding boxes of .measure elements so a spec can place fillers in REAL gaps."""
     from playwright.async_api import async_playwright
     async with async_playwright() as p:
-        b = await p.chromium.launch(); pg = await b.new_page(viewport={"width":W,"height":H})
+        b = await p.chromium.launch(**_LAUNCH_KW); pg = await b.new_page(viewport={"width":W,"height":H})
         await pg.set_content(html, wait_until="load"); await pg.wait_for_timeout(1000)
         boxes = await pg.eval_on_selector_all(".measure",
           "els=>els.map(e=>{const r=e.getBoundingClientRect();return{tag:e.dataset.tag,x:Math.round(r.x),y:Math.round(r.y),b:Math.round(r.bottom),rgt:Math.round(r.right)}})")

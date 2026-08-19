@@ -1,7 +1,9 @@
 # AQ LAYOUT AUDIT v2 — ignores parent/child nesting and whitelisted bleed elements.
-import asyncio
+import asyncio, os
 from playwright.async_api import async_playwright
 M=64; W,H=1080,1350
+_CHROME = "/opt/pw-browsers/chromium"
+_LAUNCH_KW = {"executable_path": _CHROME} if os.path.exists(_CHROME) else {}
 BLEED={"num"}
 SKIP_PAIRS={("portrait","onphoto"),("onphoto","portrait"),("h","onhero"),("onhero","h"),
     ("sign","sign"),("lbl","lbl"),("stk","stk"),("pill","pill"),
@@ -10,7 +12,7 @@ SKIP_PAIRS={("portrait","onphoto"),("onphoto","portrait"),("h","onhero"),("onher
 MARGIN_OK={"note","key","flyer","we","won","tb","title","body"}  # intentionally full-bleed, margin breach allowed
 async def audit(html,name):
     async with async_playwright() as p:
-        b=await p.chromium.launch(); pg=await b.new_page(viewport={"width":W,"height":H})
+        b=await p.chromium.launch(**_LAUNCH_KW); pg=await b.new_page(viewport={"width":W,"height":H})
         await pg.set_content("<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"+html+"</body></html>",wait_until="load")
         await pg.wait_for_timeout(1200)
         boxes=await pg.eval_on_selector_all(".measure","els=>els.map((e,i)=>{const r=e.getBoundingClientRect();return{i,tag:e.dataset.tag,x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),b:Math.round(r.bottom),rgt:Math.round(r.right)}})")
