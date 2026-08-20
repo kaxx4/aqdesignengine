@@ -217,12 +217,11 @@ async def render_slide(proj, photo, idx, total, out_dir, cap, seed, stick=None, 
     fillers, fboxes = filler_from_vision(photo, seed, n=4, exclude=ex)
     inner = (full_bleed_photo(photo_b64(photo))
              + scrim_bottom(280 if cap else 170, tint=accent)
-             + logo_pill() + dots(total, idx - 1, accent=accent) + fillers)
+             + logo_pill() + fillers)
     if stick:
         # stickers go in the guaranteed-dark bottom scrim band (playbook rule 3) — never
         # fought into a cluttered sky pocket where they clip the edge or a shoulder
         inner += sticker(stick, A[ACCENT_ORDER[(seed + 3) % 7]], M, H - 250, rot=-3)
-    inner += index_tag(idx, total, accent)
     if cap:
         inner += caption(cap, accent)
     inner += footer(proj["loc"], proj["date_label"])
@@ -298,8 +297,6 @@ async def render_type_slide(proj, idx, total, out_dir, kicker, hero, body, seed)
 
     inner += logo_pill()
     el.append(("logo", M, 48, 300, 56))
-    inner += dots(total, idx - 1, accent=accent)
-    inner += index_tag(idx, total, accent)
     inner += (f'<div style="position:absolute;bottom:52px;left:{M}px;z-index:20;font-family:var(--m);'
               f'font-weight:700;font-size:13px;letter-spacing:.06em;color:var(--ink)">@ngo.aquaterra '
               f'<span style="opacity:.6;font-weight:500">&middot; {proj["loc"]} &middot; '
