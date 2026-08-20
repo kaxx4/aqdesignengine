@@ -10,7 +10,7 @@ SKIP_PAIRS={("portrait","onphoto"),("onphoto","portrait"),("h","onhero"),("onher
 MARGIN_OK={"note","key","flyer","we","won","tb","title","body"}  # intentionally full-bleed, margin breach allowed
 async def audit(html,name):
     async with async_playwright() as p:
-        b=await p.chromium.launch(); pg=await b.new_page(viewport={"width":W,"height":H})
+        b=await p.chromium.launch(executable_path='/opt/pw-browsers/chromium') if __import__('os').path.exists('/opt/pw-browsers/chromium') else p.chromium.launch(); pg=await b.new_page(viewport={"width":W,"height":H})
         await pg.set_content("<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"+html+"</body></html>",wait_until="load")
         await pg.wait_for_timeout(1200)
         boxes=await pg.eval_on_selector_all(".measure","els=>els.map((e,i)=>{const r=e.getBoundingClientRect();return{i,tag:e.dataset.tag,x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),b:Math.round(r.bottom),rgt:Math.round(r.right)}})")
