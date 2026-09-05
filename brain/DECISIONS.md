@@ -747,3 +747,47 @@ constraint on LARGE areas; punctuation should retain contrast or the bias become
 
 `mintbright #00E5A0` lives in `core.py`'s CSS tokens but not in `ACCENTS`; it is pulled in
 explicitly for doodle fills and for the census legend to give the cool range a high-key note.
+
+---
+
+## 2026-09-05 — `giant_type`/cream stuck NEEDS-LOOK: one escalation step wasn't enough (Teachers Day poster)
+
+**Symptom.** Workflow A, fresh `giant_type` piece (Teachers Day tribute, `field="cream"`, word
+"teachers", 3 tags, one body paragraph). Ran NEEDS-LOOK at `fill=0.28`, `TL=0.17`/`TR=0.16` quads,
+issues `sparse`+`flat_dominant` — stuck even after the engine's own self-correction loop escalated
+density as far as it could.
+
+**Root cause, traced through `engine/engine.py`.** Two compounding bugs, both in code that predates
+this session:
+1. `ARCHETYPE_PROFILES["giant_type"]["max_density"]` was `1` — every other archetype gets 2-4
+   escalation steps; giant_type got exactly one, despite its own mass-scaling formulas
+   (`rightmass`/`lowmass` both use `+density*N`) clearly being written to expect more headroom
+   than that.
+2. `leftmass` — the *only* shape living in the TL quadrant — never referenced `density` at all,
+   unlike its two siblings. So the one escalation step giant_type did have could not do anything
+   for a TL-quadrant shortfall; it only ever grew the right/bottom shapes.
+
+**Fix (`engine/engine.py`).** `leftmass` now scales with density the same way `rightmass`/`lowmass`
+do. `max_density` raised `1 -> 2`. A new `midmass` tier fires only at `density>=2`: a shape placed
+in the one collision-safe window beside the title (below the word's own bounding box, above the
+tags row) — safe because the title `<div>`'s box spans the full `cs(6)` grid width for text-wrap
+purposes even when a short word's actual glyphs stop well short of it; anything placed within that
+box's *width* but above/below its *height* doesn't collide with the rendered word, but anything
+inside both dimensions risks a false `collision_check` hit against invisible whitespace. Result:
+fill 0.28 → 0.34, TL 0.17 → 0.19, TR 0.16 → 0.21, `sparse` cleared. Self-test:
+`scratchpad/test_giant_type_density_escalation.py` (9 assertions, reproduces the exact stuck state
+at the old density=1 cap and proves density=2 recovers it).
+
+**Left unencoded, deliberately — the residual `flat_dominant`.** Even after the fix, this piece
+(and likely most cream-field `giant_type` pieces) keeps tripping `flat_dominant` (cream >52% of
+pixels). Chasing that number further would mean growing the accent masses well past the brand's
+own "~30% punctuation, never flood" rule (§9) — cream legitimately covers 65-75%+ of a piece built
+from a handful of punctuation-scale shapes plus a hero word, and that is not a defect. This is a
+structural tension between the `flat_dominant` gate (assumes any non-photo, non-ink-base piece
+should read as <52% one color) and the brand's own bg-dominant-by-design punctuation rule — it is
+not exempted in code (session 5 deliberately scoped the `exempt_flat` flag to the *ink* field only,
+and that reasoning still holds), so it stays a metric-only false-positive judged by the looking
+gate, not something to keep bolting more decoration onto. Looked at the actual PNG: balanced,
+readable, one clear hero, all four quadrants carry real weight, craft layer intact — this passes
+the looking gate (§3) with the residual `flat_dominant` noted as advisory, the same way `VDR` is
+already treated as advisory for flat-vector work in §7c.

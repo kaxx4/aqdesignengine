@@ -44,6 +44,12 @@ JOBS = [
       number="534", label="drives", big="six ways to<br>show up.",
       orbit=[("food",3),("trees",1),("books",4),("dogs",0),("clothes",5),("health",6)],
       chips=["pick any. or all six.","no fees, ever"], footer="@ngo.aquaterra → pick your lane"), 2),
+  ("teachers_day", "giant_type", dict(
+      field="cream", meta="teachers' day · sept 5", word="teachers",
+      tags=["mentors","patience","gratitude"],
+      body="every kid we've reached learned from someone who chose to teach first. sundarban's classrooms run on you.",
+      big="thank you for<br>showing up.", band="you taught us this too.",
+      footer="@ngo.aquaterra"), 1),
 ]
 
 async def main():

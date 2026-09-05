@@ -386,6 +386,7 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | Full-width top exclude band severs every free region from the top edge `background_grid` requires → photo starved to `free_fraction` 0.004 | 2026 workshop batch | rule: shape excludes like the UI (logo box, dots box), never as a full-width stripe. Covered by the same self-test |
 | `pick_visible([accent, white, ink])` ranks by luminance delta → picks near-black ink on every bright wall; thin dark stroke on texture reads as **dirt** | 2026 workshop batch | rule: test the accent ALONE against local luminance, fall back only on failure; + `drop-shadow` on every photo doodle (`CAROUSEL_PLAYBOOK` 10-11) |
 | Dark smooth **hair** scores as low-busy background → doodle lands on a child's head, gate says CLEAN | 2026 workshop batch | rule: per-photo `extra_exclude` box on tight portraits, **measured off a render, never estimated** (`CAROUSEL_PLAYBOOK` 12) |
+| `giant_type`'s `leftmass` (its only TL-quadrant shape) never scaled with `density` while `rightmass`/`lowmass` did, AND its profile capped `max_density` at 1 — one escalation step, applied to shapes that couldn't use it, left cream-field pieces stuck NEEDS-LOOK (`sparse`+TL/TR<0.17) with no headroom | teachers_day | `leftmass` now scales with density; `max_density` 1→2; new `midmass` density≥2 tier fills the collision-safe window beside the title box. Self-test: `scratchpad/test_giant_type_density_escalation.py` |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -428,8 +429,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   auto-runs in `render`; `render(..., elements=…)` runs the full preflight at render time.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
   `test_layout_rules.py` (28) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
-  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13, added 2026-08-07), all in
-  `scratchpad/`. Run them before trusting the gate stack.
+  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13, added 2026-08-07) ·
+  `test_giant_type_density_escalation.py` (9, added 2026-09-05), all in `scratchpad/`. Run them
+  before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim.)
 - Collision auto-nudge is now encoded (§10) — no pending fix-rules remain from the §10 catalog.

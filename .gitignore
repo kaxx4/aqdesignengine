@@ -5,6 +5,12 @@
 # All generated posters — fresh generations (Workflow A) and recreation iterations (Workflow B)
 out/
 
+# Companion art pieces (canvas-design skill): keep the philosophy note + build/render scripts,
+# drop the rendered raster/vector/PDF outputs — same "regenerable from code" policy as out/.
+companion/**/*.png
+companion/**/*.pdf
+companion/**/*.svg
+
 # Scratchpad: keep the bespoke build SCRIPTS (the actual "how it was built" record),
 # drop their rendered/source image outputs and debug dumps.
 scratchpad/*.png

@@ -17,7 +17,7 @@ ARCHETYPE_PROFILES = {
   # per-archetype gate calibration — different geometries have different natural density
   "number_hero": dict(fill_min=0.34, max_density=3),
   "radial_orbit": dict(fill_min=0.26, max_density=4),
-  "giant_type": dict(fill_min=0.24, max_density=1, exempt_flat=True),   # radial is legitimately airier (center+ring)
+  "giant_type": dict(fill_min=0.24, max_density=2, exempt_flat=True),   # radial is legitimately airier (center+ring)
   "stacked_zones": dict(fill_min=0.30, max_density=2),
 }
 RULES = {
@@ -192,11 +192,24 @@ def archetype_giant_type(content, accent, density=0):
     # dominant reference. Ink base keeps them full-size/full-opacity (its own signature is bold+flat).
     mass_scale = 0.75 if field=="cream" else 1.0
     mass_alpha = "CC" if field=="cream" else ""  # ~80% opacity, blends toward the cream field
-    leftmass=(f'<div style="position:absolute;top:{snap(120)}px;left:{snap(60)}px;width:{int(200*mass_scale)}px;height:{int(170*mass_scale)}px;border-radius:16px;transform:rotate(-6deg);background:{A(3)}{mass_alpha};border:5px solid var(--ink);z-index:1"></div>')
+    # rule: leftmass previously ignored `density` entirely while rightmass/lowmass both scale with
+    # it — giant_type's only TL-quadrant mass had no headroom to help clear a stuck flat_dominant/
+    # sparse TL reading once density escalated (session: teachers_day, fill=0.28 stuck at the old
+    # max_density=1 cap with TL/TR both <0.17). Scale it the same way its siblings do.
+    leftmass=(f'<div style="position:absolute;top:{snap(120)}px;left:{snap(60)}px;width:{int((200+density*40)*mass_scale)}px;height:{int((170+density*30)*mass_scale)}px;border-radius:16px;transform:rotate(-6deg);background:{A(3)}{mass_alpha};border:5px solid var(--ink);z-index:1"></div>')
     rightmass=(f'<div style="position:absolute;top:{snap(360)}px;right:-70px;width:{int((300+density*40)*mass_scale)}px;height:{int((300+density*40)*mass_scale)}px;'
                f'border-radius:50%;background:{A(2)}{mass_alpha};border:5px solid var(--ink);z-index:1"></div>')
     lowmass=(f'<div style="position:absolute;bottom:{snap(300)}px;right:{M}px;width:{int((220+density*30)*mass_scale)}px;height:{int((220+density*30)*mass_scale)}px;'
              f'border-radius:40% 60% 55% 45%;background:{A(4)}{mass_alpha};border:5px solid var(--ink);z-index:1"></div>') if density>=1 else ''
+    # rule: the word div's own bounding box spans the full grid width (cs(6), ~952px) for
+    # wrapping purposes even though short words like "teachers" only render glyphs to ~65% of
+    # it — so a filler shape placed beside the word at word-height would sit INSIDE that
+    # (invisible) box and risk a collision flag, while the real visual gap it needs to fill is
+    # TR-quadrant space the existing masses don't reach. midmass sits in the one window clear of
+    # both the word box (ends ~y430) and the tags row (starts y640+): a real, needed 3rd escalation
+    # tier for pieces where density=1 still leaves TR sparse/flat_dominant (session: teachers_day).
+    midmass=(f'<div style="position:absolute;top:{snap(470)}px;right:{snap(90)}px;width:{int(260*mass_scale)}px;height:{int(150*mass_scale)}px;'
+             f'border-radius:20px;transform:rotate(4deg);background:{A(6)}{mass_alpha};border:5px solid var(--ink);z-index:1"></div>') if density>=2 else ''
     band = f'<div style="position:absolute;bottom:0;left:0;right:0;height:{160+density*30}px;background:{accent};border-top:5px solid var(--ink);z-index:2"></div>' if density>=1 else ''
     bandfg="#0A0A0A" if accent in INK_ON else "#fff"
     bandtxt = f'<div style="position:absolute;bottom:{snap(60)}px;left:{M}px;font-family:var(--d);font-weight:900;font-size:48px;text-transform:uppercase;color:{bandfg};z-index:11;line-height:.9">{content.get("band","")}</div>' if density>=1 else ''
@@ -205,7 +218,7 @@ def archetype_giant_type(content, accent, density=0):
       # field fragmentation: a large tilted accent panel breaks the flat field (kills flat_dominant)
       f'<div style="position:absolute;top:40px;left:-80px;width:420px;height:420px;border-radius:50%;border:3px solid {A(5)}44;z-index:0"></div>',
       f'<div style="position:absolute;bottom:120px;right:-60px;width:360px;height:360px;border-radius:50%;border:3px solid {A(2)}44;z-index:0"></div>',
-      leftmass, rightmass, lowmass,
+      leftmass, rightmass, lowmass, midmass,
       # rule: giant_type carries the same size-pair doodle vocabulary as the other archetypes
       # (§9) — it previously had ZERO doodles, reading flatter than every reference. Small
       # sparkle top-right (below meta, above rightmass) + large star near the lower-left edge
