@@ -147,3 +147,71 @@ else:
     ok("(reference image absent — geometry assertions skipped)")
 
 print(f"\nALL {N} ASSERTIONS PASSED")
+
+# ── layout.resolve_label_z — protect the LABEL, not the object ──────────────
+# sample 522f2d89: in a deliberately overlapping pile, heavy overlap is the effect.
+# One capsule covering another's WORDS never is. collision_check can say nothing
+# (the overlap is the design); occlusion_check measures whole objects, so a capsule
+# 60% visible reads as fine even when the hidden 40% is exactly the text.
+lay = _load("layout")
+
+solvable = [("a", (100, 100, 300, 60), 5),
+            ("b", (400, 90, 320, 90), 9),
+            ("c", (700, 700, 200, 60), 3)]
+z, un = lay.resolve_label_z(solvable)
+assert un == []
+ok("resolve_label_z leaves a pile whose labels already clear each other alone")
+
+# Raising only helps when coverage is ASYMMETRIC — a short label swallowed by a long
+# one. Two equal labels overlapping is symmetric: whichever goes on top, the other is
+# covered by the same amount, and no stacking fixes it (see the unsolvable case below).
+buried = [("short", (200, 200, 100, 40), 2), ("long", (100, 150, 500, 140), 9)]
+z2, un2 = lay.resolve_label_z(buried)
+assert z2["short"] > z2["long"], (z2, un2)
+ok("a short label swallowed by a long one is RAISED above it")
+assert un2 == [], un2
+ok("...and resolves, because it covers little of the long one in return")
+
+# genuinely unsolvable: two labels on exactly the same spot. No stacking fixes that.
+z3, un3 = lay.resolve_label_z([("x", (0, 0, 100, 50), 1), ("y", (0, 0, 100, 50), 2)])
+assert un3, "mutually-covering labels must be reported, not silently 'fixed'"
+ok("two labels in the same place are reported UNRESOLVED — the composition must move")
+
+# the escalation trap: raising every covered object at once, or one at a time without
+# cycle detection, makes a mutually-overlapping pair lift each other forever.
+import time as _t
+_t0 = _t.time()
+lay.resolve_label_z([(f"k{i}", (i * 5, 0, 200, 60), i) for i in range(12)])
+assert _t.time() - _t0 < 5.0
+ok("a heavily interlocking pile terminates instead of escalating forever")
+
+assert lay.resolve_label_z([]) == ({}, [])
+ok("resolve_label_z tolerates an empty pile")
+
+# ── compare.crop — make mockup references scorable at all ───────────────────
+# ~a third of the corpus is a mockup (phones on a backdrop, a card photo). Comparing a
+# poster against a picture of three phones on grey measures the grey, so every mockup
+# recreation in the run so far was parked with NO number.
+import PIL.Image as _I
+_probe = "scratchpad/crops/_test_probe.png"
+os.makedirs("scratchpad/crops", exist_ok=True)
+_I.new("RGB", (400, 600), (12, 12, 12)).save(_probe)
+out = cmp_.crop(_probe, 0.25, 0.10, 0.75, 0.90, "scratchpad/crops/_test_cut.png")
+assert _I.open(out).size == (200, 480)
+ok("compare.crop cuts a fractional region and writes it at the right pixel size")
+
+try:
+    cmp_.crop(_probe, 0.7, 0.1, 0.3, 0.9)
+    raise AssertionError("an inverted box should raise")
+except ValueError:
+    pass
+ok("an inverted/empty crop box raises instead of writing a broken target")
+
+_auto = cmp_.crop(_probe, 0.1, 0.1, 0.9, 0.9)
+assert os.path.exists(_auto) and "_crop_" in _auto
+ok("with no out_path it writes a predictable name beside the source")
+for _f in (_probe, "scratchpad/crops/_test_cut.png", _auto):
+    if os.path.exists(_f):
+        os.remove(_f)
+
+print(f"\nALL {N} ASSERTIONS PASSED")

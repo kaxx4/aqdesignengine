@@ -279,6 +279,9 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
   headline vs. its band). **HARD FAIL.** Prefer NESTING the child in the shape's div where you can —
   the browser then enforces it and `measure_dom` reports it for free; use this for what nesting can't say.
 - `rotated_bbox(x,y,w,h,deg)` → the axis-aligned box a rotated element ACTUALLY occupies.
+- `resolve_label_z(items)` → re-stack an overlapping pile so every object's own LABEL stays
+  readable. Returns `(new_z, unresolved)`; `unresolved` means those labels must MOVE, not
+  restack — two label boxes on the same spot cannot both be on top.
 - `occlusion_check(items)` → **advisory**; an element buried behind higher-z elements.
 - `fit_block(available_h, lines, …)` → the size at which a block fits the room left.
 - **`scatter_solve(items, W, H, protect=…, keep_out=…)`** → SOLVES a pile's placement
@@ -313,6 +316,12 @@ also runs the full `preflight` at render time for free.
 - `preview.critique(png)` / `preview.report(png, name)` → `dead_quadrant`, `sparse`, `crammed`,
   `flat`, `flat_dominant`, `uniform`; returns fill, contrast, per-quadrant fill. The headless
   proxy for the looking gate — run it every render, but it is NOT a substitute for actually looking.
+- **`compare.crop(path, x0,y0,x1,y1)`** → cut one screen/region out of a MOCKUP reference so a
+  single-mechanism recreation can be scored against something honest. Coordinates are canvas
+  fractions. Caveat: a crop and a full-res render differ in resolution AND often in aspect —
+  run a control (score the render against a downscaled copy of ITSELF) before believing a
+  detail-ratio gap is real. On 522f2d89 the control returned 1.12x against a measured 2.49x,
+  so most of that gap was genuine, not an artifact.
 - **`compare.geometry(path)`** → MEASURE a reference before describing it: content bbox,
   margins, vertical ratio, centroid, coverage and a 9x11 occupancy grid, all as canvas
   fractions. **Run this as step 0 of any recreation.** An eyeballed proportion in the
@@ -468,6 +477,8 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | A drawn mark given the die-cut sticker treatment stops reading as ink | 3d846c78 | **`shapes.ink_mark()`** — flat fill, no halo/outline/shadow. `sticker()` stays for badges |
 | An asterisk drawn as wedges radiating from a shared hub reads as a vector sparkle, not a brush mark | 3d846c78 | **`shapes.brush_asterisk()`** — strokes pulled THROUGH the centre, tapered at both ends, bowed, crossing |
 | A bitmap motif had no representation at all — any smooth builder destroys the pixel character | 77e7bb34 | **`shapes.pixel_art()` + `AQ_PIXELS`** (drop/leaf/sprout/wave) |
+| One object in a deliberately overlapping pile covers ANOTHER'S LABEL. `collision_check` is silent (the overlap IS the design) and `occlusion_check` measures whole objects, so a capsule 60% visible reads fine when the hidden 40% is exactly the words | 522f2d89 | **`layout.resolve_label_z`** — protect the LABEL box, not the object. Raises the buried one just clear; reports `unresolved` when no stacking can fix it |
+| A mockup reference (phones on a backdrop) is unscorable — comparing a poster to a picture of three phones on grey measures the grey, so every mockup recreation was parked with NO number | ~1/3 of the corpus | **`compare.crop(path, x0,y0,x1,y1)`** — cut the chosen screen and score against that |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -531,6 +542,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
 - Workflow B: the original 44 are processed (`brain/RECREATION_PROGRESS.md`). **30 NEW
   references were added 2026-09-19 (`runqueue.py init`, queue now 74).** Accepted so far
   from the new set: `3d846c781bd059` (0.123, 3 iters), `77e7bb34144e08` (0.11, 2 iters).
+  PARKED: `522f2d898b827f` (0.619, 4 iters) — a phone screen recreated on AQ story;
+  the looking gate passes and the mechanism is faithful, but the score is NOT
+  comparable to a same-aspect recreation. Recorded as parked, not accepted.
   **A recreation is NOT done at an accepting score** — 77e7bb34 v1 scored 0.147, inside
   the gate, while a whole line of copy was sliced off its slab. The looking gate is what
   caught it; compare.py cannot see a missing line of copy.
@@ -545,7 +559,7 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (23)** — **222 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
+  `test_recreation.py` (32)** — **231 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
