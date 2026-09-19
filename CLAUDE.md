@@ -140,6 +140,11 @@ tracked in `brain/RECREATION_PROGRESS.md` (a 44-row status table) and `brain/REC
 
 **The 6 steps, in order, no skipping:**
 
+0. **MEASURE THE REFERENCE FIRST.** `compare.geometry(ref_path)` → content bbox, margins,
+   vertical ratio, centroid, occupancy grid. Paste the numbers into the description and
+   BUILD TO THEM. The written inventory catches missing ELEMENTS; it is unreliable for
+   PROPORTIONS, and a wrong proportion there propagates straight into the build.
+
 1. **Full composition description BEFORE any code.** `Read` the reference `.jpg` and write a
    complete description into `brain/RECREATION_AUDIT.md` under a `## Sample N` heading. Enumerate
    EVERY background texture/shape, every layer in z-order, every distinct element with approximate
@@ -308,6 +313,10 @@ also runs the full `preflight` at render time for free.
 - `preview.critique(png)` / `preview.report(png, name)` → `dead_quadrant`, `sparse`, `crammed`,
   `flat`, `flat_dominant`, `uniform`; returns fill, contrast, per-quadrant fill. The headless
   proxy for the looking gate — run it every render, but it is NOT a substitute for actually looking.
+- **`compare.geometry(path)`** → MEASURE a reference before describing it: content bbox,
+  margins, vertical ratio, centroid, coverage and a 9x11 occupancy grid, all as canvas
+  fractions. **Run this as step 0 of any recreation.** An eyeballed proportion in the
+  written inventory is a confident wrong instruction to the build (sample 3d846c78).
 - `ref_metrics.analyze(png)` → `dom_cov`, `mean_sat`, `contrast`, `ink`, `vdr` (visual dominance
   ratio). **Reference targets:** contrast ≈ .26, ink ≈ .11, sat ≈ .31, dom_cov ≈ .46, VDR 0.06–0.20
   (one clear hero; <0.05 = no hero, >0.22 = headline swallows the piece). Treat these like the
@@ -453,6 +462,12 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `box-sizing:border-box` means a border eats the content width — every pill in a 28-pill field clipped by 5–6px | motifs v3 | rule: add `2*border` when sizing a box to its measured content. Caught by `reconcile.measure_dom`, invisible to the eye |
 | Ten objects hand-placed by coordinate; each fix trades one collision for another (six versions) | motifs v1–v6 | **`layout.scatter_solve`** — constraint placement against protected text, keep-out zones and pairwise overlap. The vector twin of `vision.plan_spots`; returns what it could NOT place rather than dumping it |
 | Depth sought by putting badges BEHIND type, which hides their own labels | motifs v6 | rule: in a sticker pile every badge sits in FRONT; depth comes from badge-on-badge overlap, and the type reads because badges land in its gaps |
+| A child positioned outside its `overflow:hidden` container — a line of copy sliced off a slab edge. **Scored 0.147, INSIDE the accept gate**; only the eye saw it | 77e7bb34 | **`reconcile.measure_dom` clipped-by-parent** (auto). Excludes the page root `.p`, so deliberate full-bleed stays the `off_canvas` check's job |
+| `reconcile._SEL` measured only DIRECT children of `.p`, so NESTING — which the house style recommends — hid elements from the gate entirely | 77e7bb34 | selector widened to every positioned descendant |
+| A proportion EYEBALLED into the step-1 written description became a confident wrong instruction: "grid sits high, 2:1 black below" vs a measured 1.05:1. Cost a scoring regression (0.180 → 0.405, IoU 0.87 → 0.60) | 3d846c78 | **`compare.geometry(path)`** — measure the reference's bbox, margins, vertical ratio, centroid and occupancy BEFORE writing the description |
+| A drawn mark given the die-cut sticker treatment stops reading as ink | 3d846c78 | **`shapes.ink_mark()`** — flat fill, no halo/outline/shadow. `sticker()` stays for badges |
+| An asterisk drawn as wedges radiating from a shared hub reads as a vector sparkle, not a brush mark | 3d846c78 | **`shapes.brush_asterisk()`** — strokes pulled THROUGH the centre, tapered at both ends, bowed, crossing |
+| A bitmap motif had no representation at all — any smooth builder destroys the pixel character | 77e7bb34 | **`shapes.pixel_art()` + `AQ_PIXELS`** (drop/leaf/sprout/wave) |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -513,7 +528,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `stacked_zones` registered. Pending: 5 more (`diagonal_cascade`, `off_frame_bleed`,
   `scatter_collage`, `isometric_grid`, `corner_anchor`) — geometry exists in `engine/archetypes.py`,
   needs wiring into the self-correcting pipeline + looking gate.
-- Workflow B: all 44 references processed (`brain/RECREATION_PROGRESS.md` all `revisit-done`).
+- Workflow B: the original 44 are processed (`brain/RECREATION_PROGRESS.md`). **30 NEW
+  references were added 2026-09-19 (`runqueue.py init`, queue now 74).** Accepted so far
+  from the new set: `3d846c781bd059` (0.123, 3 iters), `77e7bb34144e08` (0.11, 2 iters).
+  **A recreation is NOT done at an accepting score** — 77e7bb34 v1 scored 0.147, inside
+  the gate, while a whole line of copy was sliced off its slab. The looking gate is what
+  caught it; compare.py cannot see a missing line of copy.
 - Gate stack: the §10 guards are encoded in `layout.py`; `preflight` bundles them; `css_var_check`
   auto-runs in `render`; `render(..., elements=…)` runs the full preflight at render time.
   **Session 10 added a MEASURED tier** — `reconcile.measure_dom` auto-runs on every render (clipped /
@@ -524,8 +544,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
   `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
-  `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30)** —
-  **199 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
+  `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
+  `test_recreation.py` (23)** — **222 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again

@@ -1035,3 +1035,51 @@ solves the size from the room that remains, and `measure_text()['lines']` is now
 the planned line count. The check existed; it was only being used in one piece.
 
 Self-test added: `test_placement.py` (30). **Suite now 199 assertions, all verified passing.**
+
+
+### SESSION 10c (2026-09-19) — exact recreations, one at a time
+
+Two references from the new dump, run through the full Workflow B protocol.
+
+**`3d846c78` — "Sunday Script" 2x2 brand-card sheet. 0.180 -> 0.405 -> 0.123 ACCEPTED.**
+
+The middle number is the lesson. v2 was a deliberate "fix" that made things worse, because two
+proportions in my step-1 written description were eyeballed and wrong:
+
+| I wrote | Measured |
+|---|---|
+| "grid sits HIGH, ~2x as much black below as above" | **1.05 : 1** — essentially centred |
+| "the BR card is visibly wider and breaks the right edge" | wider by ~1% of frame, not 4% |
+
+Building to the written proportion dropped bbox IoU from 0.87 to 0.60. The protocol's written
+inventory is still the right first step — it is what catches MISSING ELEMENTS — but proportions are
+not a thing to remember, they are a thing to measure, and `compare.py` already had the machinery.
+Added `compare.geometry()` and a new **step 0** to the protocol: measure, then describe, then build.
+
+Also: `shapes.brush_asterisk()` v1 drew wedges radiating from a shared hub — solid centre, every
+edge meeting at a point, reading as a clean vector sparkle. That is silhouette collapse, committed
+inside the very function whose docstring warns against it. An asterisk is four STROKES pulled
+through the middle: tapered at both ends, bowed, crossing rather than meeting. Also added
+`ink_mark()`, because putting `sticker()`'s die-cut halo and outline around a drawn mark stops it
+reading as ink.
+
+**`77e7bb34` — "AcquaSofia" two-slab poster. 0.147 -> 0.11 ACCEPTED.**
+
+Measured first, and v1 landed at 0.147 immediately — better than the previous recreation managed in
+two iterations. New primitive: `shapes.pixel_art()` + `AQ_PIXELS`, because a bitmap motif was a
+silhouette family the engine could not express at all.
+
+**THE IMPORTANT FINDING.** v1 scored **0.147 — inside the 0.16 accept gate — while visibly broken**:
+the first line of copy ("it's time") was sliced off by the slab's top edge, because a bottom-anchored
+offset computed negative. A missing line of copy barely moves a pixel histogram, so `compare.py` was
+content. Only the looking gate saw it. This is precisely the case CLAUDE.md section 3 exists for, and
+it is the strongest evidence yet that an accepting score is not a finished recreation.
+
+Encoded as clipped-by-parent detection in `reconcile.measure_dom` — and building it exposed a worse
+bug underneath: `_SEL` matched only DIRECT children of `.p`, so the moment a build nested anything,
+that element was never measured at all. The house style actively RECOMMENDS nesting (it is how
+containment gets enforced), so the recommended practice was hiding elements from the gate. Selector
+widened to every positioned descendant; the page root is excluded as a clipping parent so deliberate
+full-bleed stays the `off_canvas` check's job.
+
+Self-test: `test_recreation.py` (23). **Suite now 222 assertions, all verified passing.**

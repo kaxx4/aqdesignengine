@@ -308,6 +308,216 @@
       "score": 0.75,
       "iters": 2,
       "note": "showcase5e; detail<->area tension found"
+    },
+    "110a5730e3710b": {
+      "file": "110a5730e3710ba94e525ee2c5850981.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "114f2b19c46119": {
+      "file": "114f2b19c46119a6a2b27273256182a7.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "139c5a6f43a6da": {
+      "file": "139c5a6f43a6da226328cd18f7f8db0d.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "25143d758ea743": {
+      "file": "25143d758ea743e15ec374876a41192d.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "2af2568a52cc92": {
+      "file": "2af2568a52cc92360082830202f98275.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "2d3bfa3d0b3978": {
+      "file": "2d3bfa3d0b39789e06c07e8ecd16ebae.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "3d846c781bd059": {
+      "file": "3d846c781bd0593f6c08387a095c02d9.jpg",
+      "status": "done",
+      "score": 0.123,
+      "iters": 3,
+      "note": "v3 ACCEPTED (0.123, under the 0.16 gate). 2x2 brand-card sheet: two layouts in four colourways, diagonal pairs matching. NEW PRIMITIVE shapes.brush_asterisk + ink_mark \u2014 the reference mark is four tapered strokes pulled THROUGH the centre, not wedges radiating from a hub; v1 of the function drew the hub version and was a textbook silhouette collapse. v1 0.180 -> v2 0.405 (REGRESSION) -> v3 0.123. The v2 regression was caused by TWO EYEBALLED PROPORTIONS in my step-1 written description that were simply wrong ('grid sits high, 2:1 black below' -> measured 1.05:1; 'BR card much wider' -> measured ~1% not 4%). Fixed by adding compare.geometry() and building to measured numbers: bbox IoU 0.60 -> 0.971. Remaining gap is the declared palette adaptation (AQ sky vs the reference ultramarine)."
+    },
+    "44fcf9a8183cee": {
+      "file": "44fcf9a8183cee4aaf926a66ccd9844b.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "4939a628d6deb2": {
+      "file": "4939a628d6deb2346a2cbec7bf93e264.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "4e209696416c67": {
+      "file": "4e209696416c67132421471cbcff6670.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "522f2d898b827f": {
+      "file": "522f2d898b827f5d2fdd890b4c3ec756.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "5c9c3e986f57ff": {
+      "file": "5c9c3e986f57fff88485c6fecaa500d5.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "60c27d14df64a7": {
+      "file": "60c27d14df64a752711531ea70e11445.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "62f8cc4d3c6135": {
+      "file": "62f8cc4d3c613590844bd12d49c81671.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "71cd34ac681e40": {
+      "file": "71cd34ac681e4029c19b58e7df0f7f8e.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "77e7bb34144e08": {
+      "file": "77e7bb34144e08c02ca79fcf187958d6.jpg",
+      "status": "done",
+      "score": 0.11,
+      "iters": 2,
+      "note": "v2 ACCEPTED (0.11). Two-slab centred poster. MEASURED FIRST via the new compare.geometry(), which is why v1 already landed at 0.147 vs the previous recreation needing three iterations to get there. NEW PRIMITIVE shapes.pixel_art + AQ_PIXELS (drop/leaf/sprout/wave) \u2014 a bitmap motif was a silhouette family the engine could not express at all. KEY LESSON: v1 scored 0.147 (INSIDE the accept gate) while visibly broken \u2014 the first line of copy was sliced off by the slab's top edge. compare.py cannot see a missing line of copy. Only the looking gate caught it. Encoded as reconcile.measure_dom clipped-by-parent detection, which ALSO required widening _SEL: it had been measuring only DIRECT children of .p, so the nesting the house style recommends was hiding elements from the gate entirely. QR code omitted per the real-assets rule, replaced with the handle it would resolve to."
+    },
+    "80cb7ed71a8cc9": {
+      "file": "80cb7ed71a8cc960d22e790ed09202dc.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "911d9ad81ac025": {
+      "file": "911d9ad81ac0254a18928c168a89cb66.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "936223601e1dcb": {
+      "file": "936223601e1dcbcc268b9b0493b89a6f.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "ab54c226882c14": {
+      "file": "ab54c226882c140fad78ff46e2623297.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "d536b66c9aaa00": {
+      "file": "d536b66c9aaa00a7182ca988bd6abd5a.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "d6cb16411b5ee8": {
+      "file": "d6cb16411b5ee8ce51b756461112c162.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "d88c31285a237f": {
+      "file": "d88c31285a237fae725d0316d65d408e.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "d91402fc3c0f43": {
+      "file": "d91402fc3c0f43a912d20544de256c17.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "e1fb89ef0f76cc": {
+      "file": "e1fb89ef0f76ccd10989815560324814.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "e7b32bd307aac4": {
+      "file": "e7b32bd307aac4af6e385929ffd7016b.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "f25de42e61b5c9": {
+      "file": "f25de42e61b5c9a4e34e7745cd556090.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "f501897698c870": {
+      "file": "f501897698c87029838f6a119dd3799c.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "fa3e4affb80375": {
+      "file": "fa3e4affb803755c6a211c195c616432.jpg",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
+    },
+    "videoframe_196": {
+      "file": "videoframe_1967.png",
+      "status": "pending",
+      "score": null,
+      "iters": 0,
+      "note": ""
     }
   }
 }

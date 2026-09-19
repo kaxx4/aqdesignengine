@@ -50,13 +50,42 @@ _MEASURE_JS = """els => els.map(e => {
            sh: e.scrollHeight, ch: e.clientHeight,
            ox: cs.overflowX, oy: cs.overflowY,
            fixedW: /\d/.test(e.style.width || ""),
-           fixedH: /\d/.test(e.style.height || "") };
+           fixedH: /\d/.test(e.style.height || ""),
+           clip: (() => {
+             // nearest ancestor that actually CLIPS, and its rect
+             let p = e.parentElement;
+             while (p && p !== document.body) {
+               const cs2 = getComputedStyle(p);
+               // The page root .p is ALWAYS overflow:hidden, and bleeding off the
+               // canvas edge is a deliberate AQ move (the staggered-pill field bleeds
+               // 28 pills on purpose). Treating .p as a clipping parent reported every
+               // one of them as lost content. Page-edge bleed is the off_canvas
+               // check's job, which has its own bleed whitelist; this check is only
+               // about a child cut off by a CARD or SLAB.
+               if (p.classList && p.classList.contains("p")) { return null; }
+               if (cs2.overflowX === "hidden" || cs2.overflowY === "hidden" ||
+                   cs2.overflowX === "clip"   || cs2.overflowY === "clip") {
+                 const pr = p.getBoundingClientRect();
+                 return { x: Math.round(pr.x), y: Math.round(pr.y),
+                          r: Math.round(pr.right), b: Math.round(pr.bottom),
+                          tag: p.dataset.tag || p.className || p.tagName.toLowerCase() };
+               }
+               p = p.parentElement;
+             }
+             return null;
+           })() };
 })"""
 
 # Selector note: `.p [data-tag]` only sees explicitly tagged nodes, which is how
 # the old probe under-reported. We measure every positioned descendant instead,
 # so an untagged element cannot hide from the check by simply not opting in.
-_SEL = ".p [data-tag], .p [class*=measure], .p > div, .p > span, .p > img"
+# Selector note. This used to be `.p > div, .p > span, .p > img` plus the tagged
+# nodes — DIRECT CHILDREN ONLY. So the moment a build nested anything (a label inside
+# a pill, a copy block inside a slab) that element was never measured at all, and the
+# nesting the house style actively RECOMMENDS was the thing that hid elements from the
+# gate. Sample 77e7bb34 lost a whole line of copy off the top of its slab and nothing
+# fired. Now every positioned descendant is measured.
+_SEL = ".p [data-tag], .p [class*=measure], .p div, .p span, .p img, .p svg"
 
 # An auto-sized block only gets reported when it overshoots its line box by BOTH
 # of these. Measured across the corpus: a normal AQ headline at line-height
@@ -114,6 +143,29 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
                 # sit on it. (Session 10: a 470px numeral measured 484px tall in
                 # a 367px line box; a sticker was cleared onto the glyph.)
                 out["spilling"].append(rec)
+        # CLIPPED BY ITS PARENT — content lost at a container edge.
+        #
+        # THE BUG THIS ENCODES (sample 77e7bb34, session 10c). A copy block was
+        # positioned inside an overflow:hidden slab with a top offset that computed
+        # NEGATIVE, so its first line ("it's time") was sliced off by the slab's edge.
+        # Nothing caught it: the element is not bigger than its own box (so the
+        # scroll checks say nothing), it is well inside the canvas (so the off-canvas
+        # check says nothing), and compare.py scored the piece 0.147 — inside the
+        # accept threshold — because a missing line of copy barely moves a pixel
+        # histogram. Only the looking gate saw it.
+        #
+        # An element cut off by its container is never intended, so this is reported
+        # unconditionally alongside `clipped`.
+        cl = e.get("clip")
+        if cl:
+            over = []
+            if e["x"] < cl["x"] - 1:      over.append(("left",   cl["x"] - e["x"]))
+            if e["y"] < cl["y"] - 1:      over.append(("top",    cl["y"] - e["y"]))
+            if e["right"] > cl["r"] + 1:  over.append(("right",  e["right"] - cl["r"]))
+            if e["bottom"] > cl["b"] + 1: over.append(("bottom", e["bottom"] - cl["b"]))
+            for side, px in over:
+                out["clipped"].append((f'{e["tag"]} (by {cl["tag"]})', side, int(px), 0))
+
         if e["tag"] in bleed_tags:
             continue
         if e["right"] > W + 2 or e["bottom"] > H + 2 or e["x"] < -2 or e["y"] < -2:
@@ -187,7 +239,12 @@ def format_measure(flaws, name=""):
     """One-line-per-flaw rendering for the render gate's console output."""
     lines = []
     for tag, axis, got, box in flaws.get("clipped", []):
-        lines.append(f"CLIPPED {tag}: {axis} {got}px inside a {box}px box — characters are lost")
+        if box == 0:
+            lines.append(f"CLIPPED {tag}: {got}px past its container's {axis} edge "
+                         f"— content is cut off")
+        else:
+            lines.append(f"CLIPPED {tag}: {axis} {got}px inside a {box}px box "
+                         f"— characters are lost")
     for tag, axis, got, box in flaws.get("spilling", []):
         lines.append(f"OVERSIZE {tag}: real {axis} {got}px vs {box}px box "
                      f"— a hand-written bbox here under-reports by {got-box}px")

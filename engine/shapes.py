@@ -20,7 +20,7 @@ Two fixes live here:
 All builders return an SVG path `d` string in a 0..100 x 0..100 box unless noted; `svg()` scales.
 Designed to be callable by a weak model: pick a family name, pass w/h and fill. No judgement needed.
 """
-import math
+import math, random
 
 INK = "#0A0A0A"
 SW = 6                      # ink outline weight at 100-box scale
@@ -230,6 +230,167 @@ def interior(path_d, kind="inner", box=100, color=INK, fill=None, uid=None):
         out.append(f'<clipPath id="ip{u}"><path d="{path_d}"/></clipPath>'
                    f'<g clip-path="url(#ip{u})">{"".join(marks)}</g>')
     return "".join(out)
+
+
+# ── pixel art ─────────────────────────────────────────────────────────────────
+# A bitmap motif is a silhouette FAMILY the engine had no way to express. Reference
+# 77e7bb34 carries a chunky pixel jellyfish; drawn with any smooth builder here it
+# stops being pixel art, which is the entire character of the mark. Cheap to add,
+# and it unlocks the whole 8-bit register the corpus keeps reaching for.
+
+AQ_PIXELS = {
+    # 12x12 grids. '#' = filled. Kept deliberately coarse — the chunkiness is the point.
+    "drop": [
+        ".....##.....",
+        ".....##.....",
+        "....####....",
+        "....####....",
+        "...######...",
+        "..########..",
+        ".##########.",
+        ".##########.",
+        "############",
+        ".##########.",
+        "..########..",
+        "....####....",
+    ],
+    # v1 of this grid read as a muddy blob: the midrib was implied by a diagonal
+    # gap rather than drawn, so the two halves merged. Drawn explicitly now.
+    "leaf": [
+        ".........##.",
+        "......####..",
+        "....#####...",
+        "...####.#...",
+        "..####..#...",
+        ".####...#...",
+        ".###...##...",
+        ".##...##....",
+        ".#...##.....",
+        "....##......",
+        "...##.......",
+        "..##........",
+    ],
+    "sprout": [
+        "....#..#....",
+        "...##..##...",
+        "..###..###..",
+        "..###..###..",
+        "...##..##...",
+        "....####....",
+        ".....##.....",
+        ".....##.....",
+        ".....##.....",
+        ".....##.....",
+        "....####....",
+        "...######...",
+    ],
+    "wave": [
+        "............",
+        "..##....##..",
+        ".####..####.",
+        "##..####..##",
+        "............",
+        "..##....##..",
+        ".####..####.",
+        "##..####..##",
+        "............",
+        "..##....##..",
+        ".####..####.",
+        "##..####..##",
+    ],
+}
+
+
+def pixel_art(grid, box=100, gap=0.0):
+    """Turn a list of '#'/'.' rows into a path of squares, fitted to the 0..box space.
+
+    `gap` (0..0.4) insets each cell, which reads as a slightly separated pixel grid.
+    Pass a name from AQ_PIXELS or your own rows.
+    """
+    rows = AQ_PIXELS.get(grid, grid) if isinstance(grid, str) else grid
+    if not rows:
+        return ""
+    nh, nw = len(rows), max(len(r) for r in rows)
+    cell = box / float(max(nw, nh))
+    ox = (box - nw * cell) / 2.0
+    oy = (box - nh * cell) / 2.0
+    g = cell * max(0.0, min(0.4, gap))
+    out = []
+    for j, row in enumerate(rows):
+        for i, ch in enumerate(row):
+            if ch not in ".0 ":
+                x = ox + i * cell + g / 2
+                y = oy + j * cell + g / 2
+                wcell = cell - g
+                out.append(f"M{x:.2f} {y:.2f} h{wcell:.2f} v{wcell:.2f} h{-wcell:.2f} Z")
+    return " ".join(out)
+
+
+def brush_asterisk(strokes=4, R=46, w0=8.5, w1=1.2, bow=0.14, jitter=0.18,
+                   hub=0.10, seed=3, box=100):
+    """A hand-drawn brush asterisk: `strokes` tapered marks drawn THROUGH the centre.
+
+    v1 OF THIS FUNCTION WAS WRONG, and wrong in the exact way this module exists to
+    prevent. It drew `arms` wedges radiating OUT from a shared hub, which fills the
+    centre solid and makes every edge meet at one point — the result reads as a clean
+    vector sparkle, not as ink. Rendered beside the reference it was plainly a
+    different object: silhouette collapse, committed while writing the note warning
+    against silhouette collapse.
+
+    An asterisk is not drawn as eight wedges. It is drawn as FOUR STROKES, each pulled
+    right through the middle and off the other side, so:
+      * each stroke tapers at BOTH ends (a brush loads at the middle of a pull)
+      * the strokes cross rather than meeting, so the centre is dense but not a point
+      * each is slightly BOWED — a hand pivots, it does not rule a line
+      * the crossing point of each is offset a little from dead centre (`hub`), which
+        is what stops it reading as a snowflake
+    `seed` makes the jitter reproducible.
+
+    Returns a path `d` in the 0..box space, like every other builder here.
+    """
+    import math
+    rng = random.Random(seed)
+    c = box / 2.0
+    out = []
+    for i in range(strokes):
+        a = (math.pi * i / strokes) + rng.uniform(-jitter, jitter)
+        ca, sa = math.cos(a), math.sin(a)
+        px, py = -sa, ca                                   # perpendicular
+        # the stroke runs from -len_a to +len_b through a slightly offset centre
+        ox = c + rng.uniform(-hub, hub) * R
+        oy = c + rng.uniform(-hub, hub) * R
+        la = R * (1.0 - rng.uniform(0, jitter))
+        lb = R * (1.0 - rng.uniform(0, jitter))
+        x0, y0 = ox - la * ca, oy - la * sa
+        x1, y1 = ox + lb * ca, oy + lb * sa
+        hw = (w0 / 2.0) * (1.0 + rng.uniform(-0.18, 0.18))
+        tw = w1 / 2.0
+        # bow: push the belly of the stroke sideways so it is not a ruled line
+        bx = ox + px * bow * R * rng.choice((1, -1))
+        by = oy + py * bow * R
+        out.append(
+            "M{:.2f} {:.2f} "
+            "Q{:.2f} {:.2f} {:.2f} {:.2f} "
+            "L{:.2f} {:.2f} "
+            "Q{:.2f} {:.2f} {:.2f} {:.2f} Z".format(
+                x0 + px * tw, y0 + py * tw,
+                bx + px * hw, by + py * hw, x1 + px * tw, y1 + py * tw,
+                x1 - px * tw, y1 - py * tw,
+                bx - px * hw, by - py * hw, x0 - px * tw, y0 - py * tw))
+    return " ".join(out)
+
+
+def ink_mark(path_d, fill=INK, size=120, rot=0, box=100):
+    """Draw a path as a FLAT ink mark: no halo, no outline, no shadow.
+
+    sticker() gives every object the die-cut treatment, which is right for badges and
+    wrong for a drawn mark — a brush asterisk with a pale halo and a 6px outline around
+    each stroke stops looking like ink and starts looking like a sticker of ink.
+    """
+    return (f'<svg viewBox="0 0 {box} {box}" width="{size}" height="{size}" '
+            f'style="transform:rotate({rot}deg);overflow:visible" '
+            f'xmlns="http://www.w3.org/2000/svg">'
+            f'<path d="{path_d}" fill="{fill}"/></svg>')
 
 
 # ── label fit ──────────────────────────────────────────────────────────────────
