@@ -994,3 +994,44 @@ shipped as a hero number at all.
 ### Self-tests added (all reconstruct a real failure above)
 `test_brand_truth.py` (23) · `test_texture.py` (25) · `test_measured_layout.py` (32).
 **Full suite now 169 assertions, all verified passing this session.**
+
+
+### SESSION 10b (2026-09-19) — four motifs from the new references, and the end of hand-placed piles
+
+Built the four strongest motifs from the 2026-09 reference dump against real CSV content. Six
+iterations of the sticker swarm alone. What they taught:
+
+**1. The box-units trap.** `shapes.label(size=13)` is in the 0–100 box `sticker()` scales, so inside
+a 206px badge that 13 renders at 27px. Every sticker label overflowed its silhouette. `fit_font()`
+now returns BOX units so the caller never does the conversion, and reports `fits=False` when a
+label cannot fit that shape at all — "291 WORKSHOPS" genuinely does not fit a 168px burst, and
+saying so is better than shipping 5pt type. Per-family `INNER_FRAC` generalises
+`layout.star_text_width`, which had solved this for stars only.
+
+**2. A multi-line headline declared as ONE bbox is ~60% air.** Both collision_check and
+occlusion_check became meaningless against it — badges in the clear beside the short line "KEEP"
+were flagged, badges genuinely buried were not. Declaring PER-LINE boxes fixed both at once.
+
+**3. `box-sizing: border-box` means the border eats the content width.** Every one of 28 pills
+clipped by 5–6px because they were sized to their measured content. Invisible by eye; caught
+instantly by `reconcile.measure_dom`. This is the clearest evidence so far that the measured tier
+earns its place.
+
+**4. Six versions of hand-typed coordinates is a search done badly.** Each fix moved one badge onto
+something else: buried DOG FEEDS, then buried the word "UP.", then put two badges on the body copy.
+`layout.scatter_solve()` does the search properly — protected text boxes (coverable a little, never
+buried), absolute keep-out bands, pairwise overlap ceiling — and returns what it could NOT place
+rather than dumping it somewhere bad. It is the vector twin of `vision.plan_spots()`, which had
+existed for photographs since 2026-08 with no equivalent for vector layouts.
+
+**5. Depth does not come from putting things behind type.** Five versions tried to interleave badges
+in front of and behind the headline. Every badge placed behind lost its own label. Re-reading the
+reference: every badge is in FRONT; the type reads because the badges land in its gaps, and the
+pile reads as a pile because the badges overlap *each other*.
+
+**6. An honest regression.** Piece C got WORSE from v1 to v2 — a 2px font increase re-wrapped the
+headline to four lines with "IS" orphaned and pushed the body copy onto the footer. `fit_block()`
+solves the size from the room that remains, and `measure_text()['lines']` is now checked against
+the planned line count. The check existed; it was only being used in one piece.
+
+Self-test added: `test_placement.py` (30). **Suite now 199 assertions, all verified passing.**

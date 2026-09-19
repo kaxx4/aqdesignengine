@@ -274,6 +274,11 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
   headline vs. its band). **HARD FAIL.** Prefer NESTING the child in the shape's div where you can —
   the browser then enforces it and `measure_dom` reports it for free; use this for what nesting can't say.
 - `rotated_bbox(x,y,w,h,deg)` → the axis-aligned box a rotated element ACTUALLY occupies.
+- `occlusion_check(items)` → **advisory**; an element buried behind higher-z elements.
+- `fit_block(available_h, lines, …)` → the size at which a block fits the room left.
+- **`scatter_solve(items, W, H, protect=…, keep_out=…)`** → SOLVES a pile's placement
+  against protected text, keep-out bands and pairwise overlap. Use it instead of typing
+  coordinates for anything more than ~3 loose objects. Returns `(placements, unplaced)`.
 - `wash_scan(html,W,H)` → **advisory**; large patterned decoration at low alpha (the 'dirt' defect).
 - `star_text_width(diameter)` → helper: the width to constrain text to so it fits a star's waist.
 - `antipattern_scan(html)` → **manual only** (not in the auto gate — false-positives on normal
@@ -375,6 +380,12 @@ so AQ's LinkedIn art is landscape or square — never 4:5.
 - `core.outline_of(surface)` · `core.hard_shadow(size)` · `core.keyline(ring_bg)` · `core.RADII`
   (32/22/14/pill) — the craft scales, shared with the site.
 
+**Stickers** — build every badge with `shapes.sticker()` and fit its label with
+`shapes.fit_font(measured_w, measured_at, kind, size)`. ⚠ `shapes.label(size=)` is in BOX
+units (0–100), NOT px: inside a 206px badge a 13 renders at 27px. `fit_font` returns box
+units and reports `fits=False` when a label simply cannot fit that silhouette — split it
+over lines or grow the badge; never ship 5pt type.
+
 **Textures** (`engine/tex.py`) — texture belongs INSIDE a shape that has an edge, at full contrast:
 `grain` `paper_fibre` `stripes` `crosshatch` `dot_grid` `grid_lines` `checkerboard` `rays`
 `concentric` `duotone` `photo_ink` `tape` `torn` `cutpaper` `riso_offset`. A faint patterned wash is
@@ -434,6 +445,14 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | Clipped / oversize / off-canvas text invisible to every static gate | session 10 | **`reconcile.measure_dom` (AUTO in `build.render`)** — the check already existed but was welded inside Workflow-A-only `probe()`; extracted and wired |
 | Faint patterned decoration at .05–.34 alpha reads as dirt and smears body copy | friendship_day | **`layout.wash_scan` (advisory, in `preflight`)** — the rule existed in this table with no encoded guard until session 10 |
 | `tape()`/craft object in cream on a cream page, or floating with nothing under it | session 10 | rule: a craft object must contrast its ground AND be holding something down |
+| Sticker label sized independently of the silhouette holding it — `PATHER SATHI` ran out of both ends of its capsule | motifs v1 | **`shapes.fit_font` / `inner_width`** — a per-family usable-width fraction, fitted from a MEASURED label. Generalises `layout.star_text_width`, which solved this for stars only |
+| **UNIT TRAP:** `shapes.label(size=13)` is BOX units (0–100), so inside a 206px sticker it renders at 27px | motifs v1 | `fit_font` returns BOX units, so the caller never does the conversion that went wrong |
+| Element placed *behind* another so completely that it reads as a smear, not as depth | motifs v1–v5 | **`layout.occlusion_check`** (advisory) — the general form of `cascade_peek_check`. Caveat documented: a text bbox is mostly air, so it over-reports against type |
+| Headline size picked by eye, wraps to one more line than planned, pushes body copy onto the footer | motifs v2 | **`layout.fit_block`** — solve the size from the room that remains. And ALWAYS check `measure_text()['lines']` against the planned line count |
+| A multi-line headline declared as ONE bbox: ~60% air, so collision and occlusion checks both become meaningless | motifs v3 | rule: declare a headline as PER-LINE boxes — `KEEP` is 420px wide, not 952 |
+| `box-sizing:border-box` means a border eats the content width — every pill in a 28-pill field clipped by 5–6px | motifs v3 | rule: add `2*border` when sizing a box to its measured content. Caught by `reconcile.measure_dom`, invisible to the eye |
+| Ten objects hand-placed by coordinate; each fix trades one collision for another (six versions) | motifs v1–v6 | **`layout.scatter_solve`** — constraint placement against protected text, keep-out zones and pairwise overlap. The vector twin of `vision.plan_spots`; returns what it could NOT place rather than dumping it |
+| Depth sought by putting badges BEHIND type, which hides their own labels | motifs v6 | rule: in a sticker pile every badge sits in FRONT; depth comes from badge-on-badge overlap, and the type reads because badges land in its gaps |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -505,8 +524,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
   `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
-  `test_texture.py` (25) · `test_measured_layout.py` (32)** — **169 assertions total, all verified
-  passing 2026-09-19**. All in `scratchpad/`. Run them before trusting the gate stack.
+  `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30)** —
+  **199 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
+  Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
   2026-09-03: its `os.chdir` still pointed at the project's pre-move folder, so despite being on
@@ -515,6 +535,11 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
 - **OPEN DECISION (session 10):** the live site's ops/teal is `#12909C`; the engine's canon teal is
   `#0E7C86`. Recorded as `core.DEPT_SITE_TEAL` rather than reconciled, because changing `ACCENTS[6]`
   restyles all 44 recreations. Someone should decide which one wins.
+- **Motifs built from the 2026-09 reference dump** (`scratchpad/gen_motifs_v6.py`, output in
+  `out/session10b/`): sticker swarm (badges in the gaps of a headline), staggered bleed rows
+  (a full-canvas field of named pills), duotone photo (two-plate riso that keeps faces), and
+  notched interlocking slabs. These are worked examples, NOT registered archetypes — the
+  Workflow A registry is still the same four.
 - **Real content source:** `welfare_projects_rows.csv` (558 logged welfare projects, 2021–2026) is
   the first real dataset wired into generation. Counted figures: 558 projects · 291 workshops ·
   126 returns to Pather Sathi · 3,756 volunteer TURNOUTS (not unique volunteers — the qualifier

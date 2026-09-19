@@ -542,6 +542,168 @@ def rotated_bbox(x, y, w, h, deg):
     return (x - (nw - w) / 2.0, y - (nh - h) / 2.0, nw, nh)
 
 
+def scatter_solve(items, W, H, protect=(), keep_out=(), zones=None, margin=28,
+                  max_pair_overlap=0.18, max_protect_cover=0.30, seed=1, tries=600):
+    """Place a pile of objects so the pile reads as designed instead of as a mess.
+
+    THE BUG THIS ENCODES (session 10b, sticker swarm). Ten badges were positioned by
+    typing coordinates. Every fix moved one badge onto something else: the first pass
+    buried DOG FEEDS under a headline, the second buried the word "UP.", the third put
+    two badges on the body copy and hid a fourth behind another badge. FIVE iterations,
+    each one trading one collision for another, because a human (or a model) picking
+    ten positions against ten constraints by eye is doing a search badly.
+
+    vision.plan_spots() already solves exactly this for photographs — measure the
+    image, return safe spots. There was simply no equivalent for vector layouts, so
+    every bespoke script hand-placed its pile. This is that equivalent.
+
+    Constraints, all hard unless noted:
+      * stay `margin` px inside the canvas
+      * overlap no OTHER placed item by more than `max_pair_overlap` of its own area
+        (a little overlap is the motif — a pile that never touches is a grid)
+      * cover no `protect` box by more than `max_protect_cover` (headline lines, body
+        copy — text you must still be able to read)
+      * never intersect a `keep_out` box at all (the logo, the footer)
+
+    items:   [(label, w, h)] — use the ROTATED footprint (layout.rotated_bbox)
+    protect: [(x,y,w,h)] text boxes — may be partly covered, never buried
+    keep_out:[(x,y,w,h)] absolute no-go
+    zones:   optional [(x,y,w,h)] to bias placement into; defaults to the whole canvas
+
+    Returns (placements, unplaced) where placements is [(label, x, y)]. Anything that
+    could not be placed within `tries` comes back in `unplaced` rather than being
+    dropped somewhere bad — an honest failure the caller must resolve by removing an
+    item or giving it more room.
+    """
+    rng = random.Random(seed)
+    zones = list(zones) if zones else [(margin, margin, W - 2 * margin, H - 2 * margin)]
+
+    def inter(a, b):
+        ix = min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0])
+        iy = min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1])
+        return max(0.0, ix) * max(0.0, iy)
+
+    # biggest first: the hard-to-place objects get the free space, which is what a
+    # designer does by hand and what makes greedy placement actually converge
+    order = sorted(range(len(items)), key=lambda i: -items[i][1] * items[i][2])
+    placed, out, unplaced = [], {}, []
+
+    for i in order:
+        lab, w, h = items[i]
+        best, best_score = None, None
+        for _ in range(tries):
+            zx, zy, zw, zh = zones[rng.randrange(len(zones))]
+            x = rng.uniform(zx, max(zx, zx + zw - w))
+            y = rng.uniform(zy, max(zy, zy + zh - h))
+            x = min(max(x, margin), W - margin - w)
+            y = min(max(y, margin), H - margin - h)
+            box = (x, y, w, h)
+            area = max(1.0, w * h)
+
+            if any(inter(box, k) > 0 for k in keep_out):
+                continue
+            worst_pair = max((inter(box, pb) / area for pb in placed), default=0.0)
+            if worst_pair > max_pair_overlap:
+                continue
+            bad_text = False
+            cover_pen = 0.0
+            for pb in protect:
+                frac = inter(box, pb) / max(1.0, pb[2] * pb[3])
+                if frac > max_protect_cover:
+                    bad_text = True
+                    break
+                cover_pen += frac
+            if bad_text:
+                continue
+
+            # among legal spots prefer: a LITTLE contact with a neighbour (the pile
+            # should interlock), little text coverage, away from dead corners
+            contact = 0.0 if not placed else worst_pair
+            cx, cy = x + w / 2, y + h / 2
+            centre_pull = ((cx - W / 2) ** 2 + (cy - H / 2) ** 2) ** 0.5 / (W + H)
+            score = cover_pen * 3.0 + centre_pull * 0.7 - min(contact, 0.10) * 4.0
+            if best_score is None or score < best_score:
+                best, best_score = box, score
+        if best is None:
+            unplaced.append(lab)
+        else:
+            placed.append(best)
+            out[lab] = (best[0], best[1])
+
+    return ([(items[i][0], *out[items[i][0]]) for i in order if items[i][0] in out],
+            unplaced)
+
+
+def occlusion_check(items, min_visible=0.45):
+    """Flag an element so covered by the things in front of it that it reads as a
+    mistake rather than as depth.
+
+    THE BUG THIS ENCODES (session 10b, sticker swarm). Interleaving badges in front
+    of and behind a headline is the whole motif — a pile only reads as depth when
+    some of it is behind. But a "DOG FEEDS" tag placed behind the word SHOWING came
+    out ~85% covered, so it read as a red smear with three stray letters, not as a
+    sticker. Nothing could catch it: collision_check treats that overlap as intended
+    (it IS intended), and bounds/contains have nothing to say about z-order.
+
+    This is the general form of cascade_peek_check, which solved exactly this for
+    repeated-card decks and was never generalised past them.
+
+    items: [(label, (x,y,w,h), z), ...] — z is the CSS z-index.
+    Anything with a higher z is treated as opaque cover. Returns
+    [(label, visible_fraction), ...] for elements below `min_visible`.
+
+    APPROXIMATE BY DESIGN, and one caveat matters more than the rest: a TEXT
+    element's bbox is mostly air. A headline box reports 100% coverage of whatever
+    sits behind it while its glyph strokes might cover only a third, so this
+    over-reports against type. Tolerable here — the numbers still RANK the badges
+    correctly, and a badge sitting wholly inside a headline's box is worth looking
+    at even when some of it peeks between letters. It also unions coverage on a
+    coarse grid rather than clipping polygons, and cannot know a cover is
+    translucent. So: "look at this one", never a hard fail.
+    """
+    out = []
+    norm = [(lab, tuple(box[-4:]), z) for lab, box, z in items]
+    for lab, (x, y, w, h), z in norm:
+        if w <= 0 or h <= 0:
+            continue
+        covers = [b for _l, b, zz in norm if zz > z]
+        if not covers:
+            continue
+        # 24x24 sample grid over the element: cheap, stable, and accurate to ~2%
+        N = 24
+        hidden = 0
+        for i in range(N):
+            px = x + (i + 0.5) * w / N
+            for j in range(N):
+                py = y + (j + 0.5) * h / N
+                for (cx, cy, cw, ch) in covers:
+                    if cx <= px <= cx + cw and cy <= py <= cy + ch:
+                        hidden += 1
+                        break
+        visible = 1.0 - hidden / float(N * N)
+        if visible < min_visible:
+            out.append((lab, round(visible, 3)))
+    return out
+
+
+def fit_block(available_h, line_count, line_height=0.9, max_size=200, min_size=24,
+              extras=0):
+    """The largest font size at which `line_count` lines still fit `available_h`.
+
+    THE BUG THIS ENCODES (session 10b, piece C). A headline was set at a size picked
+    by eye, wrapped to one more line than expected, and pushed the body copy down
+    onto the footer. The available space was knowable the whole time — it is just
+    (footer top - photo bottom) - the gaps. Solve for the size instead of nudging it.
+
+    `extras` is any fixed height below the block that must also fit (body copy, a
+    kicker, the gaps between them).
+    """
+    room = available_h - extras
+    if room <= 0 or line_count <= 0:
+        return min_size
+    return max(min_size, min(max_size, room / (line_count * line_height)))
+
+
 def contains_check(pairs, pad=0):
     """Flag content that does not actually fit the shape it is supposed to sit in.
 
@@ -670,7 +832,7 @@ def img_src_check(html):
 def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=None,
               expect_hero=False, min_hero_frac=0.12, quad_min_frac=0.35,
               collision_ignore=frozenset(), auto_nudge=False, cascade_stacks=None,
-              contains=None):
+              contains=None, occlusion=None):
     """
     ONE pre-render gate that runs every static check the session-8 revisit pass
     turned into a rule. The pass showed the recurring bugs slipped through because
@@ -737,6 +899,8 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         r['invisible_colors'] = invisible_color_check(color_pairs, page_bg, core)
     if expect_hero:
         r['missing_hero'] = dominance_check(elements, W, H, min_hero_frac)
+    if occlusion is not None:
+        r['occluded'] = occlusion_check(occlusion)
     if contains is not None:
         r['not_contained'] = contains_check(contains)
     if cascade_stacks:
@@ -745,7 +909,7 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
             hidden.extend((gi, i, frac) for i, frac in cascade_peek_check(stack))
         r['cascade_hidden'] = hidden
     ADVISORY = {'under_filled_quadrants', 'nudged_elements', 'invisible_craft',
-                'cascade_hidden', 'faint_wash'}
+                'cascade_hidden', 'faint_wash', 'occluded'}
     hard = {k: v for k, v in r.items() if k not in ADVISORY}
     clean = all(not v for v in hard.values())
     r['clean'] = clean
