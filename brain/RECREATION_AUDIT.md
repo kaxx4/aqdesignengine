@@ -1812,3 +1812,85 @@ logged `in_progress` in `brain/RECREATION_QUEUE.json`.
    `motion_lines`) is still too thin vs reference interiors. Highest-value next lever.
 2. Under-fill correction over-shot twice (05 at 1.39x, 12 at 1.83x) — damp it.
 3. None of the 15 is at the 0.16 acceptance bar; they are structurally ~80%, not 90%.
+
+
+---
+
+## Sample 3d846c78 — "Sunday Script" 2x2 brand-card sheet  (session 10c, 2026-09-19)
+
+Reference: `training_samples/reference_posters/3d846c781bd0593f6c08387a095c02d9.jpg`
+Slug / output: `out/versions/3d846c781bd059/`
+
+### STEP 1 — FULL COMPOSITION DESCRIPTION (written before any code; this is the acceptance checklist)
+
+**Canvas / ground.** Pure black field, edge to edge. No texture, no grain, no vignette. The cards
+are photographed stock, so each carries a soft, very short drop shadow — the only soft shadow in
+the piece.
+
+**Global structure.** FOUR landscape cards in a 2x2 grid, occupying roughly x 11%..89% and
+y 29%..72% of the frame. The grid is NOT centred vertically: there is about twice as much black
+below it as above. Gutter between cards is small and equal (~2.5% of frame width). Card aspect is
+close to 1.45:1 (a business card). The bottom-right card is visibly WIDER than the other three and
+breaks the grid's right edge — the sheet is a photograph of real cards, not a perfect matrix.
+
+**Element inventory, z-ordered:**
+
+1. black ground
+2. card TL — off-white stock (~#E8E6E1), all type in a saturated ULTRAMARINE BLUE
+   2a. a justified two-column caps block, 4 lines, grotesk bold, very tight leading (~0.95):
+       line1 `PUNCTUATION` ......... `FANATICS`
+       line2 `METAPHOR` ............ `JUNKIES`
+       line3 `COPYWRITERS` .... `FOR`  `THE`      <- line 3 justifies to THREE words
+       line4 `SHARPEST` ........... `BRANDS`
+       Both edges flush; the gap between columns is the justification, not a fixed gutter.
+   2b. a hand-drawn BRUSH ASTERISK, blue, centred horizontally, sitting below the caps block.
+       ~8 separate tapered strokes radiating from a hub, uneven angles/lengths, paper visible
+       between them. NOT a filled star and NOT a spiky polygon.
+   2c. two lines of small caps at the card's bottom, same blue:
+       `COPYWRITER STUDIO BASED IN THE UK`
+       `+44 7900 112233` ....... `@SUNDAYSCRIPT`   <- justified to both edges
+3. card TR — solid ULTRAMARINE field, type in off-white
+   3a. serif display wordmark, two lines, tight leading: `Sunday` / `Script.`
+       High-contrast didone-ish serif. The terminal PERIOD is large and deliberate.
+       Optically centred, sitting high in the card.
+   3b. bottom row: three small serif words evenly distributed across the full card width:
+       `Ink.`    `Pause.`    `Repeat.`
+4. card BL — solid ORANGE field, type in black. Identical layout to TR (wordmark + three words).
+5. card BR — off-white stock, type in BLACK. Same layout as TL, with two differences:
+   the brush asterisk is LARGER and sits left of centre, and the card is wider.
+
+**Type system (only two families in the whole piece):**
+- a bold grotesk, UPPERCASE only, used justified, for every small/structural text
+- a high-contrast serif, sentence case, used only for the wordmark and the three-word rhythm line
+
+**Colour:** black ground; one off-white stock; exactly two saturated accents (ultramarine, orange).
+Four colours total. Each card is single-accent — no card carries two accents.
+
+**The mechanism worth stealing:** the same two layouts printed in four colourways, arranged so the
+diagonal pairs match. Recognition comes from the JUSTIFIED caps block and the brush mark, not from
+the wordmark.
+
+### AQ ADAPTATION (acceptable substitutions, declared up front)
+- ultramarine -> AQ sky `#3DA9FC`; orange -> AQ tomato `#FF4D2E`; off-white -> AQ cream `#F4EFE0`
+- serif wordmark -> `AquaTerra.` in Instrument Serif (AQ's real serif)
+- the three-word line -> `Log.  Return.  Repeat.` (AQ's actual working rhythm)
+- the caps block -> a real AQ descriptor that reads as a sentence across the two columns:
+  `KOLKATA GROWN / STUDENT RUN / WELFARE CREW / CLIMATE AND EDUCATION`
+- contact lines -> `STUDENT-RUN NON-PROFIT BASED IN KOLKATA` / `558 LOGGED PROJECTS  @NGO.AQUATERRA`
+  (558 is Counted, from the welfare CSV, qualifier attached)
+- NEW PRIMITIVE REQUIRED: `shapes.brush_asterisk()` + `shapes.ink_mark()`. doodles.star/burst are
+  closed polygons; the reference mark is separate tapered strokes with paper between them.
+  Substituting a starburst would be exactly the silhouette collapse shapes.py exists to prevent.
+
+### ACCEPTANCE CHECKLIST (each must be present and correctly proportioned)
+- [ ] black ground, no texture
+- [ ] 2x2 grid, ~1.45:1 cards, equal small gutters, sitting HIGH (more black below than above)
+- [ ] soft short drop shadow on each card (the piece's only soft shadow)
+- [ ] TL: justified 4-line caps block, both edges flush, line 3 justifying to three words
+- [ ] TL: blue brush asterisk, centred, 8 tapered strokes, gaps visible
+- [ ] TL: two bottom caps lines, second one justified left/right
+- [ ] TR: serif wordmark 2 lines + prominent period, sitting high
+- [ ] TR: three serif words evenly distributed across the bottom
+- [ ] BL: same as TR in orange/black
+- [ ] BR: same as TL in black, asterisk larger and off-centre, card wider
+- [ ] exactly four colours; one accent per card

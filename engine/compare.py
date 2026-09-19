@@ -25,6 +25,7 @@ Usage:
     r = compare.compare("training_samples/reference_posters/x.jpg", "out/versions/x/v2.png")
     print(r["score"]);  [print(c) for c in r["critique"]]
 """
+import os
 import numpy as np
 from PIL import Image, ImageFilter
 from collections import Counter
@@ -227,6 +228,60 @@ def compare(ref_path, gen_path, gw=9, gh=11):
                 gen=dict(area=round(go["area"], 3), centroid=[round(v, 3) for v in go["centroid"]],
                          gyration=round(go["gyration"], 3), detail=round(gd, 2)),
                 critique=crit)
+
+
+def geometry(path, gw=9, gh=11):
+    """MEASURE a reference's geometry instead of describing it from memory.
+
+    THE BUG THIS ENCODES (sample 3d846c78, session 10c). Step 1 of the recreation
+    protocol is "write a full composition description before any code". I wrote that
+    the card grid "sits HIGH, with about twice as much black below it as above".
+    Measured, the reference is 1.05 : 1 — essentially centred. v1 happened to land at
+    1.04 : 1 and scored 0.18; v2 "fixed" it to 0.51 : 1 and scored 0.405, with bbox
+    IoU falling 0.87 -> 0.60. An eyeballed proportion in the written description
+    became a confident, wrong instruction to the build.
+
+    The protocol's written inventory is still the right first step — it is what
+    catches MISSING ELEMENTS. But proportions are not something to remember; they are
+    something to measure, and the machinery was already here.
+
+    Returns a dict and prints a block ready to paste into RECREATION_AUDIT.md.
+    """
+    im = _load(path)
+    a = _arrays(im)
+    if isinstance(a, tuple):
+        a = a[0]
+    m = content_mask(a, im=im)
+    import numpy as _np
+    ys, xs = _np.nonzero(m)
+    H_, W_ = m.shape
+    if len(xs) == 0:
+        return {}
+    x0, x1 = xs.min() / W_, xs.max() / W_
+    y0, y1 = ys.min() / H_, ys.max() / H_
+    cx, cy = xs.mean() / W_, ys.mean() / H_
+    occ = _np.asarray(_grid_occupancy(m, gw, gh)).reshape(-1)
+    rows = []
+    for r in range(gh):
+        rows.append(" ".join(f"{float(occ[r * gw + c]):.2f}" for c in range(gw)))
+    out = {
+        "content_bbox": (round(x0, 3), round(y0, 3), round(x1, 3), round(y1, 3)),
+        "margins": {"left": round(x0, 3), "right": round(1 - x1, 3),
+                    "top": round(y0, 3), "bottom": round(1 - y1, 3)},
+        "vertical_ratio": round(y0 / max(1e-6, 1 - y1), 2),
+        "centroid": (round(cx, 3), round(cy, 3)),
+        "coverage": round(float(m.mean()), 3),
+        "grid": [float(v) for v in occ],
+    }
+    print(f"MEASURED GEOMETRY — {os.path.basename(path)}")
+    print(f"  content bbox   x {x0:.3f}..{x1:.3f}   y {y0:.3f}..{y1:.3f}")
+    print(f"  margins        L {x0:.3f}  R {1-x1:.3f}  T {y0:.3f}  B {1-y1:.3f}")
+    print(f"  vertical ratio {out['vertical_ratio']} : 1  (space above : below)")
+    print(f"  centroid       ({cx:.3f}, {cy:.3f})   coverage {m.mean():.3f}")
+    print(f"  occupancy {gw}x{gh}:")
+    for r in rows:
+        print("    " + r)
+    return out
 
 
 def report(ref_path, gen_path):
