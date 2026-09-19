@@ -381,10 +381,10 @@
     },
     "522f2d898b827f": {
       "file": "522f2d898b827f5d2fdd890b4c3ec756.jpg",
-      "status": "pending",
+      "status": "blocked",
       "score": null,
       "iters": 0,
-      "note": ""
+      "note": "PARKED at v4 (0.619), NOT accepted \u2014 and the score is not comparable to a same-aspect recreation. Mechanism (rotated-capsule pile, labels set along each capsule's angle, bleeding off all edges, clean cut-off above a centred CTA) is faithfully recreated and the looking gate PASSES: all 12 labels readable, dense interlock, correct hue separation. Three reasons the number stays high: (1) the reference is a PHONE SCREEN at aspect 0.484 recreated on AQ story 0.5625 \u2014 compare.py squeezes both to 4:5, distorting each differently; (2) detail 2.49x is mostly REAL, not a resolution artifact \u2014 a control comparing the render against a downscaled copy of ITSELF gives only 1.12x, so ~2.2x is genuine excess edge density: the reference uses fewer, larger capsules; (3) the AQ palette has 7 accents vs the reference's ~9 including tints. NEW this pass: compare.crop() so mockup references are scorable at all (previously every mockup recreation was parked with no number), and layout.resolve_label_z(). v1 1.105 -> v2 0.635 -> v3 0.658 -> v4 0.619. To improve: fewer + longer capsules still, and a same-aspect target."
     },
     "5c9c3e986f57ff": {
       "file": "5c9c3e986f57fff88485c6fecaa500d5.jpg",

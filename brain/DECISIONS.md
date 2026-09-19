@@ -1083,3 +1083,44 @@ widened to every positioned descendant; the page root is excluded as a clipping 
 full-bleed stays the `off_canvas` check's job.
 
 Self-test: `test_recreation.py` (23). **Suite now 222 assertions, all verified passing.**
+
+
+### SESSION 10d (2026-09-19) — the first scorable mockup recreation
+
+`522f2d89` right screen — a pile of rotated capsules, each labelled along its own angle.
+v1 1.105 -> v2 0.635 -> v3 0.658 -> **v4 0.619, PARKED (not accepted)**.
+
+**Mockup references were unscorable, and that was hiding real information.** About a third of the
+corpus is a mockup: phones on a backdrop, cards photographed on black, a website screenshot. The
+standing ruling — pick one mechanism, recreate it as a single AQ canvas — is right, but it left
+those references with no number at all, so every one of them was parked on the looking gate alone.
+Comparing a poster against a picture of two phones on grey measures the grey. `compare.crop()` cuts
+the chosen screen so there is something honest to measure.
+
+**Protect the label, not the object.** In a pile that is SUPPOSED to overlap, `collision_check` has
+nothing to say and `occlusion_check` measures whole objects — a capsule 60% visible reads as fine
+even when the hidden 40% is exactly the words. v2 had four buried labels. `resolve_label_z()` works
+on the LABEL box instead, and its most useful output turned out to be the honest failure: it
+reported that those four could not be fixed by restacking and had to MOVE. v3 acted on that by
+solving the label POSITIONS with `scatter_solve` and hanging each capsule off its label — 14/14
+readable.
+
+Writing it hit two traps worth recording. Raising every covered object at once makes a mutually
+overlapping pair lift each other forever. Raising one at a time still cycles, because whichever ends
+up on top leaves the other covered — and that case is genuinely unsolvable by z-order. So a key
+raised once and covered again is declared `unresolved` and frozen: it breaks the cycle AND reports
+the truth.
+
+**A hypothesis I checked and was wrong about.** The stubborn `detail 2.49x` looked like it had to be
+an artifact of comparing a 255px crop against a 2160px render. Control: score the render against a
+downscaled copy of ITSELF. That returned 1.12x. So ~2.2x of the gap is REAL — the reference genuinely
+uses fewer, larger capsules than my pile. Worth the two minutes: without the control I would have
+written the gap off and stopped improving.
+
+**Parked, not accepted, and the record says why.** 0.619 against a 0.16 gate is not a pass. The
+reference is a phone screen at aspect 0.484 recreated on AQ story at 0.5625, and compare.py squeezes
+both to 4:5, distorting each differently — so this number is not comparable to a same-aspect
+recreation's. The looking gate passes and the mechanism is right; the score is parked with the
+reason, rather than the threshold being quietly relaxed to make it look finished.
+
+Self-test: `test_recreation.py` extended to 32. **Suite now 231 assertions, all verified passing.**

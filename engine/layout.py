@@ -686,6 +686,76 @@ def occlusion_check(items, min_visible=0.45):
     return out
 
 
+def resolve_label_z(items, min_visible=0.80, max_passes=6):
+    """Re-order a pile's z so that every object's OWN LABEL stays readable.
+
+    THE BUG THIS ENCODES (sample 522f2d89, and the sticker swarm before it). In a
+    deliberately overlapping pile, heavy overlap is the whole effect — the objects are
+    SUPPOSED to cover each other. What is never intended is one object covering
+    another's TEXT. collision_check can say nothing here (the overlap is the design);
+    occlusion_check measures whole objects, so a capsule 60% visible reads as fine even
+    when the 40% hidden is exactly the part with the words on it.
+
+    So the thing to protect is not the object, it is the label box inside it.
+
+    Given [(key, label_box, z)] this raises the z of any object whose label is covered
+    below `min_visible`, just far enough to clear whatever covers it, and repeats until
+    stable. Raising rather than lowering keeps the pile's existing depth relationships
+    as intact as possible — the alternative, pushing coverers down, cascades.
+
+    Returns (new_z_by_key, unresolved_keys). `unresolved` is honest: two labels can sit
+    exactly on top of each other, and no z-order fixes that — the composition has to
+    move. Callers should act on it rather than shipping an unreadable label.
+    """
+    z = {k: zz for k, _b, zz in items}
+    boxes = {k: tuple(b[-4:]) for k, b, _z in items}
+    keys = [k for k, _b, _z in items]
+
+    def _vis(k):
+        cur = [(kk, boxes[kk], z[kk]) for kk in keys]
+        hit = occlusion_check([(kk, b, zv) for kk, b, zv in cur], min_visible=min_visible)
+        return {h[0]: h[1] for h in hit}
+
+    # Raise ONE object per pass — the worst-covered — and re-measure.
+    #
+    # Two traps here, both hit while writing this:
+    #   * raising EVERY covered object at once makes a mutually-overlapping pair lift
+    #     each other forever: a goes above b, b goes above a, both climb.
+    #   * raising one at a time still cycles on such a pair, because whichever ends up
+    #     on top leaves the other covered. That case is genuinely UNSOLVABLE by
+    #     z-order — if two label boxes materially overlap, no stacking makes both
+    #     readable and the composition itself has to move. So a key that has already
+    #     been raised once and is covered again is declared unresolved and frozen,
+    #     which both breaks the cycle and reports the truth.
+    raised, stuck = set(), set()
+    for _ in range(max_passes * max(1, len(keys))):
+        covered = {k: v for k, v in _vis(None).items() if k not in stuck}
+        if not covered:
+            break
+        k = min(covered, key=lambda kk: covered[kk])
+        if k in raised:
+            stuck.add(k)
+            continue
+        above = [z[kk] for kk in keys if kk != k and z[kk] > z[k]
+                 and _overlaps(boxes[k], boxes[kk])]
+        if not above:
+            stuck.add(k)
+            continue
+        newz = max(above) + 1
+        if newz == z[k]:
+            stuck.add(k)
+            continue
+        z[k] = newz
+        raised.add(k)
+    return z, sorted(_vis(None))
+
+
+def _overlaps(a, b):
+    ix = min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0])
+    iy = min(a[1] + a[3], b[1] + b[3]) - max(a[1], b[1])
+    return ix > 0 and iy > 0
+
+
 def fit_block(available_h, line_count, line_height=0.9, max_size=200, min_size=24,
               extras=0):
     """The largest font size at which `line_count` lines still fit `available_h`.

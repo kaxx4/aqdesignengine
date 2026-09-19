@@ -230,6 +230,38 @@ def compare(ref_path, gen_path, gw=9, gh=11):
                 critique=crit)
 
 
+def crop(path, x0, y0, x1, y1, out_path=None):
+    """Cut one region out of a reference and save it as a scorable target.
+
+    WHY THIS EXISTS. Roughly a third of the corpus is a MOCKUP: two or three phone
+    screens on a coloured backdrop, a 2x2 card photo, a website screenshot. The
+    protocol's standing ruling is to pick ONE screen or mechanism and recreate it as a
+    single 1080x1350 poster — which is right, but it left those references unscorable.
+    Comparing a full-bleed poster against a picture of three phones on grey measures
+    the grey. Every mockup recreation in the run so far was therefore parked on the
+    looking gate alone, with a note that the metrics were a mismatch.
+
+    Cropping the chosen screen gives the comparison something honest to measure:
+    the recreation's mechanism against the reference's mechanism, nothing else.
+
+    Coordinates are FRACTIONS of the source image, so they can be read off a view of
+    it. Writes beside the reference as `<name>__crop_<x0>_<y0>.png` unless told
+    otherwise, and returns the path.
+    """
+    im = Image.open(path).convert("RGB")
+    w, h = im.size
+    box = (int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h))
+    if box[2] <= box[0] or box[3] <= box[1]:
+        raise ValueError(f"empty crop box {box}")
+    cut = im.crop(box)
+    if out_path is None:
+        base = os.path.splitext(path)[0]
+        out_path = f"{base}__crop_{x0:.2f}_{y0:.2f}.png"
+    cut.save(out_path)
+    print(f"cropped {os.path.basename(path)} {box} -> {out_path}  ({cut.size[0]}x{cut.size[1]})")
+    return out_path
+
+
 def geometry(path, gw=9, gh=11):
     """MEASURE a reference's geometry instead of describing it from memory.
 
