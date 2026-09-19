@@ -239,6 +239,18 @@ async def main():
     print("done")
 asyncio.run(main())
 ```
+**Rendering more than one piece? Hold ONE browser open.** `render()` used to cost 16.8s a poster
+(two chromium cold starts + 2.7s of blind sleeps); it is now 1.9s inside a session:
+```python
+async with B.session():
+    for html, out in jobs:
+        await B.render(html, out, W, H, elements=els)   # elements= also runs the bbox reconciliation
+```
+**And MEASURE text before you size anything around it** — `B.measure_text([...])` returns the layout
+box (`h`, flow the next element off this), the content box (`ink_h`), and the TRUE painted glyph box
+(`glyph_w`/`glyph_h`, size collision bboxes off this). Every layout bug in session 10 was a guessed
+text dimension.
+
 Run with `PYTHONIOENCODING=utf-8 python gen_<slug8>_vN.py` (the utf-8 flag matters for the ✓/⚠
 glyphs on Windows). Then **Read the rendered PNG and run the looking gate (§3).**
 
@@ -258,6 +270,11 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
 - `css_var_check(html, core)` → `var(--typo)` referenced but never defined (renders transparent).
 - `dominance_check(elements, W, H, min_hero_frac=0.12)` → **opt-in**; flags "no element reaches hero
   scale" for layouts that should have one dominant element.
+- `contains_check(pairs)` → content that does not fit the shape it belongs to (label vs. its pill,
+  headline vs. its band). **HARD FAIL.** Prefer NESTING the child in the shape's div where you can —
+  the browser then enforces it and `measure_dom` reports it for free; use this for what nesting can't say.
+- `rotated_bbox(x,y,w,h,deg)` → the axis-aligned box a rotated element ACTUALLY occupies.
+- `wash_scan(html,W,H)` → **advisory**; large patterned decoration at low alpha (the 'dirt' defect).
 - `star_text_width(diameter)` → helper: the width to constrain text to so it fits a star's waist.
 - `antipattern_scan(html)` → **manual only** (not in the auto gate — false-positives on normal
   footers). Call by hand when chasing a blank card (the rotate+overflow:hidden+bottom gotcha).
@@ -275,8 +292,12 @@ also runs the full `preflight` at render time for free.
 ### 7b. DOM structural — `engine/audit.py` & `engine/reconcile.py`
 - `audit.audit(html, name)` (runs inside `build.render`) → margin breaches + real overlaps between
   `.measure`-tagged DOM elements, with whitelisted by-design overlaps (tags-on-hero, sign piles…).
-- `reconcile.probe(...)` → measures rendered DOM extents when you cannot see the image: overflow,
-  off-canvas, text-wider-than-container.
+- **`reconcile.measure_dom(page,W,H)` → AUTO-RUNS in `build.render()` on every render.** Measures the
+  real DOM: `clipped` (characters lost), `spilling` (content exceeds a declared size), `off_canvas`,
+  plus `boxes` (true extents). This is the ONLY check that sees what hand-written tuples cannot.
+- **`reconcile.reconcile_boxes(boxes, elements)` → advisory**, auto-run when `render(..., elements=…)`:
+  declared tuples vs. what was drawn — `under_reported` and `untracked`.
+- `reconcile.probe(...)` → the legacy Workflow-A-only driver. Prefer `measure_dom`.
 
 ### 7c. Pixel / metric — `engine/preview.py` & `engine/ref_metrics.py`
 - `preview.critique(png)` / `preview.report(png, name)` → `dead_quadrant`, `sparse`, `crammed`,
@@ -339,7 +360,25 @@ tree`. Call ONLY via `dd.stamp(kind, color, rot=, style=)` — 5 are stroke-draw
 distribution), `edu` (education Sundarban), `diwali` (fundraising), `xmas` (Christmas Khidirpur).
 
 **Canvas sizes** (`core.SIZES`): `feed` (1080,1350) — the default · `story` (1080,1920) · `square`
-(1080,1080).
+(1080,1080) · `linkedin` (1200,628) · `li_square` (1200,1200). LinkedIn crops portrait hard in-feed,
+so AQ's LinkedIn art is landscape or square — never 4:5.
+
+**Contrast is MEASURED, never assumed** (all added session 10, from the live site's `tokens.css`):
+- `core.text_on(fill)` — the correct text colour ON a fill, decided by computing both candidates.
+  (It used to read a hand-kept set and returned white on pink at **3.14:1, failing AA**; ink is 6.31:1.)
+- `core.on_cream(accent, size_px)` — accent type on the page ground. **Accents may shout but may not
+  whisper:** a 500px mint numeral on cream is 3.78:1 and passes the large-text floor; a 20px mint
+  label is the same 3.78:1 and fails, so it swaps to the darkened partner.
+- `core.ink_of(accent)` — that darkened partner. NO raw accent clears 4.5:1 as small type on cream.
+- `core.accent_for(dept)` — **department colour is semantic, not a rotation index**: welfare=mint,
+  events=sky, labs=lemon, ops=teal, content=grape, matching what the website teaches.
+- `core.outline_of(surface)` · `core.hard_shadow(size)` · `core.keyline(ring_bg)` · `core.RADII`
+  (32/22/14/pill) — the craft scales, shared with the site.
+
+**Textures** (`engine/tex.py`) — texture belongs INSIDE a shape that has an edge, at full contrast:
+`grain` `paper_fibre` `stripes` `crosshatch` `dot_grid` `grid_lines` `checkerboard` `rays`
+`concentric` `duotone` `photo_ink` `tape` `torn` `cutpaper` `riso_offset`. A faint patterned wash is
+not texture, it is dirt — `layout.wash_scan` reports it.
 
 **Logo** — `core.LOGO`, the real colored wordmark, top-left every slide (a pill on dark/photo
 backgrounds; NEVER white-inverted).
@@ -368,7 +407,7 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | Text overflows a star/burst's narrow waist | 19, 44 | `layout.star_text_width` |
 | Hero scaled far too small vs. reference | 42 | `layout.dominance_check` (opt-in) |
 | Wide `bottom:`-anchored child in rotated overflow parent renders BLANK | 7 | `layout.antipattern_scan` (manual) + rule: anchor wide content with `top:` |
-| Stale bbox tuple hides a real off-canvas/collision | 6 | discipline: update `elements.append` whenever you move CSS |
+| Stale bbox tuple hides a real off-canvas/collision | 6 | **`reconcile.reconcile_boxes` (AUTO in `build.render` when `elements=` passed)** — compares declared tuples against what the browser DREW; reports `under_reported` + `untracked`. Was the catalog's only "discipline" row |
 | Dead half the reference fills | 15, 25, 30, 31, 39 | `preview.critique` dead_quadrant/sparse + "scale up before filler" |
 | One flat color floods the field | (batch) | `preview.critique` flat_dominant (>52%) |
 | Cramming a pile into one corner starves other quadrants | 87525f70 | `layout.quadrant_fill_check` (overlap LOCAL, fill GLOBAL) |
@@ -386,6 +425,15 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | Full-width top exclude band severs every free region from the top edge `background_grid` requires → photo starved to `free_fraction` 0.004 | 2026 workshop batch | rule: shape excludes like the UI (logo box, dots box), never as a full-width stripe. Covered by the same self-test |
 | `pick_visible([accent, white, ink])` ranks by luminance delta → picks near-black ink on every bright wall; thin dark stroke on texture reads as **dirt** | 2026 workshop batch | rule: test the accent ALONE against local luminance, fall back only on failure; + `drop-shadow` on every photo doodle (`CAROUSEL_PLAYBOOK` 10-11) |
 | Dark smooth **hair** scores as low-busy background → doodle lands on a child's head, gate says CLEAN | 2026 workshop batch | rule: per-photo `extra_exclude` box on tight portraits, **measured off a render, never estimated** (`CAROUSEL_PLAYBOOK` 12) |
+| Repeated-card "deck" offset points toward the frontmost copy instead of away from it → back cards nest fully inside it, cascade reads as one flat card | `2022ebef4ffad5` | `layout.cascade_peek_check` (advisory, opt-in via `preflight(..., cascade_stacks=[...])`) + rule: offset direction must point away from where the front copy already covers |
+| `text_on()` returned WHITE on pink/mint/tomato/grape — white on pink is **3.14:1, fails AA**; ink is 6.31:1 | whole corpus (found session 10 by reading the live site's `tokens.css`) | **`core.text_on()` now MEASURES** both candidates and returns the winner — right for any colour, not a table that can drift. Self-test: `scratchpad/test_brand_truth.py` |
+| Accent-coloured SMALL type on cream — no accent clears 4.5:1 there (best teal 4.30, worst lemon 1.36) | whole corpus | **`core.ink_of()` / `core.on_cream(accent, size_px)`** — accents may shout (display sizes clear the 3:1 large-text floor) but may not whisper |
+| Department hue picked by arbitrary `accent_idx`, so a welfare poster could come out grape | Workflow A | **`core.accent_for(dept)`** — welfare=mint, events=sky, labs=lemon, ops=teal, content=grape, matching the site |
+| Text sized by GUESS: label wider than its pill ("PLANTAT"), headline taller than its band | session 10 batch v1, all 3 pieces | **`build.measure_text()`** (ask the font: layout / content / TRUE PAINTED glyph box) + **`layout.contains_check`** (HARD FAIL). Preferred fix is structural — NEST the label in the shape's div and the browser enforces it |
+| Rotated element's real footprint is bigger than its CSS size — a 168px sticker at -9° draws **192px** | session 10 (found by `reconcile_boxes`) | **`layout.rotated_bbox(x,y,w,h,deg)`** — error peaks at +41% at 45° |
+| Clipped / oversize / off-canvas text invisible to every static gate | session 10 | **`reconcile.measure_dom` (AUTO in `build.render`)** — the check already existed but was welded inside Workflow-A-only `probe()`; extracted and wired |
+| Faint patterned decoration at .05–.34 alpha reads as dirt and smears body copy | friendship_day | **`layout.wash_scan` (advisory, in `preflight`)** — the rule existed in this table with no encoded guard until session 10 |
+| `tape()`/craft object in cream on a cream page, or floating with nothing under it | session 10 | rule: a craft object must contrast its ground AND be holding something down |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
@@ -413,6 +461,29 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   corpus-coverage audit; read before adding any archetype or gate), **`GENERATION_MAP.md`** (the
   architecture + dependency-ordered build plan for autonomous one-shot generation), `dna/batch_01..06.md`
   (per-poster teardowns behind VISUAL_DNA).
+- **`brain/CONTENT_SYSTEM.md`** — the hub doc for everything beyond a single poster: which doc owns
+  which surface (Instagram, LinkedIn, brochures/catalogs/PDFs), what's built vs. spec, the shared
+  build order, and the node map (§6) tying every brain doc together bidirectionally. **Start here**
+  for any task that isn't a plain feed-poster generation. It indexes:
+  - **`brain/VOICE.md`** — the full voice system: lane x audience x channel x intent, a truth
+    ladder for numbers, a do-not-say list, worked examples. Supersedes the old 4-line voice note
+    in `DECISIONS.md`. Spec only (§11 there scopes what encoding it requires) — apply it by hand
+    until `engine/copy.py` exists.
+  - **`brain/IDEATION.md`** — the Instagram/LinkedIn post-idea engine: content pillars, a
+    post-type taxonomy, hook formulas, a rotation rule against repetition, and a brief-generator
+    that resolves a raw event into a full brief via `VOICE.md` §7. Spec only.
+  - **`brain/BROCHURE_CATALOG.md`** — spec for one-pagers, tri-fold brochures, program catalogs,
+    impact reports and partnership decks: new multi-page canvas sizes, a shared page-grid system,
+    five page roles, and the render-pipeline extension (PDF assembly) this would need. Spec only,
+    with explicit print-safety caveats (sRGB vs. CMYK, no bleed/fold marks yet) — read before
+    treating any output as print-ready.
+  - **`brain/AQ_FACTS.md`** — the sourced fact/fingerprint bank behind `VOICE.md`'s truth ladder,
+    built 2026-08-26 from a real ingestion of 47 AQ/Shikshaq documents and ~105 photos/designs
+    (CSR proposal, org strategy briefs, Shikshaq UX research, published posts). Pull real numbers
+    from here; never invent a plausible-sounding one.
+  - **`brain/GAPS.md`** — the first-class, centrally-tracked open-questions log for the whole
+    content system (voice, ideation, brochures). Check here before assuming a question is
+    unresolved — several were answered by the 2026-08-26 ingestion.
 - `training_samples/reference_posters/` — the 44 references. `out/versions/<slug>/` — recreation
   iterations. `out/` — fresh generations. `sample_outputs/` — example engine outputs.
 
@@ -426,13 +497,29 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
 - Workflow B: all 44 references processed (`brain/RECREATION_PROGRESS.md` all `revisit-done`).
 - Gate stack: the §10 guards are encoded in `layout.py`; `preflight` bundles them; `css_var_check`
   auto-runs in `render`; `render(..., elements=…)` runs the full preflight at render time.
+  **Session 10 added a MEASURED tier** — `reconcile.measure_dom` auto-runs on every render (clipped /
+  oversize / off-canvas, from the real DOM) and `reconcile_boxes` reconciles declared tuples against
+  what was drawn. This closes the gap that let three posters pass the whole static stack while
+  visibly broken: static checks can only ever verify what the author TYPED.
+  **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (28) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
-  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13, added 2026-08-07), all in
-  `scratchpad/`. Run them before trusting the gate stack.
+  `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
+  `test_texture.py` (25) · `test_measured_layout.py` (32)** — **169 assertions total, all verified
+  passing 2026-09-19**. All in `scratchpad/`. Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
-  rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim.)
+  rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
+  2026-09-03: its `os.chdir` still pointed at the project's pre-move folder, so despite being on
+  disk it had silently never actually run since the repo relocated — fixed, now genuinely 31/31.)
 - Collision auto-nudge is now encoded (§10) — no pending fix-rules remain from the §10 catalog.
+- **OPEN DECISION (session 10):** the live site's ops/teal is `#12909C`; the engine's canon teal is
+  `#0E7C86`. Recorded as `core.DEPT_SITE_TEAL` rather than reconciled, because changing `ACCENTS[6]`
+  restyles all 44 recreations. Someone should decide which one wins.
+- **Real content source:** `welfare_projects_rows.csv` (558 logged welfare projects, 2021–2026) is
+  the first real dataset wired into generation. Counted figures: 558 projects · 291 workshops ·
+  126 returns to Pather Sathi · 3,756 volunteer TURNOUTS (not unique volunteers — the qualifier
+  travels with the number, `VOICE.md` §2). Worked examples: `scratchpad/gen_csv_batch_v5.py`,
+  output in `out/session10/`.
 - The looking gate is only as good as the checklist + the eye. It runs EVERY time; that is its value.
   **Keep converting each new visual catch into an encoded rule (§8).**
 - **CORPUS COVERAGE (measured 2026-07-24, `brain/VISUAL_DNA.md`): the 4 built archetypes can reach

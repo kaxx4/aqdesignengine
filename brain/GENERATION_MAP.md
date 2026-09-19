@@ -143,3 +143,10 @@ hand. Each one closed is one fewer reason a generation needs supervision.
 
 The looking gate (step 6) is the deliberate exception and stays forever — but per VISUAL_DNA it
 should be catching *taste* questions, not "the chip is on someone's face." That class is now a rule.
+
+## See also
+The COPYWRITER component (§[2] above) now has a full spec, not just this map's summary:
+`VOICE.md` (the resolver itself) and `IDEATION.md` (what to write about, upstream of how it
+sounds — its §5a maps post-types onto this file's archetypes, built and pending alike). The
+LEDGER (§[5]) is designed to be shared: `IDEATION.md` §8.1 extends it with pillar/post-type
+columns rather than building a second ledger. Full node map: `CONTENT_SYSTEM.md` §6.

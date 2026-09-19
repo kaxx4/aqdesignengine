@@ -128,6 +128,54 @@ def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
     return out
 
 
+def cascade_peek_check(stack, min_peek_frac=0.06):
+    """
+    Repeated-card "deck" compositions (CLAUDE.md/VISUAL_DNA.md §7 repetition-as-composition:
+    2022ebef4f's 3x duplicated card at decreasing scale + increasing rotation) have a specific,
+    previously-uncaught failure mode: the back repeats are offset in the WRONG DIRECTION and end
+    up fully covered by the front card instead of peeking out from behind it. Caught by eye in the
+    2022ebef4ffad5 recreation (v3->v4, 2026-09-03): the smaller back cards were nested inside the
+    front card's bounds by 88/44px while the frontmost card was ~720px wide, so their edges never
+    crossed the front card's edge and the "cascade" rendered as a single flat card.
+
+    stack: list of (x,y,w,h) for one cascade group, ordered BACK-TO-FRONT (index 0 is drawn first
+    / furthest back, last index is drawn last / frontmost — matches the z-order convention used
+    throughout the bespoke scripts).
+    min_peek_frac: each back card must have at least this fraction of its OWN area not covered by
+    the union of every card drawn after it (i.e. visibly poking out), or it reads as hidden.
+
+    Returns list of (index, visible_frac) for cards that fail to peek. Empty list == pass.
+    Rotation is intentionally ignored (checked on axis-aligned bboxes) — this is a cheap, zero
+    false-positive-on-real-bugs check for the "offset too small / wrong sign" class, not a precise
+    peek measurement; a rotated card that clears this check by a wide margin is fine.
+
+    Coverage is computed by grid-sampling each card (not by summing pairwise overlap areas) —
+    summing double-counts the region where two or more FRONT cards overlap each other on top of
+    the card being tested, which made an early version of this check fail correctly-peeking real
+    3-card decks. Sampling handles the union correctly with no extra bookkeeping.
+    """
+    out = []
+    GRID = 12
+    for i in range(len(stack) - 1):
+        x, y, w, h = stack[i]
+        if w <= 0 or h <= 0:
+            continue
+        front = stack[i + 1:]
+        visible = 0
+        total = 0
+        for gx in range(GRID):
+            for gy in range(GRID):
+                px = x + (gx + 0.5) / GRID * w
+                py = y + (gy + 0.5) / GRID * h
+                total += 1
+                if not any(fx <= px <= fx + fw and fy <= py <= fy + fh for fx, fy, fw, fh in front):
+                    visible += 1
+        visible_frac = visible / total
+        if visible_frac < min_peek_frac:
+            out.append((i, round(visible_frac, 3)))
+    return out
+
+
 def collision_nudge(elements, W, H, min_overlap=12, ignore_pairs=frozenset(),
                      max_iters=40, step=6, margin=8):
     """
@@ -349,6 +397,74 @@ def invisible_craft_scan(html, page_bg, core=None, thresh=18):
     return out
 
 
+_PATTERN_FN = ("repeating-linear-gradient", "repeating-radial-gradient",
+               "repeating-conic-gradient", "conic-gradient", "radial-gradient")
+
+def wash_scan(html, W=1080, H=1350, lo=0.05, hi=0.34, min_area_frac=0.22):
+    """Flag large PATTERNED decoration rendered at low opacity — the 'faint wash'
+    defect.
+
+    THE BUG THIS ENCODES (Friendship Day, 2026-08-02; catalogued in CLAUDE.md §10
+    with a written rule but, until now, NO automated guard). Rings, hatch and
+    checker 'fields' were laid across big areas at .13-.26 opacity to add
+    richness. At that alpha a pattern does not read as texture — it reads as
+    DIRT on the paper, and worse, body copy sitting on top of it loses its
+    counters and smears. The piece looks smudged rather than crafted, and every
+    numeric gate passes because nothing is off-canvas, colliding or invisible.
+
+    The fix is never 'nudge the alpha' — it is the house rule: decoration is
+    SOLID, lives inside a shape with an edge, and carries the ink outline and
+    hard shadow like any other object (engine/tex.py). If a texture has to be
+    whispered to be bearable, cut it.
+
+    Scoped deliberately so it does not cry wolf:
+      * only PATTERN backgrounds (repeating-*/conic/radial gradients). A flat
+        low-alpha colour layer is a photo scrim, which is legitimate craft
+        (CAROUSEL_PLAYBOOK) and is left alone.
+      * only opacity strictly inside (lo, hi). Below `lo` it is invisible rather
+        than dirty; at/above `hi` it is a deliberate, visible field.
+      * only when the element covers >= `min_area_frac` of the canvas, because
+        the damage is proportional to how much copy it can sit under. A small
+        textured chip is fine.
+
+    ADVISORY. A halftone screen over a PHOTO is the one legitimate large
+    low-alpha pattern in the house style, and whether a div sits over an image
+    is not knowable from the HTML string alone — so this reports and never flips
+    preflight's `clean`, per the standing 'no noisy check in the auto-gate' rule.
+
+    Returns list of (opacity, area_frac, pattern_fn, snippet). Empty == clean.
+    """
+    out = []
+    canvas = float(W * H) or 1.0
+    for sm in re.finditer(r'style\s*=\s*"([^"]*)"', html or ""):
+        st = sm.group(1)
+        low = st.lower()
+        fn = next((f for f in _PATTERN_FN if f in low), None)
+        if fn is None:
+            continue
+        om = re.search(r'(?:^|[;\s])opacity\s*:\s*([0-9.]+)', low)
+        if not om:
+            continue
+        try:
+            op = float(om.group(1))
+        except ValueError:
+            continue
+        if not (lo < op < hi):
+            continue
+        # area: explicit w/h, or inset:0 which means "the whole parent"
+        if re.search(r'inset\s*:\s*0', low):
+            frac = 1.0
+        else:
+            wm = re.search(r'(?:^|[;\s])width\s*:\s*([0-9.]+)px', low)
+            hm = re.search(r'(?:^|[;\s])height\s*:\s*([0-9.]+)px', low)
+            if not (wm and hm):
+                continue
+            frac = (float(wm.group(1)) * float(hm.group(1))) / canvas
+        if frac >= min_area_frac:
+            out.append((op, round(frac, 3), fn, st[:70]))
+    return out
+
+
 def invisible_color_check(pairs, page_bg, core=None, thresh=40):
     """
     Flag any fill/stroke color that is ~identical to the surface it sits on —
@@ -403,6 +519,66 @@ def css_var_check(html, core=None):
         defined |= set('--' + n for n in re.findall(r'--([\w]+)\s*:', core.ROOT))
     referenced = set(re.findall(r'var\(\s*(--[\w]+)', html))
     return sorted(referenced - defined)
+
+
+def rotated_bbox(x, y, w, h, deg):
+    """The AXIS-ALIGNED box a rotated element actually occupies.
+
+    THE BUG THIS ENCODES (session 10, found by reconcile_boxes). Rotation is in
+    almost every AQ piece — tilted stickers, tape, chips, signs. A bespoke script
+    writes `transform:rotate(-9deg)` on a 168px sticker and then appends the
+    tuple (x, y, 168, 168), because that is the width it typed. The browser draws
+    a 192x192 footprint: 168*(cos9 + sin9). Every collision and bounds check then
+    runs against a box 14% too small, and a neighbour gets cleared into the
+    sticker's corner. At 45deg the error peaks at 41%.
+
+    Returns (x, y, w, h) re-centred and grown, so it drops straight into an
+    elements list:  els.append(("stk", *lay.rotated_bbox(x, y, d, d, rot)))
+    """
+    import math
+    r = math.radians(deg)
+    c, s_ = abs(math.cos(r)), abs(math.sin(r))
+    nw, nh = w * c + h * s_, w * s_ + h * c
+    return (x - (nw - w) / 2.0, y - (nh - h) / 2.0, nw, nh)
+
+
+def contains_check(pairs, pad=0):
+    """Flag content that does not actually fit the shape it is supposed to sit in.
+
+    THE BUG THIS ENCODES (session 10, batch v1). A pill-shaped bar was sized from
+    its DATA (`width = 120px` for a count of 26) while its label was sized from
+    its TEXT, so "PLANTATION DRIVE" rendered as "PLANTAT" hanging off a short
+    pill. Same defect, different axis: a three-line headline was positioned over
+    a 392px colour band that its own line-height made 448px tall, so the last
+    word straddled the band edge onto the page.
+
+    Neither is visible to any existing gate. bounds_check only knows the canvas;
+    collision_check treats the label and its pill as two elements that are SUPPOSED
+    to overlap; and reconcile.measure_dom can only see containment the DOM actually
+    expresses. Label and shape were siblings positioned by coordinate, so nothing
+    related them.
+
+    THE PREFERRED FIX IS STRUCTURAL: nest the label INSIDE the shape's div. Then
+    the browser enforces containment and measure_dom reports it for free. Use this
+    check for the cases nesting cannot express — a rotated sticker over a slab, a
+    caption that must stay within a photo, type fitted to a band it is not a child
+    of.
+
+    pairs: [(label, inner(x,y,w,h), outer(x,y,w,h)), ...]
+    pad:   required slack inside the outer box, in px.
+    Returns [(label, side, overhang_px), ...]. Empty == clean.
+    """
+    out = []
+    for label, inner, outer in pairs:
+        ix, iy, iw, ih = inner[-4:]
+        ox, oy, ow, oh = outer[-4:]
+        for side, over in (("left",   (ox + pad) - ix),
+                           ("top",    (oy + pad) - iy),
+                           ("right",  (ix + iw) - (ox + ow - pad)),
+                           ("bottom", (iy + ih) - (oy + oh - pad))):
+            if over > 0.5:
+                out.append((label, side, round(over, 1)))
+    return out
 
 
 def star_text_width(diameter, waist_frac=0.42):
@@ -493,7 +669,8 @@ def img_src_check(html):
 
 def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=None,
               expect_hero=False, min_hero_frac=0.12, quad_min_frac=0.35,
-              collision_ignore=frozenset(), auto_nudge=False):
+              collision_ignore=frozenset(), auto_nudge=False, cascade_stacks=None,
+              contains=None):
     """
     ONE pre-render gate that runs every static check the session-8 revisit pass
     turned into a rule. The pass showed the recurring bugs slipped through because
@@ -508,6 +685,13 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
       color_pairs  : list of (label,fill) or (label,fill,surface) -> invisible_color_check
                      (needs page_bg + core to resolve var() tokens).
       expect_hero  : True only for single-dominant-element layouts -> dominance_check.
+      contains      : list of (label, inner_box, outer_box) -> contains_check. Declares
+                     "this content must fit inside that shape" for relationships the DOM
+                     does not express. HARD FAIL — clipped copy is never intended.
+      cascade_stacks: list of repeated-card "deck" groups, each a list of (x,y,w,h) ordered
+                     back-to-front -> cascade_peek_check per group (opt-in, advisory: rotation
+                     is ignored so it can under-flag a rotated design that clears the bbox check
+                     without actually reading as flat — never over-flag one, per the docstring).
       auto_nudge   : if True and collisions are found, run collision_nudge on `elements`
                      before scoring collisions/quadrants/hero — r['nudged_elements'] carries
                      the repositioned list back to the caller (None if nothing moved) so a
@@ -542,6 +726,10 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
             # an ink outline/hard shadow lands on an ink field. Cannot be a hard fail because an
             # element's true backing surface isn't knowable from the HTML.
             r['invisible_craft'] = invisible_craft_scan(html, page_bg, core)
+        # ADVISORY: large patterned decoration at low alpha reads as dirt and smears
+        # through body copy (friendship_day). Can't tell a halftone-over-photo from a
+        # wash-over-paper in a string, so it reports and never blocks.
+        r['faint_wash'] = wash_scan(html, W, H)
         # antipattern_scan is NOT run here — it cannot be told apart from a normal
         # full-width footer without nesting analysis (false-positives on nearly every
         # poster). Call layout.antipattern_scan(html) manually when chasing a blank card.
@@ -549,7 +737,15 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         r['invisible_colors'] = invisible_color_check(color_pairs, page_bg, core)
     if expect_hero:
         r['missing_hero'] = dominance_check(elements, W, H, min_hero_frac)
-    ADVISORY = {'under_filled_quadrants', 'nudged_elements', 'invisible_craft'}
+    if contains is not None:
+        r['not_contained'] = contains_check(contains)
+    if cascade_stacks:
+        hidden = []
+        for gi, stack in enumerate(cascade_stacks):
+            hidden.extend((gi, i, frac) for i, frac in cascade_peek_check(stack))
+        r['cascade_hidden'] = hidden
+    ADVISORY = {'under_filled_quadrants', 'nudged_elements', 'invisible_craft',
+                'cascade_hidden', 'faint_wash'}
     hard = {k: v for k, v in r.items() if k not in ADVISORY}
     clean = all(not v for v in hard.values())
     r['clean'] = clean

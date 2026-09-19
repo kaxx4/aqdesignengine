@@ -1,5 +1,5 @@
 import os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 spec = importlib.util.spec_from_file_location("layout", os.path.join(ENGINE_DIR, "layout.py"))

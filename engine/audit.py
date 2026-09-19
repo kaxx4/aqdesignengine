@@ -8,18 +8,36 @@ SKIP_PAIRS={("portrait","onphoto"),("onphoto","portrait"),("h","onhero"),("onher
     ("flyer","flyer"),("tape","tape"),("key","key"),("word","word"),("card","card")}
 # element tags that are allowed to breach margin by design (tilted full-width notes/cards)
 MARGIN_OK={"note","key","flyer","we","won","tb","title","body"}  # intentionally full-bleed, margin breach allowed
-async def audit(html,name):
-    async with async_playwright() as p:
-        b=await p.chromium.launch(); pg=await b.new_page(viewport={"width":W,"height":H})
-        await pg.set_content("<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"+html+"</body></html>",wait_until="load")
-        await pg.wait_for_timeout(1200)
-        boxes=await pg.eval_on_selector_all(".measure","els=>els.map((e,i)=>{const r=e.getBoundingClientRect();return{i,tag:e.dataset.tag,x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),b:Math.round(r.bottom),rgt:Math.round(r.right)}})")
-        # also get nesting: for each measure el, is it inside another measure el?
-        nest=await pg.eval_on_selector_all(".measure","els=>els.map((e,i)=>{let p=e.parentElement,inside=-1;while(p){if(p.classList&&p.classList.contains('measure')){inside=[...document.querySelectorAll('.measure')].indexOf(p);break}p=p.parentElement}return inside})")
-        await b.close()
+_BOXES_JS = "els=>els.map((e,i)=>{const r=e.getBoundingClientRect();return{i,tag:e.dataset.tag,x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),b:Math.round(r.bottom),rgt:Math.round(r.right)}})"
+# nesting: for each measure el, is it inside another measure el?
+_NEST_JS = "els=>els.map((e,i)=>{let p=e.parentElement,inside=-1;while(p){if(p.classList&&p.classList.contains('measure')){inside=[...document.querySelectorAll('.measure')].indexOf(p);break}p=p.parentElement}return inside})"
+
+async def audit(html, name, page=None, canvas=None):
+    """Margin + overlap gate over the `.measure`-tagged DOM.
+
+    `page`  — an ALREADY-LOADED playwright page showing this html. Pass it and the
+              audit measures that page instead of cold-starting a second browser.
+              This used to launch its own chromium on every single render, which
+              (with the screenshot's launch) meant TWO browser cold starts and
+              2.7s of blind sleeps per poster. See build.render / build.session.
+    `canvas` — (W,H) of the piece. The module constants are feed-sized; a story
+              (1080x1920) audited against 1350 reported phantom bottom breaches.
+    """
+    aW, aH = canvas if canvas else (W, H)
+    if page is not None:
+        boxes = await page.eval_on_selector_all(".measure", _BOXES_JS)
+        nest  = await page.eval_on_selector_all(".measure", _NEST_JS)
+    else:
+        async with async_playwright() as p:
+            b=await p.chromium.launch(); pg=await b.new_page(viewport={"width":aW,"height":aH})
+            await pg.set_content("<!DOCTYPE html><html><head><meta charset='utf-8'></head><body>"+html+"</body></html>",wait_until="load")
+            await pg.wait_for_timeout(1200)
+            boxes=await pg.eval_on_selector_all(".measure", _BOXES_JS)
+            nest=await pg.eval_on_selector_all(".measure", _NEST_JS)
+            await b.close()
     issues=[]
     for k,bx in enumerate(boxes):
-        if bx['tag'] not in BLEED and bx['tag'] not in MARGIN_OK and (bx['x']<M-3 or bx['rgt']>W-M+3 or bx['b']>H-36):
+        if bx['tag'] not in BLEED and bx['tag'] not in MARGIN_OK and (bx['x']<M-3 or bx['rgt']>aW-M+3 or bx['b']>aH-36):
             issues.append(f"MARGIN {bx['tag']} breaches safe area (x{bx['x']} r{bx['rgt']} b{bx['b']})")
     def ov(a,c):
         ix=min(a['rgt'],c['rgt'])-max(a['x'],c['x']); iy=min(a['b'],c['b'])-max(a['y'],c['y'])

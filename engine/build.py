@@ -12,7 +12,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def _load(name):
     s = importlib.util.spec_from_file_location(name, os.path.join(HERE, name+".py"))
     m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
-core = _load("core"); rhythm = _load("rhythm"); dd = _load("doodles"); audit = _load("audit"); layout = _load("layout")
+core = _load("core"); rhythm = _load("rhythm"); dd = _load("doodles"); audit = _load("audit")
+layout = _load("layout"); reconcile = _load("reconcile")
 
 M = 64; COLS = 6; GUT = 20
 def _colw(W): return (W-2*M - GUT*(COLS-1))/COLS
@@ -65,6 +66,83 @@ def page(W,H,bg,inner,grain=True):
             f'.p{{width:{W}px;height:{H}px;background:{bg};position:relative;overflow:hidden;font-family:var(--e)}}{g}</style></head>'
             f'<body><div class="p">{inner}</div></body></html>')
 
+# ════════════════════════════════════════════════════════════════════════════
+# RENDER SESSION — one browser, many posters  (session 10)
+# ════════════════════════════════════════════════════════════════════════════
+# Measured before this existed: 16.81s PER POSTER. The browser work is only
+# ~1.1s of that. The rest was structural waste, all of it repeated per render:
+#   * audit.audit() cold-started its OWN chromium, then render started a second
+#   * 1200ms + 1500ms of blind wait_for_timeout() "for fonts"
+#   * 1.3 MB of base64 @font-face re-parsed from scratch every document
+# A session keeps one browser and one page per viewport alive, so a batch pays
+# the cold start ONCE and each extra poster costs about a second. Nothing about
+# a piece's appearance changes — this is purely how many times we boot chromium.
+#
+# Use it whenever you render more than one thing:
+#     async with B.session():
+#         for spec in specs:
+#             await B.render(spec.html, spec.out, W, H)
+# render() still works standalone; with no session open it opens a private one
+# for that single call, so every existing bespoke script keeps working unchanged.
+
+class RenderSession:
+    def __init__(self, scale=2):
+        self.scale = scale
+        self._pw = None; self._browser = None; self._pages = {}
+
+    async def start(self):
+        from playwright.async_api import async_playwright
+        self._pw = await async_playwright().start()
+        self._browser = await self._pw.chromium.launch()
+        return self
+
+    async def page(self, W, H):
+        """One reused page per (viewport, scale). Reusing the page is what keeps
+        the embedded fonts in the renderer's cache between posters."""
+        key = (W, H, self.scale)
+        if key not in self._pages:
+            self._pages[key] = await self._browser.new_page(
+                viewport={"width": W, "height": H}, device_scale_factor=self.scale)
+        return self._pages[key]
+
+    async def close(self):
+        try:
+            if self._browser: await self._browser.close()
+        finally:
+            if self._pw: await self._pw.stop()
+            self._pw = None; self._browser = None; self._pages = {}
+
+_SESSION = None
+
+class session:
+    """`async with B.session():` — hold one browser open across many renders."""
+    def __init__(self, scale=2): self.scale = scale; self._owned = False
+    async def __aenter__(self):
+        global _SESSION
+        if _SESSION is None:
+            _SESSION = await RenderSession(self.scale).start(); self._owned = True
+        return _SESSION
+    async def __aexit__(self, *exc):
+        global _SESSION
+        if self._owned and _SESSION is not None:
+            await _SESSION.close(); _SESSION = None
+        return False
+
+# Deterministic readiness, replacing the two blind sleeps. We wait for the thing
+# we actually care about — fonts parsed, images decoded, two frames painted —
+# rather than guessing 1500ms and hoping it was enough on a slow machine (or
+# burning 1400ms of it on a fast one).
+_SETTLE_JS = """async () => {
+  await document.fonts.ready;
+  await Promise.all([...document.images]
+    .filter(i => !i.complete)
+    .map(i => new Promise(r => { i.onload = i.onerror = r; })));
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+}"""
+
+async def _settle(pg):
+    await pg.evaluate(_SETTLE_JS)
+
 # ---------- render + audit gate ----------
 async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=None,
                  expect_hero=False):
@@ -73,9 +151,7 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     expect_hero) and render also runs the full layout.preflight static gate for free — the
     session-8 hardening, so a build gets bounds+collision+invisible-color+hero checks at
     render time without a separate call. Backward-compatible: omit them and nothing changes."""
-    from playwright.async_api import async_playwright
     name = os.path.basename(out_png)
-    issues = await audit.audit(html, name)
     # Auto-run ONLY zero-false-positive HTML checks on every render: an undefined css var is
     # unambiguously an invisible-element bug (sample 32). The rotate+overflow+bottom blank-card
     # gotcha is NOT auto-run — it can't be told apart from a normal full-width footer without
@@ -101,12 +177,128 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     if elements is not None:
         layout.preflight(W, H, elements, html=None, color_pairs=color_pairs,
                          page_bg=page_bg, core=core, expect_hero=expect_hero)
-    async with async_playwright() as p:
-        b = await p.chromium.launch()
-        pg = await b.new_page(viewport={"width":W,"height":H}, device_scale_factor=2)
-        await pg.set_content(html, wait_until="load"); await pg.wait_for_timeout(1500)
-        await pg.locator(".p").screenshot(path=out_png); await b.close()
-    return issues
+    # The DOM audit and the screenshot both need this html LOADED in a browser.
+    # They now share one page load instead of cold-starting a browser each.
+    return await _shoot(html, out_png, W, H, name, elements=elements)
+
+async def _shoot(html, out_png, W, H, name, elements=None):
+    """Load once → settle → audit that same DOM → screenshot it. Uses the open
+    session's page when there is one; otherwise opens a private session for this
+    single call so standalone scripts behave exactly as they always did."""
+    async def _work(pg):
+        await pg.set_content(html, wait_until="load")
+        await _settle(pg)
+        issues = await audit.audit(html, name, page=pg, canvas=(W, H))
+        # MEASURED geometry, on the page we already have. This is the only check
+        # that can see what the hand-maintained (x,y,w,h) tuples structurally
+        # cannot: a text block whose REAL rendered size is not what the author
+        # guessed. Clipped/spilling text is unambiguous — there is no design in
+        # which a word losing its last three letters is intended — so it prints
+        # on every render rather than waiting to be opted into.
+        flaws = await reconcile.measure_dom(pg, W, H)
+        for line in reconcile.format_measure(flaws):
+            print(f"[{name}] ⚠ {line}")
+        # When the caller declared an element list, check it against reality. This
+        # is CLAUDE.md §10's "stale bbox" row, whose guard until now was the word
+        # "discipline".
+        if elements:
+            rec = reconcile.reconcile_boxes(flaws["boxes"], elements, canvas=(W, H))
+            for line in reconcile.format_reconcile(rec):
+                print(f"[{name}] ⚠ (advisory) {line}")
+        if flaws["clipped"] or flaws["spilling"]:
+            issues = list(issues or []) + reconcile.format_measure(
+                {k: v for k, v in flaws.items() if k != "off_canvas"})
+        await pg.locator(".p").screenshot(path=out_png)
+        return issues
+    if _SESSION is not None:
+        return await _work(await _SESSION.page(W, H))
+    async with session() as sess:
+        return await _work(await sess.page(W, H))
+
+async def measure_text(items, W=1080, H=1350):
+    """Measure how big text ACTUALLY renders, before you lay anything out.
+
+    THE CLASS OF BUG THIS RETIRES. Every bespoke script sizes shapes from data
+    ("this bar is 120px because the count is 26") and then drops a label on top
+    sized from nothing at all. When the label is wider than the shape you get
+    "PLANTAT" hanging off a pill, and no static gate can see it because the two
+    are unrelated siblings. The engine had no way to ask the only authority that
+    knows — the font — so authors guessed. This asks.
+
+    items: list of dicts {text, font, size, weight, letter_spacing, max_width}
+           `font` takes the CSS family or a token name ('d','e','s','m').
+    Returns the same list order, each as
+        {'w','h'          — the LAYOUT box: what the next element flows against,
+         'ink_w','ink_h'  — the content box: what the element needs to not clip,
+         'glyph_w','glyph_h' — the TRUE painted bounds of the type (single-line
+                            only, else None). This is the one to use for a
+                            numeral or all-caps hero: `ink_h` reserves the whole
+                            em box including a descender the digits never use, so
+                            flowing off it opens a hole nobody asked for.
+         'lines'          — line count}
+
+    USE THE RIGHT ONE. At line-height < 1 (every AQ headline) the glyphs paint
+    outside the line box: a 430px numeral at line-height .78 has h=335 but
+    ink_h=443. Flow the NEXT element off `h`; size a collision bbox off `ink_h`.
+    Getting this backwards is how a sticker gets cleared onto a numeral.
+
+    Costs one page load. Batch every string you need in ONE call, then lay out.
+    """
+    FAM = {"d": "var(--d)", "e": "var(--e)", "s": "var(--s)", "m": "var(--m)"}
+    spans = []
+    for i, it in enumerate(items):
+        fam = FAM.get(it.get("font", "d"), it.get("font", "var(--d)"))
+        mw = it.get("max_width")
+        box = f"width:{mw}px;" if mw else "white-space:nowrap;"
+        spans.append(
+            f'<div id="m{i}" style="position:absolute;top:0;left:0;{box}'
+            f'font-family:{fam};font-weight:{it.get("weight", 900)};'
+            f'font-size:{it.get("size", 16)}px;'
+            f'line-height:{it.get("line_height", 1)};'
+            f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'text-transform:{it.get("transform", "none")};'
+            f'visibility:hidden">{it["text"]}</div>')
+    html = page(W, H, "var(--bg)", "".join(spans), grain=False)
+
+    async def _work(pg):
+        await pg.set_content(html, wait_until="load")
+        await _settle(pg)
+        return await pg.evaluate(
+            """n => Array.from({length:n}, (_, i) => {
+                 const e = document.getElementById('m' + i);
+                 const r = e.getBoundingClientRect();
+                 const lh = parseFloat(getComputedStyle(e).lineHeight) || r.height;
+                 // h  = the LAYOUT box (what the next element flows against)
+                 // ink_h/ink_w = what the glyphs actually PAINT. At line-height
+                 // below 1 these differ a lot, and the painted extent is the one
+                 // a collision bbox must use — see the note in the docstring.
+                 const cs = getComputedStyle(e);
+                 const lines = Math.max(1, Math.round(r.height / lh));
+                 // TRUE painted glyph box, for single-line text. scrollHeight
+                 // reserves the whole font em box (ascender to descender); digits
+                 // and caps use far less of it, so flowing off scrollHeight opens
+                 // a visible hole under a numeral hero. Canvas TextMetrics gives
+                 // the actual inked bounds instead of the font's reserved space.
+                 let gw = null, gh = null;
+                 if (lines === 1) {
+                   const cx = document.createElement('canvas').getContext('2d');
+                   cx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+                   const tm = cx.measureText(e.textContent);
+                   if (tm.actualBoundingBoxAscent != null) {
+                     gw = Math.ceil(Math.abs(tm.actualBoundingBoxLeft) + Math.abs(tm.actualBoundingBoxRight));
+                     gh = Math.ceil(tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent);
+                   }
+                 }
+                 return { w: Math.ceil(r.width), h: Math.ceil(r.height),
+                          ink_w: Math.max(Math.ceil(r.width), e.scrollWidth),
+                          ink_h: Math.max(Math.ceil(r.height), e.scrollHeight),
+                          glyph_w: gw, glyph_h: gh, lines: lines };
+               })""", len(items))
+    if _SESSION is not None:
+        return await _work(await _SESSION.page(W, H))
+    async with session() as sess:
+        return await _work(await sess.page(W, H))
+
 
 async def measure_free(html, W, H):
     """Return bounding boxes of .measure elements so a spec can place fillers in REAL gaps."""

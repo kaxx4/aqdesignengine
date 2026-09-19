@@ -1,4 +1,12 @@
-# VISUAL DNA — what all 44 references actually taught (session 2026-07-24)
+# VISUAL DNA — what all 44 references actually taught (session 2026-07-24, amended since)
+
+**Maintenance note:** the base findings below (§0-9) are from the 2026-07-24 corpus-wide pass and
+are unchanged. Later per-poster recreation sessions (`brain/RECREATION_AUDIT.md`'s 2026-07-25
+"SHOWCASE RUN" and subsequent single-poster sessions, e.g. `2022ebef4ffad5` on 2026-09-03) have
+kept confirming §5a's under-filled/DETAIL-TOO-LOW findings and adding new caught-by-eye failure
+classes — see the dated addenda inline (search this file for "2026-09" etc.) and `DECISIONS.md`
+for the full write-ups. Treat §5a's "Standing gaps" as still open as of the latest recreation
+session, not resolved just because this header is old.
 
 Derived by LOOKING at every one of the 44 posters in `training_samples/reference_posters/` against a
 fixed schema (archetype, reading axis, hero %, base field, accent role, type treatment, eye-candy
@@ -190,6 +198,13 @@ from each origin to a destination (`d375fd7dbc`).
 **RULE — `connector(from_bbox, to_bbox, style)` generating an ink arrow/arc between two PLACED
 elements.** (The dashed connector hand-written for the Sunderbans v6 carousel is a special case of
 this — generalise it rather than re-deriving per piece.)
+
+**Failure mode encoded 2026-09-03 (`2022ebef4ffad5`):** the repetition move only reads as
+repetition if each duplicate is actually visible. A first rebuild offset the decreasing-scale
+copies toward the frontmost card (down-right, nested inside its bounds) and the whole cascade
+collapsed to one flat card with no gate catching it. Offset direction must point AWAY from where
+the front copy already covers. Encoded as `layout.cascade_peek_check` (see CLAUDE.md §10,
+`brain/DECISIONS.md` 2026-09-03) — opt-in/advisory via `preflight(..., cascade_stacks=[...])`.
 
 ---
 
