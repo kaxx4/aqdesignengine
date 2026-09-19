@@ -232,6 +232,78 @@ def interior(path_d, kind="inner", box=100, color=INK, fill=None, uid=None):
     return "".join(out)
 
 
+# ── label fit ──────────────────────────────────────────────────────────────────
+# THE BUG THIS ENCODES (session 10b). sticker() takes `inner` raw SVG and draws it
+# without knowing whether it fits. So a label was sized from its own text while the
+# badge was sized from the composition, and the two never met: "PATHER SATHI" ran
+# out of both ends of its capsule, "291 WORKSHOPS" out of its starburst, "FIELD
+# PROGRAM" off a burst's point. Every silhouette in this module has a DIFFERENT
+# usable width — that is the whole reason the module exists — so one padding
+# constant could never have worked.
+#
+# layout.star_text_width() already solved exactly this, for stars, and was never
+# generalised. These are the same idea with a measured fraction per family.
+#
+# The fraction is the widest horizontal chord available at the label's band,
+# expressed as a fraction of the 0..100 box, minus the ink outline.
+INNER_FRAC = {
+    "capsule":  0.86,   # a bar: nearly the whole width is usable
+    "tag":      0.76,   # loses the notch
+    "arch":     0.74,   # straight sides, but the top is a dome
+    "shield":   0.70,   # narrows toward the point
+    "scallop":  0.68,   # round, and the lobes eat the edge
+    "blob":     0.64,   # round and irregular — the safest assumption is small
+    "gear":     0.62,   # the teeth are not usable width
+    "burst":    0.52,   # a starburst's waist is the narrowest of all
+    "star":     0.42,   # matches layout.star_text_width's measured waist
+}
+DEFAULT_INNER_FRAC = 0.60
+
+
+def inner_width(kind, size, sw=SW):
+    """Usable text width, in px, inside a `size`-px sticker of family `kind`."""
+    frac = INNER_FRAC.get(kind, DEFAULT_INNER_FRAC)
+    return max(8.0, size * frac - (sw / 100.0) * size * 2)
+
+
+def fit_font(measured_w, measured_at, kind, size, min_box=5.0, max_box=None):
+    """The label font size — IN BOX UNITS — whose text still fits this silhouette.
+
+    ⚠ THE UNIT TRAP, which is the actual session-10b bug. Everything in this module
+    is drawn in a 0..100 box that sticker() then scales to `size` px. So the `size`
+    argument of label() is NOT pixels: a label at 13 inside a 206px sticker renders
+    at 13 * 206/100 = 26.8px. Writing what looked like a sensible 13px label was
+    really asking for 27px, which is why "PATHER SATHI" ran out of both ends of its
+    capsule. Passing a px value where box units are expected is silent — nothing
+    errors, the text just grows. So this returns BOX UNITS, ready to hand straight
+    to label(), and the caller never has to do the conversion that went wrong.
+
+    measured_w / measured_at come from build.measure_text(): the label's real width
+    in px when set at that px size. Text width is linear in font size, so the fit is
+    exact rather than estimated.
+
+    Returns (box_size, fits) — `fits` is False when even min_box overflows, which
+    means the label is too long for that silhouette at that diameter and the
+    composition must change (shorter label, split it over lines, or a bigger badge).
+    Callers should act on it rather than shipping 5pt type.
+    """
+    avail_px = inner_width(kind, size)
+    if measured_w <= 0 or size <= 0:
+        return (min(max_box or 13.0, 13.0), True)
+    best_px = measured_at * (avail_px / float(measured_w))     # px that would fit
+    box = best_px * 100.0 / float(size)                        # -> box units
+    cap = max_box if max_box is not None else 15.0
+    fits = box >= min_box
+    return (max(min_box, min(cap, box)), fits)
+
+
+def fit_label(text, measured_w, measured_at, kind, size, fill=INK, y=50,
+              weight=800, min_box=5.0, max_box=None):
+    """fit_font + label in one call: the only supported way to put text in a sticker."""
+    box, fits = fit_font(measured_w, measured_at, kind, size, min_box, max_box)
+    return label(text, size=box, y=y, fill=fill, weight=weight), fits
+
+
 def sticker(path_d, fill, size=120, halo=True, shadow=False, rot=0, box=100,
             inner="", outline=INK, sw=SW, halo_amt=0.55, halo_w=HALO, detail="inner"):
     """Wrap a silhouette in the uniform AQ sticker treatment.
