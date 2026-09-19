@@ -71,6 +71,29 @@ There are exactly two ways to make a poster, and they use different code paths. 
 | Output | `out/<name>.png` | `out/versions/<slug>/vN.png` (versioned, iterated) |
 | Ends when | looking gate passes | render matches the reference element-by-element; outcome logged |
 
+**C. FRESH POSTER, BESPOKE BUILD (the common case, added session 10e).** Workflow A is
+limited to the four registered archetypes, which `brain/VISUAL_DNA.md` measured as
+reaching only ~6 of the 44 original references. Most real briefs therefore want B's
+*construction method* (bespoke script from the primitives) for A's *purpose* (new
+content, no reference to match). That is a third path and it now has an entry point:
+
+```bash
+python design.py "126 return visits to one partner in Kolkata"   # draws a style
+python design.py "sign-ups open" --dept events --canvas story
+python design.py --list                                          # what the bank knows
+```
+
+`design.py` draws a STYLE from `brain/STYLE_BANK.json` — all 74 references, each with
+MEASURED fields (coverage, ground, palette, bbox, taken from the pixels) and JUDGED
+fields (mechanism, hero, and a `recipe` written as build instructions). The draw is
+educated-random: filtered by what you know, weighted so a judged style with a written
+recipe beats an unjudged one, and it never returns empty — it relaxes filters one at a
+time and reports which. It prints a BRIEF; it does not render. You still build it as a
+bespoke script and the looking gate (§3) still runs on the PNG.
+
+Workflow C's checklist is Workflow B's minus the reference-matching steps: measure the
+chosen style's reference (`compare.geometry`), build to its proportions, render, LOOK.
+
 Both workflows are gated by §3 (looking) and §7 (the automated checks). Both feed §8 (encode fixes).
 
 ---
@@ -142,7 +165,12 @@ tracked in `brain/RECREATION_PROGRESS.md` (a 44-row status table) and `brain/REC
 
 0. **MEASURE THE REFERENCE FIRST.** `compare.geometry(ref_path)` → content bbox, margins,
    vertical ratio, centroid, occupancy grid. Paste the numbers into the description and
-   BUILD TO THEM. The written inventory catches missing ELEMENTS; it is unreliable for
+   BUILD TO THEM.
+   **IF THE REFERENCE IS A MOCKUP** (phones/devices/print/a scene), crop the chosen screen
+   FIRST: `compare.crop(ref, x0,y0,x1,y1, out)` → then measure and score against the CROP.
+   Scoring a full-bleed poster against a photo of four phones on grey measures the grey.
+   Expect the crop to carry some bezel; a few "MISSING COLOUR near-black" critiques are
+   that bezel, not a missing element. The written inventory catches missing ELEMENTS; it is unreliable for
    PROPORTIONS, and a wrong proportion there propagates straight into the build.
 
 1. **Full composition description BEFORE any code.** `Read` the reference `.jpg` and write a
@@ -197,14 +225,19 @@ recreations, updated to call the standing gate (§7).
 
 ```python
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — never an absolute path. A hardcoded root
+# has broken something three times now (the self-tests twice, and this template).
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join(ENGINE_DIR, n+".py"))
     m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 core = load("core"); B = load("build"); dd = load("doodles"); lay = load("layout")
-W, H = core.SIZES["feed"]; M = 48          # feed canvas is 1080x1350 — NEVER assume taller
+W, H = core.SIZES["feed"]; M = 64          # feed canvas is 1080x1350 — NEVER assume taller
+                                           # M=64 matches build.py's own margin constant and
+                                           # ~10 of the 14 recent bespoke scripts. The template
+                                           # said 48 and nothing else did.
 A = core.ACCENTS                            # A[0..6]: pink,mint,lemon,tomato,sky,grape,teal
 elements = []                               # keep a bbox (x,y,w,h) per placed element, IN SYNC
 
@@ -268,7 +301,9 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
 `audit.py`'s DOM gate only sees elements tagged `.measure`; bespoke scripts hand-maintain
 `(x,y,w,h)` tuple lists, so these run on THAT list:
 - `bounds_check(W,H,elements)` → elements clipping off-canvas (feed is 1080×1350, not taller).
-- `collision_check(elements, min_overlap=12, ignore_pairs=…)` → any two elements really overlapping
+- `collision_check(elements, min_overlap=12, ignore_pairs=…)` — `ignore_pairs` takes PAIRS
+  in any shape (`('a','b')`, `{'a','b'}`, `frozenset({'a','b'})`); anything that is not a pair is
+  now reported rather than silently ignored → any two elements really overlapping
   (doodle over text, badge over shape). Accepts `(x,y,w,h)` or `(label,x,y,w,h)`; echoes labels.
 - `invisible_color_check(pairs, page_bg, core)` → any fill/stroke whose resolved color ≈ the
   surface behind it (the "drawn but invisible" bug). Resolves `var(--token)`; skips gradients/named.
@@ -293,8 +328,9 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
   footers). Call by hand when chasing a blank card (the rotate+overflow:hidden+bottom gotcha).
 - **`preflight(W,H,elements,html,color_pairs,page_bg,core,expect_hero=…)`** → runs all the
   zero-false-positive checks above at once, returns `{'clean': bool, ...}`, prints one verdict.
-  `under_filled_quadrants` is included but ADVISORY (its threshold is noisy — trust the pixel
-  critique for density). **This is the standing pre-render call.**
+  `under_filled_quadrants` is included but ADVISORY and is NOT PRINTED when it flags all four
+  quadrants — a check that fires on every composition carries no signal (verified across the
+  session-10 batches). Trust the pixel critique for density. **This is the standing pre-render call.**
 - Also: `quadrant_fill_check` (advisory density) and `cluster_positions` (overlapping-pile
   placement) and `pick_fill_mode` (solid-dominant fill picker) — legacy helpers, still valid.
 
@@ -305,7 +341,12 @@ also runs the full `preflight` at render time for free.
 ### 7b. DOM structural — `engine/audit.py` & `engine/reconcile.py`
 - `audit.audit(html, name)` (runs inside `build.render`) → margin breaches + real overlaps between
   `.measure`-tagged DOM elements, with whitelisted by-design overlaps (tags-on-hero, sign piles…).
-- **`reconcile.measure_dom(page,W,H)` → AUTO-RUNS in `build.render()` on every render.** Measures the
+- **`reconcile.measure_dom(page,W,H)` → AUTO-RUNS in `build.render()` on every render.**
+  NOTE ON `OVERSIZE`: a headline at the house's own tight line-height (<1) ALWAYS paints past
+  its line box, so this used to print on every hero numeral even when the author had correctly
+  used `measure_text()['ink_h']` for the bbox. It is now suppressed when the element list you
+  passed already declares a box that covers the real extent — so if you still see it, the
+  declared box really is too small. Measures the
   real DOM: `clipped` (characters lost), `spilling` (content exceeds a declared size), `off_canvas`,
   plus `boxes` (true extents). This is the ONLY check that sees what hand-written tuples cannot.
 - **`reconcile.reconcile_boxes(boxes, elements)` → advisory**, auto-run when `render(..., elements=…)`:
@@ -559,7 +600,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (32)** — **231 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
+  `test_recreation.py` (32) ·
+  `test_stylebank.py` (33)** — **265 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
@@ -581,6 +623,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   output in `out/session10/`.
 - The looking gate is only as good as the checklist + the eye. It runs EVERY time; that is its value.
   **Keep converting each new visual catch into an encoded rule (§8).**
+- **STYLE BANK (new, session 10e): `brain/STYLE_BANK.json` holds all 74 references as
+  usable STYLES — measured fields from the pixels, judged fields from eyes, all 74 judged.**
+  `python design.py "<subject>"` draws one educated-random and prints a build brief; see
+  Workflow C in §2. `stylebank.py schema` is the judging contract (it lives in the module,
+  not in a prompt); `stylebank.py crosscheck` catches a judgment written about the wrong
+  image by comparing its claimed ground against the measured one.
 - **CORPUS COVERAGE (measured 2026-07-24, `brain/VISUAL_DNA.md`): the 4 built archetypes can reach
   only ~6 of the 44 references fully, ~8 partially — ~30 are unreachable.** This, not content input,
   is the real reason generation needs per-piece steering. Three gates (`bounds_check`,

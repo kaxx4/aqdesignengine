@@ -1124,3 +1124,90 @@ recreation's. The looking gate passes and the mechanism is right; the score is p
 reason, rather than the threshold being quietly relaxed to make it look finished.
 
 Self-test: `test_recreation.py` extended to 32. **Suite now 231 assertions, all verified passing.**
+
+
+### SESSION 10e (2026-09-19) — running the manual cold on Sonnet, and the style bank
+
+Five Sonnet agents were given real tasks with no hand-holding: two built (one fresh
+poster, one recreation) and three judged all 60 unjudged references into a style bank.
+Their confusion was the deliverable. Eleven distinct defects came back, every one
+verified against the repo before anything was changed.
+
+**The manual's own template was broken.** CLAUDE.md section 6's copy-paste skeleton
+began `os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")` —
+a path that has not existed since the repo moved. BOTH building agents hit it; both only
+survived because their environment told them the real path independently. A model
+following the manual alone fails on line 2. This is the THIRD time a hardcoded absolute
+path has broken something after that move (the self-tests twice, now the template), so
+the template no longer contains one: it derives the root from the script's own location.
+Its `M = 48` also disagreed with `build.py`'s own `M = 64` and with ten of the fourteen
+recent scripts.
+
+**A silent no-op cost an agent a full debug cycle.** `collision_check(ignore_pairs=...)`
+required `frozenset({a, b})` per pair. Passing `("a","b")` — the obvious guess — matched
+nothing, reported every collision anyway, and said nothing. The gate looked like it was
+working and was doing nothing. It now accepts tuples, lists, sets and frozensets, and
+REPORTS any entry that is not a pair.
+
+**And a test was pinning that footgun in place.** `test_layout_rules.py` contained
+`ok(collision_check(..., ignore_pairs={("doodle","headline")}) != [], "a TUPLE does NOT
+whitelist — it must be a frozenset (API footgun)")`. An earlier session had encoded the
+bug as expected behaviour. When the API was fixed, that assertion failed — correctly, for
+asserting the old broken contract. **Encode the RULE, not the bug:** a test that documents
+a footgun as intended is a test that prevents its fix.
+
+**Three more real API defects, all found by building rather than reading:**
+  * `build.render`'s convenience auto-preflight had no `collision_ignore` passthrough, so
+    a script with legitimate by-design overlaps saw them REPRINTED at render time,
+    contradicting its own clean manual preflight a few lines earlier.
+  * `measure_text` with `max_width` returns the CONTAINER's width in `w`/`ink_w`, not the
+    string's. A two-letter headline in a 900px box reported 900 and silently inflated a
+    collision bbox by 724px. Added `text_w`, measured unconstrained.
+  * `doodles._svg` set a viewBox but no width/height, so every doodle rendered a few
+    percent larger than the div it was placed in — the same "declared box is a lie" class
+    section 10 already tracks for text.
+
+**Gate noise was training people to skim.** `under_filled_quadrants` fired on essentially
+every clean run, including all four quadrants at once, which carries no information; it is
+no longer printed in that case. `OVERSIZE` fired on every hero numeral because a
+line-height below 1 ALWAYS paints past the line box — it is now suppressed when the
+caller's declared element list already covers the real extent, so seeing it again means
+the box really is too small.
+
+**Workflow C got a name.** Section 2's table had two rows and neither fit "make a NEW
+poster with a bespoke build" — Workflow A means the four registered archetypes, and
+Workflow B's step 1 is "read the reference .jpg". A building agent had to improvise the
+hybrid with no checklist. That hybrid is the common case, and it is now `design.py`.
+
+**The style bank.** All 74 references are now a usable STYLE, not just a recreation
+target, split honestly: MEASURED fields (coverage, ground, palette, bbox, centroid) come
+from the pixels; JUDGED fields (kind, hero, mechanism, recipe) need eyes. `design.py`
+draws one educated-random — filtered by what you know, weighted so a judged style with a
+written recipe beats an unjudged one, never returning empty and always reporting which
+filters it relaxed.
+
+**Two independent judges hit the same six schema ambiguities**, which makes them spec
+defects rather than judge error: `mockup` was defined too narrowly (a poster photographed
+in a shopping basket is the same problem as one on a phone — the design is wearing a
+costume); there was no `kind` for a vocabulary reference with no layout, so sticker sheets
+were forced into `poster`/`sheet` (added `asset`); `canvas` was read as nearest-aspect when
+it means fit-for-purpose; `hero` had no tie-break for co-equal elements or for
+content-vs-form; `recipe` scope was unstated. The schema now lives in `stylebank.py`, not
+in whatever prompt asked for the work — a schema that exists only in a prompt gets
+re-invented, slightly differently, every time.
+
+**The best finding was self-reported.** One judge read images five per tool call, reasoned
+about them together, and mis-attributed several slug-to-image pairings. It caught itself,
+re-verified all twenty individually, and flagged it. Nothing in the system would otherwise
+have noticed: a confidently-written recipe for the WRONG PICTURE passes every schema check
+there is. So `cross_check()` now compares each judgment's claimed ground against the
+MEASURED one — cheap, needs no second look, and catches exactly that.
+
+**Which promptly found a bug in my own classifier.** `cross_check` flagged three
+contradictions. All three were false positives, and two of them because
+`_classify_ground` tested luminance before chroma: pure red `[240,0,0]` has luminance 51
+and was being called "dark". Chroma is tested first now. The third was a mockup, whose
+measured ground is the BACKDROP and not the design's — mockups are skipped. A deep maroon
+is genuinely both saturated and dark, so that pair no longer cries wolf.
+
+Self-test: `test_stylebank.py` (33). **Suite now 265 assertions across 11 files.**

@@ -4,7 +4,14 @@
 import math, random
 SW=8
 def _svg(inner,w,h,rot=0):
-    return f'<svg class="dood" viewBox="0 0 {w} {h}" style="transform:rotate({rot}deg)" xmlns="http://www.w3.org/2000/svg">{inner}</svg>'
+    # width/height PINNED to the wrapper. Without them an <svg> is a replaced element
+    # falling back to its own intrinsic sizing, so a doodle rendered a few percent
+    # larger than the div it was placed in and every declared bbox for it was a lie by
+    # that margin — the same "declared box is too small" class section 10 already
+    # tracks for text. Measured at ~7% on a 118px plus-doodle.
+    return (f'<svg class="dood" viewBox="0 0 {w} {h}" width="100%" height="100%" '
+            f'style="transform:rotate({rot}deg);display:block" '
+            f'xmlns="http://www.w3.org/2000/svg">{inner}</svg>')
 def _rough(pts,seed=0,amp=3.5):
     # jitter a point list to fake a hand-drawn wobble
     r=random.Random(seed); return [(x+r.uniform(-amp,amp),y+r.uniform(-amp,amp)) for x,y in pts]

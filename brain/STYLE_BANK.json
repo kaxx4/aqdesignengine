@@ -1,0 +1,3450 @@
+{
+  "version": 1,
+  "styles": {
+    "091944e282ce11": {
+      "file": "091944e282ce11698315cf95a78615e2.jpg",
+      "measured": {
+        "aspect": 0.565,
+        "coverage": 0.638,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.03,
+          0.073,
+          0.97,
+          0.929
+        ],
+        "centroid": [
+          0.51,
+          0.478
+        ],
+        "palette": [
+          "orange/warm",
+          "dark/ink",
+          "green/teal",
+          "green/teal",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a big rounded headline card sits atop a black band of colour-coded date-pill rows, each row splitting a date capsule from an event-name capsule",
+      "hero": "type",
+      "tags": [
+        "calendar-list",
+        "date-pills",
+        "rounded-headline",
+        "rotating-accents",
+        "sparkle-doodles"
+      ],
+      "recipe": "Paper/white outer frame, black inner band running most of the canvas height. Top: one big rounded accent card (yellow) holding a two-line giant headline plus a small sparkle doodle poking out its corner; below it a status bar splitting a rounded 'IN [MONTH]' pill (white) from a rounded '[YEAR]' pill (accent). Inside the black band, stack one row per date: a small rounded date-pill (day number + weekday, one accent) locked edge-to-edge against a longer rounded event-name pill (a different accent), rotating through 4-5 accents down the list so no two adjacent rows repeat. Close with a two-tone 'MORE INFORMATION' bar and a white URL bar carrying a small circular arrow button. Restraint: exactly one accent per pill, black ink type throughout, no doodle bigger than a corner accent.",
+      "canvas": "story",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "10f1b8a9789261": {
+      "file": "10f1b8a9789261fc73570521bf63db74.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.271,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.039,
+          0.05,
+          0.959,
+          0.953
+        ],
+        "centroid": [
+          0.446,
+          0.584
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "giant stacked headline where one line sits inside a rotated highlighter-marker rectangle and another word sits inside a rounded pill, with a single oversized character illustration draped across the seam",
+      "hero": "type",
+      "tags": [
+        "giant-type",
+        "highlighter-block",
+        "pill-word",
+        "hand-drawn-doodles",
+        "white-ground"
+      ],
+      "recipe": "White ground, thin rule top and bottom holding a slide-number / wordmark / date masthead. Stack 3-4 lines of black uppercase display type at near-full canvas width; give exactly ONE line a rotated accent-colour highlighter-block behind it (text cut out in ink) and exactly one WORD a rounded accent pill with a small icon-in-circle glyph. Drape one oversized flat character illustration (a hand, a mascot) diagonally across the seam between two lines so it visually pins them together. Scatter 3-4 small line-drawn doodles (arrow, sparkle, loop) only in the margins the type doesn't reach. One small caption line beneath the headline; restraint is two accent colours max plus black ink.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "110a5730e3710b": {
+      "file": "110a5730e3710ba94e525ee2c5850981.jpg",
+      "measured": {
+        "aspect": 0.75,
+        "coverage": 0.546,
+        "ground_rgb": [
+          240,
+          216,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.481,
+          0.554
+        ],
+        "palette": [
+          "orange/warm",
+          "near-neutral",
+          "blue/purple",
+          "near-neutral",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "editorial card rail: mixed-size image tiles and text blocks in a tight column",
+      "hero": "grid",
+      "tags": [
+        "card-rail",
+        "mixed-tiles",
+        "editorial",
+        "paper-ground"
+      ],
+      "recipe": "Paper ground, one tight column. Alternate full-width text blocks with grids of mixed-size image/colour tiles, all sharing one small radius. Reads as a feed. Use when the content is genuinely a LIST of distinct items rather than one message.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "114f2b19c46119": {
+      "file": "114f2b19c46119a6a2b27273256182a7.jpg",
+      "measured": {
+        "aspect": 1.604,
+        "coverage": 0.267,
+        "ground_rgb": [
+          240,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.091,
+          0.093,
+          0.907,
+          0.905
+        ],
+        "centroid": [
+          0.511,
+          0.519
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "dark/ink",
+          "near-neutral",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "three phone frames in a row, each showing one consecutive screen of the same onboarding flow, tied together by a repeated sticky-note prop",
+      "hero": "grid",
+      "tags": [
+        "phone-triptych",
+        "onboarding-flow",
+        "sticky-note-prop",
+        "neutral-ground",
+        "step-sequence"
+      ],
+      "recipe": "Flat neutral (warm grey) ground, three identical phone frames evenly spaced in a row, each cropped tight with generous side margins. Each screen shows ONE step of a single flow in sequence (a message screen, a question + input, a reply) so the triptych reads left-to-right as a story, not three unrelated screens. Repeat one small prop (a sticky-note clip icon) pinned at the same position on each screen to signal continuity. Keep all UI chrome (status bar, keyboard) real and identical across frames; the only thing that changes screen-to-screen is the actual content. No background decoration beyond the flat ground -- the phones and their sequence are the whole composition.",
+      "canvas": "linkedin",
+      "depts": [
+        "labs",
+        "content"
+      ]
+    },
+    "11e7d9a3ff6761": {
+      "file": "11e7d9a3ff676116583e8aa245e9bce6.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.422,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.003,
+          0.993,
+          0.993
+        ],
+        "centroid": [
+          0.493,
+          0.512
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a word spelled with isometric 3D keycap blocks scattered and tilted like a loose pile, paired with matching small 3D icon props on a grid-paper ground",
+      "hero": "pile",
+      "tags": [
+        "isometric-keycaps",
+        "word-as-objects",
+        "grid-paper-ground",
+        "scattered-tilt",
+        "icon-props"
+      ],
+      "recipe": "Light grid-paper ground (thin blue ruled lines). Build the word letter-by-letter as isometric 3D keycap blocks (flat top face + two darker side faces, thick ink outline), each letter in a different accent colour, scattered across the canvas at varied rotations so it reads as a loose pile rather than a straight baseline -- let two or three keys overlap slightly for depth. Fill the remaining corners with 2-3 small matching isometric icon props (an envelope, a pencil, a chat bubble) at the same 3D-block treatment, plus one or two flat line-drawn stars for texture. Keep the palette to 5-6 flat accents with a consistent shadow direction on every block; no background gradient, the grid paper is the only texture.",
+      "canvas": "feed",
+      "depts": [
+        "labs",
+        "content"
+      ]
+    },
+    "139c5a6f43a6da": {
+      "file": "139c5a6f43a6da226328cd18f7f8db0d.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.675,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.532,
+          0.587
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "dark/ink",
+          "orange/warm",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a giant wordmark centred above two phone screens -- one full-bleed product photo screen, one app-listing screen -- floating on a dark gradient-textured ground",
+      "hero": "photo",
+      "tags": [
+        "dual-phone-mockup",
+        "dark-gradient-ground",
+        "product-photo-screen",
+        "wordmark-overlay",
+        "accent-cta-pill"
+      ],
+      "recipe": "Dark ground with a soft organic light-streak texture behind everything. Set one huge wordmark centred at the top, white, big enough to anchor the whole piece before the phones are even noticed. Below it, two phone frames side by side: the LEFT phone is dominated by one full-bleed real product photo bleeding off its edges, with a small accent-colour rounded card of caption copy pinned at its bottom; the RIGHT phone shows an app list/search screen with 2 stacked product cards and one filled accent CTA pill. Keep both phones the same size and vertically aligned; the dark ground and single light accent colour (used sparingly on buttons and captions) are the only unifying threads.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "labs"
+      ]
+    },
+    "17c7de5509caae": {
+      "file": "17c7de5509caaed992f2de7b720ec8b4.jpg",
+      "measured": {
+        "aspect": 0.679,
+        "coverage": 0.827,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.505,
+          0.432
+        ],
+        "palette": [
+          "near-neutral",
+          "blue/purple",
+          "dark/ink",
+          "blue/purple",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "one word re-lettered six different ways in a 2x3 grid of solid-colour tiles, closed out by a seventh full-width tile in a contrasting treatment",
+      "hero": "type",
+      "tags": [
+        "lettering-grid",
+        "one-word-many-styles",
+        "solid-colour-tiles",
+        "type-exploration",
+        "closing-band"
+      ],
+      "recipe": "Build a 2-column x 3-row grid of equal square-ish tiles, each a single flat ground colour (alternate dark and one saturated accent per tile). Set the SAME word large in each tile, but change the letterform treatment completely tile to tile -- one bubbly cartoon style, one clean geometric, one condensed with a sticker-shadow, one italic serif, one distorted/warped -- so the grid reads as a type specimen sheet, not six unrelated posters. Keep a tiny caption (category + credit) bottom-left/right of each tile. Close the sheet with one full-width band beneath the grid restating the word in a seventh, most extreme treatment (e.g. cut/ransom-note), plus a footer credit line. Restraint: one word only, never mix more than two colours per tile.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "1d518d2bc5d3dd": {
+      "file": "1d518d2bc5d3dd93934dbea4cf14984d.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.259,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.083,
+          0.056,
+          0.954,
+          0.942
+        ],
+        "centroid": [
+          0.496,
+          0.562
+        ],
+        "palette": [
+          "near-neutral",
+          "blue/purple",
+          "dark/ink",
+          "blue/purple",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "carousel",
+      "mechanism": "a real calendar grid as the page's ground, with pinned event photos overlaid directly on their dates and connected by handwritten arrow call-outs",
+      "hero": "photo",
+      "tags": [
+        "calendar-ground",
+        "pinned-photos",
+        "handwritten-annotations",
+        "month-recap",
+        "carousel-slide"
+      ],
+      "recipe": "White ground. Top: small wordmark left, an arrow-pill 'next' affordance right, then a two-colour headline (brand name in accent, rest in ink) stating the month being recapped. Below, render an actual calendar grid for that month, light and unobtrusive. Overlay 4-6 real event photos as tilted, bordered snapshot cards directly ON TOP of the calendar dates they happened, each with a coloured frame (rotate the frame colour per photo) and a small caption label. Connect at least one photo to its date with a thin hand-drawn arrow and a handwritten word. Scatter a couple of seasonal doodle accents (leaves) for texture only in dead corners. Footer: two rounded filter pills bottom-left, a 'NN/07' slide-index pill bottom-right (for the carousel).",
+      "canvas": "feed",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "2022ebef4ffad5": {
+      "file": "2022ebef4ffad554b42b3d6c5c6c914a.jpg",
+      "measured": {
+        "aspect": 0.563,
+        "coverage": 0.5,
+        "ground_rgb": [
+          240,
+          0,
+          0
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.056,
+          0.09,
+          0.991,
+          0.964
+        ],
+        "centroid": [
+          0.5,
+          0.535
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "blue/purple",
+          "near-neutral",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "three identical event cards cascade-stacked with each back copy offset AWAY from the front card, tucked into a half-open envelope, ringed by object stickers on a grainy solid ground",
+      "hero": "pile",
+      "tags": [
+        "cascade-stack",
+        "envelope-motif",
+        "object-stickers",
+        "grainy-ground",
+        "repeated-card"
+      ],
+      "recipe": "Solid saturated ground with visible photo-grain texture (never flat-flat). Top third: eyebrow price/cover info left, DJ or lineup credit right, a small stamp-style venue wordmark centred. Middle: an open envelope shape (two triangular flaps) sitting behind a stack of 2-3 IDENTICAL event cards, each showing the same date/illustration -- offset the back copies UP and to the side AWAY from where the front card already covers, never nested inside it, so all three edges stay visible (this is the exact bug the engine's cascade_peek_check guards against). Ring the stack with 4-6 unrelated object-sticker doodles (a drink, a disco ball, a bottle) at the canvas edges, each with a thick ink outline. Footer: bold reservation line + two phone numbers, sponsor wordmarks bottom-right. Restraint: one hero colour for the ground, cards stay pure black-on-white.",
+      "canvas": "story",
+      "depts": [
+        "events"
+      ]
+    },
+    "23bb507f6ec978": {
+      "file": "23bb507f6ec97814dc8fceeee2392803.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.202,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.272,
+          0.07,
+          0.687,
+          0.95
+        ],
+        "centroid": [
+          0.469,
+          0.525
+        ],
+        "palette": [
+          "orange/warm",
+          "green/teal",
+          "warm red/pink",
+          "dark/ink",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "asset",
+      "mechanism": "a single tall illustrated totem object built by stacking distinct flat-illustrated parts (signs, light, signal) at different heights along one central pole, floating on a plain ground with no text",
+      "hero": "shape",
+      "tags": [
+        "object-totem",
+        "stacked-parts",
+        "flat-illustration",
+        "no-text",
+        "icon-reference",
+        "vocabulary-reference"
+      ],
+      "recipe": "Plain paper ground, no headline, no copy -- this is a single-object icon reference, not a laid-out poster. Build one vertical pole shape and hang 4-6 distinct flat-illustrated parts off it at different heights and slight rotations (a traffic light, two arrow signs, a name-plate sign, a warning sign), each part a flat colour with a thick ink outline and a simple one-tone shadow for volume. Keep every part reading as its own recognisable object rather than merging into a blob. Use this mechanism as a doodle-cluster centrepiece inside a bigger AQ layout, not as a whole page -- it supplies the 'stack small objects on one spine' move, not a full composition.",
+      "canvas": "square",
+      "depts": []
+    },
+    "25143d758ea743": {
+      "file": "25143d758ea743e15ec374876a41192d.jpg",
+      "measured": {
+        "aspect": 2.004,
+        "coverage": 0.305,
+        "ground_rgb": [
+          24,
+          24,
+          24
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.035,
+          0.056,
+          0.967,
+          0.945
+        ],
+        "centroid": [
+          0.453,
+          0.614
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "dark/ink",
+          "dark/ink",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a fanned pile of rounded pill labels and circular 'peel me' badges scattered center over a dark ground, closed out by one huge footer contact line",
+      "hero": "pile",
+      "tags": [
+        "sticker-fan",
+        "pill-labels",
+        "circular-badges",
+        "dark-ground",
+        "huge-footer-line"
+      ],
+      "recipe": "Dark ground, wordmark small top-left, one outline glyph top-right for balance. Centre a loose fan of 5-7 white sticker shapes: alternate rounded pill labels (one word each, e.g. a platform name) with circular 'drag me' rosette badges (a ring of tiny repeated micro-text around one small icon). Rotate each sticker a few degrees off-axis and overlap two or three slightly so it reads as a dropped pile, not a grid. Leave generous dark space above and below the pile. Finish with one giant footer line (contact handle or URL) spanning the full width in a light sans, sized to be the second-largest element after the pile itself. Restraint: black/white stickers only, no colour except tiny icon accents inside them.",
+      "canvas": "linkedin",
+      "depts": [
+        "content"
+      ]
+    },
+    "25d39cb69b3684": {
+      "file": "25d39cb69b368495069455246a545187.jpg",
+      "measured": {
+        "aspect": 0.698,
+        "coverage": 0.367,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.052,
+          0.046,
+          0.952,
+          0.963
+        ],
+        "centroid": [
+          0.475,
+          0.585
+        ],
+        "palette": [
+          "dark/ink",
+          "orange/warm",
+          "orange/warm",
+          "near-neutral",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a giant lowercase wordmark spans the full width as the hero, sitting above a loose grid of quirky flat mascot-blob illustrations with thick ink outlines",
+      "hero": "type",
+      "tags": [
+        "giant-lowercase-wordmark",
+        "mascot-blobs",
+        "thick-ink-outline",
+        "three-column-header",
+        "white-ground"
+      ],
+      "recipe": "White ground. Small square logo mark top-left; a three-column info header (address/hours, event line, credits) spans the top in small caps type. Set the wordmark itself enormous -- full canvas width, lowercase, pure black, sitting alone with generous air above and below it as the undisputed hero. Below, arrange 4-5 flat mascot/blob illustrations (a couch, a tree, a table-creature, a plain square, an L-shape) loosely gridded but touching at a few points, each a single flat accent colour with a thick black ink outline and no gradient. Restraint: one flat colour per shape, black outlines on everything, no shadows or texture.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "29c6a858911dab": {
+      "file": "29c6a858911dab0fa25ef134785d64ba.jpg",
+      "measured": {
+        "aspect": 1.003,
+        "coverage": 0.457,
+        "ground_rgb": [
+          72,
+          168,
+          96
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.011,
+          0.024,
+          0.998,
+          0.993
+        ],
+        "centroid": [
+          0.47,
+          0.58
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a speech-bubble award badge at top connects via a hand-drawn arrow to a giant black slab headline below, with doodles filling the corners on a dotted saturated ground",
+      "hero": "type",
+      "tags": [
+        "award-badge",
+        "hand-drawn-arrow",
+        "black-slab-headline",
+        "dotted-ground",
+        "corner-doodles"
+      ],
+      "recipe": "Saturated accent ground with a fine dot-texture overlay (never flat). Top-centre: a die-cut speech-bubble badge (white fill, thick ink outline, drop shadow) holding the award/callout copy plus a small rounded date tag overlapping its corner. Draw one loose hand-drawn curved arrow connecting the badge down to the headline. Set the headline as two stacked black rounded-slab words at giant scale, each word its own slab so they can tilt slightly against each other. Fill the remaining corners with 3-4 small doodles (a hand icon in a starburst, a speech bubble made of dots, a ring-chart shape, a star) so no quadrant is empty. Restraint: one saturated ground colour, black slabs, white accents only.",
+      "canvas": "square",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "2af2568a52cc92": {
+      "file": "2af2568a52cc92360082830202f98275.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.531,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.113,
+          0.147,
+          0.885,
+          0.85
+        ],
+        "centroid": [
+          0.499,
+          0.498
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "near-neutral",
+          "green/teal",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "sticker swarm: die-cut badges landing in the GAPS of a huge headline",
+      "hero": "type",
+      "tags": [
+        "sticker-swarm",
+        "die-cut",
+        "dark-ground",
+        "giant-headline",
+        "varied-silhouette"
+      ],
+      "recipe": "Dark ground, huge white headline filling the middle. Scatter 8-12 die-cut badges around and ON it — varied silhouettes (scallop, burst, gear, tag, arch, shield, blob, capsule), each with the uniform sticker treatment so unrelated colours read as one set. Every badge sits IN FRONT of the type; depth comes from badge-on-badge overlap, and the headline reads because the badges land in its gaps. Fit each label to its silhouette (shapes.fit_font).",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "events"
+      ]
+    },
+    "2d3bfa3d0b3978": {
+      "file": "2d3bfa3d0b39789e06c07e8ecd16ebae.jpg",
+      "measured": {
+        "aspect": 0.592,
+        "coverage": 0.346,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.206,
+          0.025,
+          0.776,
+          0.984
+        ],
+        "centroid": [
+          0.488,
+          0.491
+        ],
+        "palette": [
+          "blue/purple",
+          "dark/ink",
+          "warm red/pink",
+          "warm red/pink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "solid-colour page sections are seamed together by torn-paper edges instead of straight lines, with a vertical rotated-label accordion list as one section",
+      "hero": "shape",
+      "tags": [
+        "torn-paper-seam",
+        "colour-block-sections",
+        "rotated-side-label",
+        "accordion-list",
+        "browser-chrome"
+      ],
+      "recipe": "Frame the whole thing in a simple browser-chrome window (dots + search bar) to read as a live site, but recreate only ONE mechanism from it rather than the whole page. Stack 2-3 solid-colour full-width sections; instead of a straight horizontal split, tear the edge between two of them into a jagged torn-paper silhouette in a contrasting colour so one section visibly rips into the next. For the middle mechanism, run a vertical rotated-90-degree label tab down the left edge of a section, paired with 2-3 full-width accordion rows of alternating flat accent colours (one row expanded with a plus icon). Keep everything else -- headings, buttons -- simple and centred. Restraint: torn edges appear at most twice, and only between colour blocks that actually contrast.",
+      "canvas": "story",
+      "depts": [
+        "content"
+      ]
+    },
+    "3bb3f9582d5cac": {
+      "file": "3bb3f9582d5cac37437cb9e049cf5c4a.jpg",
+      "measured": {
+        "aspect": 1.344,
+        "coverage": 0.482,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.522,
+          0.422
+        ],
+        "palette": [
+          "dark/ink",
+          "orange/warm",
+          "orange/warm",
+          "dark/ink",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "overlapping printed documents photographed flat-lay on a dark surface, the top sheet a numbered two-column brief list with one colour per line number",
+      "hero": "pile",
+      "tags": [
+        "flat-lay-photo",
+        "overlapping-documents",
+        "numbered-brief-list",
+        "sticky-note-prop",
+        "dark-surface"
+      ],
+      "recipe": "Photograph (or simulate) a dark flat surface with 3-4 printed sheets fanned and overlapping, only their corners peeking from behind the top sheet. Top sheet: a clean white page with a bold two-tone title (one word in ink, one in an accent colour) underlined by thin rules top and bottom, then a numbered list of short line-items in two columns -- give every number its OWN accent colour (rotating through 4-5) so the numbers, not the words, carry the colour. Pin one small rotated sticky-note prop with a handwritten word over a top corner of the sheet. Let one partially-hidden document behind it hint at a different colour/content so the stack reads as real, not staged-flat. Restraint: the top sheet stays black-ink-on-white; colour only lives in the numbers and the sticky note.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "3d846c781bd059": {
+      "file": "3d846c781bd0593f6c08387a095c02d9.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.309,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.109,
+          0.298,
+          0.896,
+          0.717
+        ],
+        "centroid": [
+          0.502,
+          0.508
+        ],
+        "palette": [
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "orange/warm",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "four-up card grid: TWO layouts printed in FOUR colourways, diagonal pairs matching",
+      "hero": "grid",
+      "tags": [
+        "justified-caps",
+        "serif-wordmark",
+        "brush-mark",
+        "four-up",
+        "flat-cards"
+      ],
+      "recipe": "Dark ground. 2x2 grid of ~1.45:1 cards, small equal gutters, centred. Two card designs only: an INFORMATION card (4-line caps block justified to BOTH edges, a drawn ink mark below it, two justified footer lines) and a WORDMARK card (serif name on two lines with a big terminal period, three small serif words spread along the base). Print each twice in different colourways so the diagonals match. Exactly four colours; one accent per card.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "44fcf9a8183cee": {
+      "file": "44fcf9a8183cee4aaf926a66ccd9844b.jpg",
+      "measured": {
+        "aspect": 0.993,
+        "coverage": 0.33,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.984
+        ],
+        "centroid": [
+          0.495,
+          0.503
+        ],
+        "palette": [
+          "dark/ink",
+          "warm red/pink",
+          "blue/purple",
+          "dark/ink",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a uniform 4x4 grid of badge icons, each a bold flat shape holding one simple glyph, rotating through three accents plus a dark neutral",
+      "hero": "grid",
+      "tags": [
+        "icon-grid",
+        "badge-shapes",
+        "flat-glyphs",
+        "four-colour-rotation",
+        "dark-ground"
+      ],
+      "recipe": "Dark textured ground. Lay out a strict 4x4 grid of circular/diamond/starburst/blob badge shapes, evenly spaced with equal gutters. Rotate the badge's own shape (circle, diamond, jagged star, scalloped blob, dark neutral disc) so no two adjacent badges share a silhouette. Fill each badge with ONE simple centred glyph (a star, a smiley, an X, a globe, a spiral) drawn in a contrasting flat colour -- never more than two colours per badge (ground + glyph). Cycle exactly 3 accent colours plus one dark-neutral 'disabled' badge across the grid so it reads systematic, not random. Footer: small wordmark + credit line centred at the bottom, nothing else in the margins.",
+      "canvas": "square",
+      "depts": [
+        "content",
+        "labs"
+      ]
+    },
+    "487e8003509b03": {
+      "file": "487e8003509b031fab66b15b992c50c5.jpg",
+      "measured": {
+        "aspect": 0.806,
+        "coverage": 0.512,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.063,
+          0.105,
+          0.957,
+          0.881
+        ],
+        "centroid": [
+          0.466,
+          0.495
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "blue/purple",
+          "orange/warm",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "an irregular collage grid of solid-colour headline and definition cards on a black ground, seamed by one full-width pixel-font banner strip",
+      "hero": "grid",
+      "tags": [
+        "irregular-card-grid",
+        "pixel-font-banner",
+        "black-ground",
+        "photo-card",
+        "3d-emoji-prop"
+      ],
+      "recipe": "Black ground. Arrange 5-6 rounded cards of DIFFERENT sizes in a loose (not uniform) grid across the top two-thirds: mix a light headline card, a photo/character card, a dictionary-definition card in an accent colour, and a bold two-line statement card in a second accent -- vary card widths so the grid feels collaged, not tiled. Let one 3D-rendered prop (a toy, an emoji-style object) overlap the seam between two cards to stitch them together visually. Cut a single full-width pixel-font banner strip across the middle as a headline/tagline separator. Below it, a second row of smaller square cards (a photo card, a graphic pattern card, two small icon cards) plus one credits card. Restraint: black ground throughout, each card exactly one flat colour, the pixel-font banner is the only place two contrasting fonts touch directly.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "4939a628d6deb2": {
+      "file": "4939a628d6deb2346a2cbec7bf93e264.jpg",
+      "measured": {
+        "aspect": 0.667,
+        "coverage": 0.23,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.12,
+          0.009,
+          0.883,
+          0.999
+        ],
+        "centroid": [
+          0.558,
+          0.511
+        ],
+        "palette": [
+          "green/teal",
+          "green/teal",
+          "near-neutral",
+          "near-neutral",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "cut-out photos on rotated colour quads, with hand-drawn arrows between them",
+      "hero": "photo",
+      "tags": [
+        "photo-cutout",
+        "angled-backing",
+        "hand-arrows",
+        "script-accent",
+        "pale-ground"
+      ],
+      "recipe": "Pale ground. Two or three cut-out photos, each backed by a rotated flat-colour quad slightly larger than the photo. Scatter small emoji-ish sticker doodles and hand-drawn arrows between them so the eye travels. One handwriting-style accent line. Headline in a dark grotesk at upper left.",
+      "canvas": "linkedin",
+      "depts": [
+        "welfare",
+        "events"
+      ]
+    },
+    "4c6df2b4797a32": {
+      "file": "4c6df2b4797a32d0423eb1e41420900e.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.661,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.091,
+          0.053,
+          0.963,
+          0.953
+        ],
+        "centroid": [
+          0.509,
+          0.502
+        ],
+        "palette": [
+          "dark/ink",
+          "orange/warm",
+          "near-neutral",
+          "blue/purple",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "an irregular grid of rounded event cards, each one flat accent colour, stamped with a repeated circular brand-glyph seal on select cards",
+      "hero": "grid",
+      "tags": [
+        "irregular-card-grid",
+        "rounded-event-cards",
+        "repeated-brand-seal",
+        "black-ground",
+        "footer-contact-row"
+      ],
+      "recipe": "Black ground, a three-word header row (brand / city / 'presents') spaced full-width at the very top. Below, arrange 5-6 rounded rectangle cards of varying sizes in an irregular grid -- no strict rows/columns, let a big card and two small cards share a row so it feels hand-assembled. Give each card its OWN flat ground colour and its own event name in bold caps plus 2-3 lines of detail (time/date/offer). Stamp a repeated circular brand-glyph seal (a clover/flower icon in a ring) on 2 of the cards, overlapping their corner, in a contrasting colour, to tie the sheet together as one brand. One card can carry a real photo instead of flat colour for variety. Footer: a row of tiny repeated brand glyphs, hotline number, and full address in one line. Restraint: exactly one flat colour per card, the circular seal is the only repeated motif.",
+      "canvas": "square",
+      "depts": [
+        "events"
+      ]
+    },
+    "4e209696416c67": {
+      "file": "4e209696416c67132421471cbcff6670.jpg",
+      "measured": {
+        "aspect": 0.751,
+        "coverage": 0.499,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.939
+        ],
+        "centroid": [
+          0.497,
+          0.403
+        ],
+        "palette": [
+          "warm red/pink",
+          "green/teal",
+          "warm red/pink",
+          "green/teal",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "three solid-colour panels side by side each carrying the wordmark repeated at different scales plus a recurring squiggly-arm mascot reaching in from the edge",
+      "hero": "type",
+      "tags": [
+        "wordmark-repetition",
+        "squiggle-arm-mascot",
+        "tri-colour-panels",
+        "app-icon-grid",
+        "two-tone-lettering"
+      ],
+      "recipe": "Top band: three equal-width solid-colour panels (green, cream, coral) side by side, each restating the same two-part wordmark (one word in ink, one word in an accent) at a DIFFERENT scale or arrangement -- one panel repeats it as background texture, one stacks it as a vertical list of pill-chips, one keeps it small and clean. Draw the same squiggly long-armed mascot creature reaching in from the bottom edge of every panel so it visibly threads the three together. Below, on a flat neutral ground, lay out a loose grid of 5 rounded app-icon-style tiles: one big rounded-rectangle 'hero' tile with a short two-line message plus doodles, one plain wordmark tile, and three small square tiles each sampling one more mascot pose or wordmark lockup. Restraint: two-tone wordmark (ink + one accent) repeated everywhere, the mascot's squiggle-arm is the one illustration motif allowed.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "welfare"
+      ]
+    },
+    "502e07d0ebae6c": {
+      "file": "502e07d0ebae6cb98924795f0df95826.jpg",
+      "measured": {
+        "aspect": 0.562,
+        "coverage": 0.545,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.009,
+          0.98,
+          0.991
+        ],
+        "centroid": [
+          0.483,
+          0.473
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "warm red/pink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "asset",
+      "mechanism": "a densely packed scattered sticker-sheet of real-world signage objects at varied rotations and scales, edge-to-edge with no headline copy",
+      "hero": "pile",
+      "tags": [
+        "sticker-pile",
+        "edge-to-edge-packing",
+        "varied-rotation",
+        "object-collage",
+        "no-copy",
+        "vocabulary-reference"
+      ],
+      "recipe": "Plain light ground, no headline, no footer, no brand mark -- the density itself is the composition. Collect 15-20 distinct flat-illustrated object stickers (signs, plaques, arrows) each with its own shape, size and rotation, and pack them edge-to-edge across the full canvas with only a few pixels of ground showing between any two -- leave literally no dead quadrant. Vary scale deliberately: 2-3 large anchor objects (roughly 1/4 canvas width) plus a majority of medium and small ones filling gaps, never uniform size. Each object keeps its own outline/shadow style rather than a unified craft treatment, since the mechanism here is sheer variety-density, not cohesion. Use this as a reference for 'how much can fit before it reads as chaos rather than richness,' not as a template to copy literally for AQ (no text, no CTA, no brand).",
+      "canvas": "story",
+      "depts": []
+    },
+    "51010a5e1a5625": {
+      "file": "51010a5e1a5625cd72aa26fed559bc1b.jpg",
+      "measured": {
+        "aspect": 0.819,
+        "coverage": 0.198,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.057,
+          0.036,
+          0.937,
+          0.801
+        ],
+        "centroid": [
+          0.488,
+          0.47
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "warm red/pink",
+          "dark/ink",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a giant serif headline set across four stacked lines on a grid-paper ground, one line washed with a flat highlight band, small tag-chips and emoji scattered along the type's edges",
+      "hero": "type",
+      "tags": [
+        "giant-serif-headline",
+        "grid-paper-ground",
+        "highlight-band-line",
+        "tag-chip-scatter",
+        "emoji-accents"
+      ],
+      "recipe": "Grid-paper ground (thin ruled lines, off-white). Small app-chrome bar at the very top (back arrow, wordmark, 3 icon buttons) to frame it as a screen, but keep it minimal. Set one long sentence as giant black serif type wrapping across 4 stacked lines at close leading, filling almost the full width and height -- this IS the hero, nothing else competes with it in scale. Wash exactly ONE line with a flat accent-colour highlight band sitting just behind the type (not a full rectangle, hug the line's height). Scatter 4-5 small white speech-bubble or pill tag-chips (each one short caption + optional cursor icon) along the outer edges of the type block, plus 2-3 emoji-style accents (fruit, a bolt, money) tucked into the gaps between letters. Restraint: one serif face, one highlight colour, chips stay small enough to never compete with the headline.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "522f2d898b827f": {
+      "file": "522f2d898b827f5d2fdd890b4c3ec756.jpg",
+      "measured": {
+        "aspect": 1.018,
+        "coverage": 0.379,
+        "ground_rgb": [
+          24,
+          24,
+          24
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.113,
+          0.974,
+          0.999
+        ],
+        "centroid": [
+          0.49,
+          0.479
+        ],
+        "palette": [
+          "green/teal",
+          "warm red/pink",
+          "orange/warm",
+          "warm red/pink",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "dense pile of rotated capsules, each label set along its own capsule's angle",
+      "hero": "pile",
+      "tags": [
+        "capsule-pile",
+        "rotated-type",
+        "full-bleed",
+        "dark-ground",
+        "cta-pill"
+      ],
+      "recipe": "Dark ground. A dense pile of long rotated capsules (about 5:1 length to height) filling the top ~78%, bleeding off all four edges, overlapping heavily. Each is one flat accent, NO outline or shadow, carrying its label in the measured-correct text colour, rotated with the capsule. Solve the LABEL positions so no label lands on another (layout.scatter_solve + resolve_label_z); the capsules may overlap freely. Pile stops on a clean line; below it a centred paper pill CTA and one small label.",
+      "canvas": "story",
+      "depts": [
+        "events",
+        "welfare"
+      ]
+    },
+    "5c9c3e986f57ff": {
+      "file": "5c9c3e986f57fff88485c6fecaa500d5.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.364,
+        "ground_rgb": [
+          24,
+          24,
+          24
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.065,
+          0.084,
+          0.909,
+          0.933
+        ],
+        "centroid": [
+          0.489,
+          0.497
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "warm red/pink",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "loose diagonal pile of die-cut stickers (circle, rounded rect, oval, starburst, pennant) each white-keylined and drop-shadowed, scattered across a solid black ground",
+      "hero": "pile",
+      "tags": [
+        "sticker-pile",
+        "black-ground",
+        "die-cut-keyline",
+        "mixed-shapes",
+        "snarky-copy"
+      ],
+      "recipe": "Solid black ground. Cluster 7-9 die-cut sticker shapes in a loose diagonal pile with light overlap, mixing circle, rounded-rectangle/tag, oval, ribbon-tag and starburst silhouettes so no two touching shapes repeat. Outline every sticker in a thick white keyline plus a small hard offset shadow so each reads as a separate physical object rather than a flat graphic, and give each one a single short punchy line or icon sized to its own centre. Spread the pile diagonally corner-to-corner instead of centring it, and leave the black ground visibly bare in at least two corners. That bare ground is the restraint that keeps a dense pile from reading as clutter.",
+      "canvas": "square",
+      "depts": [
+        "content"
+      ]
+    },
+    "60c27d14df64a7": {
+      "file": "60c27d14df64a752711531ea70e11445.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.593,
+        "ground_rgb": [
+          240,
+          192,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.481,
+          0.573
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "green/teal",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "two matching phone mockups shown side-by-side comparing two states of the same screen, with a giant mirrored headline word bleeding behind them as pure background texture",
+      "hero": "photo",
+      "tags": [
+        "phone-mockup",
+        "two-up-comparison",
+        "gradient-ground",
+        "mirrored-type",
+        "app-ui"
+      ],
+      "recipe": "Soft pastel gradient ground, landscape canvas. Place two identical phone-frame mockups side by side at the same scale, each showing a different state of one flow (list view vs detail view, before vs after). Run one giant headline word mirrored/reversed and low-contrast, tone-on-tone with the ground, directly behind both phones as pure atmosphere that is never meant to be read. Keep every real number and label inside the phone screens themselves. Restraint: the only colour shift between the two screens is a single accent hue change to signal progression; the gradient and mirrored type stay constant.",
+      "canvas": "linkedin",
+      "depts": [
+        "labs",
+        "content"
+      ]
+    },
+    "620d62f101b97c": {
+      "file": "620d62f101b97c666749fa48d17d26c8.jpg",
+      "measured": {
+        "aspect": 0.563,
+        "coverage": 0.568,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.037,
+          0.087,
+          0.959,
+          0.966
+        ],
+        "centroid": [
+          0.508,
+          0.501
+        ],
+        "palette": [
+          "warm red/pink",
+          "dark/ink",
+          "orange/warm",
+          "near-neutral",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a diagonal fan of overlapping rectangular cards (headline card, accent card, two photo cards) staggered on a black ground and pinned together by one small badge sticker at a seam",
+      "hero": "pile",
+      "tags": [
+        "black-ground",
+        "card-collage-fan",
+        "photo-card",
+        "badge-sticker",
+        "event-flyer"
+      ],
+      "recipe": "Black ground, story-tall canvas. Fan four rectangular cards on a slight diagonal cascade from top-left to lower-right so each overlaps the one behind it by roughly 20%: a bold-colour headline card first, a second flat-colour accent card behind and right, then two photo cards (a tinted landscape, a real event photo) lower down. Pin one small rounded badge or icon sticker at the seam where two cards cross, and let one thin line-icon doodle float free in a gap plus a bold ellipse callout near the bottom for the date. Keep every card in the same single display face. Restraint: exactly three flat colours plus the two photos, and no card may float without overlapping a neighbour.",
+      "canvas": "story",
+      "depts": [
+        "events"
+      ]
+    },
+    "62f8cc4d3c6135": {
+      "file": "62f8cc4d3c613590844bd12d49c81671.jpg",
+      "measured": {
+        "aspect": 1.536,
+        "coverage": 0.121,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.068,
+          0.998,
+          0.932
+        ],
+        "centroid": [
+          0.502,
+          0.504
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "near-neutral",
+          "blue/purple",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "staggered rows of pills bleeding off BOTH edges, brick-offset per row",
+      "hero": "pile",
+      "tags": [
+        "bleed-rows",
+        "pill-field",
+        "paper-ground",
+        "endless",
+        "offset-rows"
+      ],
+      "recipe": "Paper ground. Rows of outlined paper pills, each carrying a small accent dot and a short name. Offset each row horizontally like brickwork and let them bleed off BOTH edges — the endlessness IS the mechanism, so run them the full canvas, not part of it. Size each pill to its MEASURED text plus the border width. Optionally pin one rotated ink slab on top with a keyline ring so it reads as laid over the field.",
+      "canvas": "feed",
+      "depts": [
+        "welfare",
+        "events"
+      ]
+    },
+    "64b2248475fe76": {
+      "file": "64b2248475fe76b84841a08c6d99b0e3.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.779,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.492,
+          0.501
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a giant halftone-treated hero object popped centre-frame over a bleeding oversized reversed word-mural, cinched together by a torn paper ribbon banner carrying the headline",
+      "hero": "photo",
+      "tags": [
+        "bleed-word-mural",
+        "halftone-object",
+        "ribbon-banner",
+        "lightning-doodles",
+        "single-accent-ground"
+      ],
+      "recipe": "One flat saturated colour ground. Set the event name in giant outline or reversed caps type bleeding off all four edges as background texture, barely legible and purely atmospheric, never the actual readable headline. Centre one large halftone-textured hero object relevant to the event at roughly 55% of frame width, given a hard rim-light edge so it pops off the mural behind it, and scatter 3-4 lightning-bolt or note-icon doodles around it in one accent colour. Lay a torn paper ribbon banner across the lower third holding the real two-line headline in dark type. Restraint: exactly two colours (ground plus accent) plus paper-white for the banner.",
+      "canvas": "feed",
+      "depts": [
+        "events"
+      ]
+    },
+    "67805068493b45": {
+      "file": "67805068493b4522f5c3944723bee7d2.jpg",
+      "measured": {
+        "aspect": 0.563,
+        "coverage": 0.181,
+        "ground_rgb": [
+          216,
+          216,
+          192
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.157,
+          0.998,
+          0.793
+        ],
+        "centroid": [
+          0.493,
+          0.446
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a broken ring of assorted flat character and prop doodles orbiting a sentence set in mixed type-weights at the centre, with the wordmark parked below",
+      "hero": "shape",
+      "tags": [
+        "radial-doodle-ring",
+        "mixed-type-sentence",
+        "paper-ground",
+        "character-illustrations",
+        "grain-texture"
+      ],
+      "recipe": "Paper ground with a fine grain texture over the whole canvas. Set the sentence dead centre using three or more type treatments mixed word by word (light sans, bold sans, italic serif) so it reads like scattered handwriting rather than one headline block. Ring 10-14 small flat character or object doodles, each a distinct hue with a thick keyline and a tiny drop shadow, loosely around that centre in a broken circle, leaving a gap in the ring rather than closing it. Vary doodle scale by roughly 25% so two slightly larger pieces break the rhythm, and park the wordmark centred at the base, clear of the ring. Restraint: every doodle is a flat single-fill shape with one keyline, never a gradient.",
+      "canvas": "story",
+      "depts": [
+        "content"
+      ]
+    },
+    "67b12a3cd48f43": {
+      "file": "67b12a3cd48f435e3583b8ba56db8c2a.jpg",
+      "measured": {
+        "aspect": 1.556,
+        "coverage": 0.45,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.072,
+          0.0,
+          0.926,
+          0.833
+        ],
+        "centroid": [
+          0.491,
+          0.296
+        ],
+        "palette": [
+          "orange/warm",
+          "orange/warm",
+          "warm red/pink",
+          "near-neutral",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a gridded colour-block panel with a wavy torn bottom edge giving way to a paper panel below, built around one giant pill CTA with small sticker badges pinned at its shoulders",
+      "hero": "type",
+      "tags": [
+        "wavy-edge-transition",
+        "grid-overlay",
+        "pill-cta",
+        "badge-stickers",
+        "lowercase-wordmark"
+      ],
+      "recipe": "Split the canvas: the top roughly 45% is a saturated accent block overlaid with a thin ruled grid, the bottom is paper cream, and the two are joined by a wavy or torn horizontal seam rather than a straight line. Centre one big pill-shaped CTA button on the grid block, with two small sticker badges (a ticket shape, a starburst) tucked at its left and right shoulders. Below the seam, run two lines of body copy at the right margin and a giant lowercase wordmark bottom-left, with social icons bottom-right. Restraint: one accent colour owns the whole top block; everything below the seam is ink-on-paper only.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "684fb8df556d3a": {
+      "file": "684fb8df556d3a241e6dfcc0a9d11c2f.jpg",
+      "measured": {
+        "aspect": 0.598,
+        "coverage": 0.709,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.048,
+          0.018,
+          0.948,
+          0.979
+        ],
+        "centroid": [
+          0.503,
+          0.486
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "blue/purple",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a tall two-column grid of deck-slide cards, each rotating through one of four fixed accents so no two neighbours share a colour",
+      "hero": "grid",
+      "tags": [
+        "slide-grid",
+        "deck-preview",
+        "accent-rotation",
+        "big-stat-numbers",
+        "cover-photo"
+      ],
+      "recipe": "Stack a two-column grid of rounded-corner cards down a tall canvas, one card per deck slide, with identical gutters and corner radius throughout. Rotate exactly four flat accents (violet, orange-red, lime, white) across the cards so no two vertical or horizontal neighbours share a colour. Give each card exactly one job — a cover photo plus giant title, a three-icon feature row, one big stat number, a pull-quote, a headshot row, or a progress-bar chart — and never combine jobs on a single card. Set all type in one bold condensed display face, caps for headlines. Restraint: the uniform grid and radius are what make the colour variety read as one system instead of a scrapbook.",
+      "canvas": "story",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "71cd34ac681e40": {
+      "file": "71cd34ac681e4029c19b58e7df0f7f8e.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.084,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.137,
+          0.222,
+          0.863,
+          0.76
+        ],
+        "centroid": [
+          0.44,
+          0.442
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "green/teal",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a neutral wireframe app-chat mockup framing a row of colourful illustration thumbnails above a plain text prompt and a pill-button toolbar",
+      "hero": "photo",
+      "tags": [
+        "app-mockup",
+        "wireframe-chrome",
+        "thumbnail-row",
+        "chat-input-bar",
+        "neutral-ui"
+      ],
+      "recipe": "Build a neutral grey wireframe ground (dashed guides, a faint browser bar) framing a floating white card, so the surrounding chrome reads as a device canvas rather than content. Inside the card place a row of three square colourful illustration or photo thumbnails at the top, two lines of plain dark prompt text below them, and a bottom toolbar of pill-shaped action buttons ending in one solid dark send button, right-aligned. Restraint: colour lives only in the thumbnails — the card, buttons and text all stay neutral grey, black or white so the product content is the only thing that pops.",
+      "canvas": "square",
+      "depts": [
+        "labs"
+      ]
+    },
+    "73c29f4cc5c838": {
+      "file": "73c29f4cc5c838c0888e8d6abba42fde.jpg",
+      "measured": {
+        "aspect": 0.563,
+        "coverage": 0.485,
+        "ground_rgb": [
+          0,
+          168,
+          216
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.494,
+          0.538
+        ],
+        "palette": [
+          "orange/warm",
+          "warm red/pink",
+          "near-neutral",
+          "warm red/pink",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a product photo montage lassoed together by a hand-scribbled net overlay, capped by a duplicate-offset headline",
+      "hero": "photo",
+      "tags": [
+        "net-overlay-craft",
+        "photo-montage",
+        "duplicate-offset-type",
+        "squiggle-line",
+        "nightlife-flyer"
+      ],
+      "recipe": "Flat saturated ground (here electric blue), story-tall canvas. Cluster 2-3 product or prop photos (bottle, sphere, cup) into one overlapping vertical column, then draw an irregular hand-scribbled net or lasso line over them in a contrasting accent so it visually binds the group into one shape. Set the date as two stacked lines of the same headline, with the second line offset a few pixels down-right so it doubles or vibrates, and float 1-2 small pill callouts with short labels directly inside gaps of the net. Run one free looping squiggle line in the background for movement. Restraint: exactly three colours (ground, net line, headline accent), and the montage never leaves the net's silhouette.",
+      "canvas": "story",
+      "depts": [
+        "events"
+      ]
+    },
+    "772b9a5b29d391": {
+      "file": "772b9a5b29d3917c12bbe50a7f1470db.jpg",
+      "measured": {
+        "aspect": 0.707,
+        "coverage": 0.773,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.506,
+          0.503
+        ],
+        "palette": [
+          "dark/ink",
+          "blue/purple",
+          "blue/purple",
+          "near-neutral",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a bubble-letter wordmark on a torn paper banner laid over a full-bleed sky photo, ringed by mixed toy-photo cutouts and thin white doodle line-art",
+      "hero": "type",
+      "tags": [
+        "torn-paper-banner",
+        "bubble-lettering",
+        "toy-photo-cutouts",
+        "sky-photo-ground",
+        "line-art-doodles"
+      ],
+      "recipe": "Full-bleed photo ground (sky or outdoor scene). Lay one torn-edge white paper strip across the upper-middle carrying a small eyebrow line, then a second larger torn strip beneath it holding the headline in big bubble lettering, letting a couple of letters overlap between the two strips. Scatter 4-6 real object photo cutouts (toys, drinks, props) at generous scale around the banner, each with a soft outline so it separates from the photo behind it, and add thin white single-stroke doodles (stars, scribbles, sparkles) freely in the remaining gaps. Anchor the date and venue on a solid-colour highlight strip near the bottom. Restraint: doodles stay thin and light so they never compete with the photo cutouts.",
+      "canvas": "feed",
+      "depts": [
+        "events"
+      ]
+    },
+    "77e7bb34144e08": {
+      "file": "77e7bb34144e08c02ca79fcf187958d6.jpg",
+      "measured": {
+        "aspect": 0.753,
+        "coverage": 0.355,
+        "ground_rgb": [
+          96,
+          24,
+          0
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.189,
+          0.204,
+          0.809,
+          0.796
+        ],
+        "centroid": [
+          0.499,
+          0.501
+        ],
+        "palette": [
+          "orange/warm",
+          "near-neutral",
+          "orange/warm",
+          "orange/warm",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "two stacked slabs on a dark ground, separated by a thin seam of the ground",
+      "hero": "shape",
+      "tags": [
+        "two-slab",
+        "pixel-motif",
+        "centred",
+        "lowercase-copy",
+        "seam"
+      ],
+      "recipe": "Dark ground. Two equal slabs stacked dead centre, ~62% of frame width, with a thin seam of ground between them so they never touch. UPPER slab: one warm accent carrying a single chunky pixel-art motif, centred, nothing else. LOWER slab: paper, with short lowercase copy in the lower-left, an accent url beneath it, and the wordmark bottom-right. Four colours total.",
+      "canvas": "feed",
+      "depts": [
+        "welfare",
+        "labs"
+      ]
+    },
+    "7d4fa0d720fa7f": {
+      "file": "7d4fa0d720fa7f49dded1e854599c4e0.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.52,
+        "ground_rgb": [
+          120,
+          144,
+          240
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.083,
+          0.154,
+          0.915,
+          0.844
+        ],
+        "centroid": [
+          0.5,
+          0.491
+        ],
+        "palette": [
+          "blue/purple",
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a three-column contact-info block over a solid colour panel, closed out by a giant cursive script wordmark stretching full-width with small stickers glued along its strokes",
+      "hero": "type",
+      "tags": [
+        "script-wordmark-bleed",
+        "three-col-info",
+        "pill-label",
+        "sticker-accents",
+        "two-tone-panel"
+      ],
+      "recipe": "Two-tone stack: a light cream strip up top for navigation, then a full-width flat colour panel below. Inside the panel lay three evenly-spaced info columns, each topped by a small rounded pill label and 1-2 lines of bold text. Along the panel's bottom edge, run the org's wordmark in one giant cursive script stretching near the full width, letting it dip below the panel edge, and glue 4-5 small round sticker icons (a smiley, a heart, an emoji) directly onto the script's loops and crossbars, each in its own accent colour. Restraint: only the stickers carry extra colour; the script and panel stay two flat tones.",
+      "canvas": "linkedin",
+      "depts": [
+        "ops",
+        "content"
+      ]
+    },
+    "80cb7ed71a8cc9": {
+      "file": "80cb7ed71a8cc960d22e790ed09202dc.jpg",
+      "measured": {
+        "aspect": 1.776,
+        "coverage": 0.416,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.074,
+          0.0,
+          0.97,
+          0.999
+        ],
+        "centroid": [
+          0.569,
+          0.54
+        ],
+        "palette": [
+          "blue/purple",
+          "warm red/pink",
+          "near-neutral",
+          "dark/ink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a left-aligned stacked-caps headline countered by one thick winding ribbon shape threading down the right side, with smiling starburst doodles clipped onto its bends",
+      "hero": "type",
+      "tags": [
+        "winding-ribbon-shape",
+        "stacked-caps-headline",
+        "paper-ground",
+        "starburst-doodle",
+        "negative-space-balance"
+      ],
+      "recipe": "Paper ground, wide landscape canvas. Set the headline in three stacked lines of heavy caps in the left third of the frame, with a short lowercase tagline directly beneath in a small weight as the only other type on the page. Draw one thick ribbon or river shape in a single accent colour that winds in a loose S from the top edge to the bottom-right corner, occupying the right two-thirds of the frame. Clip 1-2 flat starburst doodles, each with a simple smiling face, onto the ribbon at its bends, in two more accent colours. Restraint: exactly three colours total (ink, ribbon, one warm accent), and the headline block never touches the ribbon.",
+      "canvas": "linkedin",
+      "depts": [
+        "welfare",
+        "content"
+      ]
+    },
+    "841552212f857b": {
+      "file": "841552212f857b7ca02fafe6dfc5d879.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.814,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.531,
+          0.53
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "orange/warm",
+          "green/teal",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a huge white bubble-letter headline breaking across bold halftone-textured colour-block shapes on black, with a ribbon banner and info boxes wedged into the gaps",
+      "hero": "type",
+      "tags": [
+        "halftone-texture",
+        "bubble-lettering",
+        "black-ground",
+        "color-block-shapes",
+        "ribbon-banner"
+      ],
+      "recipe": "Black ground with a fine halftone dot overlay applied to every colour shape. Build 2-3 large abstract flat shapes (a torn blob, triangles) in saturated accents behind the headline, letting them bleed off at least one frame edge. Set the headline in huge white bubble or rounded-slab caps stacked 2-3 lines, sized large enough to overlap the shapes behind it, then wedge a slanted ribbon banner near the top for a pre-headline tag and 1-2 solid rounded-rect info boxes (schedule, URL) near the bottom in a contrasting flat colour. Scatter a few star-sparkle and squiggle doodles into any leftover corners. Restraint: exactly four accent hues plus black and white, with the same halftone treatment on every shape so it reads as one print, not a collage.",
+      "canvas": "feed",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "87525f70ad66d8": {
+      "file": "87525f70ad66d82bf7c9457ad6765a62.jpg",
+      "measured": {
+        "aspect": 0.667,
+        "coverage": 0.509,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.024,
+          0.102,
+          0.998,
+          0.924
+        ],
+        "centroid": [
+          0.486,
+          0.525
+        ],
+        "palette": [
+          "orange/warm",
+          "warm red/pink",
+          "warm red/pink",
+          "orange/warm",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a loose vertical pile of brand badge stickers in different shapes and flat colours, unified only by rounded corners and a consistent hard drop shadow",
+      "hero": "pile",
+      "tags": [
+        "badge-pile",
+        "sticker-sheet",
+        "paper-ground",
+        "brand-wordmark",
+        "mixed-badge-shapes"
+      ],
+      "recipe": "Paper ground. Stack 6-8 badge stickers of different shapes (circle, rounded square, freeform letterform, ribbon) in a loose vertical column, each in its own flat accent colour with a thin keyline and a small hard drop shadow so they read as separate die-cut pieces, letting 2-3 overlap their neighbour by about 15% for depth. Include exactly one oversized single-letter or icon cutout as the visual anchor near the centre. Distribute the pile across the full height of the canvas rather than cramming it into one band — the documented failure here is starving the top or bottom quadrant by bunching everything in the middle. Restraint: no more than five total colours across all stickers, and one message line per sticker.",
+      "canvas": "story",
+      "depts": [
+        "content"
+      ]
+    },
+    "878f95ff7b7cbc": {
+      "file": "878f95ff7b7cbcf53356c7dace319a9b.jpg",
+      "measured": {
+        "aspect": 0.563,
+        "coverage": 0.471,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.012,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.504,
+          0.501
+        ],
+        "palette": [
+          "near-neutral",
+          "warm red/pink",
+          "warm red/pink",
+          "green/teal",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a tall scrolling page built from stacked sections separated by thin rules, unified by mixed-multicolour bubble lettering on every headline and pill-shaped badges for navigation",
+      "hero": "type",
+      "tags": [
+        "mixed-color-lettering",
+        "section-stack",
+        "pill-nav-badges",
+        "doodle-accents",
+        "portfolio-site"
+      ],
+      "recipe": "Cream ground, stacked into horizontal sections separated by thin black rules like chapters. Treat every big word (the page title, each section heading) in mixed-colour bubble or rounded lettering, cycling the accent palette letter by letter or word by word instead of keeping headlines one flat colour. Scatter thin ink squiggle, star and sparkle doodles plus an oversized outline numeral fragment loose in the corners of each section for texture. Use pill-shaped badges in rotating accent colours as the navigation or index list, each holding a short numbered label. Restraint: body copy and structural chrome (rules, footer contact line) stay plain ink-on-cream so the multicolour treatment is reserved for headlines and nav pills only.",
+      "canvas": "story",
+      "depts": [
+        "content"
+      ]
+    },
+    "8988345ad4963e": {
+      "file": "8988345ad4963ec66e5754c8c5441f56.jpg",
+      "measured": {
+        "aspect": 0.811,
+        "coverage": 0.321,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.063,
+          0.022,
+          0.965,
+          0.951
+        ],
+        "centroid": [
+          0.531,
+          0.491
+        ],
+        "palette": [
+          "near-neutral",
+          "orange/warm",
+          "blue/purple",
+          "dark/ink",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a product-sheet layout: a page label and counter badge in the corner, a loose central pile of mixed-shape stickers, and a handle/CTA row along the bottom",
+      "hero": "pile",
+      "tags": [
+        "sticker-sheet",
+        "product-page-label",
+        "pile-of-badges",
+        "mixed-typography-stickers",
+        "counter-badge"
+      ],
+      "recipe": "Neutral light-grey ground. Put a page title top-left and a rounded counter badge ('1/3') top-right, both small and quiet so the pile owns the frame. Cluster 10-14 sticker badges of mixed shape (oval, rounded-rect, circle, freeform icon, hand gesture) across the centre 70% of the frame with light overlap and no strict grid, letting a few text-only badges (name-tag, quote, wordmark) anchor the middle while small icon-only stickers fill the gaps. Place the handle or username bottom-left and a text-plus-arrow CTA bottom-right, both baseline-aligned and clear of the pile. Restraint: individual stickers can be any colour, but the page chrome (title, counter, footer) stays monochrome ink so it never competes with them.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "911d9ad81ac025": {
+      "file": "911d9ad81ac0254a18928c168a89cb66.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.463,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.12,
+          0.107,
+          0.876,
+          0.892
+        ],
+        "centroid": [
+          0.478,
+          0.481
+        ],
+        "palette": [
+          "green/teal",
+          "dark/ink",
+          "green/teal",
+          "green/teal",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "interlocking rounded slabs keyed together by a notch tab",
+      "hero": "number",
+      "tags": [
+        "notched-slabs",
+        "big-numbers",
+        "in-fill-texture",
+        "stacked"
+      ],
+      "recipe": "Paper ground. A vertical stack of full-width rounded slabs, one flat accent each, heights proportional to the data. Give each slab an in-fill texture at full contrast (crosshatch / stripes / dot-grid / grid-lines) so they read as different materials. Big number left, mono label beside it, a share bar right so no slab has a dead half. Between slabs put a notch tab carrying the UPPER slab's own colour and texture, so the two visibly key together instead of a dot floating on the seam.",
+      "canvas": "feed",
+      "depts": [
+        "ops",
+        "labs"
+      ]
+    },
+    "936223601e1dcb": {
+      "file": "936223601e1dcbcc268b9b0493b89a6f.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.556,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.087,
+          0.093,
+          0.911,
+          0.905
+        ],
+        "centroid": [
+          0.507,
+          0.507
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "dark/ink",
+          "blue/purple",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "two device screenshots showing the same app in two states side by side, with an out-of-focus colour-bleed photo cropped along the very top edge as connective texture",
+      "hero": "photo",
+      "tags": [
+        "two-phone-comparison",
+        "light-dark-pairing",
+        "blurred-photo-bleed",
+        "app-ui-mockup"
+      ],
+      "recipe": "Neutral light ground. Place two matching phone frames side by side showing the same screen in two states (light mode versus dark mode, browsing versus uploading) so the pair reads as a sequence. Crop one soft, out-of-focus colour photo along the very top edge of the canvas, bleeding just enough to peek behind both phones' status bars as pure atmosphere, never sharp. Keep all real content (thumbnails, counts, labels) inside the phone screens only. Restraint: the background photo crop must stay blurred so it never competes with the crisp screen content.",
+      "canvas": "square",
+      "depts": [
+        "labs",
+        "ops"
+      ]
+    },
+    "a99a4af4caa8fc": {
+      "file": "a99a4af4caa8fcca981b3e5efca87fcf.jpg",
+      "measured": {
+        "aspect": 0.75,
+        "coverage": 0.238,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.07,
+          0.076,
+          0.915,
+          0.911
+        ],
+        "centroid": [
+          0.517,
+          0.49
+        ],
+        "palette": [
+          "near-neutral",
+          "near-neutral",
+          "near-neutral",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "numbered product photos scattered loosely around a big mixed-serif/sans headline, each photo tagged with a small circled index number on a dashed leader line",
+      "hero": "photo",
+      "tags": [
+        "numbered-tags",
+        "product-photo-scatter",
+        "faint-grid-lines",
+        "mixed-serif-sans-wordmark",
+        "shoppable-layout"
+      ],
+      "recipe": "Paper ground with a faint vertical ruled-line grid running the full height as texture. Scatter 5-8 real object photos, clean-cut with no added shadow, loosely around a big two-word headline set in mixed serif (word one) plus bold sans (word two), left-weighted. Pin a small circled number on a short dashed leader line to each photo, numbered in reading order. Add a slim eyebrow line top-left for the campaign name and date, a two-line footer bottom-left, and a circular arrow button bottom-right. Restraint: exactly one accent colour runs through every number badge and the CTA arrow; everything else is photo plus ink type on paper.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "ab54c226882c14": {
+      "file": "ab54c226882c140fad78ff46e2623297.jpg",
+      "measured": {
+        "aspect": 1.338,
+        "coverage": 0.584,
+        "ground_rgb": [
+          192,
+          168,
+          240
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.154,
+          0.052,
+          0.97,
+          0.961
+        ],
+        "centroid": [
+          0.501,
+          0.501
+        ],
+        "palette": [
+          "green/teal",
+          "orange/warm",
+          "dark/ink",
+          "near-neutral",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "giant organic character-blob filling the upper frame, headline beneath",
+      "hero": "shape",
+      "tags": [
+        "blob-character",
+        "full-bleed-shape",
+        "chip-row",
+        "flat"
+      ],
+      "recipe": "One enormous organic bumpy blob in a flat accent filling the top two thirds, bleeding off the top and sides. A short UPPERCASE headline in paper sits over its lower half, and a row of small rounded chips runs along the bottom with exactly one chip highlighted. Two colours plus paper — restraint is what makes the blob read.",
+      "canvas": "story",
+      "depts": [
+        "welfare",
+        "events"
+      ]
+    },
+    "abb2ab5d1194e2": {
+      "file": "abb2ab5d1194e22f4dfbda71dcd98d9f.jpg",
+      "measured": {
+        "aspect": 0.708,
+        "coverage": 0.483,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.03,
+          0.007,
+          0.991,
+          0.984
+        ],
+        "centroid": [
+          0.517,
+          0.494
+        ],
+        "palette": [
+          "near-neutral",
+          "warm red/pink",
+          "warm red/pink",
+          "dark/ink",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a cluster of oversized abstract organic blob and polygon shapes scattered edge-to-edge, with wavy hand-lettered words threaded between them and thin line-art icons filling the gaps",
+      "hero": "shape",
+      "tags": [
+        "organic-blob-shapes",
+        "wavy-lettering",
+        "paper-ground",
+        "line-art-icon",
+        "multi-color-scatter"
+      ],
+      "recipe": "Paper ground. Scatter 6-8 large flat organic shapes (a flower or splat, a soft polygon, a wavy ribbon, a squiggle blob) across the full canvas at varied scale and rotation, each a single flat accent colour with no outline. Set 2-3 headline words in loose hand-lettered caps whose baselines wave or arc, threading them between the shapes rather than boxing them into a block. Fill remaining small gaps with thin single-line icon doodles (a megaphone, a star, a zigzag) in dark ink, and tuck the info block (date, venue) inside one of the polygon shapes so it needs no container of its own. Restraint: shapes never touch or outline each other — the spacing between them is what keeps six-plus colours from feeling chaotic.",
+      "canvas": "feed",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "abd472f264528c": {
+      "file": "abd472f264528c60d34cd7bce0e17617.jpg",
+      "measured": {
+        "aspect": 0.844,
+        "coverage": 0.624,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.473,
+          0.457
+        ],
+        "palette": [
+          "dark/ink",
+          "dark/ink",
+          "near-neutral",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a bubble-outline title banner over a photo background, sitting above a loose grid of scattered white note and quote cards like a mood-board pinboard",
+      "hero": "type",
+      "tags": [
+        "photo-background-collage",
+        "bubble-title",
+        "note-card-pile",
+        "moodboard-aesthetic",
+        "mixed-card-content"
+      ],
+      "recipe": "Full-bleed photo ground. Set the title across the top in thick white-fill, black-outline bubble caps, sized to slightly overlap the card pile below it. Scatter 5-7 white rectangular note or quote cards beneath it at slight rotations, giving each one a distinct content type (a short line of copy, a timestamp, a small photo grid, a rhetorical question in a speech-bubble shape) and never repeating a card type. Tuck 2-3 small flat doodle accents (star, flower, ribbon) into the gaps between cards. Restraint: cards stay white and ink-only; colour lives in the doodles and photo fragments, never in the card fills.",
+      "canvas": "feed",
+      "depts": [
+        "content"
+      ]
+    },
+    "b075bc30db0422": {
+      "file": "b075bc30db04223fc1086b86d92ba2b4.jpg",
+      "measured": {
+        "aspect": 1.278,
+        "coverage": 0.544,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.529,
+          0.466
+        ],
+        "palette": [
+          "dark/ink",
+          "green/teal",
+          "blue/purple",
+          "orange/warm",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "three cropped variations of one flat illustrated poster shown side by side, each cropping in tighter on the same green-mountain/instrument scene",
+      "hero": "shape",
+      "tags": [
+        "three-panel",
+        "flat-illustration",
+        "bold-caps",
+        "mountain-motif",
+        "festival-date-tag"
+      ],
+      "recipe": "Paper-white ground. A big green triangular mountain shape fills the upper two-thirds; overlapping flat-colour instrument silhouettes (piano keys, sax, trumpet, bass) in yellow/blue/orange sit centred over it. A bold black caps headline sits top-left outside the mountain, with a small mono date + label bottom-left. Build one full poster, then crop it three ways (wide, medium, tight) to produce the panel set shown together. Restraint: exactly 4 flat colours plus black/white, no gradients, no outlines beyond the flat shapes themselves.",
+      "canvas": "linkedin",
+      "depts": [
+        "events"
+      ]
+    },
+    "b2d4cc55d7fdbb": {
+      "file": "b2d4cc55d7fdbbc7294249e7c4d48b27.jpg",
+      "measured": {
+        "aspect": 0.786,
+        "coverage": 0.398,
+        "ground_rgb": [
+          0,
+          48,
+          168
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.081,
+          0.077,
+          0.887,
+          0.916
+        ],
+        "centroid": [
+          0.479,
+          0.51
+        ],
+        "palette": [
+          "orange/warm",
+          "orange/warm",
+          "blue/purple",
+          "warm red/pink",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "wavy hand-lettered caps headline top and bottom bookending a dense central cluster of flat hand-drawn instrument-plus-hand vignettes",
+      "hero": "type",
+      "tags": [
+        "wavy-caps",
+        "hand-drawn-hands",
+        "instrument-cluster",
+        "star-doodles",
+        "blue-ground"
+      ],
+      "recipe": "Solid saturated blue ground. Top and bottom each carry one line of big wavy cream display caps (the baseline arcs, never straight) as the two headline halves. Between them, cluster 4-5 flat two-colour instrument-plus-hand vignettes (piano+hands, guitar+hand, mic+hand, sax+hand) tight together at the vertical centre, scaled to different sizes for hierarchy so they nearly touch. Scatter 4-6 star/spark doodles and music notes into the gaps between vignettes to hold the corners. Restraint: five flat colours total, no gradients, no outlines except the black linework already inside each vignette.",
+      "canvas": "feed",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "bf31ba49142543": {
+      "file": "bf31ba491425433b3af84cb75022d1f9.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.248,
+        "ground_rgb": [
+          216,
+          216,
+          192
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.081,
+          0.197,
+          0.917,
+          0.812
+        ],
+        "centroid": [
+          0.517,
+          0.507
+        ],
+        "palette": [
+          "green/teal",
+          "orange/warm",
+          "blue/purple",
+          "dark/ink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a vertical signpost of colour-blocked category labels paired with a matching stack of pattern-filled speech-bubble callouts",
+      "hero": "pile",
+      "tags": [
+        "signpost",
+        "category-labels",
+        "pattern-fill-bubbles",
+        "cream-ground",
+        "icon-tags"
+      ],
+      "recipe": "Cream paper ground. Left half: a black signpost pole carrying 5 rounded-pill labels stacked at slight alternating rotations, each a different flat accent colour with a small icon plus bold caption (used for content categories/pillars). Right half: 3 stacked speech-bubble rectangles of decreasing width, each filled edge-to-edge with a bold two-colour pattern (diagonal stripes, intersecting curves, rough brush strokes) instead of a flat colour and no text inside. Restraint: exactly 5 sign colours and 3 bubble patterns; nothing else touches the cream ground except two small flat cloud silhouettes.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "c10cb35dfa09cd": {
+      "file": "c10cb35dfa09cdaa54d4d9911add468c.jpg",
+      "measured": {
+        "aspect": 0.873,
+        "coverage": 0.745,
+        "ground_rgb": [
+          240,
+          96,
+          24
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.497,
+          0.42
+        ],
+        "palette": [
+          "near-neutral",
+          "blue/purple",
+          "dark/ink",
+          "dark/ink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "two full-bleed panels stacked, each pairing a bold typographic centrepiece with grunge collage texture (torn paper, halftone dots, spray marks) around it",
+      "hero": "type",
+      "tags": [
+        "two-panel",
+        "torn-paper-card",
+        "giant-cutout-letters",
+        "halftone-texture",
+        "product-photo-inset"
+      ],
+      "recipe": "Split the canvas into two equal-height panels, each a different saturated flat colour. Panel 1: a torn/stapled notebook-paper rectangle sits centred, carrying a 2-3 line bold caps headline with one word in a contrasting accent plus a small wordmark line beneath; scatter halftone-dot patches, a hand-drawn swirl, and a torn-edge paper scrap in the corners. Panel 2: 1-2 giant flat-colour cut-out capital letters fill most of the frame as a backdrop; inset a real square photo with a thin halftone-dot border glow, offset off-centre, plus one spray-paint-style arrow accent. Restraint: exactly 4 colours total across both panels, texture only ever halftone dots or torn-paper, never a smooth gradient. AQ adaptation: swap the product photo for a real AQ programme photo (real-assets-only rule).",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "events"
+      ]
+    },
+    "c42f94a09f07cd": {
+      "file": "c42f94a09f07cda39df8afe51cde9098.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.186,
+        "ground_rgb": [
+          240,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.154,
+          0.083,
+          0.815,
+          0.745
+        ],
+        "centroid": [
+          0.481,
+          0.472
+        ],
+        "palette": [
+          "dark/ink",
+          "warm red/pink",
+          "green/teal",
+          "orange/warm",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a loose, non-overlapping cluster of single-colour outlined badge and sticker shapes of DIFFERENT silhouettes, captioned as a numbered set",
+      "hero": "pile",
+      "tags": [
+        "sticker-sheet",
+        "badge-shapes",
+        "thick-outline",
+        "loose-cluster",
+        "set-label-tag"
+      ],
+      "recipe": "Cream ground. A small mono 'set:' label sits centred at the top as the only caption. Below it, scatter 8-10 badge shapes loosely into a rough cluster - vary the silhouette family every time (scalloped blob, ribbon banner, donut ring, arch, plus 2-3 plain icon stickers like a pencil or gear) so no two look alike; each sticker is one flat accent colour with a thick black outline and a short bold caption or icon inside, never both crammed. Leave visible cream gaps between stickers - they cluster, never tile or overlap. One small credit line sits bottom centre. Restraint: 6-7 flat accent colours total, one per sticker, black outline and caption only, no gradients or shadows.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "welfare"
+      ]
+    },
+    "ca484173fb5287": {
+      "file": "ca484173fb52871d5f058102020b036c.jpg",
+      "measured": {
+        "aspect": 0.861,
+        "coverage": 0.614,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.486,
+          0.379
+        ],
+        "palette": [
+          "blue/purple",
+          "blue/purple",
+          "near-neutral",
+          "green/teal",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "two website-panel screenshots stacked inside one dark outer frame: a giant single-word hero panel above a coloured Gantt/timeline panel",
+      "hero": "type",
+      "tags": [
+        "two-panel-stack",
+        "giant-wordmark",
+        "logo-pill-cluster",
+        "gantt-bars",
+        "dark-frame"
+      ],
+      "recipe": "A thin near-black outer margin frames the whole piece like a browser mat. Panel 1 (saturated brand-colour ground): one giant wordmark fills the left two-thirds at hero scale with a short 2-3 line caption beneath it; on the right, 6-8 rotated rounded-pill 'logo' tags cascade diagonally, each larger going up. Panel 2 (white ground): a left-aligned page title, then a week-by-week grid with 4 short flat-colour task bars staggered in a descending staircase, each carrying an icon, label, and progress dot. Restraint: exactly one hero accent per panel plus neutrals; the task bars use a fixed 4-colour rotation, never more.",
+      "canvas": "feed",
+      "depts": [
+        "ops",
+        "content"
+      ]
+    },
+    "ce6fdd94f81b3e": {
+      "file": "ce6fdd94f81b3e6018bc80724ae4508e.jpg",
+      "measured": {
+        "aspect": 0.667,
+        "coverage": 0.436,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.05,
+          0.203,
+          0.946,
+          0.796
+        ],
+        "centroid": [
+          0.496,
+          0.501
+        ],
+        "palette": [
+          "blue/purple",
+          "blue/purple",
+          "dark/ink",
+          "blue/purple",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a scattered moodboard collage on black: rectangular flat-colour promo/info cards and real product photos pinned at varied sizes, stitched together by small sticker badges bridging the gaps",
+      "hero": "pile",
+      "tags": [
+        "moodboard-collage",
+        "black-ground",
+        "mixed-photo-flat",
+        "sticker-badges",
+        "brand-name-repeat"
+      ],
+      "recipe": "Solid black ground - the negative space between pieces IS the design. Place 4-6 rectangular artefacts at varied sizes with no shared grid: a flat-colour promo card with a bold caps headline, a flat-colour info card with body copy, a real product/lifestyle photo, and a sky-background product photo - let edges touch or nearly touch but never perfectly align. Bridge every seam with a small sticker badge (rounded blob, star, or pill) carrying the wordmark or a one-word tag, so the badges read as the glue holding the collage together. Add one hand-drawn line doodle loose in a gap. Restraint: cards/photos carry all the colour; badges are flat single-colour call-outs, never more than 2 colours each.",
+      "canvas": "story",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "cfec9bd415fff2": {
+      "file": "cfec9bd415fff2e8fc3ebd264932e783.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.667,
+        "ground_rgb": [
+          48,
+          72,
+          144
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.009,
+          0.946,
+          0.919
+        ],
+        "centroid": [
+          0.501,
+          0.507
+        ],
+        "palette": [
+          "green/teal",
+          "green/teal",
+          "green/teal",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "an illustrated overhead flat-lay: a gridded mat as the base plane, with everyday desk objects arranged loosely across it and small confetti shapes scattered in the gaps",
+      "hero": "pile",
+      "tags": [
+        "flat-lay",
+        "cutting-mat",
+        "illustrated-objects",
+        "grid-texture",
+        "confetti-shapes"
+      ],
+      "recipe": "Speckled dark-blue background stands for the desk surroundings. Centre a large rectangular grid-lined mat (one flat accent colour, ruled grid plus numbered edge) rotated a few degrees, with a second mat colour peeking out from behind one edge for depth. On top, place a lighter notepad sheet holding 2-3 loose hand-drawn squiggle doodles, plus 3-4 real desk objects (pencil, mug, eraser, ruler) each rendered as a simple flat-shaded illustration with a soft drop shadow, arranged so they touch the mat's edges naturally rather than floating centred. Scatter 4-5 tiny confetti shapes into the remaining empty grid squares. Restraint: one warm accent reused across 3+ objects to unify the palette; every object gets a shadow, nothing floats flat.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "labs"
+      ]
+    },
+    "d252704dc5e5f3": {
+      "file": "d252704dc5e5f32f202f854401f845fe.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.789,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.517,
+          0.581
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "blue/purple",
+          "warm red/pink",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a 2x2 block collage (dark headline band, checkerboard pattern, serif body-copy) stitched together by torn tape-strip word labels that cross the seams diagonally",
+      "hero": "type",
+      "tags": [
+        "quadrant-collage",
+        "serif-display",
+        "taped-strip-labels",
+        "checkerboard-pattern",
+        "starburst-accent"
+      ],
+      "recipe": "Split the canvas into big rectangular colour blocks with no uniform grid - a dark block carrying the display headline in large serif caps across two lines, a checkerboard-pattern block, and a light block with a large serif body paragraph. Lay 3-4 rotated tape-strip labels (flat accent colour, all-caps sans, torn paper-tape edges) directly ACROSS the seams between blocks - each strip is one word or short phrase, together reading as one sentence scanned top to bottom. Drop one solid starburst shape into a seam corner to anchor the eye. Restraint: exactly 4 colours (ground, one bright accent for the tape strips, one bold pattern colour-pair, ink); serif for both headline and body, sans only inside the tape strips.",
+      "canvas": "feed",
+      "depts": [
+        "content",
+        "welfare"
+      ]
+    },
+    "d2add78f901cbf": {
+      "file": "d2add78f901cbf3b892742fb5669ea47.jpg",
+      "measured": {
+        "aspect": 0.611,
+        "coverage": 0.48,
+        "ground_rgb": [
+          240,
+          192,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.499,
+          0.489
+        ],
+        "palette": [
+          "near-neutral",
+          "green/teal",
+          "orange/warm",
+          "orange/warm",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a laptop-framed screenshot of a full scrolling webpage, alternating flat-colour section bands, with one band weaving floating tag pills through an oversized headline",
+      "hero": "type",
+      "tags": [
+        "laptop-mockup",
+        "full-page-scroll",
+        "blob-illustration",
+        "word-cluster-headline",
+        "tag-pill-overlay"
+      ],
+      "recipe": "Pastel dotted-pattern ground behind a centred laptop-device frame. The screen shows a tall stitched screenshot of 3-4 stacked page sections in alternating flat colours, each a different content type (hero+CTA, about+photos, big-word statement, offer+photo+thumbnails). In the boldest section, set an oversized 3-line headline in mixed serif/sans caps and scatter 5-6 small white rounded-pill tags directly overlapping the words, as if annotating them, rather than beside them. Restraint: exactly one accent per section band, real photography only for people/place content, device frame stays neutral grey.",
+      "canvas": "story",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "d375fd7dbcf69c": {
+      "file": "d375fd7dbcf69cfcaeef11a6be81b2b9.jpg",
+      "measured": {
+        "aspect": 0.802,
+        "coverage": 0.592,
+        "ground_rgb": [
+          24,
+          48,
+          168
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.413,
+          0.473
+        ],
+        "palette": [
+          "near-neutral",
+          "blue/purple",
+          "blue/purple",
+          "dark/ink",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "an illustrated map background with curved route-lines connecting star-markers to destination labels, crossed by one big diagonal torn-paper headline strip",
+      "hero": "type",
+      "tags": [
+        "map-illustration",
+        "route-lines",
+        "torn-paper-labels",
+        "travel-time-tags",
+        "grain-texture"
+      ],
+      "recipe": "Heavily grained solid-colour ground with a simple white-outline background illustration (a map, face, or object) drawn faint enough to sit behind everything. Mark 4-6 points with star icons of varying size and colour, one larger 'home' star as the anchor; connect each to the anchor with a thin curved line in a contrasting colour. Beside every star, stack a torn-paper destination-name label above a black travel-time tag. Lay one big rotated torn-paper strip diagonally across the vertical centre carrying the headline in bold condensed caps, overlapping at least two of the route lines so it reads as pinned on top. Restraint: one line-colour family for routes, torn-paper labels always white/black only, the headline strip is the single largest element.",
+      "canvas": "feed",
+      "depts": [
+        "events"
+      ]
+    },
+    "d536b66c9aaa00": {
+      "file": "d536b66c9aaa00a7182ca988bd6abd5a.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.577,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.028,
+          0.096,
+          0.97,
+          0.902
+        ],
+        "centroid": [
+          0.477,
+          0.496
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "near-neutral",
+          "dark/ink",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "ticket/listing cards on paper with rotated status tags",
+      "hero": "grid",
+      "tags": [
+        "listing-cards",
+        "status-tag",
+        "rotated-tag",
+        "mono-labels",
+        "paper-ground"
+      ],
+      "recipe": "Paper ground. Stack of outlined listing cards, each with a bold centred title, a mono detail column and a small thumbnail. Pin a rotated status tag ('SOLD OUT', 'SELLING FAST') at a card corner in a saturated accent. Good for event line-ups.",
+      "canvas": "feed",
+      "depts": [
+        "events"
+      ]
+    },
+    "d6cb16411b5ee8": {
+      "file": "d6cb16411b5ee8ce51b756461112c162.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.394,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.057,
+          0.141,
+          0.931,
+          0.883
+        ],
+        "centroid": [
+          0.504,
+          0.502
+        ],
+        "palette": [
+          "orange/warm",
+          "dark/ink",
+          "orange/warm",
+          "warm red/pink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a dense, tightly overlapping pile of single-colour outlined stickers spanning several silhouette families, stacked so edges tuck under each other",
+      "hero": "pile",
+      "tags": [
+        "sticker-sheet",
+        "black-ground",
+        "dense-overlap",
+        "script-wordmark",
+        "badge-typography"
+      ],
+      "recipe": "Solid black ground. Pile 9-11 stickers into one dense central cluster, letting each new sticker's edge tuck slightly UNDER the previous one (not just touch) so the pile reads as physically stacked, not scattered. Vary the vocabulary deliberately: at least one hand-drawn script wordmark (outline only, no fill), one circular sunburst or coin badge with a caption ring, one novelty object icon, one hand/gesture icon, one banner ribbon. Each sticker is a single flat colour (or two max) with a thick light-cream outline so it reads against black. No background elements or ground texture - the pile alone fills the frame edge to edge with only slivers of black between pieces.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "welfare"
+      ]
+    },
+    "d88c31285a237f": {
+      "file": "d88c31285a237fae725d0316d65d408e.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.201,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.173,
+          0.998,
+          0.819
+        ],
+        "centroid": [
+          0.514,
+          0.455
+        ],
+        "palette": [
+          "dark/ink",
+          "green/teal",
+          "blue/purple",
+          "orange/warm",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "giant swooping arrow/ribbon shapes behind a short centred headline",
+      "hero": "shape",
+      "tags": [
+        "ribbon",
+        "arrow",
+        "dark-ground",
+        "centred-headline",
+        "chip-accents"
+      ],
+      "recipe": "Dark ground. Two or three enormous swooping arrow/ribbon shapes in saturated accents, crossing each other behind a short centred white headline. Add two or three tiny outlined chips at the edges of the shapes. The shapes should bleed off the frame — they are scenery, not icons.",
+      "canvas": "story",
+      "depts": [
+        "labs",
+        "events"
+      ]
+    },
+    "d91402fc3c0f43": {
+      "file": "d91402fc3c0f43a912d20544de256c17.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.404,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.061,
+          0.107,
+          0.935,
+          0.908
+        ],
+        "centroid": [
+          0.502,
+          0.49
+        ],
+        "palette": [
+          "near-neutral",
+          "dark/ink",
+          "dark/ink",
+          "dark/ink",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "dashboard stack: a hero figure over a grid of small metric cards",
+      "hero": "number",
+      "tags": [
+        "dashboard",
+        "metric-cards",
+        "paper-ground",
+        "hero-number",
+        "chips"
+      ],
+      "recipe": "Paper ground. One hero figure very large at the top with a small label above it, then a grid of small rounded metric cards beneath — each one number plus a mono caption, one of them in a saturated accent to break the rhythm. A pill row of actions under the hero. Use when the content is genuinely several numbers.",
+      "canvas": "feed",
+      "depts": [
+        "ops",
+        "labs"
+      ]
+    },
+    "e1fb89ef0f76cc": {
+      "file": "e1fb89ef0f76ccd10989815560324814.jpg",
+      "measured": {
+        "aspect": 1.333,
+        "coverage": 0.299,
+        "ground_rgb": [
+          240,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.091,
+          0.107,
+          0.907,
+          0.892
+        ],
+        "centroid": [
+          0.397,
+          0.528
+        ],
+        "palette": [
+          "dark/ink",
+          "warm red/pink",
+          "orange/warm",
+          "near-neutral",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a framed dashboard screenshot: dark sidebar plus light canvas, greeting header, then a 2x2 grid of differently-shaped pastel stat cards, a data table below, and a calendar+timeline column on the far right",
+      "hero": "grid",
+      "tags": [
+        "dashboard-ui",
+        "sidebar-nav",
+        "stat-card-grid",
+        "calendar-sidebar",
+        "pastel-cards"
+      ],
+      "recipe": "Cream ground with a thin rounded-corner outline framing the whole UI like a browser window, no actual browser chrome. A dark near-black sidebar strip down the left with a wordmark, nav icons plus labels, and a settings/logout footer. Main canvas: a friendly greeting headline top-left, then a 2x2 grid of stat cards, each a DIFFERENT pastel flat colour AND a different chart type (bar, line, pie-wedge, starburst) so no two cards read the same, each with a small numeric callout. Below the grid, a two-column data table. Far right column: a calendar grid plus a vertical timeline of coloured event chips. Restraint: exactly 4 pastel accents, one per stat card, reused nowhere else; sidebar and table stay neutral so the stat-card row is the only colour hit.",
+      "canvas": "square",
+      "depts": [
+        "ops",
+        "labs"
+      ]
+    },
+    "e7b32bd307aac4": {
+      "file": "e7b32bd307aac4af6e385929ffd7016b.jpg",
+      "measured": {
+        "aspect": 1.909,
+        "coverage": 0.243,
+        "ground_rgb": [
+          216,
+          240,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.033,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.551,
+          0.5
+        ],
+        "palette": [
+          "dark/ink",
+          "orange/warm",
+          "near-neutral",
+          "blue/purple",
+          "blue/purple"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "centred workflow collage: overlapping cards on a pale field, labelled in stages",
+      "hero": "pile",
+      "tags": [
+        "collage",
+        "pale-ground",
+        "stage-labels",
+        "overlap",
+        "soft"
+      ],
+      "recipe": "Pale ground. A loose centred collage of overlapping rectangular cards at slight scale differences, with numbered stage labels ('Intake 01', 'Production 02') set around the pile in small sentence-case type. Quiet and institutional — this is the one style in the bank that is NOT loud. Good for process/explainer content.",
+      "canvas": "linkedin",
+      "depts": [
+        "labs",
+        "content"
+      ]
+    },
+    "e9d82bbdf040cf": {
+      "file": "e9d82bbdf040cf13b8d261baa678f1e3.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.204,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.004,
+          0.0,
+          0.994,
+          0.991
+        ],
+        "centroid": [
+          0.486,
+          0.504
+        ],
+        "palette": [
+          "near-neutral",
+          "blue/purple",
+          "dark/ink",
+          "orange/warm",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "flat brand-colour arcs and quarter-circles bled off all four corners frame a giant wordmark headline, with a small phone-app mockup and a speech-bubble callout tucked into the negative space at centre",
+      "hero": "type",
+      "tags": [
+        "phone-mockup",
+        "wordmark-headline",
+        "corner-shape-bleed",
+        "speech-bubble-callout",
+        "cursor-icon"
+      ],
+      "recipe": "Near-white ground. Bleed 4-6 flat quarter-circle/ring shapes in a repeating 3-colour brand palette off each of the four corners, leaving the centre third clear. Set one giant headline spanning 2 lines through the centre, mixing a real multi-colour logotype word with bold black sans words around it. Overlap the headline's lower-left with a small phone-mockup (device outline, simple app-screen UI inside) and, to its right, one dark pill-shaped speech-bubble with two short lines of copy. Add one oversized cursor-arrow icon near the headline to imply 'click here'. Restraint: exactly 3 corner-shape colours, reused nowhere else on the page; the headline stays black plus the one multi-colour logotype moment.",
+      "canvas": "square",
+      "depts": [
+        "content",
+        "labs"
+      ]
+    },
+    "eaad68d6305fba": {
+      "file": "eaad68d6305fbaca52c0a830906bc783.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.883,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.485,
+          0.522
+        ],
+        "palette": [
+          "orange/warm",
+          "dark/ink",
+          "orange/warm",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "poster",
+      "mechanism": "a 3-plate extruded/shadow-block headline (each word its own flat-colour card with a hard offset black edge, stacked like tilted playing cards) sitting on top of a bleeding hero photo, pinned by a sunburst schedule badge and a speech-bubble tagline",
+      "hero": "type",
+      "tags": [
+        "extruded-block-headline",
+        "mic-photo",
+        "sunburst-badge",
+        "speech-bubble-callout",
+        "podcast"
+      ],
+      "recipe": "Warm flat ground with a faint grid texture and 1-2 thin curved line accents plus small doodles in the dead corners. Build the headline as 2-3 stacked rectangular plates, each ONE flat colour, each word on its own plate, each plate given a hard-edged black 3D shadow offset toward one corner so they read as thick extruded blocks; angle the plates a few degrees off horizontal and let them overlap slightly. Place one real B&W or duotone photo of the subject's key prop large and bottom-centred, bleeding off the bottom edge to anchor the piece. Add one sunburst badge with a 2-line caption and one rounded speech-bubble tagline tucked beside the photo. Restraint: exactly 3 flat accent colours across headline, badge and bubble; the photo stays B&W/duotone so it doesn't compete.",
+      "canvas": "square",
+      "depts": [
+        "content"
+      ]
+    },
+    "f25de42e61b5c9": {
+      "file": "f25de42e61b5c9a4e34e7745cd556090.jpg",
+      "measured": {
+        "aspect": 1.792,
+        "coverage": 0.363,
+        "ground_rgb": [
+          216,
+          216,
+          216
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.069,
+          0.156,
+          0.93,
+          0.844
+        ],
+        "centroid": [
+          0.529,
+          0.498
+        ],
+        "palette": [
+          "green/teal",
+          "dark/ink",
+          "dark/ink",
+          "near-neutral",
+          "green/teal"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "four phone mockups in a row, each screen a different flat-colour-blocked app page unified by the same bold serif display type",
+      "hero": "grid",
+      "tags": [
+        "four-up-phones",
+        "serif-display",
+        "promo-screens",
+        "flat-colour-blocks",
+        "app-showcase"
+      ],
+      "recipe": "Pale neutral ground, four identical phone-device outlines evenly spaced in a single row, each screen a self-contained mini-composition in flat colour blocks (2-3 stacked bands per screen). Use the SAME bold serif display face for every headline across all four screens so they read as one family despite different content (a hero statement plus real photo, a two-pill testimonial layout, a search-and-map utility screen, a promo-code offer). Vary only the ground colour band per screen and keep buttons/CTAs a consistent dark pill shape across all four. Restraint: one flat accent per screen, never more than 2 colours per screen, identical type and button treatment everywhere so the set reads as a system, not four different designs.",
+      "canvas": "linkedin",
+      "depts": [
+        "ops",
+        "content"
+      ]
+    },
+    "f501897698c870": {
+      "file": "f501897698c87029838f6a119dd3799c.jpg",
+      "measured": {
+        "aspect": 1.0,
+        "coverage": 0.336,
+        "ground_rgb": [
+          168,
+          120,
+          72
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.589,
+          0.588
+        ],
+        "palette": [
+          "orange/warm",
+          "near-neutral",
+          "orange/warm",
+          "orange/warm",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "front and back of a single printed card photographed leaning side by side against a neutral backdrop - one solid-colour type-only face, one white face carrying a small illustration plus a plain-text contact list",
+      "hero": "type",
+      "tags": [
+        "business-card-mockup",
+        "wood-backdrop",
+        "neon-flat-colour",
+        "naive-illustration",
+        "contact-list"
+      ],
+      "recipe": "Photograph (or fake-photograph via drop-shadow plus backdrop) two cards leaning at a slight angle side by side on a neutral textured surface. Card A: one flat saturated colour, no logo, just 4-5 lines of bold sans body copy left-aligned filling most of the card as a personal statement or bio. Card B: white/cream ground, one small naive line-and-fill illustration anchored to one corner bleeding slightly off the edge, and a two-column mono contact list bottom-left, nothing else. Restraint: one accent colour total, used for card A's ground and repeated once inside card B's illustration; everything else is ink-on-white or white-on-colour, no gradients, no extra badges.",
+      "canvas": "square",
+      "depts": [
+        "content"
+      ]
+    },
+    "fa3e4affb80375": {
+      "file": "fa3e4affb803755c6a211c195c616432.jpg",
+      "measured": {
+        "aspect": 1.001,
+        "coverage": 0.354,
+        "ground_rgb": [
+          240,
+          216,
+          0
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.283,
+          0.062,
+          0.713,
+          0.932
+        ],
+        "centroid": [
+          0.494,
+          0.494
+        ],
+        "palette": [
+          "dark/ink",
+          "near-neutral",
+          "dark/ink",
+          "near-neutral",
+          "dark/ink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "bento grid of rounded tiles on dark, mixing photo, colour and label pills",
+      "hero": "grid",
+      "tags": [
+        "bento",
+        "rounded-tiles",
+        "dark-ground",
+        "label-pill",
+        "mixed-media"
+      ],
+      "recipe": "Dark ground. A bento grid of rounded tiles at two or three different sizes — some photo, some flat accent, some empty dark. Drop a small outlined label pill onto each tile's corner. One circular photo cut-out breaks the grid at the top.",
+      "canvas": "story",
+      "depts": [
+        "events",
+        "content"
+      ]
+    },
+    "fc9ff902078e20": {
+      "file": "fc9ff902078e2044e28b7356e3015f71.jpg",
+      "measured": {
+        "aspect": 0.5,
+        "coverage": 0.616,
+        "ground_rgb": [
+          240,
+          240,
+          240
+        ],
+        "ground": "paper",
+        "content_bbox": [
+          0.0,
+          0.037,
+          0.998,
+          0.99
+        ],
+        "centroid": [
+          0.473,
+          0.537
+        ],
+        "palette": [
+          "green/teal",
+          "dark/ink",
+          "orange/warm",
+          "near-neutral",
+          "near-neutral"
+        ]
+      },
+      "judged": true,
+      "kind": "sheet",
+      "mechanism": "a header (wordmark plus product-info pill) sitting above a dense uneven masonry grid of many colour-blocked slide thumbnails, with one tilted cover mockup card overlapping the grid to sell the whole set",
+      "hero": "grid",
+      "tags": [
+        "template-preview",
+        "masonry-slide-grid",
+        "brand-wordmark-header",
+        "tilted-cover-card",
+        "colour-blocked-thumbnails"
+      ],
+      "recipe": "Near-white ground. Top band: a bold rounded-letter wordmark logo, a plain subtitle line, and a small rounded pill badge stating the count/scope of what's included. Below, tile 15-20 rectangular slide thumbnails edge-to-edge in an uneven masonry grid (varying widths, consistent row heights) with no gutters, cycling through a fixed 4-5 colour palette so no two adjacent thumbnails share a colour; give each thumbnail a distinct mini-layout (big stat number, quote, photo+caption, bullet list, headshot row) so the grid reads as varied content, not repeated pattern. Float ONE tilted photographic cover card with a thick white border and its own bold caption over the top-left corner of the grid, breaking the grid lines to imply 'here is the whole deck'. Restraint: exactly the same 4-5 colours repeat through every thumbnail; only the cover card gets rotation plus a white border.",
+      "canvas": "story",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    },
+    "ffc106f26f584a": {
+      "file": "ffc106f26f584a842250c4235bcd368e.jpg",
+      "measured": {
+        "aspect": 0.8,
+        "coverage": 0.839,
+        "ground_rgb": [
+          0,
+          48,
+          96
+        ],
+        "ground": "saturated",
+        "content_bbox": [
+          0.0,
+          0.0,
+          0.998,
+          0.999
+        ],
+        "centroid": [
+          0.545,
+          0.502
+        ],
+        "palette": [
+          "blue/purple",
+          "blue/purple",
+          "blue/purple",
+          "dark/ink",
+          "orange/warm"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a flat printed poster photographed lying at the base of a deep container shot from directly above, so the container's own walls become a dramatic converging-perspective frame around the design",
+      "hero": "type",
+      "tags": [
+        "basket-pov-mockup",
+        "perspective-frame",
+        "tabloid-headline",
+        "starburst-callouts",
+        "vintage-grocery"
+      ],
+      "recipe": "Build the flat poster first as its own self-contained composition: stacked flat-colour bands (top: a contrasting caps headline strip; middle: a bold giant condensed display word as the hero flanked by two small starburst callout badges; bottom: a colour band with a script tagline) using only 3-4 flat colours plus black. THEN composite it small and centred at the base of a top-down photograph of a deep ribbed container, letting the container's own texture and converging perspective lines fill the rest of the frame as the mockup context. Restraint: the poster itself never has more than 4 colours; the container shot stays a single material/colour so it doesn't compete with the design it presents.",
+      "canvas": "feed",
+      "depts": [
+        "welfare",
+        "events"
+      ]
+    },
+    "videoframe_196": {
+      "file": "videoframe_1967.png",
+      "measured": {
+        "aspect": 1.739,
+        "coverage": 0.316,
+        "ground_rgb": [
+          0,
+          0,
+          0
+        ],
+        "ground": "dark",
+        "content_bbox": [
+          0.009,
+          0.019,
+          0.956,
+          0.999
+        ],
+        "centroid": [
+          0.501,
+          0.603
+        ],
+        "palette": [
+          "near-neutral",
+          "orange/warm",
+          "dark/ink",
+          "orange/warm",
+          "warm red/pink"
+        ]
+      },
+      "judged": true,
+      "kind": "mockup",
+      "mechanism": "a numbered slide header above a cascading fan of pastel category cards, each stacked card offset up-and-back from the one in front of it so the front card stays fully readable",
+      "hero": "pile",
+      "tags": [
+        "numbered-slide-header",
+        "card-cascade",
+        "pastel-flat-cards",
+        "discount-tag",
+        "screen-recording"
+      ],
+      "recipe": "Near-black ground. Top-left: a large light numeral index plus a bold headline, with a short body caption and small icon/avatar row top-right. Below, lay 6-9 rounded-rect cards in a single cascading row, each card offset diagonally up-and-back from the previous one - critically, offset AWAY from the frontmost card's own coverage, so each card peeks out from behind the one in front rather than nesting inside it. Give every card its OWN pastel flat colour, a small 3D-style icon at top, a short label, and a small percentage/discount tag. Restraint: one flat pastel per card cycling through a fixed 6-8 colour set, icons are the only '3D' element allowed, everything else in the card stays flat.",
+      "canvas": "linkedin",
+      "depts": [
+        "content",
+        "ops"
+      ]
+    }
+  }
+}

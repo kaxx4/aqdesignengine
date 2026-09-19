@@ -89,6 +89,28 @@ def bounds_check(W, H, elements):
 # Per CLAUDE.md: convert each caught visual flaw into an encoded rule.
 # ---------------------------------------------------------------------------
 
+def _norm_ignore(ignore_pairs):
+    """Accept any sane spelling of an ignore-list and say so when one is nonsense.
+
+    THE BUG THIS FIXES. The contract was `frozenset({a, b})` per pair, documented only
+    here — 800 lines from `preflight`, which is where a caller actually looks. Passing
+    ("a","b") tuples, the obvious guess, matched nothing: every ignored collision kept
+    reporting and NOTHING said the ignore-list was a no-op. It cost a full debug cycle
+    to find by reading source. Now tuples, lists and sets all work, and anything that
+    cannot be a pair is reported instead of silently dropped.
+    """
+    out, bad = set(), []
+    for item in (ignore_pairs or ()):
+        if isinstance(item, (frozenset, set, tuple, list)) and len(item) == 2:
+            out.add(frozenset(item))
+        else:
+            bad.append(item)
+    if bad:
+        print(f"   [collision_check] IGNORED ENTRIES THAT ARE NOT PAIRS: {bad} "
+              f"— expected two labels each, e.g. ('hero','badge')")
+    return frozenset(out)
+
+
 def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
     """
     Pairwise bbox-overlap detector for the manual element list — the tuple-world
@@ -114,12 +136,13 @@ def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
         else:
             x, y, w, h = e; lbl = i
         norm.append((lbl, x, y, w, h))
+    _ign = _norm_ignore(ignore_pairs)
     out = []
     for i in range(len(norm)):
         for j in range(i + 1, len(norm)):
             la, ax, ay, aw, ah = norm[i]
             lb, bx, by, bw, bh = norm[j]
-            if frozenset({la, lb}) in ignore_pairs:
+            if frozenset({la, lb}) in _ign:
                 continue
             ox = min(ax + aw, bx + bw) - max(ax, bx)
             oy = min(ay + ah, by + bh) - max(ay, by)
@@ -984,7 +1007,14 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
     clean = all(not v for v in hard.values())
     r['clean'] = clean
     print(f"[preflight] {'CLEAN ✓' if clean else 'ISSUES:'}")
+    # A check that fires on EVERY composition carries no signal. under_filled_quadrants
+    # flagging all four quadrants is exactly that: measured across the session-10
+    # batches it printed on essentially every clean run, which is how a reader learns
+    # to skim past advisory lines that DO matter. Still returned, just not printed.
+    _noise = {'under_filled_quadrants'}
     for k, v in r.items():
+        if k in _noise and isinstance(v, list) and len(v) >= 4:
+            continue
         if k != 'clean' and v:
             tag = " (advisory)" if k in ADVISORY else ""
             shown = f"{len(v)} element(s) repositioned" if k == 'nudged_elements' else v

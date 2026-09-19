@@ -45,14 +45,21 @@ ok(lay.collision_check([(0, 0, 100, 100), (95, 0, 100, 100)]) == [],
 hit = lay.collision_check([("doodle", 0, 0, 200, 200), ("headline", 100, 100, 200, 200)])
 ok(hit and any("doodle" in str(h) and "headline" in str(h) for h in hit),
    "labels are echoed so the report names WHICH two elements collided")
-# NOTE: ignore_pairs takes a set of frozenset({a,b}) — an unordered PAIR, not a tuple.
-# A plain tuple silently fails to match and the collision still fires (verified below).
-ok(lay.collision_check([("doodle", 0, 0, 200, 200), ("headline", 100, 100, 200, 200)],
-                       ignore_pairs={frozenset({"doodle", "headline"})}) == [],
+# ignore_pairs USED to require frozenset({a,b}) exactly, and a plain tuple — the obvious
+# guess — silently matched nothing while the collision kept firing. This assertion used
+# to PIN THAT FOOTGUN IN PLACE by asserting the tuple failed. A test that documents a
+# footgun as expected behaviour is a test that prevents the fix: when a Sonnet agent lost
+# a full debug cycle to it and the API was corrected, this test failed, correctly, for
+# asserting the old broken contract. Worth remembering — encode the RULE, not the bug.
+_pair = [("doodle", 0, 0, 200, 200), ("headline", 100, 100, 200, 200)]
+ok(lay.collision_check(_pair, ignore_pairs={frozenset({"doodle", "headline"})}) == [],
    "by-design overlaps can be whitelisted via ignore_pairs (tags-on-hero, sign piles)")
-ok(lay.collision_check([("doodle", 0, 0, 200, 200), ("headline", 100, 100, 200, 200)],
-                       ignore_pairs={("doodle", "headline")}) != [],
-   "a TUPLE in ignore_pairs does NOT whitelist — it must be a frozenset (API footgun)")
+ok(lay.collision_check(_pair, ignore_pairs={("doodle", "headline")}) == [],
+   "a TUPLE now whitelists too — the silent no-op is fixed")
+ok(lay.collision_check(_pair, ignore_pairs=[["doodle", "headline"]]) == [],
+   "...and a list of lists, and a set: any spelling of a PAIR works")
+ok(lay.collision_check(_pair, ignore_pairs={"doodle"}) != [],
+   "an entry that is not a pair is REPORTED, not silently dropped")
 
 # ══ invisible_color_check — "fill == surface" (samples 21, 24) ════════════════
 ok(lay.invisible_color_check([("badge", "var(--bg)")], "var(--bg)", core) != [],
