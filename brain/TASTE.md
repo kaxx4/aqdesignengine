@@ -45,3 +45,9 @@ B. VARIABILITY: is this archetype/mood a genuine DEPARTURE from the last piece, 
 - Don't collapse to one skeleton (commit to a NEW archetype per piece).
 - Don't drop the craft layer when chasing novelty (both, always).
 - Don't accumulate — COMMIT and SUBTRACT.
+
+## See also
+This cascade is visual, but the same shape governs copy: `VOICE.md` §7's precedence rule
+(audience caps the register, intent shapes the sentence, lane fills the nouns, channel cuts the
+length, invariants veto) is this decision cascade applied to words instead of geometry. Node map
+and full cross-reference: `CONTENT_SYSTEM.md` §6.

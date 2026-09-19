@@ -146,3 +146,10 @@ heuristic-content generations with no iteration, exactly as expected for a first
 ## PRINCIPLE
 If any output quality depends on LLM judgment rather than an encoded rule, that's a bug in the ENGINE.
 Fix the rule here, never the individual output.
+
+## See also
+The "exact wording repeats across the 44 batch" finding above is exactly the failure `VOICE.md`
+(copy) and `IDEATION.md` (topic/idea variety) exist to close, for every surface, not just posters.
+Both are specs, not yet encoded — `CONTENT_SYSTEM.md` §3 states plainly what's built vs. spec
+across the whole content system; §4 there has the dependency-ordered build plan, same spirit as
+this file's own "still manual / pending" list.

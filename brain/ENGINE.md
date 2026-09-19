@@ -29,6 +29,7 @@ When building a piece, you DECIDE per layer what to include and what to leave ou
 
 ## VOICE (see brand memory for full banned list)
 Lowercase, dry, Hinglish ok, honest-as-warmth, never preachy. Soft CTAs only. No em dashes. No emojis on graphics (use ★/doodles). First names/handles only. ≥1 real fingerprint per piece.
+**Full system (lane x audience x channel x intent, extends this single-register summary to every AQ surface): `VOICE.md`. Node map: `CONTENT_SYSTEM.md` §6.**
 
 ## PIPELINE (every piece)
 `author a spec` → `html_from_spec` → **`render()` runs `audit.py` (overlap + margin gate)** → if issues, fix placement (use `measure_free()` to find REAL gaps) → re-audit → ship. Never ship with overlaps. Intended overlaps (chip-on-photo) are whitelisted in audit.py.

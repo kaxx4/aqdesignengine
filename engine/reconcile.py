@@ -5,10 +5,199 @@ import os
 import asyncio, importlib.util
 def load(n):
     s=importlib.util.spec_from_file_location(n,os.path.join(os.path.dirname(os.path.abspath(__file__)),f"{n}.py")); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
-eng=load("engine")
+# engine.py is loaded LAZILY. It imports build.py, and build.py now imports this
+# module for measure_dom() — loading it at import time would close that circle.
+# measure_dom needs nothing from it; only the Workflow A probe() does.
+_ENG = None
+def _eng():
+    global _ENG
+    if _ENG is None:
+        _ENG = load("engine")
+    return _ENG
+
 W,H=1080,1350; M=64
 
+# ════════════════════════════════════════════════════════════════════════════
+# measure_dom — the reusable half of this module  (session 10)
+# ════════════════════════════════════════════════════════════════════════════
+# THE BUG THIS FIXES. Everything below in probe() measures real rendered extents
+# and catches exactly the failure class that hand-maintained (x,y,w,h) tuples
+# CANNOT catch: a text block whose true rendered size is not what the author
+# guessed. But probe() is welded to Workflow A — it takes an archetype name,
+# replays engine.ARCHETYPES, hardcodes 1080x1350 and drives its own browser. So
+# for every bespoke Workflow B script (all 44 recreations, and every poster in
+# this session) the one check that would have caught the bug was unreachable.
+#
+# Three real failures in the session-10 batch v1, all invisible to the static
+# gate and all caught instantly by this once it could be called:
+#   * a 470px numeral was ~100px wider than its declared bbox, so the collision
+#     check cleared a sticker that visibly sat on the glyph;
+#   * pill labels were wider than their pills and rendered "PLANTAT…" clipped;
+#   * a 3-line headline was taller than the colour band it was sized to sit in
+#     and spilled across the boundary into the body copy.
+#
+# measure_dom() is that logic with the Workflow A plumbing removed: give it any
+# loaded page and it reports what is ACTUALLY on screen. build.render() calls it
+# on every render now, reusing the page it already has, so it costs ~15ms.
+
+_MEASURE_JS = """els => els.map(e => {
+  const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
+  return { tag: e.dataset.tag || e.className || e.tagName.toLowerCase(),
+           x: Math.round(r.x), y: Math.round(r.y),
+           w: Math.round(r.width), h: Math.round(r.height),
+           right: Math.round(r.right), bottom: Math.round(r.bottom),
+           sw: e.scrollWidth, cw: e.clientWidth,
+           sh: e.scrollHeight, ch: e.clientHeight,
+           ox: cs.overflowX, oy: cs.overflowY,
+           fixedW: /\d/.test(e.style.width || ""),
+           fixedH: /\d/.test(e.style.height || "") };
+})"""
+
+# Selector note: `.p [data-tag]` only sees explicitly tagged nodes, which is how
+# the old probe under-reported. We measure every positioned descendant instead,
+# so an untagged element cannot hide from the check by simply not opting in.
+_SEL = ".p [data-tag], .p [class*=measure], .p > div, .p > span, .p > img"
+
+# An auto-sized block only gets reported when it overshoots its line box by BOTH
+# of these. Measured across the corpus: a normal AQ headline at line-height
+# .86-.92 overshoots 7-9%, which is just how tight leading paints — flagging it
+# would fire on essentially every poster and teach everyone to ignore the gate.
+# A genuine "your bbox is a lie" case (line-height .78 at 470px) overshoots 32%.
+_SPILL_MIN_RATIO = 1.20
+_SPILL_MIN_PX = 24
+
+async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-bleed")):
+    """Measure the REAL rendered geometry of a loaded page and report what the
+    static tuple gate structurally cannot see.
+
+    Returns {'clipped': [...], 'spilling': [...], 'off_canvas': [...]}.
+
+      clipped   — content is larger than its box AND the box hides overflow, so
+                  characters are genuinely lost ("PLANTAT…"). Never legitimate.
+      spilling  — content is larger than its box and overflow is visible, so it
+                  escapes and lands on whatever is next to it. This is what a
+                  headline sized by guesswork does.
+      off_canvas— the element's painted box leaves the canvas. ADVISORY: full
+                  bleed is a real AQ move, so tags in `bleed_tags` are exempt
+                  and the rest are reported, not failed.
+    """
+    els = await page.eval_on_selector_all(_SEL, _MEASURE_JS)
+    out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": []}
+    for e in els:
+        if e["cw"] == 0 and e["ch"] == 0:
+            continue                                   # not laid out; nothing to say
+        out["boxes"].append((e["tag"], e["x"], e["y"],
+                             max(e["w"], e["sw"]), max(e["h"], e["sh"])))
+        over_x = e["sw"] > e["cw"] + 4
+        over_y = e["sh"] > e["ch"] + 4
+        if over_x or over_y:
+            hides = ("hidden" in (e["ox"], e["oy"])) or ("clip" in (e["ox"], e["oy"]))
+            axis = "width" if over_x else "height"
+            got, box = (e["sw"], e["cw"]) if over_x else (e["sh"], e["ch"])
+            declared = e["fixedW"] if over_x else e["fixedH"]
+            rec = (e["tag"], axis, got, box)
+            if hides:
+                # content larger than a box that hides overflow: characters are
+                # GONE. There is no design in which that is intended.
+                out["clipped"].append(rec)
+            elif declared:
+                # the author wrote an explicit width/height and the content does
+                # not fit it. Also unambiguous — the assertion was simply wrong.
+                out["spilling"].append(rec)
+            elif box and (got - box) >= _SPILL_MIN_PX and got / box >= _SPILL_MIN_RATIO:
+                # auto-sized: a tight line-height ALWAYS makes glyphs paint past
+                # the line box, so small overshoot here is normal typography and
+                # flagging it would make this gate noise. Only a large overshoot
+                # matters, and what it means is specific: any hand-written
+                # (x,y,w,h) tuple for this element under-reports its real size,
+                # so the static collision check will clear things that visibly
+                # sit on it. (Session 10: a 470px numeral measured 484px tall in
+                # a 367px line box; a sticker was cleared onto the glyph.)
+                out["spilling"].append(rec)
+        if e["tag"] in bleed_tags:
+            continue
+        if e["right"] > W + 2 or e["bottom"] > H + 2 or e["x"] < -2 or e["y"] < -2:
+            out["off_canvas"].append((e["tag"], e["x"], e["y"], e["right"], e["bottom"]))
+    return out
+
+
+def reconcile_boxes(measured, declared, tol=16, min_size=60, canvas=None):
+    """Compare what the gate was TOLD against what the browser actually drew.
+
+    THE BUG THIS ENCODES. CLAUDE.md §10 lists "stale bbox tuple hides a real
+    off-canvas/collision" with a guard column that reads, in full: "discipline".
+    It is the only entry in the catalogue whose guard is a human promise, and it
+    has cost real bugs every time — a bespoke script moves an element's CSS,
+    forgets the matching elements.append(), and every static check then runs
+    against a layout that no longer exists and cheerfully reports CLEAN.
+
+    This is that promise, mechanised. Two distinct failures, both real:
+
+      under_reported — a declared box is materially smaller than the element the
+                       browser drew, so collision_check clears neighbours that
+                       visibly sit on it. (Session 10: a 430px numeral declared
+                       336px tall, painted 443px; a sticker was cleared onto it.)
+      untracked      — a substantial element exists in the render with NO
+                       declared box anywhere near it, so the static gate never
+                       considered it at all. This is the silent half of the bug:
+                       not a wrong box, an absent one.
+
+    Matching is positional (nearest origin within `tol`), because tuples carry no
+    identity. That is a real limitation: heavily overlapping elements can match
+    the wrong partner. So both lists are ADVISORY — they tell you where to look,
+    they do not fail a build.
+
+    measured: [(tag,x,y,w,h)] from measure_dom()['boxes']
+    declared: the element list handed to preflight — (x,y,w,h) or (label,x,y,w,h)
+    """
+    out = {"under_reported": [], "untracked": []}
+    dec = [(e[0] if len(e) == 5 else "", *e[-4:]) for e in (declared or [])]
+    cw, ch = canvas if canvas else (None, None)
+    for tag, x, y, w, h in measured:
+        if w < min_size or h < min_size:
+            continue                                  # chips/labels: too small to matter here
+        if cw and w >= cw - 2 and h >= ch - 2:
+            continue                                  # the page ground itself
+        best, bestd = None, 1e9
+        for d in dec:
+            dist = abs(d[1] - x) + abs(d[2] - y)
+            if dist < bestd:
+                best, bestd = d, dist
+        if best is None or bestd > tol * 4:
+            out["untracked"].append((tag, x, y, w, h))
+            continue
+        if w > best[3] + tol or h > best[4] + tol:
+            out["under_reported"].append(
+                (best[0] or tag, (best[3], best[4]), (w, h)))
+    return out
+
+
+def format_reconcile(res):
+    lines = []
+    for label, dec, real in res.get("under_reported", []):
+        lines.append(f"BBOX UNDER-REPORTS {label}: declared {dec[0]}x{dec[1]}, "
+                     f"drawn {real[0]}x{real[1]} — the static gate is checking a smaller box")
+    for tag, x, y, w, h in res.get("untracked", []):
+        lines.append(f"UNTRACKED {tag} at ({x},{y}) {w}x{h} — no declared bbox, "
+                     f"so no gate ever considered it")
+    return lines
+
+
+def format_measure(flaws, name=""):
+    """One-line-per-flaw rendering for the render gate's console output."""
+    lines = []
+    for tag, axis, got, box in flaws.get("clipped", []):
+        lines.append(f"CLIPPED {tag}: {axis} {got}px inside a {box}px box — characters are lost")
+    for tag, axis, got, box in flaws.get("spilling", []):
+        lines.append(f"OVERSIZE {tag}: real {axis} {got}px vs {box}px box "
+                     f"— a hand-written bbox here under-reports by {got-box}px")
+    for tag, x, y, r, b in flaws.get("off_canvas", []):
+        lines.append(f"OFF-CANVAS {tag}: box ({x},{y})-({r},{b})")
+    return lines
+
+
 async def probe(name, archetype, content, accent_idx):
+    eng=_eng()
     accent=eng.RULES["accents"][accent_idx]
     # rebuild final html at the density it converged to — replay generate's density logic quickly
     from playwright.async_api import async_playwright
@@ -62,4 +251,9 @@ async def main():
         if flaws:
             for f in flaws: print(f"   ⚠ {f}")
         else: print("   ✓ no geometric flaws (extents clean)")
-asyncio.run(main())
+
+# This module is now IMPORTED by build.py for measure_dom(), so the Workflow A
+# demo below must not run on import — it used to fire asyncio.run() at module
+# level, which blew up inside any already-running event loop.
+if __name__ == "__main__":
+    asyncio.run(main())

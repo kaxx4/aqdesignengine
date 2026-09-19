@@ -41,6 +41,63 @@ One line per ruling. Read before generating. Newest at the bottom. These are LAW
 
 ## Voice
 - No em dashes anywhere. No emojis on graphics. Soft CTAs only. Never preachy. ≥1 real fingerprint (number/name/project) per piece.
+- **Superseded by `VOICE.md`** (2026-08-26) — same 4 rules, now folded into a full lane x audience x
+  channel x intent system with a truth ladder, a do-not-say list, and a precedence rule for when
+  audience/lane/intent/channel disagree. This entry stays as the historical 4-line version; `VOICE.md`
+  is the one to read and extend going forward. Node map: `CONTENT_SYSTEM.md` §6.
+- **2026-08-26 — content system extended beyond posters.** `VOICE.md` (voice, all verticals),
+  `IDEATION.md` (Instagram/LinkedIn post ideation: pillars, post-types, rotation rule),
+  `BROCHURE_CATALOG.md` (brochures/catalogs/PDFs — multi-page format spec, new territory for the
+  engine) added as specs, not yet encoded, per `CLAUDE.md` §8's "write the spec, prove it, then
+  encode" posture. `CONTENT_SYSTEM.md` is the hub doc indexing all three plus what's built vs.
+  spec across the whole system.
+- **2026-08-26 — real content ingestion + external research pass; VOICE.md and IDEATION.md
+  grounded in evidence, not just first principles.** Two tracks, same session:
+  1. **AQ content ingestion**: 47 real AQ/Shikshaq documents (strategy briefs, the real Emami
+     Foundation CSR proposal, Shikshaq UX research, org operating model, terms & conditions) and
+     ~105 real photos/designs from `C:\Users\kanis\Desktop\AquaTerra\AQ Content dump` and
+     `Shikshaq Content dump`, processed via a Haiku-model Workflow (152 agents, zero errors) for
+     cost efficiency, since this was bulk mechanical extraction, not judgment work. Findings
+     written to the new `brain/AQ_FACTS.md` (sourced fact bank, cited per-claim) and used to
+     correct `VOICE.md`/`IDEATION.md` — see those files' inline 2026-08-26 notes for what changed.
+     Corrections of note: the "donors" audience was **removed** (AquaTerra runs 0% individual
+     donations by stated policy — `AquaTerra_Revenue_Streams.md`); "corporate/CSR" was
+     **validated**, not corrected, by the real Emami proposal; Shikshaq was **confirmed** as a
+     distinct voice+visual system, not an education sub-lane (its own audience — tutors/teachers —
+     and its own shipped black/orange/blue visual system `core.py` doesn't encode, flagged in
+     `GAPS.md` #5); ROOTS (apparel venture, ~10% of revenue) was found to have been **conflated**
+     with the "clothes/kits" welfare lane in the original spec — they're unrelated (sold brand vs.
+     donated-clothing welfare activity). AQ's own two real internal voice playbooks
+     (`aq-master-brief.md`, the 2026 Strategic Growth & Virality Plan) turned out to already state
+     real, load-bearing rules `VOICE.md`/`IDEATION.md` hadn't captured: an 80/20 proof/philosophy
+     content ratio, a real posting cadence (3-5 feed posts/week, 60/25/15 carousel/reel/static
+     mix), and a named "personality-first, bury the NGO labels" technique for general-audience
+     content specifically (does not apply to CSR content — the Emami proposal is the opposite,
+     mission-forward from line one). Notably, `aq-master-brief.md` independently states "every
+     rule here exists because of a real mistake" — the copy-voice mirror of this engine's own
+     `CLAUDE.md` §1 principle, arrived at separately.
+  2. **External research** (read-only, nothing installed) into five public GitHub repos —
+     `10x-Content-Expert`, `social-media-skills`, `claude-agents-library`, `instagram-skills`, and
+     `claude-blog` — to find generalizable content-strategy and brain-organization patterns.
+     **Adopted:** an AI-tell mechanical scrub (vocabulary blacklist, dead phrases, dead closers —
+     now in `VOICE.md` §9); a claim-laundering rule for the truth ladder (don't let one verified
+     fact's credibility rub off on an adjacent unverified one — `VOICE.md` §2); a two-axis hook
+     selection (engagement-goal-first, alongside intent — `IDEATION.md` §10); a post-type
+     "data philosophy + never-does" pairing pattern (flagged as a real extension to build,
+     `IDEATION.md` §10); and, from `claude-blog`'s own "brain" vault architecture, the
+     recommendation to add explicit open-questions tracking and cross-linking discipline to this
+     `brain/` folder **before** it grows further — resulted in `brain/GAPS.md` (first-class,
+     centrally-tracked open questions, superseding the old pattern of burying them inline only)
+     and denser `## See also` cross-links added retroactively to `TASTE.md`, `ENGINE.md`,
+     `ENGINE_STATE.md`, `GENERATION_MAP.md`, `CAROUSEL_PLAYBOOK.md`. **Explicitly rejected, and
+     why:** clickbait hook formulas that instruct including a metric "where possible" even when
+     none exists (directly violates the truth ladder); mandatory "repost if..."/engagement-bait
+     closers; fabricated "viral quotes" attributed to no one; CAC/vanity-metric growth-hacker
+     framing applied to volunteer acquisition (treats people as funnel objects, violates the
+     never-guilt-trip/never-savior invariant). Two gaps surfaced but not yet built: a cross-post
+     "cannibalization" check (does a new topic overlap an existing one enough to compete with it —
+     distinct from the existing hook/format rotation rule) and a "refresh due" mechanism for facts
+     in `AQ_FACTS.md` (nothing currently flags a stale sourced number) — both logged in `GAPS.md`.
 
 ## Open / next
 - Pinterest inspiration incoming — analyze each ref's framing + rhythm mechanism, adapt to AQ tokens/fonts/voice, do NOT force into a template.
@@ -747,3 +804,193 @@ constraint on LARGE areas; punctuation should retain contrast or the bias become
 
 `mintbright #00E5A0` lives in `core.py`'s CSS tokens but not in `ACCENTS`; it is pulled in
 explicitly for doodle fills and for the census legend to give the cool range a high-key note.
+
+---
+
+## 2026-09-03 — card-deck cascade offset hides the "back" repeats instead of revealing them
+
+**Where:** `2022ebef4ffad5` recreation (poster 13/44, "card deck repetition" — the `2022ebef4f`
+repetition-as-composition steal already named in `VISUAL_DNA.md` §7). The v1-v3 bespoke script was
+lost between sessions, so it was rebuilt from scratch as `scratchpad/gen_2022ebef4ffad5_v4.py`.
+
+**The bug.** The rebuild's first pass offset the smaller/further-back repeats of a duplicated card
+*down and to the right* of the frontmost (largest, least-rotated) card — `dx,dy` both positive,
+smaller card nested inside the front card's own bounds. Visually this rendered as ONE flat card:
+the "cascade" of three never became visible because every back repeat was geometrically contained
+inside the front one. No existing gate caught it — `bounds_check`/`collision_check` only look for
+things going wrong (off-canvas, unwanted overlap), and three cards stacked with zero visible
+separation trip neither.
+
+**The fix.** Offset the back repeats *up* (negative `dy`) relative to the front card, so their top
+edge crosses the front card's top edge and a real sliver is visible above/beside it — matching how
+the reference (and every fanned-card/hand-of-cards reference in the corpus) actually reads: the
+front card is the one you'd pick up, sitting *below* the fan, with each older card peeking out
+above it.
+
+**Encoded.** `layout.cascade_peek_check(stack, min_peek_frac=0.06)` — grid-samples each non-front
+card against the union of everything drawn after it (in front); flags any card that isn't
+genuinely visible. Wired into `preflight(..., cascade_stacks=[...])` as ADVISORY (rotation is
+ignored, so it can under-flag a rotated design that clears the bbox check without reading as flat,
+but should never over-flag a good one). Self-test: `scratchpad/test_layout_rules.py` assertions
+29-31, reconstructing the exact v3 coordinates. See CLAUDE.md §10 bug catalog.
+
+**General rule for any repeated-element composition (not just cards):** when duplicating one
+element at decreasing scale, the offset direction is not free — it has to point AWAY from where
+the largest/frontmost copy already covers, or the duplication is invisible and the "repetition as
+composition" move (VISUAL_DNA.md §7) silently degrades to one element.
+
+**Also fixed in passing, not encoded (too specific to be a general rule):** a stale hardcoded
+absolute path in `scratchpad/test_layout_rules.py` (`os.chdir(...)`) pointed at the project's old
+folder location and silently broke the entire self-test suite — it was never actually run since
+the repo moved. Worth remembering: a suite CLAUDE.md cites as passing should be run, not assumed,
+before trusting it (same lesson as the missing-file incident logged 2026-08-03).
+
+**Addendum, same session:** all five `scratchpad/test_*.py` self-tests (not just
+`test_layout_rules.py`) had the identical stale `os.chdir` pointing at the pre-move project path
+— every one of them has been silently failing to run at all (not failing assertions, failing to
+*start*) since the repo moved to `AQ_CODEBASE` under `Code\AquaTerra`. Fixed all five. Re-run
+totals, now genuinely verified: `test_layout_rules.py` 31/31, `test_collision_nudge.py` 9/9,
+`test_invisible_craft.py` 11/11, `test_doodle_stamp.py` 25/25, `test_vision_starve.py` 13/13 — 89
+assertions total. **General lesson:** "the self-tests pass" was true only because CLAUDE.md said
+so, not because anyone ran them this session-arc — a doc that cites a test suite's pass/fail state
+needs that state re-verified periodically, not carried forward as inherited fact.
+
+---
+
+## SESSION 10 (2026-09-19) — the website as the brand's source of truth, and the end of guessed geometry
+
+Task: improve the engine against a new reference dump + the live AquaTerra site (read-only), and
+produce real Instagram/LinkedIn posts from `welfare_projects_rows.csv` (558 rows).
+
+### 1. The site had already resolved a contrast question the poster engine got wrong
+`frontend/src/styles/tokens.css` carries a MEASURED colour system. Checked against it,
+`core.text_on()` was wrong on **four of seven accents** — it returned white on pink, mint, tomato
+and grape. White on pink #FF4D8C is **3.14:1, below the AA floor for normal text**; ink on the same
+pink is 6.31:1. The engine had been shipping the failing pairing across the whole corpus.
+
+**Ruling: `text_on()` MEASURES rather than looking up.** It computes both candidate contrasts and
+returns the winner, so it is correct for colours outside `ACCENTS` too. A corrected lookup table
+would have been a second thing to drift.
+
+**Second, related gap:** not one accent clears 4.5:1 as TYPE ON CREAM (best is teal at 4.30, worst
+lemon at 1.36), so accent-coloured small type on the page ground was *always* illegible and nothing
+guarded it. Added `ACCENT_INK` (the site's darkened partners, all verified >=4.5:1 on cream AND
+white) and `ink_of()`.
+
+**But the rule is not "accents never touch the page."** WCAG splits at large text (>=24px bold,
+3.0:1). A 500px mint numeral on cream is 3.78:1 and PASSES; a 20px mint label is the same 3.78:1
+and FAILS. `on_cream(accent, size_px)` encodes exactly that split — **accents may shout but may not
+whisper**. Written before the first poster, which is the only reason the first poster did not
+violate it.
+
+### 2. Department colour is semantic, not a rotation index
+The site pins a hue per department (`--c-welfare` mint, `--c-events` sky, `--c-labs` lemon,
+`--c-ops` teal, `--c-content` grape). `generate()` picked the hue by an arbitrary `accent_idx`, so
+a welfare poster could come out grape — fine in isolation, but it breaks the one colour-code the
+audience is taught on every other surface. Added `core.DEPT` / `accent_for()`.
+
+**DRIFT RECORDED, NOT SILENTLY RECONCILED:** the site's teal is `#12909C`, the engine's is
+`#0E7C86`. Changing `ACCENTS[6]` would restyle all 44 recreations, so the engine keeps its own and
+`DEPT_SITE_TEAL` records the difference as data. A real decision for a later session, not something
+to quietly paper over.
+
+### 3. Render was 16.8s/poster, and ~15s of it was structural waste
+Profiled: the browser work is ~1.1s. The rest was `audit.audit()` cold-starting its OWN chromium
+(so every render booted two), plus 1200ms + 1500ms of blind `wait_for_timeout` "for fonts", on a
+1.3 MB base64 `@font-face` payload re-parsed per document.
+
+Added `build.session()` (one browser, one page per viewport, held across a batch), taught
+`audit.audit()` to reuse a page it is handed, and replaced both sleeps with real readiness
+(`document.fonts.ready` + image decode + two frames).
+
+**16.81s -> 3.40s standalone, 1.86s in a session. Output verified byte-identical (sha256) against
+the old path** — this changed only how many times chromium boots, never a pixel. Also fixed in
+passing: `audit` hardcoded a 1080x1350 viewport, so a story-sized piece was audited against the
+wrong canvas and reported phantom bottom breaches.
+
+### 4. THE BIG ONE: the check that would have caught every layout bug existed and was unreachable
+All three posters in batch v1 failed the looking gate for the **same root cause** — the author
+guessed rendered text dimensions — and all three passed the entire static gate stack.
+
+`reconcile.py` already measured real DOM extents and already detected "TEXT WIDER than container".
+But `probe()` was welded to Workflow A: it took an archetype name, replayed `engine.ARCHETYPES`,
+hardcoded 1080x1350 and drove its own browser. **For every bespoke Workflow B script — all 44
+recreations and every piece in this session — the one check that could catch the bug could not be
+called.** (It also ran `asyncio.run()` at module level, so importing it was impossible.)
+
+Extracted `reconcile.measure_dom(page, W, H)`, which works on any loaded page, and wired it into
+`build.render()` using the page it already has (~15ms).
+
+**Scoping mattered more than the check.** First cut fired on every tight-leading headline, because
+at line-height < 1 glyphs ALWAYS paint past the line box. A gate that fires on every poster is a
+gate everyone learns to ignore. Measured the corpus: normal AQ headlines overshoot 7-9%; a genuine
+"your bbox is a lie" case overshoots 32%. Threshold set at 20% + 24px, and the report reworded from
+the vague "lands on its neighbour" to what it actually means: *a hand-written bbox here
+under-reports by N px*.
+
+### 5. Three numbers, and knowing which one to use
+`build.measure_text()` now asks the font instead of the author guessing. It returns three different
+sizes, and using the wrong one is its own bug:
+- `w/h` — the LAYOUT box, what the next element flows against
+- `ink_w/ink_h` — the CONTENT box, what the element needs in order not to clip
+- `glyph_w/glyph_h` — **the TRUE painted bounds** (canvas `TextMetrics`, single-line)
+
+For "126" at 430px: layout 731x336, content 731x443, **painted 783x363**. The painted box is
+*wider than the layout box* — that is precisely what let a sticker be cleared onto the numeral. And
+`ink_h` over-reserves, because the em box includes a descender digits never use; flowing off it
+opened a visible hole. **Flow off `h`; size a collision bbox off `glyph_h`.**
+
+Batch v5 uses this to SOLVE for the hero size rather than pick one: given the sticker column's
+rotated footprint, it computes the font-size whose painted width exactly fills the remaining
+budget. It landed on 408px painting 743px into a 743.8px budget.
+
+### 6. Containment must be expressed, not implied
+A pill was sized from DATA (26 projects -> 120px) while its label was sized from TEXT (212px), and
+they were sibling divs, so `collision_check` treated their overlap as intended and the poster
+shipped "PLANTAT". Same bug on the other axis: a headline positioned over a colour band it was
+taller than.
+
+**Preferred fix is structural — nest the label INSIDE the shape's div**, and the browser plus
+`measure_dom` enforce it for free. Added `layout.contains_check` (HARD FAIL) for the relationships
+nesting cannot express: a rotated sticker over a slab, type fitted to a band it is not a child of.
+
+### 7. `rotated_bbox` — rotation inflates the real footprint
+Found by the new reconciliation: a 168px sticker at `rotate(-9deg)` draws a **192px** axis-aligned
+box. Every collision check on a tilted element — and AQ tilts almost everything — had been running
+against a box 14% too small. At 45deg the error peaks at 41%.
+
+### 8. CLAUDE.md §10's only "discipline" row is now mechanised
+"Stale bbox tuple hides a real off-canvas/collision" was the single entry in the catalogue whose
+guard column was a human promise. `reconcile.reconcile_boxes()` compares the declared element list
+against what the browser actually drew, reporting `under_reported` (declared smaller than drawn)
+and `untracked` (a substantial element with NO declared box — the silent half of the bug).
+ADVISORY, because tuples carry no identity and matching is positional.
+
+### 9. Textures: the file's own docstring was a lie
+`tex.halftone_fill()` returned a FLAT fill. That is the correct house ruling (no halftone on solid
+brand colour) but the NAME said otherwise, so it was a trap. Rebuilt `tex.py` as a real vocabulary
+— parameterised `grain`, `paper_fibre`, `stripes`, `crosshatch`, `dot_grid`, `grid_lines`,
+`checkerboard`, `rays`, `concentric`, a proper two-plate `duotone` (the old single-tint-at-.55
+pushed every photo to one muddy mid-tone and lost the faces), `photo_ink`, `tape`, `torn`,
+`riso_offset`. Legacy entry points kept so the 44 recreations still import.
+
+**Every field texture defaults to FULL alpha**, and `layout.wash_scan()` now encodes the
+friendship_day rule that had no automated guard: large PATTERNED decoration at .05-.34 alpha reads
+as dirt and smears body copy. Scoped hard — flat low-alpha scrims are legitimate photo craft and
+are left alone; small textured chips are below the area floor. ADVISORY, because a halftone over a
+photo is indistinguishable from a wash over paper in an HTML string.
+
+**Also learned, the hard way, twice:** `tape()` in cream on a cream page is not craft, it is a
+smudge; and tape floating with nothing under it is not tape. Craft objects must be visible against
+their ground and must be holding something down.
+
+### 10. Truth ladder held
+Every number shipped is Counted off the CSV with its qualifier attached: 558 logged projects, 291
+workshops, 126 returns to one partner (two spellings of "Pather Sathi" merged), 3,756 **volunteer
+turnouts** — deliberately NOT "3,756 volunteers", which would imply unique people. The parseable
+attendance figures sum to 10,216, but that is attendances and not unique children, so it was not
+shipped as a hero number at all.
+
+### Self-tests added (all reconstruct a real failure above)
+`test_brand_truth.py` (23) · `test_texture.py` (25) · `test_measured_layout.py` (32).
+**Full suite now 169 assertions, all verified passing this session.**

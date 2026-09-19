@@ -38,24 +38,24 @@
     },
     "2022ebef4ffad5": {
       "file": "2022ebef4ffad554b42b3d6c5c6c914a.jpg",
-      "status": "in_progress",
-      "score": 0.424,
-      "iters": 1,
-      "note": "showcase5c dense build; word_boxes+checker+extrude primitives added"
+      "status": "blocked",
+      "score": 0.533,
+      "iters": 4,
+      "note": "v5: added centroid correction (headline+deck lifted ~50-60px, CENTROID OFF 0.12->0.10) and real interior linework (hatch on card corner/spray tube, solid ink fold-seam lines on envelope -- avoided the low-opacity-wash antipattern from CLAUDE.md's bug catalog). Score plateaued 0.533->0.52: detail ratio barely moved (0.45->0.44) because area also grew (over-filled 1.15x->1.23x), which is the same DETAIL-TOO-LOW-is-structurally-persistent pattern already logged across the whole 15-poster showcase batch in RECREATION_AUDIT.md's 'Standing gaps' (none of those 15 reached 0.16 either). Parking here, not a true blocker: v5.png is clean on the looking gate (zero collisions, correct cascade peek per the new layout.cascade_peek_check, good hierarchy) and is the best version so far. Needs the batch-wide fix (richer shapes.py silhouettes / heavier hatch density on card interiors) rather than another per-poster nudge -- revisit after that lands."
     },
     "23bb507f6ec978": {
       "file": "23bb507f6ec97814dc8fceeee2392803.jpg",
-      "status": "in_progress",
-      "score": 0.339,
-      "iters": 2,
-      "note": "showcase5e; detail<->area tension found"
+      "status": "blocked",
+      "score": 0.328,
+      "iters": 3,
+      "note": "Parking at a good stopping point, not a true blocker: v3.png is clean on the looking gate (no collisions, no dead zones, tight signpost cluster matching the reference's density), score 0.328 with no blocking critique in either v2 or v3. Remaining gap is two muted reference hues (grey-teal, muted red/pink) needing real area, not just icon-scale color -- a palette-level fix, not a layout bug. Revisit with a fresh accent pass rather than another layout nudge."
     },
     "25d39cb69b3684": {
       "file": "25d39cb69b368495069455246a545187.jpg",
-      "status": "in_progress",
-      "score": 0.392,
-      "iters": 2,
-      "note": "showcase5: new shapes.py silhouettes, blocking critiques cleared"
+      "status": "blocked",
+      "score": 0.369,
+      "iters": 4,
+      "note": "Parking at a good stopping point: v4.png clean on the looking gate, no blocking critique, best score yet (0.369) and closest bbox match (0.972 IoU) of the session. Remaining gap is 3 small under-filled regions (~0.7-0.75 delta) plus palette noise from the sticker() ring outline -- neither is a blocking layout bug. A future pass could recover some of v3's bespoke-silhouette specificity (real furniture-creature shapes instead of generic blobs) while keeping v4's scale/centroid fix."
     },
     "29c6a858911dab": {
       "file": "29c6a858911dab0fa25ef134785d64ba.jpg",

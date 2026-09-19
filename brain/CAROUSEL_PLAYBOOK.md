@@ -128,3 +128,11 @@ and is now either an encoded rule or a standing instruction.
 - If a NEW general failure class turns up during the batch (not covered by the checklist above),
   stop and add it here per CLAUDE.md §8 before continuing — that is what keeps the 30th post better
   than the 1st, instead of just as error-prone.
+
+## See also
+This playbook is the one surface where the wider voice system is already running, in practice:
+§5 ("sticker copy must match the actual photo") and §6 ("never let a sticker/tag invent a fact")
+are the truth ladder and fingerprint rule now written up in full at `VOICE.md` §2 and §1.6 — this
+playbook did them first, by hand, before they had a name. `IDEATION.md` treats "always/usually a
+carousel" as a post-type property (§5a) and points back here as the built implementation. Node
+map: `CONTENT_SYSTEM.md` §6.

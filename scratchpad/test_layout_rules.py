@@ -8,7 +8,7 @@ Run:  PYTHONIOENCODING=utf-8 python scratchpad/test_layout_rules.py
 Companions: test_collision_nudge.py · test_invisible_craft.py · test_doodle_stamp.py
 """
 import os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 def load(n):
@@ -104,5 +104,17 @@ r2 = lay.preflight(W, H, [("a", 950, 40, 200, 200)], html=None)
 ok(r2["clean"] is False and r2["off_canvas"], "preflight FAILS clean on a hard bug (off-canvas)")
 ok("under_filled_quadrants" in r and r["clean"] is True,
    "under_filled_quadrants is ADVISORY — reported, but never flips clean")
+
+# ══ cascade_peek_check — "deck offset hides the back cards" (2022ebef4ffad5, 2026-09-03) ════
+buggy_stack = [(170 + 88, 470 + 96, 590, 459), (170 + 44, 470 + 48, 648, 504), (170, 470, 720, 560)]
+ok(lay.cascade_peek_check(buggy_stack) != [],
+   "2022ebef4ffad5 v3 (actual coords): back cards offset DOWN-RIGHT and shrunk end up nested "
+   "fully inside the frontmost card's bounds -- the 'cascade' rendered as one flat card. Caught.")
+fixed_stack = [(170 + 30, 560 + -110, 612, 476), (170 + 15, 560 + -55, 662, 515), (170, 560, 720, 560)]
+ok(lay.cascade_peek_check(fixed_stack) == [],
+   "v4 fix: back cards offset UP so their top edge crosses the frontmost card's top edge -- "
+   "each one visibly peeks out. Passes.")
+ok(lay.cascade_peek_check([(0, 0, 100, 100)]) == [],
+   "a single-card 'stack' (nothing behind it to hide) trivially passes")
 
 print(f"\nALL {n} ASSERTIONS PASSED")
