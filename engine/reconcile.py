@@ -235,6 +235,36 @@ def format_reconcile(res):
     return lines
 
 
+def suppress_handled(flaws, declared, tol=8):
+    """Drop OVERSIZE reports the author has already accounted for.
+
+    THE NOISE THIS REMOVES (found by a Sonnet agent running the manual cold, session
+    10e). `spilling`/OVERSIZE fires whenever glyphs paint past their line box — which a
+    line-height below 1 ALWAYS causes, and every AQ headline uses one. So it printed on
+    essentially every hero numeral, including renders where the author had read
+    measure_text()'s docstring and correctly sized the bbox off `ink_h`. The check
+    cannot tell "already handled" from "genuine bug" on its own.
+
+    But the CALLER knows: if they passed an element list whose declared box already
+    covers the painted extent, they have handled it. Only what remains is worth a line.
+    A gate that cries wolf on every clean run is how people learn to skim past the
+    warnings that matter.
+    """
+    if not declared:
+        return flaws
+    boxes = [(e[-2], e[-1]) for e in declared]     # (w, h) of every declared element
+    out = dict(flaws)
+    keep = []
+    for rec in flaws.get("spilling", []):
+        tag, axis, got, box = rec
+        i = 0 if axis == "width" else 1
+        if any(b[i] + tol >= got for b in boxes):
+            continue                                # someone declared a box this big
+        keep.append(rec)
+    out["spilling"] = keep
+    return out
+
+
 def format_measure(flaws, name=""):
     """One-line-per-flaw rendering for the render gate's console output."""
     lines = []

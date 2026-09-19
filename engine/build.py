@@ -145,7 +145,7 @@ async def _settle(pg):
 
 # ---------- render + audit gate ----------
 async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=None,
-                 expect_hero=False):
+                 expect_hero=False, collision_ignore=frozenset(), auto_nudge=False):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -175,8 +175,13 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
         if same:
             print(f"[{name}] ⚠ FILL SAME AS PAGE BG (element invisible): {same}")
     if elements is not None:
+        # collision_ignore/auto_nudge pass THROUGH. Without them the render-time
+        # convenience gate re-reported by-design overlaps that the caller's own
+        # preflight had already accepted — the two gates contradicting each other a
+        # few lines apart, which teaches people to distrust both.
         layout.preflight(W, H, elements, html=None, color_pairs=color_pairs,
-                         page_bg=page_bg, core=core, expect_hero=expect_hero)
+                         page_bg=page_bg, core=core, expect_hero=expect_hero,
+                         collision_ignore=collision_ignore, auto_nudge=auto_nudge)
     # The DOM audit and the screenshot both need this html LOADED in a browser.
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements)
@@ -196,6 +201,14 @@ async def _shoot(html, out_png, W, H, name, elements=None):
         # which a word losing its last three letters is intended — so it prints
         # on every render rather than waiting to be opted into.
         flaws = await reconcile.measure_dom(pg, W, H)
+        # OVERSIZE fires whenever glyphs paint past their line box, which a tight
+        # line-height ALWAYS causes — so it printed on every hero numeral even when the
+        # author had correctly sized the bbox off measure_text()['ink_h']. If the caller
+        # declared a box that already covers the real extent, they handled it; only what
+        # remains is worth a line. A gate that cries wolf on every clean run is how
+        # people learn to skim past the warnings that matter.
+        if elements:
+            flaws = reconcile.suppress_handled(flaws, elements)
         for line in reconcile.format_measure(flaws):
             print(f"[{name}] ⚠ {line}")
         # When the caller declared an element list, check it against reality. This
@@ -229,6 +242,10 @@ async def measure_text(items, W=1080, H=1350):
            `font` takes the CSS family or a token name ('d','e','s','m').
     Returns the same list order, each as
         {'w','h'          — the LAYOUT box: what the next element flows against,
+         'text_w'         — the string's OWN width, measured unconstrained. When you
+                            pass `max_width`, `w` and `ink_w` are the CONTAINER's width,
+                            not the text's — a two-letter headline in a 900px box
+                            reports 900. Size a collision bbox off `text_w`.
          'ink_w','ink_h'  — the content box: what the element needs to not clip,
          'glyph_w','glyph_h' — the TRUE painted bounds of the type (single-line
                             only, else None). This is the one to use for a
@@ -250,6 +267,18 @@ async def measure_text(items, W=1080, H=1350):
         fam = FAM.get(it.get("font", "d"), it.get("font", "var(--d)"))
         mw = it.get("max_width")
         box = f"width:{mw}px;" if mw else "white-space:nowrap;"
+        # A SECOND, unconstrained copy of every string. With max_width set the block's
+        # rect width is the CSS width no matter how short the text is, so `w` cannot be
+        # trusted as the text's own width — that silently inflated a collision bbox by
+        # ~100px for a two-letter headline. `text_w` below is measured at nowrap and IS
+        # the string's real width.
+        spans.append(
+            f'<div id="t{i}" style="position:absolute;top:-9999px;left:0;white-space:nowrap;'
+            f'font-family:{fam};font-weight:{it.get("weight", 900)};'
+            f'font-size:{it.get("size", 16)}px;'
+            f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'text-transform:{it.get("transform", "none")};'
+            f'visibility:hidden">{it["text"]}</div>')
         spans.append(
             f'<div id="m{i}" style="position:absolute;top:0;left:0;{box}'
             f'font-family:{fam};font-weight:{it.get("weight", 900)};'
@@ -289,7 +318,9 @@ async def measure_text(items, W=1080, H=1350):
                      gh = Math.ceil(tm.actualBoundingBoxAscent + tm.actualBoundingBoxDescent);
                    }
                  }
-                 return { w: Math.ceil(r.width), h: Math.ceil(r.height),
+                 const te = document.getElementById('t' + i);
+                 const tw = te ? Math.ceil(te.getBoundingClientRect().width) : null;
+                 return { w: Math.ceil(r.width), h: Math.ceil(r.height), text_w: tw,
                           ink_w: Math.max(Math.ceil(r.width), e.scrollWidth),
                           ink_h: Math.max(Math.ceil(r.height), e.scrollHeight),
                           glyph_w: gw, glyph_h: gh, lines: lines };
