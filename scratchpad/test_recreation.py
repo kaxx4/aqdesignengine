@@ -214,4 +214,38 @@ for _f in (_probe, "scratchpad/crops/_test_cut.png", _auto):
     if os.path.exists(_f):
         os.remove(_f)
 
+# ── THE SCORE MUST SAY WHEN IT IS NOT COMPARABLE (session 10f, agent r1) ────
+# compare._load resamples BOTH images to one frame. That is right for relative
+# geometry and wrong to read as a quality number when the sources are different
+# shapes: a 0.275 phone-screen crop against a 0.5625 story canvas scored 0.534
+# against a 0.16 accept line while the looking gate found every element present
+# and correctly proportioned. The agent had to discover that by running a control
+# (render vs. a downscaled copy of itself → 0.001). compare knows both aspects.
+import io as _io2, contextlib as _ctx2
+from PIL import Image as _Im
+import tempfile as _tf2
+
+_d = _tf2.mkdtemp(prefix="aq_asp_")
+_tall = os.path.join(_d, "tall.png");  _Im.new("RGB", (400, 1400), "white").save(_tall)
+_wide = os.path.join(_d, "wide.png");  _Im.new("RGB", (400, 500), "white").save(_wide)
+_same = os.path.join(_d, "same.png");  _Im.new("RGB", (800, 1000), "white").save(_same)
+
+r_, g_, gap_ = cmp_.aspect_gap(_tall, _wide)
+assert gap_ > 0.5, (r_, g_)
+ok(f"aspect_gap measures the real source shapes ({r_} vs {g_})")
+
+_b = _io2.StringIO()
+with _ctx2.redirect_stdout(_b):
+    cmp_.compare(_tall, _wide)
+assert "ASPECT MISMATCH" in _b.getvalue()
+ok("a cross-aspect comparison SAYS the score is not comparable")
+assert "control" in _b.getvalue().lower() and "RECREATION_PROTOCOL" in _b.getvalue()
+ok("...and names the control to run and where the ruling lives")
+
+_b = _io2.StringIO()
+with _ctx2.redirect_stdout(_b):
+    cmp_.compare(_same, _same)
+assert "ASPECT MISMATCH" not in _b.getvalue()
+ok("a same-aspect comparison stays silent — it does not cry wolf on normal work")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

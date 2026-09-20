@@ -100,6 +100,33 @@ bespoke script and the looking gate (§3) still runs on the PNG.
 Workflow C's checklist is Workflow B's minus the reference-matching steps: measure the
 chosen style's reference (`compare.geometry`), build to its proportions, render, LOOK.
 
+### WHEN THE STYLE AND THE BRAND DISAGREE — the precedence ladder
+A drawn style is a *reference someone judged*, not a specification, and it will
+sometimes ask for something §9 forbids. Both of these came up on the first real
+Workflow C builds and both were resolved correctly from first principles — which
+means every builder was re-deriving them. They are rules now:
+
+1. **A HARD BRAND RULE BEATS THE RECIPE, always.** `core.accent_for(dept)` is semantic,
+   contrast is measured, Instrument Serif is ≤1 accent word, the ground is cream not
+   white, real assets only. A recipe saying "set the whole headline in serif caps"
+   loses to §9; take the *mechanism* (serif carries the voice) and express it the
+   brand's way (one italic accent word).
+2. **A recipe's COUNT is a target, not a ceiling.** "Restraint: exactly four colours"
+   means *this piece is disciplined about colour*, and a fifth that arrives because
+   the department hue is fixed by rule has not broken the restraint. Keep the spirit
+   — no free-for-all — and say in the script's docstring which number you exceeded
+   and why.
+3. **The mechanism is the part you must not drop.** Everything else is negotiable.
+   If honouring a brand rule would destroy the mechanism, you have drawn the wrong
+   style for this brief: re-draw with a different seed rather than build a piece whose
+   whole reason for existing has been adapted away.
+4. **Record every adaptation** in the bespoke script's docstring, the same way
+   Workflow B's step 4 distinguishes an acceptable adaptation from a real miss. §5's
+   list applies here too: swapping literal brand copy for AQ program names, using a
+   real AQ photo or flat SVG where the reference used stock, substituting an engine
+   doodle for an icon the engine lacks — all acceptable. A missing mechanism, a
+   collision, an invisible element, a dead half — still failures.
+
 Both workflows are gated by §3 (looking) and §7 (the automated checks). Both feed §8 (encode fixes).
 
 ---
@@ -620,6 +647,9 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `stylebank._REPROP_WORDS` was a hidden acceptance list: a recipe could fail the canvas check with no way to see why | session 10f, judging agent | `RECIPE_RULE` now PRINTS the enforced tuple (derived, not retyped — the first draft of this fix drifted immediately, "square" vs "squar") |
 | `AGENTS.md` was a full second copy of this manual, frozen before session 10: `M = 48`, the render call that disables the measured tier, "all 44 processed" against a 74-item queue, and no knowledge of `measure_text`, `measure_dom`, the style bank or Workflow C. A harness reading it by convention got a confident, authoritative, four-sessions-stale manual | session 10f | `AGENTS.md` is now a pointer to this file. `test_repo_hygiene.py` asserts it stays one |
 
+| A cross-aspect score read as a quality number: a 0.275 phone crop against a 0.5625 story canvas scored 0.534 against a 0.16 accept line while the looking gate found every element present. Discovering that took a control run the builder had to think of | session 10f, agent r1 | **`compare.compare()` now WARNS on an aspect gap >25%** and names the control to run · `compare.aspect_gap()` |
+| Workflow C had no ruling for "the drawn style's recipe conflicts with a hard brand rule" (a reference set entirely in serif vs. §9's ≤1 accent word) or "the recipe's colour count vs. the fixed department hue". Both were re-derived from first principles by every builder | session 10f, agent c1 | **§2's precedence ladder** — hard brand rule beats recipe; a recipe's count is a target not a ceiling; the mechanism is the part you may not drop; record every adaptation |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -699,9 +729,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_layout_rules.py` (72) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (32) ·
+  `test_recreation.py` (36) ·
   `test_stylebank.py` (57) · `test_buried_text.py` (13) · `test_repo_hygiene.py` (28)** —
-  **381 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  **385 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

@@ -149,7 +149,33 @@ def _name_color(c):
     return "blue/purple"
 
 
+_ASPECT_WARN = 0.25
+
+
+def aspect_gap(ref_path, gen_path):
+    """How far apart the two images' SOURCE aspects are, before _load flattens both
+    into the common analysis frame. Returns (ref_aspect, gen_aspect, rel_gap)."""
+    ra = Image.open(ref_path).size
+    ga = Image.open(gen_path).size
+    r, g = ra[0] / ra[1], ga[0] / ga[1]
+    return round(r, 3), round(g, 3), abs(r - g) / max(r, g)
+
+
 def compare(ref_path, gen_path, gw=9, gh=11):
+    # SAY IT UP FRONT WHEN THE SCORE IS NOT COMPARABLE. _load resamples both images to
+    # one frame, which is right for relative geometry and wrong to read as a quality
+    # number when the sources are different shapes: a 0.275 phone-screen crop against a
+    # 0.5625 story canvas scored 0.534 against a 0.16 accept line while the looking gate
+    # found every element present and correctly proportioned. The agent who hit that had
+    # to discover it by running a control (render vs. a downscaled copy of itself, which
+    # returned 0.001). compare knows both aspects and can simply say so.
+    _r, _g, _gap = aspect_gap(ref_path, gen_path)
+    if _gap > _ASPECT_WARN:
+        print(f"   [compare] ASPECT MISMATCH {_r}:1 vs {_g}:1 ({_gap:.0%} apart). Both are "
+              f"resampled to {SIZE[0]}x{SIZE[1]}, so this score measures the DISTORTION as "
+              f"well as the design and is NOT comparable to a same-aspect recreation. "
+              f"Run a control (score the render against a downscaled copy of ITSELF) "
+              f"before believing any gap — see brain/RECREATION_PROTOCOL.md, MOCKUPS.")
     ref, gen = _load(ref_path), _load(gen_path)
     ra, rl = _arrays(ref)
     ga, gl = _arrays(gen)
