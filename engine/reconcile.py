@@ -51,6 +51,50 @@ _MEASURE_JS = """els => els.map(e => {
            ox: cs.overflowX, oy: cs.overflowY,
            fixedW: /\d/.test(e.style.width || ""),
            fixedH: /\d/.test(e.style.height || ""),
+           // Does this element's OWN TEXT actually reach the surface? Sample a few
+           // points across its box and ask the browser what is painted there. A
+           // point "hits" when elementFromPoint returns this element or something
+           // inside it. See buried_text in measure_dom for why this exists.
+           txt: (e.textContent || "").trim().slice(0, 40),
+           ownText: [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()),
+           hit: (() => {
+             if (r.width < 2 || r.height < 2) return null;
+             // OPACITY IS THE WHOLE POINT. elementFromPoint reports GEOMETRIC
+             // stacking, not visual coverage — and a headline at the house's tight
+             // line-height hit-tests ABOVE its own border box, so it "covered" a
+             // label 27px higher while being completely transparent there. The v1
+             // of this check called that buried and was wrong (agent c2, c2_v5).
+             // So: walk the whole stack at each point, top down, and only call it
+             // buried if something OPAQUE sits above this element.
+             const opaque = (n) => {
+               const s = getComputedStyle(n);
+               if (parseFloat(s.opacity || "1") < 0.5) return false;
+               if (s.backgroundImage && s.backgroundImage !== "none") return true;
+               const m = (s.backgroundColor || "").match(/rgba?\\(([^)]+)\\)/);
+               if (!m) return false;
+               const p = m[1].split(",").map(parseFloat);
+               return p.length < 4 || p[3] >= 0.9;
+             };
+             const pts = [[.5,.5],[.2,.3],[.8,.3],[.2,.7],[.8,.7]];
+             let seen = 0, ok = 0, top = null;
+             for (const [fx, fy] of pts) {
+               const px = r.x + r.width * fx, py = r.y + r.height * fy;
+               if (px < 0 || py < 0 || px > innerWidth || py > innerHeight) continue;
+               seen++;
+               const stack = document.elementsFromPoint(px, py);
+               let blocked = null;
+               for (const t of stack) {
+                 if (t === e || e.contains(t) || t.contains(e)) break;  // reached us
+                 if (opaque(t)) { blocked = t; break; }
+               }
+               if (!blocked) { ok++; }
+               else if (!top) {
+                 top = blocked.dataset.tag || blocked.className
+                       || blocked.tagName.toLowerCase();
+               }
+             }
+             return seen ? { seen, ok, top } : null;
+           })(),
            clip: (() => {
              // nearest ancestor that actually CLIPS, and its rect
              let p = e.parentElement;
@@ -111,7 +155,8 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
                   and the rest are reported, not failed.
     """
     els = await page.eval_on_selector_all(_SEL, _MEASURE_JS)
-    out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": []}
+    out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": [],
+           "buried_text": []}
     for e in els:
         if e["cw"] == 0 and e["ch"] == 0:
             continue                                   # not laid out; nothing to say
@@ -165,6 +210,30 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
             if e["bottom"] > cl["b"] + 1: over.append(("bottom", e["bottom"] - cl["b"]))
             for side, px in over:
                 out["clipped"].append((f'{e["tag"]} (by {cl["tag"]})', side, int(px), 0))
+
+        # BURIED TEXT — type that is painted, laid out, the right colour, inside its
+        # box and on the canvas, and still cannot be seen because something opaque is
+        # in front of it.
+        #
+        # THE BUG THIS ENCODES (session 10f, agent c1's v1). A body-copy paragraph had
+        # no z-index; a sibling background rectangle had `z-index:1`. In CSS any
+        # explicit z-index on a positioned element paints above `z-index:auto`
+        # REGARDLESS of DOM order, so the opaque cream rectangle buried the whole
+        # paragraph. preflight printed CLEAN. render()'s auto-gates printed CLEAN.
+        # Playwright's own is_visible() and bounding_box() both reported it present,
+        # because by every DOM measure it WAS. Only reading the PNG caught it.
+        #
+        # So the question has to be asked of the compositor, not the layout engine:
+        # hit-test points across the box and see what is actually on top. That catches
+        # this cause and every other one — paint order, a later sibling, a stacking
+        # context — without needing to model any of them.
+        #
+        # Only elements with their OWN text are tested. A decorative div legitimately
+        # sits behind things; a word does not.
+        hit = e.get("hit")
+        if e.get("ownText") and hit and hit["seen"] and hit["ok"] == 0:
+            out["buried_text"].append(
+                (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?", hit["seen"]))
 
         if e["tag"] in bleed_tags:
             continue
@@ -278,6 +347,12 @@ def format_measure(flaws, name=""):
     for tag, axis, got, box in flaws.get("spilling", []):
         lines.append(f"OVERSIZE {tag}: real {axis} {got}px vs {box}px box "
                      f"— a hand-written bbox here under-reports by {got-box}px")
+    for tag, txt, top, seen in flaws.get("buried_text", []):
+        lines.append(f"BURIED (advisory) {tag}: \"{txt}\" is painted but not visible — "
+                     f"an opaque '{top}' is in front of it at all {seen} sampled points. "
+                     f"If that is not intended, raise this element above '{top}' or move "
+                     f"one of them. A repeated-card DECK legitimately hides the back "
+                     f"copies' own text and will report here")
     for tag, x, y, r, b in flaws.get("off_canvas", []):
         lines.append(f"OFF-CANVAS {tag}: box ({x},{y})-({r},{b})")
     return lines

@@ -146,7 +146,7 @@ if os.path.exists(REF):
 else:
     ok("(reference image absent — geometry assertions skipped)")
 
-print(f"\nALL {N} ASSERTIONS PASSED")
+# (no banner here — a mid-file "ALL PASSED" print makes a FAILED run look passed)
 
 # ── layout.resolve_label_z — protect the LABEL, not the object ──────────────
 # sample 522f2d89: in a deliberately overlapping pile, heavy overlap is the effect.

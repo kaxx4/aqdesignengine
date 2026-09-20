@@ -10,12 +10,17 @@ individual slide afterwards for anything the montage flags.
 Paths assume the AQ layout out/versions/<slug>_carousel/<version>/N_*.png; override with
 AQ_OUT_VERSIONS if your tree differs.
 """
-import os, sys, glob
+import os
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
+import sys, glob
 from PIL import Image, ImageDraw
 
 OUT = os.environ.get(
     "AQ_OUT_VERSIONS",
-    r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE\out\versions")
+    os.path.join(_r, r"out\versions"))
 TH = 380
 
 

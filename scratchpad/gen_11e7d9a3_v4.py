@@ -1,3 +1,4 @@
+import os
 """RECREATION — 11e7d9a3ff6761 (isometric OVERFLOW keycaps), iteration 4.
 
 v3 (script since lost from scratchpad, only the PNG survives) measured 0.507 vs reference:
@@ -12,7 +13,12 @@ keycaps used, this reference's own top steal per DECISIONS.md), scaled to genuin
 (envelope, code-brackets, numbered tag, pointing hand, pencil) reproducing the reference's set.
 """
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

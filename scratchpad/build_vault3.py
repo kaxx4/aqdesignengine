@@ -1,6 +1,9 @@
 import os, re, io
 
-ROOT = r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE"
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+ROOT = _r
 VAULT = os.path.join(ROOT, "AQ Design Engine")
 BRAIN = os.path.join(ROOT, "brain")
 

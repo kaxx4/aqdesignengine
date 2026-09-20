@@ -1,3 +1,4 @@
+import os
 """AQUATERRA HALL OF FAME — yearbook REWORK, 1080x1350.
 
 Source: C:/Users/kanis/Downloads/Yearbook.pdf (12 pages, 810x1012.5pt = already 4:5).
@@ -16,7 +17,12 @@ What changes is the LANGUAGE, into AQ brand:
   - handwritten "yearbook" mark    -> Instrument Serif italic accent word, same corner
 """
 import asyncio, base64, json, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

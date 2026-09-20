@@ -1,3 +1,4 @@
+import os
 """Fill the empty image / alt / label columns of the 2026 workshop rows from the downloaded
 Drive photos.
 
@@ -13,7 +14,12 @@ Only EMPTY cells are filled. An existing main_image or image_N is never overwrit
 """
 import csv, json, os, shutil
 
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 SRC_CSV = r"C:\Users\kanis\Downloads\welfare_projects_rows.csv"
 OUT = "out/CSV_IMAGE_FILL"
 PHOTOS = "scratchpad/carousel_2026"

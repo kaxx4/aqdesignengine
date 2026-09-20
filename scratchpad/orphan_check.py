@@ -1,6 +1,11 @@
-import os, re, io
+import os
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
+import re, io
 
-VAULT = r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE\AQ Design Engine"
+VAULT = os.path.join(_r, r"AQ Design Engine")
 
 files = {}
 for root, dirs, fs in os.walk(VAULT):

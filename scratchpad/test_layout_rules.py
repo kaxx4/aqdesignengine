@@ -8,7 +8,9 @@ Run:  PYTHONIOENCODING=utf-8 python scratchpad/test_layout_rules.py
 Companions: test_collision_nudge.py · test_invisible_craft.py · test_doodle_stamp.py
 """
 import os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
+# Repo root from THIS FILE's location. A hardcoded root has broken this repo
+# five times; the last fix just swapped in a NEW absolute path.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 def load(n):
@@ -192,5 +194,83 @@ ok(_say(_E, {("card", "envelope")}) == "",
    "a build whose ignore pairs all name real elements says nothing")
 ok(_say(_E, set()) == "",
    "no ignore pairs at all is silent — the check cannot fire unasked")
+
+# ── TEXT THAT IS THERE BUT CANNOT BE READ (session 10f, from 110a5730 v4) ───
+# A recreation put white 30px copy on a lavender card and DECLARED the pair
+# honestly: ("card2_title", WHITE, LAVENDER) was right there in color_pairs.
+# invisible_color_check ran on that exact pair and passed it, because its question
+# is "is this the SAME colour as its backing" — an RGB distance — and #FFFFFF vs
+# #DAD1FF are plainly different colours. They are also 1.44:1. core.text_on()
+# would have returned ink at 13.71:1. The engine knew; nothing asked.
+shapes_m = load("shapes")
+LAV = shapes_m.lighten(core.ACCENTS[5], 0.72)
+WHITE_ = "#FFFFFF"
+
+ok(round(core.contrast(WHITE_, LAV), 2) == 1.44,
+   "MEASURED: white on that lavender is 1.44:1 — barely above invisible")
+ok(lay.invisible_color_check([("card2_title", WHITE_, LAV)], "#FF4D2E", core) == [],
+   "invisible_color_check passes it — distance is the wrong question for legibility")
+
+_tc = lay.text_contrast_check([("card2_title", WHITE_, LAV, 30, True)], core=core)
+ok(len(_tc) == 1 and _tc[0][3] == 1.44,
+   "text_contrast_check catches it and reports the real ratio")
+ok(_tc[0][5] == core.text_on(LAV) == "#0A0A0A",
+   "...and hands back the colour core.text_on would have chosen (13.71:1)")
+
+# the WCAG large-text split must be honoured, or it will be wrong about every hero
+ok(lay.text_contrast_check([("num", core.ACCENTS[1], core.CREAM, 500, True)], core=core) == [],
+   "a 500px mint numeral on cream (3.78:1) passes the 3.0 large-text floor")
+_small = lay.text_contrast_check([("lbl", core.ACCENTS[1], core.CREAM, 20, True)], core=core)
+ok(len(_small) == 1 and _small[0][4] == core.AA_NORMAL,
+   "...and the SAME mint at 20px fails the 4.5 floor — the on_cream rule, enforced")
+
+ok(lay.text_contrast_check([("a", core.INK, core.CREAM, 16)], core=core) == [] and
+   lay.text_contrast_check([("b", "#FFFFFF", core.INK, 16)], core=core) == [],
+   "the two normal AQ combinations do not fire")
+ok(lay.text_contrast_check([("c", "var(--nope)", "#FFF", 16)], core=core) == [],
+   "an unresolvable colour is SKIPPED, never guessed (same contract as its sibling)")
+ok(lay.text_contrast_check([("d", WHITE_, LAV)], core=None) == [],
+   "without core it returns nothing rather than inventing a contrast model")
+
+_pf2 = lay.preflight(1080, 1350, [(0, 0, 100, 100)],
+                     text_pairs=[("card2_title", WHITE_, LAV, 30, True)], core=core)
+ok(_pf2["clean"] is False and _pf2["unreadable_text"],
+   "preflight HARD-FAILS on unreadable copy — opt-in, so it never fires unasked")
+
+# ── CONTAINMENT IS NOT COLLISION (session 10f, from agent r1) ───────────────
+# A UI-mockup recreation with four cards had to hand-list one ignore pair per
+# child. A forgotten pair is indistinguishable from a real bug; a typo'd one
+# silently whitelists nothing. Declaring the CARD once says what was meant.
+CARD = [("card", 80, 180, 400, 300), ("title", 104, 204, 300, 40),
+        ("body", 104, 260, 340, 80), ("stray", 300, 150, 120, 120)]
+
+_bare = lay.collision_check(CARD)
+ok(len(_bare) == 4, "without containers, every child of the card is reported (4 pairs)")
+
+_held = lay.collision_check(CARD, containers=("card",))
+ok(len(_held) == 2, "declaring the card drops the two contained children")
+ok(all("card" not in (a, b) or "stray" in (a, b) for a, b, _, _ in _held),
+   "...and the card is only cleared against things actually INSIDE it")
+ok(any({a, b} == {"card", "stray"} for a, b, _, _ in _held),
+   "a doodle hanging OFF the card's edge is still a collision")
+ok(any({a, b} == {"title", "stray"} for a, b, _, _ in _held),
+   "...and siblings inside a container are still checked against each other")
+
+# the containment test is geometric, not by name — a child must really be inside
+_out = [("card", 80, 180, 400, 300), ("title", 40, 204, 300, 40)]
+ok(lay.collision_check(_out, containers=("card",)) != [],
+   "a 'child' that pokes outside its container is NOT silently forgiven")
+
+_g = _say([("card", 80, 180, 400, 300)], set())
+ok(_g == "", "no containers declared, nothing said")
+_buf = _io.StringIO()
+with _ctx.redirect_stdout(_buf):
+    lay.collision_check(CARD, containers=("panel",))
+ok("CONTAINERS NOT IN THE ELEMENT LIST" in _buf.getvalue() and "panel" in _buf.getvalue(),
+   "a container that was never declared is reported, not silently ignored")
+
+_pf3 = lay.preflight(1080, 1350, CARD, containers=("card",))
+ok(len(_pf3["collisions"]) == 2,
+   "preflight carries containers through to the collision check")
 
 print(f"\nALL {n} ASSERTIONS PASSED")

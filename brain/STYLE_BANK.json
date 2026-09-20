@@ -643,7 +643,7 @@
         "giant-headline",
         "varied-silhouette"
       ],
-      "recipe": "Dark ground, huge white headline filling the middle. Scatter 8-12 die-cut badges around and ON it — varied silhouettes (scallop, burst, gear, tag, arch, shield, blob, capsule), each with the uniform sticker treatment so unrelated colours read as one set. Every badge sits IN FRONT of the type; depth comes from badge-on-badge overlap, and the headline reads because the badges land in its gaps. Fit each label to its silhouette (shapes.fit_font).",
+      "recipe": "Dark ground, huge white headline filling the middle. Scatter 8-12 die-cut badges around and ON it — varied silhouettes (scallop, burst, gear, tag, arch, shield, blob, capsule), each with the uniform sticker treatment so unrelated colours read as one set. Every badge sits IN FRONT of the type; depth comes from badge-on-badge overlap, and the headline reads because the badges land in its gaps. Fit each label to its silhouette (shapes.fit_font). Feed's taller portrait frame means the headline wraps to three short lines stacked centre instead of the reference's two wide ones, opening a tall column above and below for the swarm to wrap top and bottom rather than only left and right; keep the badge count near the reference's low end (8-9) so none needs to shrink below a readable size at feed's narrower 1080px width — do not widen the badges to eat the extra space, let breathing room between them do that instead.",
       "canvas": "feed",
       "depts": [
         "content",
@@ -923,7 +923,7 @@
         "script-accent",
         "pale-ground"
       ],
-      "recipe": "Pale ground. Two or three cut-out photos, each backed by a rotated flat-colour quad slightly larger than the photo. Scatter small emoji-ish sticker doodles and hand-drawn arrows between them so the eye travels. One handwriting-style accent line. Headline in a dark grotesk at upper left.",
+      "recipe": "Pale ground; headline in a dark grotesk at upper left, with one handwriting-style accent line beneath it. Two or three cut-out photos, each backed by a rotated flat-colour quad slightly larger than the photo, with small emoji-ish sticker doodles scattered between them. Linkedin's short wide frame (1200x628) has no room to stack the reference's tall column of photos, so lay the two or three photo-and-quad pairs out in a single row beside the headline, each shrunk to fit within the banner's 628px height while keeping its rotated backing quad visible at the corners. Keep the hand-drawn arrows short and mostly sideways, hopping photo to photo along that row instead of looping vertically the way the tall reference does. Do not add a fourth photo or a second accent line to fill the extra width — generous side margins are the banner's own breathing room.",
       "canvas": "linkedin",
       "depts": [
         "welfare",
@@ -1154,7 +1154,7 @@
         "dark-ground",
         "cta-pill"
       ],
-      "recipe": "Dark ground. A dense pile of long rotated capsules (about 5:1 length to height) filling the top ~78%, bleeding off all four edges, overlapping heavily. Each is one flat accent, NO outline or shadow, carrying its label in the measured-correct text colour, rotated with the capsule. Solve the LABEL positions so no label lands on another (layout.scatter_solve + resolve_label_z); the capsules may overlap freely. Pile stops on a clean line; below it a centred paper pill CTA and one small label.",
+      "recipe": "Dark ground; a dense pile of long rotated capsules (about 5:1 length to height) fills the top ~78% of the frame, bleeding off all four edges and overlapping heavily. Each capsule is one flat accent with no outline or shadow, carrying its label in the measured-correct text colour rotated with the capsule; solve label positions with layout.scatter_solve + resolve_label_z so an overlapping capsule never buries another's label, though the capsules themselves may overlap freely. Pile stops on a clean line; below it sits a centred paper pill CTA and one small label. The extracted phone screen this mechanism comes from is already close to story's tall portrait proportions — it is the two-phone photograph as a whole that measures near-square, not the single screen — so build straight to the full 1080x1920 canvas without squeezing the pile: extend the same capsule density down the extra vertical run rather than stretching individual capsules taller. Do not widen the capsules to compensate for story's narrower 1080px column; keep their 5:1 proportion and let the pile simply run longer.",
       "canvas": "story",
       "depts": [
         "events",
@@ -1340,7 +1340,7 @@
         "endless",
         "offset-rows"
       ],
-      "recipe": "Paper ground. Rows of outlined paper pills, each carrying a small accent dot and a short name. Offset each row horizontally like brickwork and let them bleed off BOTH edges — the endlessness IS the mechanism, so run them the full canvas, not part of it. Size each pill to its MEASURED text plus the border width. Optionally pin one rotated ink slab on top with a keyline ring so it reads as laid over the field.",
+      "recipe": "Paper ground; rows of outlined pills, each carrying a small accent dot and a short name, offset row-to-row like brickwork. Let every row bleed off BOTH left and right edges — the endlessness IS the mechanism — and size each pill to its MEASURED text plus the border width. Feed's taller portrait frame has far more vertical room than the reference's short wide strip, so stack noticeably more rows top to bottom (roughly double the reference's row count) rather than stretching row height or pill size to fill it. Optionally pin one rotated ink slab over the field partway down, with a keyline ring so it reads as laid over the pills. Do not enlarge the pills themselves to cover the added height — the field's density is the point, so more rows is the only correct way to fill a taller canvas.",
       "canvas": "feed",
       "depts": [
         "welfare",
@@ -2316,7 +2316,7 @@
         "mountain-motif",
         "festival-date-tag"
       ],
-      "recipe": "Paper-white ground. A big green triangular mountain shape fills the upper two-thirds; overlapping flat-colour instrument silhouettes (piano keys, sax, trumpet, bass) in yellow/blue/orange sit centred over it. A bold black caps headline sits top-left outside the mountain, with a small mono date + label bottom-left. Build one full poster, then crop it three ways (wide, medium, tight) to produce the panel set shown together. Restraint: exactly 4 flat colours plus black/white, no gradients, no outlines beyond the flat shapes themselves.",
+      "recipe": "Paper-white ground; a big green triangular mountain shape fills the upper two-thirds, with overlapping flat-colour instrument silhouettes (piano keys, sax, trumpet, bass) in yellow/blue/orange centred over it. A bold black caps headline sits top-left outside the mountain, with a small mono date + label bottom-left. Build one full poster at these proportions, then for linkedin's short wide banner (1200x628) crop and lay out just TWO panels side by side — a medium and a tight crop — instead of the reference's three, since the banner's shallow height leaves no room for a third full-height column. Shrink the mountain-and-instrument group proportionally within each crop so every silhouette stays fully visible rather than clipped at the banner's shorter height. Keep exactly 4 flat colours plus black/white with no gradients and no outlines beyond the flat shapes themselves — do not add a third panel just to fill the width.",
       "canvas": "linkedin",
       "depts": [
         "events"
@@ -2924,7 +2924,7 @@
         "centred-headline",
         "chip-accents"
       ],
-      "recipe": "Dark ground. Two or three enormous swooping arrow/ribbon shapes in saturated accents, crossing each other behind a short centred white headline. Add two or three tiny outlined chips at the edges of the shapes. The shapes should bleed off the frame — they are scenery, not icons.",
+      "recipe": "Dark ground. Two or three enormous swooping arrow/ribbon shapes in saturated accents, crossing each other behind a short centred white headline. Add two or three tiny outlined chips at the edges of the shapes. The shapes should bleed off the frame — they are scenery, not icons. The onboarding screen this mechanism comes from is itself a tall portrait rectangle close to story's 1080x1920 frame — it is the wide row of five phones measured together that reads as landscape, not any one screen — so build straight to that full canvas, letting the ribbons sweep top-to-bottom rather than the wider side-to-side crossing a landscape frame would invite, with the short centred headline above a bottom nav strip (dot row + one pill button) exactly as the reference's single screen carries it.",
       "canvas": "story",
       "depts": [
         "labs",
@@ -3298,7 +3298,7 @@
         "label-pill",
         "mixed-media"
       ],
-      "recipe": "Dark ground. A bento grid of rounded tiles at two or three different sizes — some photo, some flat accent, some empty dark. Drop a small outlined label pill onto each tile's corner. One circular photo cut-out breaks the grid at the top.",
+      "recipe": "Dark ground; a bento grid of rounded tiles at two or three different sizes — some photo, some flat accent, some empty dark. Drop a small outlined label pill onto each tile's corner. One circular photo cut-out breaks the grid at the top. The screen itself is a tall portrait rectangle nested inside the far more square photograph of the phone on its yellow backdrop, so build straight to story's full 1080x1920 canvas at the screen's own portrait proportions, not the square framing the mockup measures as a whole. Fill the extra vertical run with one or two additional grid rows rather than stretching any existing tile taller than the others — the tile-size vocabulary stays fixed, only the grid's row count grows.",
       "canvas": "story",
       "depts": [
         "events",

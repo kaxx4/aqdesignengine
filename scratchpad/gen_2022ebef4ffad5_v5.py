@@ -9,7 +9,9 @@ cascade_peek_check (encoded this session, see DECISIONS.md 2026-09-03) run on th
 the 3 cards genuinely peek, not just pass by eye.
 """
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
+# Repo root from THIS FILE's location. A hardcoded root has broken this repo
+# five times; the last fix just swapped in a NEW absolute path.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

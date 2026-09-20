@@ -50,6 +50,11 @@ async def audit(html, name, page=None, canvas=None):
             ix,iy=ov(boxes[i],boxes[j])
             if ix>12 and iy>12:
                 issues.append(f"OVERLAP {boxes[i]['tag']} x {boxes[j]['tag']} ({ix}x{iy}px)")
-    print(f"[{name}] {'CLEAN ✓' if not issues else 'ISSUES:'}")
+    # SCOPE-QUALIFIED on purpose. This says only "no margin breach or overlap among
+    # the .measure-tagged DOM" — it is printed BEFORE reconcile's measured tier runs,
+    # so a bare "CLEAN" here sat directly above lines like "BURIED copy ... is painted
+    # but INVISIBLE". A verdict that reads as final while a later check is still to
+    # report is how a real defect gets skimmed past.
+    print(f"[{name}] {'margins/overlap CLEAN ✓' if not issues else 'ISSUES:'}")
     for x in issues: print("   -",x)
     return issues

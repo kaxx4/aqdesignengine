@@ -212,11 +212,45 @@ ok("a same-frame style still says 'build to THESE numbers' — guidance is not b
 
 # CANVAS_RULE told judges to write the compression into the recipe. Nothing checked it,
 # so a majority of the cross-aspect entries never mention the frame. Now it is reported.
-_flags = [b for b in sb.validate(verbose=False) if b[1] == "recipe/canvas"]
-assert _flags, "validate() must surface recipes that ignore their own canvas shift"
-ok(f"validate() names {len(_flags)} recipes that never say how they re-proportion")
-assert all(sb.canvas_shift(S[slug]) for slug, _, _ in _flags)
-ok("...and every one of them really is a cross-aspect entry, not a false positive")
+# Assert the CHECK, not the current contents of the bank. An earlier draft of this
+# test asserted that validate() currently returns flags — which passed only while the
+# bank was still broken, and failed the moment the recipes were repaired. That is the
+# same "encode the bug, not the rule" mistake session 10e found pinned in
+# test_layout_rules.py. What must hold is: a cross-aspect recipe that ignores its own
+# frame IS flagged, and one that addresses it is NOT.
+import copy as _cp2
+_before = _cp2.deepcopy(sb._load())
+try:
+    _b2 = sb._load()
+    _tgt = next(k for k, v in _b2["styles"].items()
+                if v.get("kind") == "poster" and v["measured"]["aspect"] > 1.15)
+    _b2["styles"][_tgt]["canvas"] = "story"          # 0.562 — a real shift from >1.15
+    _b2["styles"][_tgt]["recipe"] = "Paper ground. One big headline. Restraint: nothing else."
+    sb._save(_b2)
+    _flags = [x for x in sb.validate(verbose=False) if x[1] == "recipe/canvas"]
+    assert any(s == _tgt for s, _, _ in _flags), _flags
+    ok("a cross-aspect recipe that never mentions its frame IS flagged")
+
+    _b2 = sb._load()
+    _b2["styles"][_tgt]["recipe"] += (" Re-proportioned for the taller frame: the row "
+                                      "becomes a stack of three, bleeding off both sides.")
+    sb._save(_b2)
+    assert not [x for x in sb.validate(verbose=False)
+                if x[1] == "recipe/canvas" and x[0] == _tgt]
+    ok("...and the same entry clears once the recipe says how it re-proportions")
+finally:
+    sb._save(_before)
+
+assert sb.validate(verbose=False) == []
+ok("the bank as it stands is clean on BOTH the hard schema and the advisories")
+
+# canvas_shift must stay silent for kinds whose measured aspect is not the design's
+_mockup_shift = {"slug": "m", "kind": "mockup", "canvas": "story",
+                 "measured": {"aspect": 1.018}}
+assert sb.canvas_shift(_mockup_shift) is None
+ok("canvas_shift says nothing about a mockup — 1.018 is the PHOTO, not the design")
+assert sb.canvas_shift(dict(_mockup_shift, kind="poster")) is not None
+ok("...while the identical numbers on a poster do report a shift")
 
 # ── WHAT THE MEASURED NUMBERS ACTUALLY DESCRIBE (session 10f) ───────────────
 # "build to THESE numbers" was honest for only 25 of the 74 entries. For a `sheet`

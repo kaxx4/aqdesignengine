@@ -6,7 +6,9 @@ every gate still said CLEAN — the craft layer vanished silently.
 """
 import os, sys, importlib.util
 
-os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
+# Repo root from THIS FILE's location. A hardcoded root has broken this repo
+# five times; the last fix just swapped in a NEW absolute path.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE)
 

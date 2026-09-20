@@ -215,8 +215,21 @@ def canvas_shift(style, canvas=None):
     checked, and 10 of the 17 recipes say nothing about it — which is the standing
     lesson that a rule with no check is a rule half the work ignores.
 
-    Returns None when the frames agree, else a dict describing the shift.
+    NOT APPLICABLE TO A NON-POSTER, and getting that wrong was this function's own
+    first bug. `measured.aspect` is the aspect of the IMAGE FILE. For a `mockup` that
+    is a photo of three phones in a row, and for a `sheet` it is a page of twelve
+    artefacts — neither is the aspect of the design you are extracting. It fired on
+    three mockups whose actual screens were already close to their judged canvas, and
+    stated a precise ratio ("the reference is 1.018:1") that was simply not true of
+    the design. MEASURED_SCOPE already tells those kinds to crop and measure the crop;
+    claiming a second, false number on top of that is worse than saying nothing.
+    Caught by a judging agent reading the images — the measurement could not see it.
+
+    Returns None when the frames agree, when the kind makes the question unanswerable,
+    or when either value is missing. Otherwise a dict describing the shift.
     """
+    if style.get("kind") in MEASURED_SCOPE:
+        return None
     target = canvas or style.get("canvas")
     want = CANVAS_ASPECT.get(target)
     have = (style.get("measured") or {}).get("aspect")
@@ -579,7 +592,15 @@ def merge(verbose=True):
             if slug not in styles:
                 unknown.append((fn, slug)); continue
             clean = {k: v for k, v in fields.items() if k in JUDGED_FIELDS}
-            if not clean.get("mechanism") or not clean.get("recipe"):
+            # Completeness is a property of the RESULT, not of the drop-file. This used
+            # to require `mechanism` and `recipe` in the drop itself, so a PARTIAL
+            # update — "here is a better recipe for an entry you already judged" — was
+            # silently skipped unless the author also re-sent the mechanism unchanged.
+            # An agent repairing seven recipes had to discover that by reading a
+            # SKIPPED line, and following the documented drop-file shape literally
+            # would have made every fix vanish. Merge first, then judge the outcome.
+            merged = dict(styles[slug]); merged.update(clean)
+            if not merged.get("mechanism") or not merged.get("recipe"):
                 skipped.append((fn, slug)); continue
             styles[slug].update(clean)
             styles[slug]["judged"] = True

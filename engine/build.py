@@ -145,7 +145,9 @@ async def _settle(pg):
 
 # ---------- render + audit gate ----------
 async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=None,
-                 expect_hero=False, collision_ignore=frozenset(), auto_nudge=False):
+                 expect_hero=False, collision_ignore=frozenset(), containers=(),
+                 text_pairs=None, cascade_stacks=None, reading_order=None,
+                 contains=None, occlusion=None, auto_nudge=False):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -181,7 +183,10 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
         # few lines apart, which teaches people to distrust both.
         layout.preflight(W, H, elements, html=None, color_pairs=color_pairs,
                          page_bg=page_bg, core=core, expect_hero=expect_hero,
-                         collision_ignore=collision_ignore, auto_nudge=auto_nudge)
+                         collision_ignore=collision_ignore, containers=containers,
+                         text_pairs=text_pairs, cascade_stacks=cascade_stacks,
+                         reading_order=reading_order, contains=contains,
+                         occlusion=occlusion, auto_nudge=auto_nudge)
     # The DOM audit and the screenshot both need this html LOADED in a browser.
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements)
@@ -238,8 +243,18 @@ async def measure_text(items, W=1080, H=1350):
     are unrelated siblings. The engine had no way to ask the only authority that
     knows — the font — so authors guessed. This asks.
 
-    items: list of dicts {text, font, size, weight, letter_spacing, max_width}
+    items: list of dicts {text, font, size, weight, style, letter_spacing, max_width}
            `font` takes the CSS family or a token name ('d','e','s','m').
+           `style` is the CSS font-style — pass "italic" for anything set in
+           Instrument Serif (`--s`), whose ONLY sanctioned brand use is italic (§9).
+           It defaults to italic for the 's' token for exactly that reason.
+
+    ITALIC USED TO BE UNMEASURABLE. There was no font-style parameter and the canvas
+    measurer did not emit one either, so every `--s` string came back measured as
+    upright — 9.9% narrow on a display-size wordmark, which bled it 71px off-canvas
+    and was caught only after render by reconcile's OVERSIZE line. That is the exact
+    "sized by guess" class this function exists to retire, reintroduced through a
+    missing argument (session 10f, agent c3).
     Returns the same list order, each as
         {'w','h'          — the LAYOUT box: what the next element flows against,
          'text_w'         — the string's OWN width, measured unconstrained. When you
@@ -264,7 +279,11 @@ async def measure_text(items, W=1080, H=1350):
     FAM = {"d": "var(--d)", "e": "var(--e)", "s": "var(--s)", "m": "var(--m)"}
     spans = []
     for i, it in enumerate(items):
-        fam = FAM.get(it.get("font", "d"), it.get("font", "var(--d)"))
+        tok = it.get("font", "d")
+        fam = FAM.get(tok, it.get("font", "var(--d)"))
+        # Instrument Serif is only ever used italic in this brand, so measuring it
+        # upright is always wrong. Default accordingly; an explicit `style` still wins.
+        sty = it.get("style") or ("italic" if tok == "s" else "normal")
         mw = it.get("max_width")
         box = f"width:{mw}px;" if mw else "white-space:nowrap;"
         # A SECOND, unconstrained copy of every string. With max_width set the block's
@@ -274,14 +293,14 @@ async def measure_text(items, W=1080, H=1350):
         # the string's real width.
         spans.append(
             f'<div id="t{i}" style="position:absolute;top:-9999px;left:0;white-space:nowrap;'
-            f'font-family:{fam};font-weight:{it.get("weight", 900)};'
+            f'font-family:{fam};font-weight:{it.get("weight", 900)};font-style:{sty};'
             f'font-size:{it.get("size", 16)}px;'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
         spans.append(
             f'<div id="m{i}" style="position:absolute;top:0;left:0;{box}'
-            f'font-family:{fam};font-weight:{it.get("weight", 900)};'
+            f'font-family:{fam};font-weight:{it.get("weight", 900)};font-style:{sty};'
             f'font-size:{it.get("size", 16)}px;'
             f'line-height:{it.get("line_height", 1)};'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
@@ -311,7 +330,9 @@ async def measure_text(items, W=1080, H=1350):
                  let gw = null, gh = null;
                  if (lines === 1) {
                    const cx = document.createElement('canvas').getContext('2d');
-                   cx.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+                   // font shorthand ORDER MATTERS: style, then weight, then size/family.
+                   // Omitting the style here measured italic as upright.
+                   cx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
                    const tm = cx.measureText(e.textContent);
                    if (tm.actualBoundingBoxAscent != null) {
                      gw = Math.ceil(Math.abs(tm.actualBoundingBoxLeft) + Math.abs(tm.actualBoundingBoxRight));
