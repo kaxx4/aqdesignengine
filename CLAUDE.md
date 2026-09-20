@@ -735,6 +735,9 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 
 | A recreation reported a CLEAN looking gate with "every element present and correctly proportioned" while it had sorted a single interleaved PILE into two tidy horizontal bands, and shrunk a full-bleed footer from 18% of the reference's height to 6%. The leftover region deltas were blamed on stochastic placement; four further iterations could not move them, because they were the arrangement | session 10f, `25143d758ea743` | §5 step 4 and the protocol now ask all THREE questions — present, right SIZE relative to the frame, right RELATIONSHIP to neighbours. A pile and a grid of the same objects have the same inventory and different geometry |
 
+| **Two engine components pulling one build in opposite directions.** `invisible_color_check` is a HARD FAIL judging fill vs surface, so it failed a paper card on the cream page — a card the AQ craft layer makes read by its ink outline and hard shadow, which is the house style (§9). The author tinted the card to satisfy it, and `compare.py`'s `content_mask` then scored the tint as extra content: reverting to literal `CREAM` failed the gate but scored **9 points better**, confirmed by a control render | session 10f, agent fe7b3 | a 4th tuple element `(label, fill, surface, edged=True)` declares the edge to the STATIC check · **`reconcile.invisible_fill` reads the real `border` and `box-shadow`** and needs no declaration at all |
+| `scatter_solve` was used as a RECREATION tool. It finds *a* legal layout, not *the reference's* — two agents independently spent iterations chasing region deltas that were really "my solver chose differently". Its single `max_pair_overlap` also cannot serve a pile mixing redundant-content objects with single-shot labels: one ceiling either tangles the stickers or clips a word, and it clipped "LINKEDIN" to "LINKED" | session 10f, agents f2514 + fe7b3 | docstring states the scope (authoring, not recreation — in Workflow B place from the measured reference and use this only to CHECK) and the two-pass decomposition a mixed pile needs |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -811,12 +814,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (76) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_layout_rules.py` (81) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (47) ·
   `test_stylebank.py` (64) · `test_buried_text.py` (27) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
-  **438 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  **443 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

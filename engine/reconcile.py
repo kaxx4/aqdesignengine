@@ -138,6 +138,20 @@ _MEASURE_JS = """els => els.map(e => {
              if (p.length >= 4 && p[3] < 0.9) return null;   // not an opaque fill
              if ((cs2.backgroundImage || "none") !== "none") return null;
              if (r.width < 4 || r.height < 4) return null;
+             // AN EDGE MAKES IT VISIBLE. The AQ craft layer is a thick ink outline
+             // and a hard offset shadow (section 9), and a paper card on the cream
+             // page is MEANT to read by its edge rather than its fill — that is the
+             // house style, not a mistake. Judging fill alone hard-failed exactly
+             // that design, and the author then tinted the card to satisfy the gate,
+             // which compare.py scored as extra content: two engine components
+             // pulling a build in opposite directions, confirmed by a control render
+             // (session 10f, agent fe7b3). An element with a real border or shadow
+             // is not invisible, whatever its fill is doing.
+             const bw = parseFloat(cs2.borderTopWidth || "0")
+                      + parseFloat(cs2.borderLeftWidth || "0");
+             if (bw >= 2) return null;
+             const sh = cs2.boxShadow || "none";
+             if (sh !== "none" && !/(^|\s)rgba\([^)]*,\s*0\s*\)/.test(sh)) return null;
              const stack = document.elementsFromPoint(r.x + r.width / 2,
                                                       r.y + r.height / 2);
              let past = false;

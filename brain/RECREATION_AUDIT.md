@@ -2763,3 +2763,86 @@ this is a strong recreation: (1) zero missing elements against the step-1 invent
 real box-model/z-index bugs were found and fixed by the gate stack itself (not by chasing a
 number), (3) `preview.critique`'s independent pixel critique is clean with no
 flat/dead-quadrant/sparse flags.
+
+### OUTCOME — v11, score 0.253, not under the 0.16 accept line (session, 2026-09-20/21)
+
+11 iterations. Full script history + every render preserved at
+`out/versions/e7b32bd307aac4/gen_e7b32bd3_v1.py` .. `v11.py` / `v1.png` .. `v11.png`.
+
+**Looking gate: PASSED.** Every one of the 26 elements enumerated in the step-1 inventory
+above is present, in the right place, at the right relative proportion: the cream field,
+the schematic wireframe, all 8 photo/paper bleed panels (4 real AQ photos + 4 declared flat
+swaps + the swing tag), the card, all 4 zig-zagged step labels, and all 11 pile objects
+including the Aa/Au pair and the jpg/mp4 pair, both distinctly readable. No collision, no
+off-canvas element, no undefined var, no invisible fill — `layout.preflight` reports CLEAN
+on every version from v6 onward. `layout.resolve_label_z` reports zero unresolved labels
+by v6 (it started with `bookphoto` unresolved in v1-v5, fixed by moving the whole
+book/Aa/Au cluster down to the position measured directly off the reference crop).
+
+**Score history** (`compare.compare`, accept line 0.16): v1(gate-fail, unscored) -> v2 0.463
+(first clean gate) -> v3 (font/photo-caption fixes, unscored standalone) -> v4 0.463 (same,
+after ribbed-rect/sticky depth fixes) -> v5 0.384 (left/right bleed-panel vertical trims)
+-> v6 0.337 (re-measured the whole book/Aa/Au/Approved/sticky cluster off a direct crop of
+the reference, closing the "gap above the pile" the earlier versions never left) -> v7
+0.288 -> v8 0.267 -> v9 0.267 (plateau: several individual-cell fixes traded one grid
+cell's error for a neighbour's, net zero) -> v10 0.247 (best) -> v11 0.253 (deliberately
+kept a small regression — see below).
+
+**Why it did not reach 0.16.** `bbox_iou` held at 0.967 the entire time (the render's
+overall extent matches the reference closely) and `detail_ratio`/`gyration_ratio` stayed
+inside the DECISION TABLE's non-blocking bands throughout (0.79-0.86 and 0.96-0.99
+respectively — the accept thresholds are 0.72-1.45 and 0.84-1.18). **No BLOCKING critique
+(detail-too-low, content-too-small, too-dispersed) ever fired.** The remaining gap is
+`area_ratio` (~1.18-1.25, i.e. this render paints 18-25% more "content" pixels than the
+reference) plus a persistent set of individual 9x11 grid-cell mismatches concentrated in
+the AMBIENT DECORATIVE BLEED PANELS (the diagonal-clipped corner/edge shapes), not the
+hero pile. Root cause, confirmed by direct measurement each time: this build approximates
+every bleed panel as an axis-aligned bbox + a straight-line polygon clip, while the
+reference's actual shapes are more organic tapered wedges. Fixing one cell's error by
+resizing a panel's bbox reliably shifted the error into an adjacent cell (documented in
+`gen_e7b32bd3_v9.py`'s and `v10.py`'s own comments: widening the chair panel fixed
+row11/col6 but broke row11/col7; taller ribbed-rect fixed row8/col5 but broke row8/col6).
+Closing this fully would need per-panel polygon tracing at a precision beyond a rectangular
+clip-path, which is a real, named limitation of the bespoke-script approach for this
+specific reference, not a missing or misjudged element.
+
+**v10 -> v11, a deliberate SCORE regression kept on purpose.** Looking at v10.png directly
+(not just the score) surfaced a real defect the metric never flagged: `core.PHOTOS['edu']`
+(used for the right-mid buttercup bleed) carries its own baked-in caption
+("CREATING MOMENTS ETCHED IN THEIR HEARTS FOREVER"), and it rendered CLIPPED AND ILLEGIBLE
+across the bottom of that small triangle — the same defect already caught and fixed once
+for `core.PHOTOS['food']` on the book-photo tile, just missed here until an actual visual
+review. Fixing it (an oversized top-anchored `background-size` crop, same technique) made
+the render score 0.006 WORSE (0.247 -> 0.253) because it reduced total "content" pixels in
+that cell slightly further from the reference's own value there — but it is unambiguously
+the right fix; CLAUDE.md Sec3/Sec5 is explicit that the looking gate outranks the score, and
+this is a concrete instance of the score rewarding a visible defect. Kept.
+
+**A genuine tension between two gates, not resolved, documented instead.** The card had to
+be tinted away from CREAM (to `#D2CEC4`, a warm light grey — v3 first tried a light-grape
+wash, `#E2DAFF`, replaced for looking closer to an actual paper tone) to clear
+`layout.invisible_color_check`'s hard-fail 40-unit RGB threshold: the reference's own card
+is genuinely near-identical in colour to its page background (my own pixel sampling found
+~0 distance), distinguished only by a drop shadow. But `compare.py`'s `content_mask` uses
+essentially the same kind of distance-from-background threshold (tol=46) to decide what
+counts as "content" for scoring — so any card fill that clears the ENGINE's hard gate also
+gets classified as painted "content" by the SCORER, while the reference's own near-invisible
+card contributes ~nothing to its measured "content" area. A control render (card fill set
+back to literal CREAM, `scratchpad/_test_cardbg_same.py`, not part of the accepted version)
+scored 0.425 vs the accepted build's 0.463 at that point in the session — a real but smaller
+effect than expected, confirming the card is A contributor to the area_ratio gap but not
+the dominant one. There is no fill that satisfies both checks at once for this specific
+"paper card that's supposed to be nearly invisible" pattern; the engine rule was kept
+(never violate a hard-fail gate to chase a score) and the gap was documented instead of
+worked around.
+
+**Disposition:** recorded via `runqueue.py record` with the actual score (0.253), not
+"accepted" in the strict score<=0.16 sense, and not "parked" either (this is not a mockup —
+CLAUDE.md's parking precedent is reserved for structurally-unscorable references). The
+honest state: mechanism, hero pile, and every inventoried element are faithfully
+reproduced and pass the looking gate; the numeric gap that remains is fully accounted for,
+concentrated in decorative bleed-panel geometry, and further iteration showed diminishing/
+mixed returns (v9 and the ribbed-rect experiment in v10 each showed that shrinking one
+grid-cell's error reliably grew another's, for a net zero or negative score change on
+several attempts). Full mechanics, exact numbers and API friction are in
+`scratchpad/friction4/fe7b3.md`.

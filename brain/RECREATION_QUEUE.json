@@ -486,10 +486,10 @@
     },
     "e7b32bd307aac4": {
       "file": "e7b32bd307aac4af6e385929ffd7016b.jpg",
-      "status": "pending",
-      "score": null,
-      "iters": 0,
-      "note": ""
+      "status": "attempted",
+      "score": 0.253,
+      "iters": 11,
+      "note": "v11 CLEAN gate, looking gate passed full 26-elem inventory, no blocking critique (detail 0.79-0.86, area 1.18-1.25, spread 0.96-0.99 all in-band); above 0.16 on area_ratio + bleed-panel grid-cell mismatches from rect-bbox vs organic-wedge shapes (see AUDIT.md). v10->v11 kept a deliberate 0.006 score regression to fix an illegible baked-in photo caption the metric missed."
     },
     "f25de42e61b5c9": {
       "file": "f25de42e61b5c9a4e34e7745cd556090.jpg",

@@ -560,7 +560,22 @@ def invisible_color_check(pairs, page_bg, core=None, thresh=40):
     tokens = _token_map(core)
     out = []
     for p in pairs:
-        if len(p) == 3:
+        # A 4th element means "this shape has an EDGE" — an ink outline, a hard
+        # offset shadow, a keyline. The AQ craft layer (§9) makes a paper card on the
+        # cream page read by its edge rather than its fill, which is the house style
+        # and not a mistake. Judging fill alone HARD-FAILED exactly that design, the
+        # author tinted the card to satisfy this gate, and compare.py then scored the
+        # tint as extra content — two engine components pulling a build in opposite
+        # directions, proven with a control render (session 10f, agent fe7b3).
+        #
+        # It stays explicit here because this check cannot see the DOM. The measured
+        # twin, reconcile's `invisible_fill`, reads the real border and box-shadow and
+        # needs no declaration.
+        if len(p) == 4:
+            lbl, fill, surf, edged = p
+            if edged:
+                continue
+        elif len(p) == 3:
             lbl, fill, surf = p
         else:
             lbl, fill = p; surf = page_bg
@@ -664,6 +679,23 @@ def rotated_bbox(x, y, w, h, deg):
 def scatter_solve(items, W, H, protect=(), keep_out=(), zones=None, margin=28,
                   max_pair_overlap=0.18, max_protect_cover=0.30, seed=1, tries=600):
     """Place a pile of objects so the pile reads as designed instead of as a mess.
+
+    ⚠ THIS IS AN AUTHORING TOOL, NOT A RECREATION TOOL. It finds *a* legal layout —
+    one satisfying your constraints — not *the reference's* layout. For Workflow A/C,
+    where any good arrangement will do, that is exactly right and it beats typing
+    coordinates (the six-versions-of-hand-placement row in CLAUDE.md §10 is why it
+    exists). For Workflow B you are matching a SPECIFIC geometry, and a solver free to
+    choose will keep choosing something else: two agents independently spent iterations
+    chasing region deltas that were really "my solver put these where it liked, the
+    reference puts them where IT liked" (session 10f, f2514 and fe7b3). In Workflow B,
+    place from the measured reference and use this only to CHECK that it is legal.
+
+    ONE CEILING CANNOT SERVE A MIXED PILE. `max_pair_overlap` is global, but an object
+    whose content is redundant (a sticker whose art repeats around a ring) tolerates
+    far more overlap than one carrying a single-shot label (a pill that says LINKEDIN
+    exactly once). One value for both either tangles the stickers or clips a word — it
+    clipped "LINKEDIN" to "LINKED". Run TWO PASSES: solve the tolerant objects first,
+    then solve the label-bearing ones with the first pass's boxes as `protect`.
 
     THE BUG THIS ENCODES (session 10b, sticker swarm). Ten badges were positioned by
     typing coordinates. Every fix moved one badge onto something else: the first pass
