@@ -222,7 +222,15 @@ tracked in `brain/RECREATION_PROGRESS.md` (a 44-row status table) and `brain/REC
 
 4. **Look, side-by-side.** `Read` the reference AND your render. Walk your step-1 checklist item by
    item: is each listed element present, and proportioned correctly? **A missing listed element is
-   a FAIL requiring another iteration — not an acceptable variation.** Distinguish honestly:
+   a FAIL requiring another iteration — not an acceptable variation.**
+   **PRESENT IS THE EASY THIRD.** Ask all three of each element — is it there, is it the right SIZE
+   relative to the frame, and is it in the right RELATIONSHIP to its neighbours (interleaved vs.
+   sorted, overlapping vs. spaced, varied vs. aligned). A recreation of `25143d758ea743` reported a
+   clean looking gate with every element present, while it had sorted a single interleaved PILE into
+   two tidy horizontal bands and shrunk a full-bleed footer to a third of its relative size. A pile
+   and a grid of the same objects have the same inventory and different geometry, and "everything is
+   here" is the check most likely to feel like a pass. See RECREATION_PROTOCOL.md's
+   "WHEN THE REGION ROWS ARE LYING TO YOU". Distinguish honestly:
    - *Acceptable adaptation* — swapping the reference's literal brand copy for AQ program names;
      using a flat SVG illustration or a real AQ photo where the reference used stock/fake imagery
      (the real-assets-only rule, §9); substituting an engine doodle for an icon the engine lacks.
@@ -724,6 +732,8 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `PAPER` (#FFFFFF) and `CREAM` (#F4EFE0) are **1.15:1** apart, so a white card on the cream page reads only by its outline. `invisible_color_check` flags the pair, correctly — but nothing said so, and it looked like a false positive | session 10f, agent f62f8 | stated in §9: the two tokens cannot carry a figure/ground relationship without a craft layer |
 
 | A doodle hidden by a CSS STACKING CONTEXT — `.dood{z-index:4}` plus a sibling `transform` — paints behind another element regardless of DOM order. Undocumented, gate-invisible, found only by looking at the PNG | session 10f, agent f2514 | `buried_text` reaches it, after THREE bugs in the check itself: an SVG's `tagName` is the lowercase `"svg"` so `== "SVG"` matched nothing; a doodle is a positioned DIV wrapping an svg, so checking only the leaf missed the element the author placed; and an SVG's `className` is an `SVGAnimatedString` — truthy — so it won every `\|\|` in the tag expression and reports literally read `OFF-CANVAS {}` |
+
+| A recreation reported a CLEAN looking gate with "every element present and correctly proportioned" while it had sorted a single interleaved PILE into two tidy horizontal bands, and shrunk a full-bleed footer from 18% of the reference's height to 6%. The leftover region deltas were blamed on stochastic placement; four further iterations could not move them, because they were the arrangement | session 10f, `25143d758ea743` | §5 step 4 and the protocol now ask all THREE questions — present, right SIZE relative to the frame, right RELATIONSHIP to neighbours. A pile and a grid of the same objects have the same inventory and different geometry |
 
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.

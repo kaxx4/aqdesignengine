@@ -249,12 +249,15 @@ INIT_Z["qcard"] = 1
 # HEIGHT was closer to right; the real fix for "reads as a rug fringe" is that v3 also had
 # it too NARROW and too far right (RX575, ending at 740 -- the true left edge sits under the
 # book photo, matching it at RX550..740 wide).
-# v6 shrank this to RH=70 to fix an OVER-fill v4/v5 caused one row further down (y457-514).
-# But a direct crop right on the persistent "row 8/11 col 5/9" critique
-# (scratchpad/_ref_row8col5.png, x500-700 y380-480) shows the ribbed rect's real bottom edge
-# sits almost exactly at y456 -- v6 stopped 41px short of that. RH=112 reaches y457, the
-# row8/row9 boundary, without re-triggering the row9 over-fill v6 was fixing.
-RX, RY, RW, RH = 550, 345, 190, 112
+# A crop right on the persistent "row 8/11 col 5/9" critique (scratchpad/_ref_row8col5.png,
+# x500-700 y380-480) shows the reference's ribbed rect really does reach further down than
+# v6's RH=70 -- but taking the full box taller (tried: RH=112) just pushed the OVER-fill into
+# the neighbouring column instead (row 8/11 col 6/9 went from 0.09 to 0.91): this rect is a
+# diagonal/tapered shape in the reference, not the axis-aligned rectangle this build uses, so
+# widening the bbox in either dimension trades one grid cell's error for another's. Net score
+# was worse with the taller box (0.258) than without (0.247) -- reverted. Left as a known,
+# named residual gap rather than chased further; see the friction report.
+RX, RY, RW, RH = 550, 345, 190, 70
 PILE_BOX["ribbed"] = (RX, RY, RW, RH)
 LABEL_BOX["ribbed"] = (RX, RY + RH - 25, RW, 25)   # the bit that peeks out below the book photo
 INIT_Z["ribbed"] = 2
