@@ -708,6 +708,9 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `core.on_dark` / `on_ground` / `lit_of` existed but were absent from §9 — the section a brief about dark-ground contrast points you at | session 10f, agent g4 | added to §9 with the measured facts (teal 4.00:1 FAILS on ink; mint and grape just pass) |
 | `ref_metrics.vdr` and `ink` INVERT on a dark ground — their dark-pixel heuristic cannot tell headline ink from the page's own ink ground, so a correct dark story measured `vdr 0.99` against a 0.06–0.20 target | session 10f, agent g4 | documented in §7c as a second caveat, in the opposite direction from the one already there |
 
+| **The standing auto-resume rule was jammed.** `record()` wrote status `in_progress` whenever a score missed the accept line, so "attempted, did not converge" and "a session is working on this right now" became the same value. `nxt()` resumes in-progress work first and returns the FIRST such entry — so with **36 of them, every new window got the same stuck poster** and the 26 never-touched references were unreachable through the documented entry point. The run sat at 3 done of 74 while 36 had been worked. All 36 carried a score; not one was a real interruption | session 10f | **`runqueue._status()`** derives `attempted` from the data (derived, not migrated — four agents were writing to the JSON at the time), `record()` stores it going forward, and `nxt()` now prefers untouched work then falls back to the attempt CLOSEST to converging. Self-test: `scratchpad/test_runqueue.py` |
+| `runqueue.py`'s own docstring told you to run `python engine/queue.py` — a file that does not exist and must not, since a module named `queue.py` in `engine/` shadows the stdlib and broke every bespoke script once already (this same table) | session 10f | every command in it names the real file; the self-test asserts it |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -788,8 +791,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (39) ·
-  `test_stylebank.py` (64) · `test_buried_text.py` (21) · `test_repo_hygiene.py` (28)** —
-  **407 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (64) · `test_buried_text.py` (21) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
+  **424 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
