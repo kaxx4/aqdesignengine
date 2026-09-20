@@ -147,7 +147,8 @@ async def _settle(pg):
 async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=None,
                  expect_hero=False, collision_ignore=frozenset(), containers=(),
                  text_pairs=None, cascade_stacks=None, reading_order=None,
-                 contains=None, occlusion=None, bleed_tags=None, auto_nudge=False):
+                 contains=None, occlusion=None, bleed_tags=None, crop_tags=(),
+                 auto_nudge=False):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -208,9 +209,11 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     # The DOM audit and the screenshot both need this html LOADED in a browser.
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements,
-                        collision_ignore=collision_ignore, bleed_tags=bleed_tags)
+                        collision_ignore=collision_ignore, bleed_tags=bleed_tags,
+                        crop_tags=crop_tags)
 
-async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(), bleed_tags=None):
+async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
+                 bleed_tags=None, crop_tags=()):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
@@ -229,8 +232,10 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(), 
         # OFF-CANVAS for every element doing exactly what it was meant to, with no
         # way to quiet it (session 10f, agent g1). measure_dom always had
         # bleed_tags; render simply never exposed it.
-        flaws = await reconcile.measure_dom(
-            pg, W, H, **({} if bleed_tags is None else {'bleed_tags': tuple(bleed_tags)}))
+        _md = {'crop_tags': tuple(crop_tags or ())}
+        if bleed_tags is not None:
+            _md['bleed_tags'] = tuple(bleed_tags)
+        flaws = await reconcile.measure_dom(pg, W, H, **_md)
         # OVERSIZE fires whenever glyphs paint past their line box, which a tight
         # line-height ALWAYS causes — so it printed on every hero numeral even when the
         # author had correctly sized the bbox off measure_text()['ink_h']. If the caller

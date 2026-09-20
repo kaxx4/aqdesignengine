@@ -248,4 +248,43 @@ with _ctx2.redirect_stdout(_b):
 assert "ASPECT MISMATCH" not in _b.getvalue()
 ok("a same-aspect comparison stays silent — it does not cry wolf on normal work")
 
+# ── A DELIBERATE CROP IS NOT A BUG (session 10f, agent g4) ──────────────────
+# "size it oversize, then clip it with overflow:hidden" is a real technique. An
+# agent used it twice in one poster — to crop a baked-in caption out of a photo,
+# and to shape a hero-shine — and got CLIPPED reported both times on a visually
+# correct render. It worked around the gate rather than ship a render whose own
+# log reads as broken, which is exactly the wrong way round.
+async def crop_tests():
+    global N
+    W2, H2 = 1080, 1350
+    CROP = ('<div data-tag="frame" style="position:absolute;left:100px;top:300px;'
+            'width:600px;height:300px;overflow:hidden;background:#FFF">'
+            '<div data-tag="photo" style="position:absolute;left:0;top:-120px;'
+            'width:600px;height:520px;background:#1B8A5A"></div></div>')
+    # the 77e7bb34 bug: a line of copy sliced off a slab edge, never intended
+    REAL = ('<div data-tag="slab" style="position:absolute;left:100px;top:300px;'
+            'width:600px;height:200px;overflow:hidden;background:#FFF">'
+            '<div data-tag="copy" style="position:absolute;left:20px;top:-60px;'
+            'font:700 40px sans-serif">one<br>two</div></div>')
+    async with B.session():
+        pg = await B._SESSION.page(W2, H2)
+
+        await pg.set_content(B.page(W2, H2, "var(--bg)", CROP, grain=False), wait_until="load")
+        await B._settle(pg)
+        undeclared = await rec.measure_dom(pg, W2, H2)
+        assert any("photo" in str(t) for t, *_ in undeclared["clipped"])
+        ok("an UNDECLARED crop reports CLIPPED — the check is not weakened")
+
+        declared = await rec.measure_dom(pg, W2, H2, crop_tags=("photo", "frame"))
+        assert declared["clipped"] == [], declared["clipped"]
+        ok("declaring the crop silences it, container and child alike")
+
+        await pg.set_content(B.page(W2, H2, "var(--bg)", REAL, grain=False), wait_until="load")
+        await B._settle(pg)
+        still = await rec.measure_dom(pg, W2, H2, crop_tags=("photo", "frame"))
+        assert any("copy" in str(t) for t, *_ in still["clipped"])
+        ok("...and a DIFFERENT element's accidental clip still fires (the 77e7bb34 bug)")
+
+asyncio.run(crop_tests())
+
 print(f"\nALL {N} ASSERTIONS PASSED")

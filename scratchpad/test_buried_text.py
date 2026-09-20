@@ -140,6 +140,33 @@ async def main():
            "a kicker above a tight-line-height headline is NOT buried (the c2_v5 "
            "false positive: the headline hit-tests above its box but is transparent)")
 
+        # PARTIAL BURIAL (session 10f, g2_v6). The check required EVERY sampled point
+        # to be covered, so a plate whose label had its bottom half sliced off by an
+        # overlapping sibling passed with 2 of 5 points clear — and shipped, with
+        # "SINCE 2021" cut through the middle of its letters. You cannot read the top
+        # half of a word.
+        HALF = page(
+            "<div data-tag='label' style='position:absolute;left:100px;top:200px;"
+            "width:500px;height:100px;font:900 64px sans-serif;color:#0A0A0A'>"
+            "SINCE 2021</div>"
+            "<div data-tag='plate' style='position:absolute;left:60px;top:248px;"
+            "width:700px;height:400px;background:#FFC700;z-index:5'></div>")
+        r = await measure(HALF)
+        ok(any(t[0] == "label" for t in r["buried_text"]),
+           "a label with its bottom half covered by a plate IS reported (g2_v6)")
+
+        # the AQ move this must NOT flag: a sticker tucked over a headline's corner
+        TUCK = page(
+            "<div data-tag='head' style='position:absolute;left:100px;top:200px;"
+            "width:800px;height:200px;font:900 90px sans-serif;color:#0A0A0A'>"
+            "SHOWING UP</div>"
+            "<div data-tag='badge' style='position:absolute;left:820px;top:180px;"
+            "width:140px;height:140px;border-radius:50%;background:#FF4D8C;"
+            "z-index:5'></div>")
+        r = await measure(TUCK)
+        ok(not any(t[0] == "head" for t in r["buried_text"]),
+           "...while a sticker tucked over one corner is a deliberate tuck, not a cut")
+
         # ...and a TRANSPARENT box genuinely on top must not bury anything either
         GLASS = page(
             "<div data-tag='copy' style='position:absolute;left:80px;top:400px;"

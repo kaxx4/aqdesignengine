@@ -498,6 +498,10 @@ also runs the full `preflight` at render time for free.
   collision auditor — a piece should land within ~0.1 per axis before you call it done.
   (Caveat: flat-vector recreations read low on `vdr` vs. gradient/photo references — a known metric
   limitation, not a visual bug.)
+  **SECOND CAVEAT, the opposite direction (session 10f): `vdr` and `ink` INVERT on a dark-ground
+  piece.** Their dark-pixel heuristic cannot tell "headline ink" from "the page's own ink ground",
+  so a correct dark-ground story measured `vdr = 0.99` against a documented target of 0.06–0.20.
+  Do not chase these two numbers on a dark ground; the rest of `analyze()` still reads normally.
 
 ---
 
@@ -555,6 +559,18 @@ so AQ's LinkedIn art is landscape or square — never 4:5.
 **Contrast is MEASURED, never assumed** (all added session 10, from the live site's `tokens.css`):
 - `core.text_on(fill)` — the correct text colour ON a fill, decided by computing both candidates.
   (It used to read a hand-kept set and returned white on pink at **3.14:1, failing AA**; ink is 6.31:1.)
+- **`core.on_dark(accent, size_px)` — the same decision on the INK ground, which is where about a
+  third of the style bank lives.** Measured on `#0A0A0A`: teal is **4.00:1 and FAILS** small type
+  (it gets tinted to a lighter partner); mint and grape sit at 4.55:1 and just pass. If you are
+  typing a hex value for type on a dark field, you have skipped this.
+- `core.on_ground(accent, ground, size_px)` — the general form. It picks the direction by MEASURING
+  the ground (darken on light, lighten on dark) instead of assuming, and falls back to whichever
+  neutral actually wins there. `on_cream` and `on_dark` both delegate to it. Before it existed,
+  `on_cream(accent, 16, ground=INK)` — which that signature openly invites — returned **ink on ink,
+  1.00:1, invisible**, because its only fallback darkened.
+- `core.lit_of(accent)` — the computed lightened partner, mirroring `ink_of`. It walks the accent
+  toward paper in 5% steps and stops at the first value that clears the floor, so the department
+  hue survives.
 - `core.on_cream(accent, size_px)` — accent type on the page ground. **Accents may shout but may not
   whisper:** a 500px mint numeral on cream is 3.78:1 and passes the large-text floor; a 20px mint
   label is the same 3.78:1 and fails, so it swaps to the darkened partner.
@@ -687,6 +703,11 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `cross_check` excluded only `mockup` from its ground comparison — the same reasoning covers every kind in `MEASURED_SCOPE`, and it surfaced the moment the ground sampler got accurate enough to read a sheet's dark backdrop correctly | session 10f | excludes all of `MEASURED_SCOPE` |
 | `audit.audit(ignore_pairs=)` matches the DOM's `data-tag` while `layout.collision_check` matches the caller's element LABELS — two namespaces behind one argument, so three plates sharing `data-tag="plate"` had the tuple-level ignore work and the DOM-level one silently miss, in the same render call | session 10f, agent g2 (a regression introduced earlier the same session) | `audit` reports ignore pairs matching no `data-tag`, and lists the tags that do exist |
 
+| `buried_text` required EVERY sampled point to be covered, so a plate label with its bottom half sliced off by an overlapping sibling passed with 2 of 5 points clear — and shipped, "SINCE 2021" cut through the middle of its letters. You cannot read the top half of a word | session 10f, g2_v6 | a **3x3 grid** instead of the 5-point X (judging "is half of this covered" needs vertical resolution), reported at a 60% majority — a corner tuck is 1/9 and stays silent |
+| "Size it oversize, then clip it with `overflow:hidden`" is a real technique, and `CLIPPED` fired on a visually correct render. The agent worked around its own gate rather than ship a render whose log reads as broken | session 10f, agent g4 | `render(..., crop_tags=("photo","frame"))`, honoured for the container and the child. A DIFFERENT element's accidental clip still fires |
+| `core.on_dark` / `on_ground` / `lit_of` existed but were absent from §9 — the section a brief about dark-ground contrast points you at | session 10f, agent g4 | added to §9 with the measured facts (teal 4.00:1 FAILS on ink; mint and grape just pass) |
+| `ref_metrics.vdr` and `ink` INVERT on a dark ground — their dark-pixel heuristic cannot tell headline ink from the page's own ink ground, so a correct dark story measured `vdr 0.99` against a 0.06–0.20 target | session 10f, agent g4 | documented in §7c as a second caveat, in the opposite direction from the one already there |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -766,9 +787,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_layout_rules.py` (76) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (36) ·
-  `test_stylebank.py` (64) · `test_buried_text.py` (19) · `test_repo_hygiene.py` (28)** —
-  **402 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_recreation.py` (39) ·
+  `test_stylebank.py` (64) · `test_buried_text.py` (21) · `test_repo_hygiene.py` (28)** —
+  **407 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

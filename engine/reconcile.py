@@ -75,7 +75,14 @@ _MEASURE_JS = """els => els.map(e => {
                const p = m[1].split(",").map(parseFloat);
                return p.length < 4 || p[3] >= 0.9;
              };
-             const pts = [[.5,.5],[.2,.3],[.8,.3],[.2,.7],[.8,.7]];
+             // A 3x3 GRID, not the old 5-point X. Judging "is half of this word
+             // covered" needs vertical resolution: with points only at .3/.5/.7 a
+             // label sliced across its middle blocked 2 of 5 and passed. Nine points
+             // put three full rows under the question, so a bottom-half cover reads
+             // as 6/9 while a corner tuck stays at 1/9.
+             const pts = [[.2,.2],[.5,.2],[.8,.2],
+                          [.2,.5],[.5,.5],[.8,.5],
+                          [.2,.8],[.5,.8],[.8,.8]];
              let seen = 0, ok = 0, top = null;
              for (const [fx, fy] of pts) {
                const px = r.x + r.width * fx, py = r.y + r.height * fy;
@@ -181,7 +188,8 @@ def _rgb_tuple(css):
 _SPILL_MIN_RATIO = 1.20
 _SPILL_MIN_PX = 24
 
-async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-bleed")):
+async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-bleed"),
+                      crop_tags=()):
     """Measure the REAL rendered geometry of a loaded page and report what the
     static tuple gate structurally cannot see.
 
@@ -212,7 +220,12 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
             got, box = (e["sw"], e["cw"]) if over_x else (e["sh"], e["ch"])
             declared = e["fixedW"] if over_x else e["fixedH"]
             rec = (e["tag"], axis, got, box)
-            if hides:
+            if hides and e["tag"] in crop_tags:
+                # ...unless the author says the clipping IS the technique. A frame
+                # that deliberately crops an oversize child is overflow:hidden with
+                # taller content BY DESIGN, so the container reports here too.
+                pass
+            elif hides:
                 # content larger than a box that hides overflow: characters are
                 # GONE. There is no design in which that is intended.
                 out["clipped"].append(rec)
@@ -243,7 +256,16 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
         #
         # An element cut off by its container is never intended, so this is reported
         # unconditionally alongside `clipped`.
+        # CROPPING ON PURPOSE. "size it oversize, then clip it with overflow:hidden"
+        # is a real technique — an agent used it twice in one poster, to crop a baked
+        # caption out of a photo and to shape a hero-shine — and got CLIPPED reported
+        # both times on a visually correct render. It worked around the gate rather
+        # than ship a render whose own log reads as broken, which is the wrong way
+        # round (session 10f, agent g4). Same contract as bleed_tags: say so and the
+        # gate believes you.
         cl = e.get("clip")
+        if cl and e["tag"] in crop_tags:
+            cl = None
         if cl:
             over = []
             if e["x"] < cl["x"] - 1:      over.append(("left",   cl["x"] - e["x"]))
@@ -295,9 +317,21 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
                         (e["tag"], bh["own"], bh["behind"], bh["tag"], round(dist, 1)))
 
         hit = e.get("hit")
-        if e.get("ownText") and hit and hit["seen"] and hit["ok"] == 0:
-            out["buried_text"].append(
-                (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?", hit["seen"]))
+        # PARTIAL BURIAL IS STILL ILLEGIBLE. This required ok == 0 — every sampled
+        # point covered — so a plate whose label had its bottom 40% sliced off by an
+        # overlapping sibling passed with 2 of 5 points clear, and shipped: "SINCE
+        # 2021" cut through the middle of its letters (session 10f, g2_v6). You
+        # cannot read the top half of a word.
+        #
+        # The threshold has to leave room for the real AQ move it must not flag: a
+        # sticker tucked over a headline's corner covers about one point in five and
+        # is deliberate. A majority blocked is not a tuck, it is a cut.
+        if e.get("ownText") and hit and hit["seen"]:
+            _blocked = hit["seen"] - hit["ok"]
+            if _blocked and _blocked >= hit["seen"] * 0.6:
+                out["buried_text"].append(
+                    (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?",
+                     f'{_blocked}/{hit["seen"]}'))
 
         if e["tag"] in bleed_tags:
             continue
@@ -417,7 +451,7 @@ def format_measure(flaws, name=""):
                      f"— the shape is drawn and cannot be seen")
     for tag, txt, top, seen in flaws.get("buried_text", []):
         lines.append(f"BURIED (advisory) {tag}: \"{txt}\" is painted but not visible — "
-                     f"an opaque '{top}' is in front of it at all {seen} sampled points. "
+                     f"an opaque '{top}' covers it at {seen} sampled points. "
                      f"If that is not intended, raise this element above '{top}' or move "
                      f"one of them. A repeated-card DECK legitimately hides the back "
                      f"copies' own text and will report here")
