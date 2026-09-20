@@ -124,4 +124,73 @@ ok(lay.cascade_peek_check(fixed_stack) == [],
 ok(lay.cascade_peek_check([(0, 0, 100, 100)]) == [],
    "a single-card 'stack' (nothing behind it to hide) trivially passes")
 
+# ── READING ORDER (session 10f, from out/session10f/c1_v3.png) ───────────────
+# "showing up again and again" set as three chips at x=48 / x=560 / x=48. Every
+# chip legible, nothing colliding, no dead quadrant, pixel critique happy — but
+# chips 1 and 3 shared a left edge, so they read as a COLUMN and the sentence
+# scanned "showing -> and again -> up again". A Sonnet agent iterated the piece
+# TWICE, fixed the empty quadrant the metrics named, and never saw this.
+REAL = [("SHOWING", 48, 672, 560, 80),      # the exact coordinates from c1_v3.py
+        ("UP AGAIN", 560, 726, 500, 80),
+        ("AND AGAIN", 48, 800, 520, 72)]
+_ro = lay.reading_order_check(REAL)
+ok(len(_ro) == 1 and "COLUMN TRAP" in _ro[0],
+   "the real c1_v3 chip placement is caught as a column trap")
+ok("SHOWING" in _ro[0] and "AND AGAIN" in _ro[0] and "UP AGAIN" in _ro[0],
+   "...and the message names all three, in the order they will actually be read")
+
+# it must not fire on the two placements that are CORRECT, or nobody will use it
+ok(lay.reading_order_check([("a", 48, 100, 400, 80), ("b", 48, 190, 400, 80),
+                            ("c", 48, 280, 400, 80)]) == [],
+   "a plain left-aligned three-line stack passes — all three share the edge")
+ok(lay.reading_order_check([("a", 48, 100, 400, 80), ("b", 300, 200, 400, 80),
+                            ("c", 560, 300, 400, 80)]) == [],
+   "a clean diagonal stagger passes — chips 1 and 3 are not aligned")
+ok(lay.reading_order_check(REAL[:2]) == [],
+   "two chips alone cannot form a column trap (it needs three)")
+
+# the unambiguous half
+_inv = lay.reading_order_check([("first", 48, 600, 300, 80), ("second", 48, 100, 300, 80)])
+ok(len(_inv) == 1 and "INVERTED" in _inv[0],
+   "a part read second but placed entirely above the first is an inversion")
+ok(lay.reading_order_check([("first", 48, 100, 300, 80), ("second", 48, 300, 300, 80)]) == [],
+   "...and the same two in the right order do not fire")
+
+# bare (x,y,w,h) boxes are accepted like every other check in this module
+ok(lay.reading_order_check([(48, 672, 560, 80), (560, 726, 500, 80),
+                            (48, 800, 520, 72)]) != [],
+   "unlabelled boxes still work — labels are for the message, not the logic")
+
+# and it is a HARD FAIL in preflight, because a scrambled sentence is not taste
+_pf = lay.preflight(1080, 1350, [(48, 672, 560, 80)], reading_order=REAL)
+ok(_pf["clean"] is False and _pf["reading_order"],
+   "preflight fails on a column trap — opt-in, so it never fires unasked")
+ok(lay.preflight(1080, 1350, [(48, 672, 560, 80)])["clean"] is True,
+   "...and a build that declares no sentence is unaffected")
+
+# ── IGNORE PAIRS NAMING UNDECLARED ELEMENTS (session 10f, from c2_v3.png) ───
+# The script whitelisted ("book","card") and ("umbrella","card") while book,
+# umbrella and a lemon star were all missing from `elements`. collision_check
+# therefore could not see them, preflight printed CLEAN, and the star landed on
+# the words "SIGN-UPS OPEN NOW". The author had thought about those overlaps —
+# they just never entered the gate's world, and nothing said so.
+import io as _io, contextlib as _ctx
+
+def _say(els, ign):
+    buf = _io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        lay.collision_check(els, ignore_pairs=ign)
+    return buf.getvalue()
+
+_E = [("card", 200, 600, 700, 700), ("envelope", 0, 1300, 1080, 300)]
+_out = _say(_E, {("book", "card"), ("umbrella", "card"), ("card", "envelope")})
+ok("UNDECLARED" in _out and "book" in _out and "umbrella" in _out,
+   "an ignore pair naming an undeclared label is reported (the c2_v3 star bug)")
+ok("card" not in _out.split("UNDECLARED")[1].split("]")[0],
+   "...and a label that IS declared is not named in that warning")
+ok(_say(_E, {("card", "envelope")}) == "",
+   "a build whose ignore pairs all name real elements says nothing")
+ok(_say(_E, set()) == "",
+   "no ignore pairs at all is silent — the check cannot fire unasked")
+
 print(f"\nALL {n} ASSERTIONS PASSED")

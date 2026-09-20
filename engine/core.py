@@ -124,6 +124,75 @@ ACCENT_INK = {
     "#0E7C86": "#0E6E77",   # teal   -> 5.20:1
 }
 
+def _chan(hex_color):
+    """(r,g,b) 0-255 from an #RGB or #RRGGBB string."""
+    h = hex_color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _mix(a_hex, b_hex, t):
+    """Blend a toward b by t (0..1) in sRGB. Hue-preserving enough for a tint ladder."""
+    a, b = _chan(a_hex), _chan(b_hex)
+    return "#%02X%02X%02X" % tuple(round(a[i] + (b[i] - a[i]) * t) for i in range(3))
+
+
+def lit_of(accent_hex, ground=None, floor=AA_NORMAL):
+    """The LIGHTENED partner of an accent, for type on a DARK ground.
+
+    The mirror of ink_of(). Computed, not tabulated, for the same reason contrast()
+    is computed: a hand-kept table drifts, and this one would need an entry per
+    (accent, ground) pair. Walks the accent toward PAPER in 5% steps and returns the
+    FIRST tint that clears the floor — the smallest change that does the job, so the
+    hue stays recognisably the department's colour.
+
+    Returns the accent unchanged when it already passes, or when no tint can pass
+    (a caller that needs to know should ask contrast() directly).
+    """
+    ground = ground or INK
+    if not isinstance(accent_hex, str) or not accent_hex.startswith("#"):
+        return accent_hex
+    if contrast(accent_hex, ground) >= floor:
+        return accent_hex
+    for i in range(1, 21):
+        cand = _mix(accent_hex, PAPER, i * 0.05)
+        if contrast(cand, ground) >= floor:
+            return cand
+    return accent_hex
+
+
+def on_ground(accent_hex, ground, size_px=16, bold=True):
+    """The accent value that is ACTUALLY LEGIBLE as type on ANY ground.
+
+    THE BUG THIS FIXES. on_cream() took a `ground=` argument — which invites exactly
+    the call `on_cream(accent, 16, ground=INK)` for a dark-ground poster — but its
+    only fallback was ink_of(), which DARKENS. On a dark ground that walks the wrong
+    way, fails again, and hits the final `else INK` branch: the function returned
+    #0A0A0A ON #0A0A0A, contrast 1.00:1, invisible. It was the catalog's oldest
+    failure class ("drawn but invisible") emitted by the helper built to prevent it.
+
+    So the direction of the fix is now chosen by MEASURING the ground rather than
+    assumed to be "darker": darken on a light ground, lighten on a dark one. And the
+    last-resort value is the neutral that actually WINS on that ground (text_on), not
+    a hardcoded INK.
+    """
+    if not isinstance(accent_hex, str) or not accent_hex.startswith("#"):
+        return accent_hex
+    ground = ground or CREAM
+    if not isinstance(ground, str) or not ground.startswith("#"):
+        return accent_hex               # var()/gradient — never guess (same as text_on)
+    floor = AA_LARGE if (bool(bold) and size_px >= 24) else AA_NORMAL
+    if contrast(accent_hex, ground) >= floor:
+        return accent_hex               # accents may shout
+    # Which way is there room to move? Ask the ground, don't assume.
+    partner = lit_of(accent_hex, ground, floor) if contrast(PAPER, ground) > contrast(INK, ground) \
+        else ink_of(accent_hex)
+    if contrast(partner, ground) >= floor:
+        return partner
+    return text_on(ground)              # the neutral that WINS here, never a fixed INK
+
+
 def on_cream(accent_hex, size_px=16, bold=True, ground=None):
     """The accent value that is ACTUALLY LEGIBLE as type on the page ground.
 
@@ -137,16 +206,23 @@ def on_cream(accent_hex, size_px=16, bold=True, ground=None):
     So the rule is not "accents never touch the page" — it is "accents may shout
     but may not whisper". Returns the raw accent when it clears its own floor at
     that size, otherwise the darkened partner.
+
+    Kept as the named entry point for the common case — the page ground is cream far
+    more often than anything else, and `on_cream(a, 20)` reads better at a call site
+    than `on_ground(a, CREAM, 20)`. It now DELEGATES, so the dark-ground branch cannot
+    diverge from it again.
     """
-    ground = ground or CREAM
-    if not isinstance(accent_hex, str) or not accent_hex.startswith("#"):
-        return accent_hex
-    large = bool(bold) and size_px >= 24
-    floor = AA_LARGE if large else AA_NORMAL
-    if contrast(accent_hex, ground) >= floor:
-        return accent_hex
-    alt = ink_of(accent_hex)
-    return alt if contrast(alt, ground) >= floor else INK
+    return on_ground(accent_hex, ground or CREAM, size_px=size_px, bold=bold)
+
+
+def on_dark(accent_hex, size_px=16, bold=True, ground=None):
+    """Type on the INK ground — the other half of the poster corpus.
+
+    Named because a third of the style bank is dark-ground and every one of those
+    builds needs this decision. Measured facts on #0A0A0A: teal is 4.00:1 and FAILS
+    small type (so it gets tinted); mint and grape sit at 4.55:1 and just pass.
+    """
+    return on_ground(accent_hex, ground or INK, size_px=size_px, bold=bold)
 
 def ink_of(accent_hex):
     """The legible partner of an accent, for TYPE ON THE PAGE GROUND.

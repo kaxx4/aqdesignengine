@@ -191,24 +191,123 @@ def pick(dept=None, canvas=None, ground=None, hero=None, kind="poster",
     return chosen[0] if n == 1 else chosen
 
 
-def brief(style, subject):
-    """Turn a chosen style + a subject line into an instruction a builder can act on."""
+# Canvas aspects, as the builder's frame — keyed to core.SIZES so the two can't drift.
+CANVAS_ASPECT = {"feed": 1080 / 1350, "story": 1080 / 1920, "square": 1.0,
+                 "linkedin": 1200 / 628, "li_square": 1.0}
+
+# Below this relative gap the reference and the target frame are close enough that the
+# measured proportions transfer directly. Above it they DO NOT, and saying so is the
+# whole point — see canvas_shift().
+_ASPECT_TOL = 0.25
+
+
+def canvas_shift(style, canvas=None):
+    """How far the TARGET frame is from the frame the style was MEASURED in.
+
+    `measured.coverage`, `centroid` and `content_bbox` are fractions OF THE REFERENCE
+    IMAGE. They are only instructions if you are building at the reference's aspect.
+    17 of the 74 bank entries are judged onto a canvas more than 25% away from their
+    own image — and `4939a628d6deb2` is a 0.667 portrait judged `linkedin` (1.91), a
+    2.9x swing. `brief()` used to print those fractions under "build to THESE numbers"
+    with nothing to say they were measured in a different shape.
+
+    CANVAS_RULE already told judges to write the compression into the recipe. Nothing
+    checked, and 10 of the 17 recipes say nothing about it — which is the standing
+    lesson that a rule with no check is a rule half the work ignores.
+
+    Returns None when the frames agree, else a dict describing the shift.
+    """
+    target = canvas or style.get("canvas")
+    want = CANVAS_ASPECT.get(target)
+    have = (style.get("measured") or {}).get("aspect")
+    if not want or not have:
+        return None
+    if abs(have - want) / want <= _ASPECT_TOL:
+        return None
+    return {"target": target, "target_aspect": round(want, 3), "ref_aspect": have,
+            "ratio": round(want / have, 2),
+            "direction": "wider" if want > have else "taller"}
+
+
+# What `measured.coverage` / `centroid` / `content_bbox` ACTUALLY describe, per kind.
+# They are always honest measurements OF THE REFERENCE IMAGE — the question the brief has
+# to answer is whether that image is a single design (so the fractions are build targets)
+# or something else entirely. Counted across the bank: only 25 of 74 entries are a
+# same-frame `poster`. For the other 49, "build to THESE numbers" pointed at the
+# proportions of a sticker sheet, a photograph of a phone, or a whole page scroll.
+MEASURED_SCOPE = {
+    "sheet":    ("THE WHOLE SHEET, NOT ANY ONE ARTEFACT ON IT",
+                 "Copy the system that unites them, then re-solve the proportions for a "
+                 "single piece."),
+    "mockup":   ("THE PHOTOGRAPH — BACKDROP, DEVICE AND SHADOWS INCLUDED",
+                 "Crop the design out first (compare.crop) and measure THAT, per "
+                 "CLAUDE.md section 5 step 0."),
+    "asset":    ("A VOCABULARY SHEET WITH NO LAYOUT TO COPY",
+                 "Take the marks, not the composition."),
+    "carousel": ("THE WHOLE STRIP, NOT ONE SLIDE",
+                 "Build ONE frame and let the others follow the same system."),
+}
+
+
+def brief(style, subject, canvas=None):
+    """Turn a chosen style + a subject line into an instruction a builder can act on.
+
+    `canvas` is the canvas the CALLER asked for. It may differ from the style's own
+    judged canvas (a relaxed draw), and either may differ from the reference image's
+    aspect — so the brief states which frame every number belongs to.
+    """
     m = style.get("measured", {})
+    target = canvas or style.get("canvas")
+    shift = canvas_shift(style, target)
+    scope = MEASURED_SCOPE.get(style.get("kind"))
+    # The numbers are only instructions when the reference IS one design, shot in your frame.
+    targets = (scope is None) and (shift is None)
+    frame = "   <- build to these" if targets else ""
     lines = [
-        f"STYLE  {style['slug']}  ({style.get('file')})",
+        # `slug` is injected by pick(); a style read straight out of the bank dict is
+        # keyed BY its slug and carries no copy of it, so brief() used to raise KeyError
+        # on the obvious call `brief(bank["styles"][s], ...)`.
+        f"STYLE  {style.get('slug') or os.path.splitext(style.get('file') or '')[0][:14]}"
+        f"  ({style.get('file')})",
         f"  mechanism : {style.get('mechanism') or '(unjudged — open the image)'}",
         f"  hero      : {style.get('hero') or '?'}      kind: {style.get('kind') or '?'}",
         f"  ground    : {m.get('ground')}  {m.get('ground_rgb')}",
-        f"  coverage  : {m.get('coverage')}   centroid {m.get('centroid')}",
+        f"  coverage  : {m.get('coverage')}   centroid {m.get('centroid')}{frame}",
         f"  palette   : {', '.join(m.get('palette') or [])}",
-        f"  canvas    : {style.get('canvas')}",
+        f"  canvas    : {target}" + (f"   (style's own: {style.get('canvas')})"
+                                     if target != style.get("canvas") else ""),
         f"  recipe    : {style.get('recipe') or '(none written yet)'}",
+    ]
+    if scope:
+        head, detail = scope
+        lines += [
+            "",
+            f"  ⚠ THE NUMBERS ABOVE MEASURE {head}.",
+            f"    This reference is a `{style.get('kind')}`, so coverage, centroid and",
+            f"    content_bbox are not build targets. {detail}",
+        ]
+    if shift:
+        lines += [
+            "",
+            f"  ⚠ RE-PROPORTION — the reference is {shift['ref_aspect']}:1, you are building "
+            f"{shift['target_aspect']}:1 ({shift['direction']}, {shift['ratio']}x).",
+            "    TRANSFERS as written : the mechanism, the ground, the palette, the restraint,",
+            "                           the z-order, and the RELATIVE weight of each element.",
+            "    DOES NOT TRANSFER    : coverage, centroid and content_bbox above — those are",
+            "                           fractions of the REFERENCE frame, not of yours.",
+            "    Re-solve the layout for your frame: decide what stacks vs. sits side by side,",
+            "    and keep the mechanism legible rather than scaling the reference to fit.",
+        ]
+    lines += [
         "",
         f"SUBJECT  {subject}",
         "",
         "BUILD IT:",
         f"  1. open the reference:  training_samples/reference_posters/{style.get('file')}",
-        f"  2. measure it:          compare.geometry(path)   <- build to THESE numbers",
+        f"  2. measure it:          compare.geometry(path)"
+        + ("   <- build to THESE numbers" if targets else
+           "   <- read the SHAPE of the layout; see the warning above before"
+           " treating any fraction as a target"),
         "  3. bespoke script from core/build/layout/shapes/tex — never engine.py ARCHETYPES",
         "  4. render, then LOOK at the PNG (CLAUDE.md section 3). The score is a proxy.",
     ]
@@ -397,9 +496,22 @@ def cross_check(verbose=True):
     return out
 
 
-def validate(verbose=True):
+_REPROP_WORDS = ("compress", "re-proportion", "reproportion", "landscape", "portrait",
+                 "wider", "taller", "side by side", "side-by-side", "stack", "aspect",
+                 "squar", "column", "row of", "band")
+
+
+def validate(verbose=True, advisory=True):
     """Report judged entries that fall outside the schema. Never edits anything —
-    a judgment made under an older spec is data, not a bug to silently overwrite."""
+    a judgment made under an older spec is data, not a bug to silently overwrite.
+
+    `advisory=False` returns only HARD violations (a field outside its enum, an empty
+    recipe) and drops the completeness warnings. The split matters because the two
+    demand different responses: a hard violation means the entry is unusable, while
+    `recipe/canvas` means the entry is fine and its recipe is merely incomplete. Same
+    ADVISORY-vs-hard separation `layout.preflight` already makes, for the same reason —
+    one noisy category in a pass/fail list teaches the reader to ignore the whole list.
+    """
     bank = _load()
     bad = []
     for slug, v in bank.get("styles", {}).items():
@@ -417,6 +529,16 @@ def validate(verbose=True):
         n = len(v.get("tags") or [])
         if not (3 <= n <= 8):
             bad.append((slug, "tags", f"{n} tags"))
+        # CANVAS_RULE: a mechanism judged onto a canvas far from its own aspect must say
+        # in the recipe HOW it compresses. That instruction went unchecked, so 10 of the
+        # 17 cross-aspect entries never mention the frame — and `brief()` then printed
+        # reference-frame fractions as build targets. Advisory, not a hard error: the
+        # judgment itself is fine, it is the recipe that is incomplete.
+        sh = canvas_shift(v) if advisory else None
+        if sh and not any(w in (v.get("recipe") or "").lower() for w in _REPROP_WORDS):
+            bad.append((slug, "recipe/canvas",
+                        f"{sh['ref_aspect']}:1 ref judged {sh['target']} "
+                        f"({sh['target_aspect']}:1) — recipe never says how it re-proportions"))
     if verbose:
         if bad:
             print(f"{len(bad)} schema issues:")

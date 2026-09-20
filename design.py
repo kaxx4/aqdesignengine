@@ -74,7 +74,9 @@ def main():
     for i, style in enumerate(picks):
         if i:
             print("\n" + "-" * 74 + "\n")
-        print(sb.brief(style, subject))
+        # Pass the canvas the USER asked for — it can differ from the style's own judged
+        # canvas (a relaxed draw), and the brief has to name which frame its numbers are in.
+        print(sb.brief(style, subject, canvas=a.canvas))
         if accent:
             print(f"\n  DEPARTMENT COLOUR (fixed by rule, core.accent_for('{a.dept}')): {accent}")
             print(f"  text on it: {core.text_on(accent)}   "
