@@ -403,6 +403,14 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
 - `collision_check(..., containers=("card","slab"))` → declare the furniture ONCE instead of
   hand-listing an ignore pair per child. Explicit on purpose: a doodle dropped entirely
   inside a headline's bbox is containment too, and that is the bug the check exists for.
+- `img_src_check(html)` → an `<img>` with an empty or missing src. Auto in `preflight` with `html=`.
+- `double_rotation_scan(html)` → **advisory**; an element rotated by BOTH its wrapper and itself
+  draws at the SUM. `doodles.stamp(rot=)` and `shapes.sticker(rot=)` bake the angle in, so a
+  rotated wrapper doubles it. Counter-rotation is legal and reports a sum near zero — that is the
+  tell. Auto in `preflight` with `html=`.
+- **`bleed_tags=("pill",)`** → tags that leave the canvas ON PURPOSE. `bounds_check` is a hard
+  fail, so without this a design whose MECHANISM is the bleed can never report clean. Accepted by
+  `preflight` and `render`, and passed on to `measure_dom`'s own off-canvas exemption.
 - `reading_order_check(parts)` → one SENTENCE split across placed boxes must scan in its own
   order. Catches an INVERSION and the COLUMN TRAP (parts 1 and 3 left-aligned with 2 between
   them, so they read as a column). HARD FAIL via `preflight(reading_order=[…])`.
@@ -453,6 +461,12 @@ also runs the full `preflight` at render time for free.
 - **`reconcile.reconcile_boxes(boxes, elements)` → advisory**, auto-run when `render(..., elements=…)`:
   declared tuples vs. what was drawn — `under_reported` and `untracked`.
 - `reconcile.probe(...)` → the legacy Workflow-A-only driver. Prefer `measure_dom`.
+- **`measure_dom` also reports `invisible_fill` (auto).** An element whose own opaque background
+  is the same colour as the first opaque thing painted BEHIND it. This replaced
+  `layout.same_as_bg_scan` in the auto gate, which compared every fill to the PAGE ground and so
+  called a cream badge on a full-bleed teal panel invisible on every render. A static scan cannot
+  know an element's real backing surface; the browser can. The static one stays as a manual
+  diagnostic.
 - **`measure_dom` also reports `buried_text` (ADVISORY, auto).** Type that is painted,
   laid out, correctly coloured, inside its box and on the canvas — and invisible, because
   something OPAQUE is in front of it. Catches the z-index trap (an explicit `z-index` on a
@@ -669,6 +683,10 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | **`build.render()` hardcoded `html=None` in its internal preflight**, so `css_var_check`, `img_src_check`, `invisible_craft_scan`, `wash_scan` and `double_rotation_scan` NEVER ran through the documented convenience path — while §6 claimed that one call was the whole gate | session 10f, agent g1 | `render()` passes the html. Its own `css_var_check` now runs only when there is no element list, so nothing is reported twice |
 | A design whose MECHANISM is bleeding off both edges printed a wall of `OFF-CANVAS`, and `bounds_check` is a HARD FAIL — so a correct full-bleed build could never report clean, which teaches you to read past a failing verdict | session 10f, agent g1 | `preflight(..., bleed_tags=("pill",))` and `render(..., bleed_tags=…)`. `measure_dom` always had it; nothing above exposed it |
 
+| **A MEASURED field was wrong.** `compare._bg_color` took the modal quantized colour of every pixel, assuming the ground is the largest flat area. On a dense poster it is not: a warm-yellow RISO-TEXTURED field scatters across buckets while solid black type lands in one, so black won and the bank recorded `ground: dark [0,0,0]` for a plainly yellow reference. `design.py` would have briefed a dark piece from it. Blurring first only moved the answer to the largest green plate | session 10f, agent g2 | **`_bg_color` samples the EDGE RING**, because the ground is whatever the design has not covered. 8 of 74 entries changed; the two other `poster` changes were verified by eye as corrections, one is a wash |
+| `cross_check` excluded only `mockup` from its ground comparison — the same reasoning covers every kind in `MEASURED_SCOPE`, and it surfaced the moment the ground sampler got accurate enough to read a sheet's dark backdrop correctly | session 10f | excludes all of `MEASURED_SCOPE` |
+| `audit.audit(ignore_pairs=)` matches the DOM's `data-tag` while `layout.collision_check` matches the caller's element LABELS — two namespaces behind one argument, so three plates sharing `data-tag="plate"` had the tuple-level ignore work and the DOM-level one silently miss, in the same render call | session 10f, agent g2 (a regression introduced earlier the same session) | `audit` reports ignore pairs matching no `data-tag`, and lists the tags that do exist |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -749,8 +767,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (36) ·
-  `test_stylebank.py` (57) · `test_buried_text.py` (19) · `test_repo_hygiene.py` (28)** —
-  **395 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (64) · `test_buried_text.py` (19) · `test_repo_hygiene.py` (28)** —
+  **402 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

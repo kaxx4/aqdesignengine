@@ -490,11 +490,19 @@ def cross_check(verbose=True):
     for slug, v in bank.get("styles", {}).items():
         if not v.get("judged"):
             continue
-        # A MOCKUP's measured ground is the BACKDROP it was photographed on, not the
-        # ground of the design inside it — a phone on a yellow table measures yellow
-        # while its screen, which is what the recipe describes, is black. Both are
-        # correct about different things, so there is nothing to cross-check.
-        if v.get("kind") == "mockup":
+        # EVERY kind in MEASURED_SCOPE measures something other than the design's own
+        # ground, so there is nothing here to cross-check. A mockup's ground is the
+        # backdrop it was photographed on: a phone on a yellow table measures yellow
+        # while its screen, which the recipe describes, is black. A SHEET's is the
+        # presentation board: `b075bc30db0422` is three white posters on a dark
+        # backdrop, so the pixels say dark and the recipe correctly says paper, and
+        # both are right about different things.
+        #
+        # Only `mockup` was excluded before, which was the same rule stated too
+        # narrowly — the identical reasoning covers sheets, assets and carousels, and
+        # it surfaced the moment the ground sampler got accurate enough to read the
+        # backdrop correctly.
+        if v.get("kind") in MEASURED_SCOPE:
             continue
         text = ((v.get("recipe") or "") + " " + " ".join(v.get("tags") or [])).lower()
         measured = (v.get("measured") or {}).get("ground")

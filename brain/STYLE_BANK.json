@@ -237,7 +237,7 @@
       "file": "139c5a6f43a6da226328cd18f7f8db0d.jpg",
       "measured": {
         "aspect": 0.8,
-        "coverage": 0.675,
+        "coverage": 0.74,
         "ground_rgb": [
           0,
           0,
@@ -248,17 +248,17 @@
           0.0,
           0.0,
           0.998,
-          0.999
+          0.979
         ],
         "centroid": [
-          0.532,
-          0.587
+          0.504,
+          0.47
         ],
         "palette": [
+          "dark/ink",
           "near-neutral",
-          "dark/ink",
-          "dark/ink",
-          "orange/warm",
+          "green/teal",
+          "green/teal",
           "green/teal"
         ]
       },
@@ -284,29 +284,29 @@
       "file": "17c7de5509caaed992f2de7b720ec8b4.jpg",
       "measured": {
         "aspect": 0.679,
-        "coverage": 0.827,
+        "coverage": 0.91,
         "ground_rgb": [
-          0,
-          0,
-          0
+          240,
+          240,
+          240
         ],
-        "ground": "dark",
+        "ground": "paper",
         "content_bbox": [
-          0.0,
-          0.0,
-          0.998,
-          0.999
+          0.015,
+          0.016,
+          0.985,
+          0.982
         ],
         "centroid": [
-          0.505,
-          0.432
+          0.5,
+          0.49
         ],
         "palette": [
-          "near-neutral",
+          "dark/ink",
           "blue/purple",
           "dark/ink",
           "blue/purple",
-          "dark/ink"
+          "green/teal"
         ]
       },
       "judged": true,
@@ -609,11 +609,11 @@
         "aspect": 1.333,
         "coverage": 0.531,
         "ground_rgb": [
-          0,
-          0,
-          0
+          192,
+          192,
+          192
         ],
-        "ground": "dark",
+        "ground": "paper",
         "content_bbox": [
           0.113,
           0.147,
@@ -700,13 +700,13 @@
       "file": "3bb3f9582d5cac37437cb9e049cf5c4a.jpg",
       "measured": {
         "aspect": 1.344,
-        "coverage": 0.482,
+        "coverage": 0.81,
         "ground_rgb": [
-          216,
-          216,
-          216
+          24,
+          24,
+          24
         ],
-        "ground": "paper",
+        "ground": "dark",
         "content_bbox": [
           0.0,
           0.0,
@@ -714,15 +714,15 @@
           0.999
         ],
         "centroid": [
-          0.522,
-          0.422
+          0.508,
+          0.568
         ],
         "palette": [
-          "dark/ink",
+          "near-neutral",
           "orange/warm",
+          "near-neutral",
           "orange/warm",
-          "dark/ink",
-          "near-neutral"
+          "orange/warm"
         ]
       },
       "judged": true,
@@ -1443,28 +1443,28 @@
       "file": "67b12a3cd48f435e3583b8ba56db8c2a.jpg",
       "measured": {
         "aspect": 1.556,
-        "coverage": 0.45,
+        "coverage": 0.729,
         "ground_rgb": [
-          240,
-          240,
-          216
+          216,
+          216,
+          192
         ],
         "ground": "paper",
         "content_bbox": [
-          0.072,
+          0.07,
           0.0,
-          0.926,
-          0.833
+          0.928,
+          0.887
         ],
         "centroid": [
-          0.491,
-          0.296
+          0.498,
+          0.435
         ],
         "palette": [
+          "near-neutral",
           "orange/warm",
           "orange/warm",
           "warm red/pink",
-          "near-neutral",
           "blue/purple"
         ]
       },
@@ -1629,13 +1629,13 @@
       "file": "772b9a5b29d3917c12bbe50a7f1470db.jpg",
       "measured": {
         "aspect": 0.707,
-        "coverage": 0.773,
+        "coverage": 0.924,
         "ground_rgb": [
-          216,
-          216,
-          216
+          0,
+          96,
+          192
         ],
-        "ground": "paper",
+        "ground": "saturated",
         "content_bbox": [
           0.0,
           0.0,
@@ -1643,14 +1643,14 @@
           0.999
         ],
         "centroid": [
-          0.506,
-          0.503
+          0.509,
+          0.528
         ],
         "palette": [
-          "dark/ink",
-          "blue/purple",
-          "blue/purple",
           "near-neutral",
+          "dark/ink",
+          "near-neutral",
+          "blue/purple",
           "blue/purple"
         ]
       },
@@ -2280,29 +2280,29 @@
       "file": "b075bc30db04223fc1086b86d92ba2b4.jpg",
       "measured": {
         "aspect": 1.278,
-        "coverage": 0.544,
+        "coverage": 0.902,
         "ground_rgb": [
-          240,
-          240,
-          240
+          0,
+          0,
+          0
         ],
-        "ground": "paper",
+        "ground": "dark",
         "content_bbox": [
           0.0,
-          0.0,
+          0.041,
           0.998,
-          0.999
+          0.957
         ],
         "centroid": [
-          0.529,
-          0.466
+          0.499,
+          0.499
         ],
         "palette": [
-          "dark/ink",
+          "near-neutral",
           "green/teal",
           "blue/purple",
           "orange/warm",
-          "near-neutral"
+          "dark/ink"
         ]
       },
       "judged": true,
@@ -2514,27 +2514,27 @@
       "file": "ca484173fb52871d5f058102020b036c.jpg",
       "measured": {
         "aspect": 0.861,
-        "coverage": 0.614,
+        "coverage": 0.857,
         "ground_rgb": [
-          240,
-          240,
-          240
+          0,
+          0,
+          24
         ],
-        "ground": "paper",
+        "ground": "dark",
         "content_bbox": [
-          0.0,
-          0.0,
-          0.998,
-          0.999
+          0.03,
+          0.039,
+          0.969,
+          0.967
         ],
         "centroid": [
-          0.486,
-          0.379
+          0.499,
+          0.503
         ],
         "palette": [
-          "blue/purple",
-          "blue/purple",
           "near-neutral",
+          "blue/purple",
+          "orange/warm",
           "green/teal",
           "blue/purple"
         ]
@@ -2749,29 +2749,29 @@
       "file": "d375fd7dbcf69cfcaeef11a6be81b2b9.jpg",
       "measured": {
         "aspect": 0.802,
-        "coverage": 0.592,
+        "coverage": 0.793,
         "ground_rgb": [
           24,
-          48,
-          168
+          24,
+          72
         ],
-        "ground": "saturated",
+        "ground": "dark",
         "content_bbox": [
-          0.0,
+          0.011,
           0.0,
           0.998,
           0.999
         ],
         "centroid": [
-          0.413,
-          0.473
+          0.557,
+          0.525
         ],
         "palette": [
+          "blue/purple",
+          "blue/purple",
           "near-neutral",
           "blue/purple",
-          "blue/purple",
-          "dark/ink",
-          "dark/ink"
+          "blue/purple"
         ]
       },
       "judged": true,
@@ -2937,8 +2937,8 @@
         "aspect": 1.333,
         "coverage": 0.404,
         "ground_rgb": [
-          240,
-          240,
+          216,
+          216,
           240
         ],
         "ground": "paper",
@@ -3123,26 +3123,26 @@
       "file": "eaad68d6305fbaca52c0a830906bc783.jpg",
       "measured": {
         "aspect": 1.0,
-        "coverage": 0.883,
+        "coverage": 0.687,
         "ground_rgb": [
-          0,
-          0,
-          0
+          240,
+          192,
+          96
         ],
-        "ground": "dark",
+        "ground": "saturated",
         "content_bbox": [
           0.0,
-          0.0,
+          0.043,
           0.998,
           0.999
         ],
         "centroid": [
-          0.485,
-          0.522
+          0.524,
+          0.546
         ],
         "palette": [
-          "orange/warm",
           "dark/ink",
+          "green/teal",
           "orange/warm",
           "orange/warm",
           "orange/warm"
@@ -3356,11 +3356,11 @@
       "file": "ffc106f26f584a842250c4235bcd368e.jpg",
       "measured": {
         "aspect": 0.8,
-        "coverage": 0.839,
+        "coverage": 0.766,
         "ground_rgb": [
-          0,
-          48,
-          96
+          24,
+          120,
+          216
         ],
         "ground": "saturated",
         "content_bbox": [
@@ -3370,15 +3370,15 @@
           0.999
         ],
         "centroid": [
-          0.545,
-          0.502
+          0.427,
+          0.47
         ],
         "palette": [
           "blue/purple",
           "blue/purple",
-          "blue/purple",
           "dark/ink",
-          "orange/warm"
+          "blue/purple",
+          "blue/purple"
         ]
       },
       "judged": true,

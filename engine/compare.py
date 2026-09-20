@@ -52,11 +52,34 @@ def _arrays(im):
     return a, lum
 
 
-def _bg_color(a):
-    """Modal quantized color = the background field."""
+def _bg_color(a, edge_frac=0.06):
+    """The background FIELD, sampled from the canvas edge rather than the whole image.
+
+    THE BUG THIS FIXES (session 10f, agent g2). This was the modal quantized colour of
+    every pixel, which assumes the ground is the largest flat area. On a dense poster
+    it is not. `eaad68d6305fba` is a warm-yellow riso-textured field carrying big flat
+    plates of green, orange and black type: the yellow is TEXTURED, so it scatters
+    across many quantization buckets, while the solid black lands in one. Black won
+    the mode, the bank recorded `ground: dark [0,0,0]` for a plainly yellow poster,
+    and `design.py` would have briefed a builder to make a dark piece from it. Blurring
+    first (which content_mask already does for this exact image) only moved the answer
+    to the green plate — the mode is simply the wrong question when the design covers
+    88% of the canvas.
+
+    The ground is whatever the design has NOT covered, and the place it is most
+    reliably exposed is the frame. So: take the modal colour of the outer border ring.
+    Falls back to the global mode when the ring is degenerate.
+    """
+    h, w = a.shape[:2]
+    m = max(2, int(round(min(h, w) * edge_frac)))
+    ring = np.concatenate([a[:m].reshape(-1, 3), a[-m:].reshape(-1, 3),
+                           a[:, :m].reshape(-1, 3), a[:, -m:].reshape(-1, 3)])
+    if ring.size:
+        q = (ring // 24 * 24)
+        common = Counter(map(tuple, q)).most_common(1)[0][0]
+        return np.array(common, dtype=np.float32)
     q = (a // 24 * 24).reshape(-1, 3)
-    common = Counter(map(tuple, q)).most_common(1)[0][0]
-    return np.array(common, dtype=np.float32)
+    return np.array(Counter(map(tuple, q)).most_common(1)[0][0], dtype=np.float32)
 
 
 def content_mask(a, tol=46, im=None, denoise=True):
