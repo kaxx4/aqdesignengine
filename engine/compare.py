@@ -30,7 +30,13 @@ import numpy as np
 from PIL import Image, ImageFilter
 from collections import Counter
 
-SIZE = (540, 675)          # common analysis resolution (feed aspect 4:5)
+# Common analysis resolution. BOTH images are resampled to this, so what is compared
+# is RELATIVE geometry — which is the intent, and why the feed aspect here does not
+# bias a square or landscape piece. It DOES mean a comparison between two different
+# aspects is distorting both to a common frame: that is fine for "is the mass in the
+# same place", and it is exactly why a mockup crop scored against a story canvas is
+# not comparable to a same-aspect recreation (see RECREATION_PROTOCOL.md, MOCKUPS).
+SIZE = (540, 675)          # feed aspect 4:5
 
 
 def _load(path, size=SIZE):
@@ -46,11 +52,34 @@ def _arrays(im):
     return a, lum
 
 
-def _bg_color(a):
-    """Modal quantized color = the background field."""
+def _bg_color(a, edge_frac=0.06):
+    """The background FIELD, sampled from the canvas edge rather than the whole image.
+
+    THE BUG THIS FIXES (session 10f, agent g2). This was the modal quantized colour of
+    every pixel, which assumes the ground is the largest flat area. On a dense poster
+    it is not. `eaad68d6305fba` is a warm-yellow riso-textured field carrying big flat
+    plates of green, orange and black type: the yellow is TEXTURED, so it scatters
+    across many quantization buckets, while the solid black lands in one. Black won
+    the mode, the bank recorded `ground: dark [0,0,0]` for a plainly yellow poster,
+    and `design.py` would have briefed a builder to make a dark piece from it. Blurring
+    first (which content_mask already does for this exact image) only moved the answer
+    to the green plate — the mode is simply the wrong question when the design covers
+    88% of the canvas.
+
+    The ground is whatever the design has NOT covered, and the place it is most
+    reliably exposed is the frame. So: take the modal colour of the outer border ring.
+    Falls back to the global mode when the ring is degenerate.
+    """
+    h, w = a.shape[:2]
+    m = max(2, int(round(min(h, w) * edge_frac)))
+    ring = np.concatenate([a[:m].reshape(-1, 3), a[-m:].reshape(-1, 3),
+                           a[:, :m].reshape(-1, 3), a[:, -m:].reshape(-1, 3)])
+    if ring.size:
+        q = (ring // 24 * 24)
+        common = Counter(map(tuple, q)).most_common(1)[0][0]
+        return np.array(common, dtype=np.float32)
     q = (a // 24 * 24).reshape(-1, 3)
-    common = Counter(map(tuple, q)).most_common(1)[0][0]
-    return np.array(common, dtype=np.float32)
+    return np.array(Counter(map(tuple, q)).most_common(1)[0][0], dtype=np.float32)
 
 
 def content_mask(a, tol=46, im=None, denoise=True):
@@ -143,7 +172,33 @@ def _name_color(c):
     return "blue/purple"
 
 
+_ASPECT_WARN = 0.25
+
+
+def aspect_gap(ref_path, gen_path):
+    """How far apart the two images' SOURCE aspects are, before _load flattens both
+    into the common analysis frame. Returns (ref_aspect, gen_aspect, rel_gap)."""
+    ra = Image.open(ref_path).size
+    ga = Image.open(gen_path).size
+    r, g = ra[0] / ra[1], ga[0] / ga[1]
+    return round(r, 3), round(g, 3), abs(r - g) / max(r, g)
+
+
 def compare(ref_path, gen_path, gw=9, gh=11):
+    # SAY IT UP FRONT WHEN THE SCORE IS NOT COMPARABLE. _load resamples both images to
+    # one frame, which is right for relative geometry and wrong to read as a quality
+    # number when the sources are different shapes: a 0.275 phone-screen crop against a
+    # 0.5625 story canvas scored 0.534 against a 0.16 accept line while the looking gate
+    # found every element present and correctly proportioned. The agent who hit that had
+    # to discover it by running a control (render vs. a downscaled copy of itself, which
+    # returned 0.001). compare knows both aspects and can simply say so.
+    _r, _g, _gap = aspect_gap(ref_path, gen_path)
+    if _gap > _ASPECT_WARN:
+        print(f"   [compare] ASPECT MISMATCH {_r}:1 vs {_g}:1 ({_gap:.0%} apart). Both are "
+              f"resampled to {SIZE[0]}x{SIZE[1]}, so this score measures the DISTORTION as "
+              f"well as the design and is NOT comparable to a same-aspect recreation. "
+              f"Run a control (score the render against a downscaled copy of ITSELF) "
+              f"before believing any gap — see brain/RECREATION_PROTOCOL.md, MOCKUPS.")
     ref, gen = _load(ref_path), _load(gen_path)
     ra, rl = _arrays(ref)
     ga, gl = _arrays(gen)

@@ -288,4 +288,63 @@ _noslug["file"] = "abcdef1234567890.jpg"
 assert "abcdef12345678" in sb.brief(_noslug, "s")
 ok("brief() works on a style read straight out of the bank (no injected slug)")
 
+# ── THE ACCEPTANCE LIST MUST BE VISIBLE, AND MUST BE THE REAL ONE ───────────
+# A judging agent reported `_REPROP_WORDS` as a hidden acceptance test: it could be
+# failed by a recipe that plainly DID address its frame, with no way to know why.
+# Publishing a hand-retyped copy would only swap an invisible contract for one free
+# to drift — and the first draft of that fix drifted immediately ("square" in the
+# prose, "squar" in the code). So the rule PRINTS the tuple.
+_printed = sb.RECIPE_RULE
+for _w in sb._REPROP_WORDS:
+    assert _w in _printed, _w
+ok("every enforced re-proportion word appears in the published RECIPE_RULE")
+assert "hidden acceptance test" in _printed
+ok("...and the rule says plainly that the list is part of the contract")
+assert "DOES NOT COUNT AGAINST" in _printed
+ok("the sentence budget no longer competes with the re-proportioning requirement")
+
+# ── THE GROUND IS SAMPLED FROM THE EDGE (session 10f, agent g2) ─────────────
+# compare._bg_color took the modal quantized colour of EVERY pixel, which assumes
+# the ground is the largest flat area. On a dense poster it is not.
+# `eaad68d6305fba` is a warm-yellow RISO-TEXTURED field carrying flat plates of
+# green, orange and black: the yellow scatters across quantization buckets while
+# the solid black lands in one, so black won the mode and the bank recorded
+# `ground: dark [0,0,0]` for a plainly yellow poster. design.py would have briefed
+# a builder to make a dark piece from it. Blurring first — which content_mask
+# already does for this exact image — only moved the answer to the green plate.
+#
+# This is the most important class of bug in the bank, because MEASURED fields are
+# the ones trusted precisely for not being anybody's opinion.
+_yellow = S.get("eaad68d6305fba")
+if _yellow:
+    assert _yellow["measured"]["ground"] == "saturated", _yellow["measured"]
+    ok("the riso-textured yellow poster measures SATURATED, not dark")
+    _r, _g, _b = _yellow["measured"]["ground_rgb"]
+    assert _r > 200 and _g > 150 and _b < 150, _yellow["measured"]["ground_rgb"]
+    ok("...and its ground_rgb is actually warm yellow, not a plate colour")
+
+_cmp = _load("compare")
+import numpy as _np
+# a ground the design covers MOST of: edge sampling must still find the frame
+_field = _np.zeros((400, 400, 3), dtype=_np.float32)
+_field[:, :] = (240, 192, 96)          # yellow ground
+_field[40:360, 40:360] = (0, 0, 0)     # a black slab over 64% of it
+assert tuple(int(v) for v in _cmp._bg_color(_field)) != (0, 0, 0)
+ok("a slab covering 64% of the canvas does not become the measured ground")
+assert sb._classify_ground([int(v) for v in _cmp._bg_color(_field)]) == "saturated"
+ok("...the frame still reads as the yellow it actually is")
+
+# and the ordinary case must be unchanged
+_plain = _np.zeros((200, 200, 3), dtype=_np.float32)
+_plain[:, :] = (244, 239, 224)
+assert sb._classify_ground([int(v) for v in _cmp._bg_color(_plain)]) == "paper"
+ok("a plain cream field still measures paper — the common case is untouched")
+
+# cross_check must not fire on kinds whose measured ground is a BACKDROP
+assert sb.cross_check(verbose=False) == []
+ok("cross_check is clean: sheets and mockups measure a backdrop, not their design")
+_sheets = [k for k, v in S.items() if v.get("kind") in sb.MEASURED_SCOPE]
+assert _sheets and all(sb.canvas_shift(S[k]) is None for k in _sheets)
+ok(f"...and all {len(_sheets)} of them are excluded by the same MEASURED_SCOPE rule")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

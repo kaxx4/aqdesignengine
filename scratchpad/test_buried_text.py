@@ -140,6 +140,33 @@ async def main():
            "a kicker above a tight-line-height headline is NOT buried (the c2_v5 "
            "false positive: the headline hit-tests above its box but is transparent)")
 
+        # PARTIAL BURIAL (session 10f, g2_v6). The check required EVERY sampled point
+        # to be covered, so a plate whose label had its bottom half sliced off by an
+        # overlapping sibling passed with 2 of 5 points clear — and shipped, with
+        # "SINCE 2021" cut through the middle of its letters. You cannot read the top
+        # half of a word.
+        HALF = page(
+            "<div data-tag='label' style='position:absolute;left:100px;top:200px;"
+            "width:500px;height:100px;font:900 64px sans-serif;color:#0A0A0A'>"
+            "SINCE 2021</div>"
+            "<div data-tag='plate' style='position:absolute;left:60px;top:248px;"
+            "width:700px;height:400px;background:#FFC700;z-index:5'></div>")
+        r = await measure(HALF)
+        ok(any(t[0] == "label" for t in r["buried_text"]),
+           "a label with its bottom half covered by a plate IS reported (g2_v6)")
+
+        # the AQ move this must NOT flag: a sticker tucked over a headline's corner
+        TUCK = page(
+            "<div data-tag='head' style='position:absolute;left:100px;top:200px;"
+            "width:800px;height:200px;font:900 90px sans-serif;color:#0A0A0A'>"
+            "SHOWING UP</div>"
+            "<div data-tag='badge' style='position:absolute;left:820px;top:180px;"
+            "width:140px;height:140px;border-radius:50%;background:#FF4D8C;"
+            "z-index:5'></div>")
+        r = await measure(TUCK)
+        ok(not any(t[0] == "head" for t in r["buried_text"]),
+           "...while a sticker tucked over one corner is a deliberate tuck, not a cut")
+
         # ...and a TRANSPARENT box genuinely on top must not bury anything either
         GLASS = page(
             "<div data-tag='copy' style='position:absolute;left:80px;top:400px;"
@@ -163,6 +190,110 @@ async def main():
            "...while a 0.97-alpha scrim over the same copy IS reported")
 
         await b.close()
+
+    # ── THE TWO OVERLAP CHECKERS MUST COOPERATE (session 10f, agent c3) ──────
+    # layout.collision_check takes collision_ignore for by-design overlaps. But
+    # build.render ALSO auto-runs audit.py's DOM overlap check, which had its own
+    # closed SKIP_PAIRS vocabulary baked into that file and reachable by no caller.
+    # So a script could silence one report and the other kept printing the same five
+    # overlaps on every render. The only thing that actually worked was DOM
+    # parent/child nesting, found by reading engine source after the documented
+    # parameter appeared to do nothing. A gate nobody can silence is a gate everybody
+    # learns to scroll past.
+    B = _load("build")
+    inner = ('<div class="measure" data-tag="word" style="position:absolute;left:120px;'
+             'top:400px;width:700px;height:200px;background:#1B8A5A"></div>'
+             '<div class="measure" data-tag="sticker" style="position:absolute;left:300px;'
+             'top:450px;width:160px;height:160px;background:#FF4D8C"></div>')
+    html2 = B.page(W, H, "var(--bg)", inner, grain=False)
+    els = [("word", 120, 400, 700, 200), ("sticker", 300, 450, 160, 160)]
+    tmp = os.path.join(os.environ.get("TEMP", "."), "_aq_overlap.png")
+
+    import io as _io, contextlib as _ctx
+    buf = _io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        await B.render(html2, tmp, W, H, elements=els)
+    undeclared = buf.getvalue()
+    ok("OVERLAP word x sticker" in undeclared,
+       "an undeclared overlap is reported by the DOM audit (it is a real report)")
+
+    buf = _io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        await B.render(html2, tmp, W, H, elements=els,
+                       collision_ignore={("word", "sticker")})
+    declared = buf.getvalue()
+    ok("OVERLAP word x sticker" not in declared,
+       "ONE collision_ignore declaration now silences the DOM audit too")
+    ok("ISSUES" not in declared and "CLEAN" in declared,
+       "...and the render reports clean rather than contradicting its own preflight")
+    # ── INVISIBLE FILL, MEASURED (session 10f, agents c3 and g3) ────────────
+    # layout.same_as_bg_scan compares every declared background against the PAGE
+    # ground and called itself zero-false-positive. It is not: a cream badge on a
+    # full-bleed teal panel is plainly visible and got "FILL SAME AS PAGE BG" on
+    # EVERY render. Two independent agents reported it, which makes it a spec
+    # defect — a static scan cannot know what is behind an element, and most AQ
+    # posters layer. The browser knows exactly.
+    from playwright.async_api import async_playwright as _apw
+    async with _apw() as p2:
+        b2 = await p2.chromium.launch()
+        pg2 = await b2.new_page(viewport={"width": W, "height": H})
+
+        async def fills(inner):
+            await pg2.set_content(page(inner), wait_until="load")
+            return (await rec.measure_dom(pg2, W, H))["invisible_fill"]
+
+        visible = await fills(
+            "<div data-tag='panel' style='position:absolute;inset:0;"
+            "background:#0E7C86'></div>"
+            "<div data-tag='badge' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:#F4EFE0'></div>")
+        ok(not any(t[0] == "badge" for t in visible),
+           "a cream badge on a full-bleed TEAL panel is NOT flagged (the c3/g3 false positive)")
+
+        gone = await fills(
+            "<div data-tag='badge' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:#F4EFE0'></div>")
+        ok(any(t[0] == "badge" for t in gone),
+           "...while a cream badge on the CREAM page still IS — the real bug survives")
+        _row = [t for t in gone if t[0] == "badge"][0]
+        ok(_row[3] and _row[4] < 18,
+           "...and the report names what is painted behind it, with the measured distance")
+
+        # a translucent fill is a deliberate tint, not an invisible shape
+        tinted = await fills(
+            "<div data-tag='wash' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:rgba(244,239,224,0.4)'></div>")
+        ok(not any(t[0] == "wash" for t in tinted),
+           "a translucent fill over the same colour is a tint, not a vanished shape")
+
+        await b2.close()
+
+    # ── render() MUST ACTUALLY PASS THE HTML TO PREFLIGHT (agent g1) ─────────
+    # It hardcoded html=None, so css_var_check, img_src_check, invisible_craft_scan,
+    # wash_scan and double_rotation_scan never ran through the documented convenience
+    # path no matter what the caller passed — while §6 claimed this one call was the
+    # whole gate. Found by reading build.py after the agent's own manual scans caught
+    # things render() had just reported clean.
+    buf3 = _io.StringIO()
+    with _ctx.redirect_stdout(buf3):
+        await B.render(
+            B.page(W, H, "var(--bg)",
+                   '<div data-tag="a" style="position:absolute;left:100px;top:200px;'
+                   'width:200px;height:100px;color:var(--typo)">x</div>', grain=False),
+            tmp, W, H, elements=[("a", 100, 200, 200, 100)])
+    ok("--typo" in buf3.getvalue(),
+       "an undefined css var reaches preflight THROUGH render (html is no longer None)")
+    ok(buf3.getvalue().count("--typo") == 1,
+       "...and is reported exactly once, not by two checkers at once")
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
+
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
 
     print(f"\nALL {N} ASSERTIONS PASSED")
 

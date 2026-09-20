@@ -67,8 +67,12 @@ def quadrant_fill_check(W, H, elements, min_frac=0.55):
 
 def bounds_check(W, H, elements):
     """
-    Canvas is 1080x1350 for feed (NOT ~1700+) — two separate bespoke recreations
-    silently lost elements to `overflow:hidden` by assuming a taller canvas.
+    Checks against the W,H YOU PASS — this function has never assumed a canvas, and
+    a docstring that opened "Canvas is 1080x1350" read like it did, which is its own
+    small defect in a repo that also ships story, square, linkedin and li_square
+    (`core.SIZES`). The history it was recording: two bespoke recreations silently
+    lost elements to `overflow:hidden` by assuming a canvas TALLER than the feed's
+    1350. Pass the real size and that cannot happen.
     Call this on every (x,y,w,h) element list right before rendering; it returns
     a list of (index, x,y,w,h) that clip off-canvas so the bug is caught before
     a render, not discovered after by comparing a blank patch to the reference.
@@ -749,6 +753,47 @@ def scatter_solve(items, W, H, protect=(), keep_out=(), zones=None, margin=28,
             unplaced)
 
 
+_ROT_RE = re.compile(r"rotate\(\s*(-?[\d.]+)\s*deg\s*\)", re.I)
+_TAG_RE = re.compile(r"<(div|span|svg)\b[^>]*>|</(div|span|svg)>", re.I)
+
+
+def double_rotation_scan(html, min_deg=1.0):
+    """An element rotated by its wrapper AND by itself draws at the SUM of both.
+
+    THE BUG (session 10f, agent c2). `doodles.stamp(kind, col, rot=10)` and
+    `shapes.sticker(..., rot=10)` both bake `transform:rotate(10deg)` into the SVG
+    they return. Wrapping that in a div which ALSO rotates — the natural thing to do
+    once you have written a generic `at(x, y, rot=...)` helper for your cards — draws
+    it at 20°. Every rotated doodle in two versions was at twice its intended angle,
+    and `layout.rotated_bbox(x, y, w, h, 10)` then under-reported the real footprint
+    by an amount that looks like a rounding error and is not.
+
+    Reports (outer_deg, inner_deg, sum) per nesting. ADVISORY: counter-rotation is a
+    real technique — rotate a card, then rotate its label back so the type stays
+    level — and that shows up here as a sum near zero, which is the tell. A sum that
+    is roughly double either angle is the bug.
+    """
+    out = []
+    stack = []
+    pos = 0
+    for m in _TAG_RE.finditer(html):
+        tag = m.group(0)
+        if tag.startswith("</"):
+            if stack:
+                stack.pop()
+            continue
+        if tag.rstrip().endswith("/>"):
+            continue                       # self-closing: cannot contain anything
+        rots = _ROT_RE.findall(tag)
+        deg = float(rots[0]) if rots else 0.0
+        if abs(deg) >= min_deg:
+            for outer in stack:
+                if abs(outer) >= min_deg:
+                    out.append((round(outer, 2), round(deg, 2), round(outer + deg, 2)))
+        stack.append(deg)
+    return out
+
+
 def reading_order_check(parts, align_tol=24, band_tol=0.35):
     """One SENTENCE broken across several placed boxes must scan in its own order.
 
@@ -1070,7 +1115,8 @@ def img_src_check(html):
 def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=None,
               expect_hero=False, min_hero_frac=0.12, quad_min_frac=0.35,
               collision_ignore=frozenset(), containers=(), auto_nudge=False, cascade_stacks=None,
-              contains=None, occlusion=None, reading_order=None, text_pairs=None):
+              contains=None, occlusion=None, reading_order=None, text_pairs=None,
+              bleed_tags=()):
     """
     ONE pre-render gate that runs every static check the session-8 revisit pass
     turned into a rule. The pass showed the recurring bugs slipped through because
@@ -1116,7 +1162,14 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         r['nudged_elements'] = elements
     # legacy checks want plain (x,y,w,h); collision_check keeps labels for readable output
     plain = [e[-4:] for e in elements]
-    r['off_canvas'] = bounds_check(W, H, plain)
+    # Bleeding off the canvas edge is a documented AQ move (the staggered-pill field
+    # bleeds 28 pills on purpose), and bounds_check is a HARD FAIL — so a design whose
+    # MECHANISM is the bleed could never report clean, and the author learns to read
+    # past a failing verdict. Declaring which tags bleed is the same contract
+    # reconcile.measure_dom already had; preflight simply never offered it.
+    _bleed = {str(t) for t in (bleed_tags or ())}
+    _checked = [e for e in elements if not (len(e) == 5 and str(e[0]) in _bleed)]
+    r['off_canvas'] = bounds_check(W, H, [e[-4:] for e in _checked])
     r['collisions'] = collision_check(elements, ignore_pairs=collision_ignore,
                                       containers=containers)
     r['under_filled_quadrants'] = quadrant_fill_check(W, H, plain, min_frac=quad_min_frac)  # advisory
@@ -1132,6 +1185,10 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         # through body copy (friendship_day). Can't tell a halftone-over-photo from a
         # wash-over-paper in a string, so it reports and never blocks.
         r['faint_wash'] = wash_scan(html, W, H)
+        # ADVISORY: an element rotated by BOTH its wrapper and itself draws at the
+        # sum. Counter-rotation is legitimate and shows up here with a sum near
+        # zero, so this reports rather than blocks.
+        r['double_rotation'] = double_rotation_scan(html)
         # antipattern_scan is NOT run here — it cannot be told apart from a normal
         # full-width footer without nesting analysis (false-positives on nearly every
         # poster). Call layout.antipattern_scan(html) manually when chasing a blank card.
@@ -1159,7 +1216,7 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
             hidden.extend((gi, i, frac) for i, frac in cascade_peek_check(stack))
         r['cascade_hidden'] = hidden
     ADVISORY = {'under_filled_quadrants', 'nudged_elements', 'invisible_craft',
-                'cascade_hidden', 'faint_wash', 'occluded'}
+                'cascade_hidden', 'faint_wash', 'occluded', 'double_rotation'}
     hard = {k: v for k, v in r.items() if k not in ADVISORY}
     clean = all(not v for v in hard.values())
     r['clean'] = clean

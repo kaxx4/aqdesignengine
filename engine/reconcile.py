@@ -75,7 +75,14 @@ _MEASURE_JS = """els => els.map(e => {
                const p = m[1].split(",").map(parseFloat);
                return p.length < 4 || p[3] >= 0.9;
              };
-             const pts = [[.5,.5],[.2,.3],[.8,.3],[.2,.7],[.8,.7]];
+             // A 3x3 GRID, not the old 5-point X. Judging "is half of this word
+             // covered" needs vertical resolution: with points only at .3/.5/.7 a
+             // label sliced across its middle blocked 2 of 5 and passed. Nine points
+             // put three full rows under the question, so a bottom-half cover reads
+             // as 6/9 while a corner tuck stays at 1/9.
+             const pts = [[.2,.2],[.5,.2],[.8,.2],
+                          [.2,.5],[.5,.5],[.8,.5],
+                          [.2,.8],[.5,.8],[.8,.8]];
              let seen = 0, ok = 0, top = null;
              for (const [fx, fy] of pts) {
                const px = r.x + r.width * fx, py = r.y + r.height * fy;
@@ -94,6 +101,35 @@ _MEASURE_JS = """els => els.map(e => {
                }
              }
              return seen ? { seen, ok, top } : null;
+           })(),
+           // What is ACTUALLY painted behind this element's own background? Walk the
+           // stack below it and take the first opaque thing. See invisible_fill.
+           behind: (() => {
+             const cs2 = getComputedStyle(e);
+             const own = cs2.backgroundColor || "";
+             const m = own.match(/rgba?\\(([^)]+)\\)/);
+             if (!m) return null;
+             const p = m[1].split(",").map(parseFloat);
+             if (p.length >= 4 && p[3] < 0.9) return null;   // not an opaque fill
+             if ((cs2.backgroundImage || "none") !== "none") return null;
+             if (r.width < 4 || r.height < 4) return null;
+             const stack = document.elementsFromPoint(r.x + r.width / 2,
+                                                      r.y + r.height / 2);
+             let past = false;
+             for (const t of stack) {
+               if (t === e) { past = true; continue; }
+               if (!past) continue;                          // above us; not the backing
+               if (e.contains(t)) continue;                  // our own child
+               const s3 = getComputedStyle(t);
+               if ((s3.backgroundImage || "none") !== "none") return null;
+               const m3 = (s3.backgroundColor || "").match(/rgba?\\(([^)]+)\\)/);
+               if (!m3) continue;
+               const q = m3[1].split(",").map(parseFloat);
+               if (q.length >= 4 && q[3] < 0.9) continue;    // see through it
+               return { own: own, behind: s3.backgroundColor,
+                        tag: t.dataset.tag || t.className || t.tagName.toLowerCase() };
+             }
+             return null;
            })(),
            clip: (() => {
              // nearest ancestor that actually CLIPS, and its rect
@@ -136,10 +172,24 @@ _SEL = ".p [data-tag], .p [class*=measure], .p div, .p span, .p img, .p svg"
 # .86-.92 overshoots 7-9%, which is just how tight leading paints — flagging it
 # would fire on essentially every poster and teach everyone to ignore the gate.
 # A genuine "your bbox is a lie" case (line-height .78 at 470px) overshoots 32%.
+def _rgb_tuple(css):
+    """(r,g,b) from a computed `rgb()`/`rgba()` string, else None."""
+    import re as _re
+    m = _re.match(r"rgba?\(([^)]+)\)", (css or "").strip())
+    if not m:
+        return None
+    parts = [p.strip() for p in m.group(1).split(",")]
+    try:
+        return tuple(int(float(p)) for p in parts[:3])
+    except ValueError:
+        return None
+
+
 _SPILL_MIN_RATIO = 1.20
 _SPILL_MIN_PX = 24
 
-async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-bleed")):
+async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-bleed"),
+                      crop_tags=()):
     """Measure the REAL rendered geometry of a loaded page and report what the
     static tuple gate structurally cannot see.
 
@@ -156,7 +206,7 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
     """
     els = await page.eval_on_selector_all(_SEL, _MEASURE_JS)
     out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": [],
-           "buried_text": []}
+           "buried_text": [], "invisible_fill": []}
     for e in els:
         if e["cw"] == 0 and e["ch"] == 0:
             continue                                   # not laid out; nothing to say
@@ -170,7 +220,12 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
             got, box = (e["sw"], e["cw"]) if over_x else (e["sh"], e["ch"])
             declared = e["fixedW"] if over_x else e["fixedH"]
             rec = (e["tag"], axis, got, box)
-            if hides:
+            if hides and e["tag"] in crop_tags:
+                # ...unless the author says the clipping IS the technique. A frame
+                # that deliberately crops an oversize child is overflow:hidden with
+                # taller content BY DESIGN, so the container reports here too.
+                pass
+            elif hides:
                 # content larger than a box that hides overflow: characters are
                 # GONE. There is no design in which that is intended.
                 out["clipped"].append(rec)
@@ -201,7 +256,16 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
         #
         # An element cut off by its container is never intended, so this is reported
         # unconditionally alongside `clipped`.
+        # CROPPING ON PURPOSE. "size it oversize, then clip it with overflow:hidden"
+        # is a real technique — an agent used it twice in one poster, to crop a baked
+        # caption out of a photo and to shape a hero-shine — and got CLIPPED reported
+        # both times on a visually correct render. It worked around the gate rather
+        # than ship a render whose own log reads as broken, which is the wrong way
+        # round (session 10f, agent g4). Same contract as bleed_tags: say so and the
+        # gate believes you.
         cl = e.get("clip")
+        if cl and e["tag"] in crop_tags:
+            cl = None
         if cl:
             over = []
             if e["x"] < cl["x"] - 1:      over.append(("left",   cl["x"] - e["x"]))
@@ -230,10 +294,44 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
         #
         # Only elements with their OWN text are tested. A decorative div legitimately
         # sits behind things; a word does not.
+        # INVISIBLE FILL, measured against what is REALLY behind the element.
+        #
+        # layout.same_as_bg_scan answers this statically by comparing every declared
+        # background against the PAGE background, and calls itself zero-false-positive.
+        # It is not: a cream badge sitting on a full-bleed teal panel is plainly
+        # visible, and got "FILL SAME AS PAGE BG" on every render. TWO independent
+        # agents reported that (session 10f, c3 and g3), which makes it a spec defect
+        # rather than bad luck — a static scan cannot know an element's real backing
+        # surface, and guessing the page ground is wrong the moment anything is
+        # layered, which is most AQ posters.
+        #
+        # The browser knows exactly. This compares an element's own opaque fill with
+        # the first opaque thing painted underneath it.
+        bh = e.get("behind")
+        if bh and bh.get("own") and bh.get("behind"):
+            ca, cb = _rgb_tuple(bh["own"]), _rgb_tuple(bh["behind"])
+            if ca and cb:
+                dist = sum((x - y) ** 2 for x, y in zip(ca, cb)) ** 0.5
+                if dist < 18:
+                    out["invisible_fill"].append(
+                        (e["tag"], bh["own"], bh["behind"], bh["tag"], round(dist, 1)))
+
         hit = e.get("hit")
-        if e.get("ownText") and hit and hit["seen"] and hit["ok"] == 0:
-            out["buried_text"].append(
-                (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?", hit["seen"]))
+        # PARTIAL BURIAL IS STILL ILLEGIBLE. This required ok == 0 — every sampled
+        # point covered — so a plate whose label had its bottom 40% sliced off by an
+        # overlapping sibling passed with 2 of 5 points clear, and shipped: "SINCE
+        # 2021" cut through the middle of its letters (session 10f, g2_v6). You
+        # cannot read the top half of a word.
+        #
+        # The threshold has to leave room for the real AQ move it must not flag: a
+        # sticker tucked over a headline's corner covers about one point in five and
+        # is deliberate. A majority blocked is not a tuck, it is a cut.
+        if e.get("ownText") and hit and hit["seen"]:
+            _blocked = hit["seen"] - hit["ok"]
+            if _blocked and _blocked >= hit["seen"] * 0.6:
+                out["buried_text"].append(
+                    (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?",
+                     f'{_blocked}/{hit["seen"]}'))
 
         if e["tag"] in bleed_tags:
             continue
@@ -347,9 +445,13 @@ def format_measure(flaws, name=""):
     for tag, axis, got, box in flaws.get("spilling", []):
         lines.append(f"OVERSIZE {tag}: real {axis} {got}px vs {box}px box "
                      f"— a hand-written bbox here under-reports by {got-box}px")
+    for tag, own, behind, btag, dist in flaws.get("invisible_fill", []):
+        lines.append(f"INVISIBLE FILL {tag}: its background {own} is the same as the "
+                     f"'{btag}' painted directly behind it ({behind}, distance {dist}) "
+                     f"— the shape is drawn and cannot be seen")
     for tag, txt, top, seen in flaws.get("buried_text", []):
         lines.append(f"BURIED (advisory) {tag}: \"{txt}\" is painted but not visible — "
-                     f"an opaque '{top}' is in front of it at all {seen} sampled points. "
+                     f"an opaque '{top}' covers it at {seen} sampled points. "
                      f"If that is not intended, raise this element above '{top}' or move "
                      f"one of them. A repeated-card DECK legitimately hides the back "
                      f"copies' own text and will report here")
@@ -391,10 +493,15 @@ async def probe(name, archetype, content, accent_idx):
              right:Math.round(r.right),bottom:Math.round(r.bottom),
              sw:e.scrollWidth,cw:e.clientWidth}})""")
         await b.close()
+    # Measure against the canvas this piece was actually rendered at. These were the
+    # literals 1080 and 1350, so probe() reported a phantom bottom overflow on every
+    # element below y=1330 of a story poster. probe() is Workflow-A-only legacy and
+    # Workflow A is feed-only today, which is the sole reason it never bit.
+    pW, pH = W, H
     flaws=[]
     for e in els:
-        if e['right']>1080-20: flaws.append(f"{e['tag']} overflows RIGHT edge (right={e['right']})")
-        if e['bottom']>1350-20: flaws.append(f"{e['tag']} overflows BOTTOM (bottom={e['bottom']})")
+        if e['right']>pW-20: flaws.append(f"{e['tag']} overflows RIGHT edge (right={e['right']})")
+        if e['bottom']>pH-20: flaws.append(f"{e['tag']} overflows BOTTOM (bottom={e['bottom']})")
         if e['x']<M-20: flaws.append(f"{e['tag']} breaches LEFT margin (x={e['x']})")
         if e['sw']>e['cw']+4: flaws.append(f"{e['tag']} TEXT WIDER than container (scroll {e['sw']}>{e['cw']})")
     return flaws

@@ -214,4 +214,77 @@ for _f in (_probe, "scratchpad/crops/_test_cut.png", _auto):
     if os.path.exists(_f):
         os.remove(_f)
 
+# ── THE SCORE MUST SAY WHEN IT IS NOT COMPARABLE (session 10f, agent r1) ────
+# compare._load resamples BOTH images to one frame. That is right for relative
+# geometry and wrong to read as a quality number when the sources are different
+# shapes: a 0.275 phone-screen crop against a 0.5625 story canvas scored 0.534
+# against a 0.16 accept line while the looking gate found every element present
+# and correctly proportioned. The agent had to discover that by running a control
+# (render vs. a downscaled copy of itself → 0.001). compare knows both aspects.
+import io as _io2, contextlib as _ctx2
+from PIL import Image as _Im
+import tempfile as _tf2
+
+_d = _tf2.mkdtemp(prefix="aq_asp_")
+_tall = os.path.join(_d, "tall.png");  _Im.new("RGB", (400, 1400), "white").save(_tall)
+_wide = os.path.join(_d, "wide.png");  _Im.new("RGB", (400, 500), "white").save(_wide)
+_same = os.path.join(_d, "same.png");  _Im.new("RGB", (800, 1000), "white").save(_same)
+
+r_, g_, gap_ = cmp_.aspect_gap(_tall, _wide)
+assert gap_ > 0.5, (r_, g_)
+ok(f"aspect_gap measures the real source shapes ({r_} vs {g_})")
+
+_b = _io2.StringIO()
+with _ctx2.redirect_stdout(_b):
+    cmp_.compare(_tall, _wide)
+assert "ASPECT MISMATCH" in _b.getvalue()
+ok("a cross-aspect comparison SAYS the score is not comparable")
+assert "control" in _b.getvalue().lower() and "RECREATION_PROTOCOL" in _b.getvalue()
+ok("...and names the control to run and where the ruling lives")
+
+_b = _io2.StringIO()
+with _ctx2.redirect_stdout(_b):
+    cmp_.compare(_same, _same)
+assert "ASPECT MISMATCH" not in _b.getvalue()
+ok("a same-aspect comparison stays silent — it does not cry wolf on normal work")
+
+# ── A DELIBERATE CROP IS NOT A BUG (session 10f, agent g4) ──────────────────
+# "size it oversize, then clip it with overflow:hidden" is a real technique. An
+# agent used it twice in one poster — to crop a baked-in caption out of a photo,
+# and to shape a hero-shine — and got CLIPPED reported both times on a visually
+# correct render. It worked around the gate rather than ship a render whose own
+# log reads as broken, which is exactly the wrong way round.
+async def crop_tests():
+    global N
+    W2, H2 = 1080, 1350
+    CROP = ('<div data-tag="frame" style="position:absolute;left:100px;top:300px;'
+            'width:600px;height:300px;overflow:hidden;background:#FFF">'
+            '<div data-tag="photo" style="position:absolute;left:0;top:-120px;'
+            'width:600px;height:520px;background:#1B8A5A"></div></div>')
+    # the 77e7bb34 bug: a line of copy sliced off a slab edge, never intended
+    REAL = ('<div data-tag="slab" style="position:absolute;left:100px;top:300px;'
+            'width:600px;height:200px;overflow:hidden;background:#FFF">'
+            '<div data-tag="copy" style="position:absolute;left:20px;top:-60px;'
+            'font:700 40px sans-serif">one<br>two</div></div>')
+    async with B.session():
+        pg = await B._SESSION.page(W2, H2)
+
+        await pg.set_content(B.page(W2, H2, "var(--bg)", CROP, grain=False), wait_until="load")
+        await B._settle(pg)
+        undeclared = await rec.measure_dom(pg, W2, H2)
+        assert any("photo" in str(t) for t, *_ in undeclared["clipped"])
+        ok("an UNDECLARED crop reports CLIPPED — the check is not weakened")
+
+        declared = await rec.measure_dom(pg, W2, H2, crop_tags=("photo", "frame"))
+        assert declared["clipped"] == [], declared["clipped"]
+        ok("declaring the crop silences it, container and child alike")
+
+        await pg.set_content(B.page(W2, H2, "var(--bg)", REAL, grain=False), wait_until="load")
+        await B._settle(pg)
+        still = await rec.measure_dom(pg, W2, H2, crop_tags=("photo", "frame"))
+        assert any("copy" in str(t) for t, *_ in still["clipped"])
+        ok("...and a DIFFERENT element's accidental clip still fires (the 77e7bb34 bug)")
+
+asyncio.run(crop_tests())
+
 print(f"\nALL {N} ASSERTIONS PASSED")

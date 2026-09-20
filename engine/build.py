@@ -147,7 +147,8 @@ async def _settle(pg):
 async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=None,
                  expect_hero=False, collision_ignore=frozenset(), containers=(),
                  text_pairs=None, cascade_stacks=None, reading_order=None,
-                 contains=None, occlusion=None, auto_nudge=False):
+                 contains=None, occlusion=None, bleed_tags=None, crop_tags=(),
+                 auto_nudge=False):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -158,9 +159,13 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     # unambiguously an invisible-element bug (sample 32). The rotate+overflow+bottom blank-card
     # gotcha is NOT auto-run — it can't be told apart from a normal full-width footer without
     # nesting analysis, so it's a manual diagnostic (layout.antipattern_scan).
-    bad_vars = layout.css_var_check(html, core)
-    if bad_vars:
-        print(f"[{name}] ⚠ UNDEFINED CSS VARS (render invisible): {bad_vars}")
+    # css_var_check runs here ONLY when there is no element list, because with one the
+    # preflight below sees the html and reports it itself — running both printed the
+    # same undefined var twice.
+    if elements is None:
+        bad_vars = layout.css_var_check(html, core)
+        if bad_vars:
+            print(f"[{name}] ⚠ UNDEFINED CSS VARS (render invisible): {bad_vars}")
     # Also zero-false-positive: a fill that resolves to (near-)exactly the page bg is invisible,
     # full stop. Auto-run because the opt-in invisible_color_check silently never fired on
     # bespoke scripts that didn't pass color_pairs (showcase5b lemon-bubble-on-lemon-field).
@@ -172,40 +177,65 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
         _m = re.search(r'\.p\{[^}]*?background:\s*([^;}]+)', html or "")
         if _m:
             _bg = _m.group(1).strip()
-    if _bg is not None:
-        same = layout.same_as_bg_scan(html, _bg, core)
-        if same:
-            print(f"[{name}] ⚠ FILL SAME AS PAGE BG (element invisible): {same}")
+    # same_as_bg_scan USED TO AUTO-RUN HERE and no longer does. It compares every
+    # declared background against the PAGE ground, which is only the real backing
+    # surface when nothing is layered — and most AQ posters layer. A cream badge on a
+    # full-bleed teal panel is plainly visible and got "FILL SAME AS PAGE BG" on every
+    # single render. Two independent agents reported that (session 10f, c3 and g3),
+    # which makes it a spec defect and not bad luck: a static scan cannot know what is
+    # behind an element, and its docstring's "zero-false-positive" claim was wrong.
+    #
+    # reconcile.measure_dom answers the same question EXACTLY, by asking the browser
+    # what is actually painted underneath (`invisible_fill`, below). The static scan
+    # remains available as a manual pre-render diagnostic, like antipattern_scan.
     if elements is not None:
         # collision_ignore/auto_nudge pass THROUGH. Without them the render-time
         # convenience gate re-reported by-design overlaps that the caller's own
         # preflight had already accepted — the two gates contradicting each other a
         # few lines apart, which teaches people to distrust both.
-        layout.preflight(W, H, elements, html=None, color_pairs=color_pairs,
+        # `html` USED TO BE HARDCODED None HERE, so css_var_check, img_src_check,
+        # invisible_craft_scan, wash_scan and double_rotation_scan never ran through
+        # the documented convenience path no matter what the caller passed — while
+        # §6 claimed this one call was the whole gate. An agent found it by reading
+        # this source after its own manual scans caught things `render()` had just
+        # reported clean (session 10f, agent g1).
+        layout.preflight(W, H, elements, html=html, color_pairs=color_pairs,
                          page_bg=page_bg, core=core, expect_hero=expect_hero,
                          collision_ignore=collision_ignore, containers=containers,
                          text_pairs=text_pairs, cascade_stacks=cascade_stacks,
                          reading_order=reading_order, contains=contains,
-                         occlusion=occlusion, auto_nudge=auto_nudge)
+                         occlusion=occlusion, bleed_tags=(bleed_tags or ()),
+                         auto_nudge=auto_nudge)
     # The DOM audit and the screenshot both need this html LOADED in a browser.
     # They now share one page load instead of cold-starting a browser each.
-    return await _shoot(html, out_png, W, H, name, elements=elements)
+    return await _shoot(html, out_png, W, H, name, elements=elements,
+                        collision_ignore=collision_ignore, bleed_tags=bleed_tags,
+                        crop_tags=crop_tags)
 
-async def _shoot(html, out_png, W, H, name, elements=None):
+async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
+                 bleed_tags=None, crop_tags=()):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
     async def _work(pg):
         await pg.set_content(html, wait_until="load")
         await _settle(pg)
-        issues = await audit.audit(html, name, page=pg, canvas=(W, H))
+        issues = await audit.audit(html, name, page=pg, canvas=(W, H),
+                                   ignore_pairs=collision_ignore, margin=M)
         # MEASURED geometry, on the page we already have. This is the only check
         # that can see what the hand-maintained (x,y,w,h) tuples structurally
         # cannot: a text block whose REAL rendered size is not what the author
         # guessed. Clipped/spilling text is unambiguous — there is no design in
         # which a word losing its last three letters is intended — so it prints
         # on every render rather than waiting to be opted into.
-        flaws = await reconcile.measure_dom(pg, W, H)
+        # A design whose MECHANISM is bleeding off both edges printed a wall of
+        # OFF-CANVAS for every element doing exactly what it was meant to, with no
+        # way to quiet it (session 10f, agent g1). measure_dom always had
+        # bleed_tags; render simply never exposed it.
+        _md = {'crop_tags': tuple(crop_tags or ())}
+        if bleed_tags is not None:
+            _md['bleed_tags'] = tuple(bleed_tags)
+        flaws = await reconcile.measure_dom(pg, W, H, **_md)
         # OVERSIZE fires whenever glyphs paint past their line box, which a tight
         # line-height ALWAYS causes — so it printed on every hero numeral even when the
         # author had correctly sized the bbox off measure_text()['ink_h']. If the caller

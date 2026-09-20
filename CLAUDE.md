@@ -100,6 +100,33 @@ bespoke script and the looking gate (§3) still runs on the PNG.
 Workflow C's checklist is Workflow B's minus the reference-matching steps: measure the
 chosen style's reference (`compare.geometry`), build to its proportions, render, LOOK.
 
+### WHEN THE STYLE AND THE BRAND DISAGREE — the precedence ladder
+A drawn style is a *reference someone judged*, not a specification, and it will
+sometimes ask for something §9 forbids. Both of these came up on the first real
+Workflow C builds and both were resolved correctly from first principles — which
+means every builder was re-deriving them. They are rules now:
+
+1. **A HARD BRAND RULE BEATS THE RECIPE, always.** `core.accent_for(dept)` is semantic,
+   contrast is measured, Instrument Serif is ≤1 accent word, the ground is cream not
+   white, real assets only. A recipe saying "set the whole headline in serif caps"
+   loses to §9; take the *mechanism* (serif carries the voice) and express it the
+   brand's way (one italic accent word).
+2. **A recipe's COUNT is a target, not a ceiling.** "Restraint: exactly four colours"
+   means *this piece is disciplined about colour*, and a fifth that arrives because
+   the department hue is fixed by rule has not broken the restraint. Keep the spirit
+   — no free-for-all — and say in the script's docstring which number you exceeded
+   and why.
+3. **The mechanism is the part you must not drop.** Everything else is negotiable.
+   If honouring a brand rule would destroy the mechanism, you have drawn the wrong
+   style for this brief: re-draw with a different seed rather than build a piece whose
+   whole reason for existing has been adapted away.
+4. **Record every adaptation** in the bespoke script's docstring, the same way
+   Workflow B's step 4 distinguishes an acceptable adaptation from a real miss. §5's
+   list applies here too: swapping literal brand copy for AQ program names, using a
+   real AQ photo or flat SVG where the reference used stock, substituting an engine
+   doodle for an icon the engine lacks — all acceptable. A missing mechanism, a
+   collision, an invisible element, a dead half — still failures.
+
 Both workflows are gated by §3 (looking) and §7 (the automated checks). Both feed §8 (encode fixes).
 
 ---
@@ -274,11 +301,49 @@ elements.append((M, H-70, 300, 20))
 inner = "".join([f'<div style="position:absolute;inset:0;background:var(--bg)"></div>', hero, footer])
 html = B.page(W, H, "var(--bg)", inner, grain=False)   # grain=True adds photo-grain overlay
 
-# color_pairs: (label, fill) or (label, fill, surface) for every shape whose fill could vanish
+# ---- DECLARE WHAT THE GATE CANNOT INFER ------------------------------------------
+# Each of these is OPT-IN and simply never fires unless you pass it. They are not
+# extras: every one exists because a poster shipped broken without it. Declare the
+# ones your piece actually has and delete the rest.
+
+# SHAPES whose fill could vanish into what is behind them:  (label, fill[, surface])
 color_pairs = [("hero_bg", A[4], "var(--bg)")]
 
+# TYPE, against the surface it sits ON:  (label, text, surface[, size_px[, bold]])
+# Different question from color_pairs — that asks "is it the same colour", this asks
+# "can it be read". White on a pale card is a big distance AND 1.44:1. HARD FAIL.
+text_pairs = [("headline", core.INK, "var(--bg)", 96, True),
+              ("label",    core.on_cream(A[4], 16), "var(--bg)", 16, True)]
+
+# CONTAINERS — a card/slab/panel that HOLDS things. Anything wholly inside one is
+# contained, not colliding. Beats hand-listing an ignore pair per child. The label
+# must be one you actually put in `elements`, or the check says so and holds nothing.
+# ⚠ FILL THIS IN the moment your piece has a panel, card or slab with things ON it.
+#   Leaving it empty makes every child of that panel report as a collision with it —
+#   five false collisions on the first build that had a full-bleed panel, and the
+#   author went reading layout.py to find out why.
+containers = ()          # e.g. ("panel", "card") — each must also be in `elements`
+
+# TAGS THAT BLEED OFF THE CANVAS ON PURPOSE. Full-bleed is a real AQ move and
+# bounds_check is a HARD FAIL, so without this a design whose MECHANISM is the bleed
+# can never report clean and you learn to read past a failing verdict.
+bleed_tags = ()          # e.g. ("pill",) for a field that runs off both edges
+
+# ONE SENTENCE split across several boxes, in the order it is meant to be READ.
+# This example is the CORRECT placement — a clean diagonal stagger:
+reading_order = [("chip1", 48, 672, 520, 80), ("chip2", 300, 772, 520, 80),
+                 ("chip3", 552, 872, 520, 80)]
+# The same three at x=48 / x=560 / x=48 would HARD FAIL as a column trap: chips 1
+# and 3 share a left edge, so the eye reads them as a column and the sentence scans
+# "chip1 -> chip3 -> chip2". That shipped once (out/session10f/c1_v3.png) and two
+# rounds of iteration did not catch it, because nothing about it is measurable in a
+# pixel histogram.
+
 # ONE gate call before render. clean==False means a real bug — fix before rendering.
+# (You can skip this entirely and let render() do it — see the render call below.)
 pf = lay.preflight(W, H, elements, html=html, color_pairs=color_pairs,
+                   text_pairs=text_pairs, containers=containers,
+                   reading_order=reading_order, bleed_tags=bleed_tags,
                    page_bg="var(--bg)", core=core, expect_hero=True)
 
 async def main():
@@ -289,8 +354,15 @@ async def main():
     # elements.append() is invisible to EVERY check. That exact omission put a lemon
     # star on top of the words "SIGN-UPS OPEN NOW" while preflight printed CLEAN
     # (out/session10f/c2_v3.png). The template used to show the short call.
+    #
+    # render() forwards EVERY preflight option, so this one call is the whole gate:
+    # the static checks, the DOM measurement (clipped / oversize / off-canvas /
+    # buried), and the declared-vs-drawn reconciliation. Calling preflight by hand
+    # and then rendering without elements= is the failure mode this replaced.
     await B.render(html, f"out/versions/{slug}/v2.png", W, H,
                    elements=elements, color_pairs=color_pairs,
+                   text_pairs=text_pairs, containers=containers,
+                   reading_order=reading_order, bleed_tags=bleed_tags,
                    page_bg="var(--bg)", expect_hero=True)
     print("done")
 asyncio.run(main())
@@ -331,6 +403,14 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
 - `collision_check(..., containers=("card","slab"))` → declare the furniture ONCE instead of
   hand-listing an ignore pair per child. Explicit on purpose: a doodle dropped entirely
   inside a headline's bbox is containment too, and that is the bug the check exists for.
+- `img_src_check(html)` → an `<img>` with an empty or missing src. Auto in `preflight` with `html=`.
+- `double_rotation_scan(html)` → **advisory**; an element rotated by BOTH its wrapper and itself
+  draws at the SUM. `doodles.stamp(rot=)` and `shapes.sticker(rot=)` bake the angle in, so a
+  rotated wrapper doubles it. Counter-rotation is legal and reports a sum near zero — that is the
+  tell. Auto in `preflight` with `html=`.
+- **`bleed_tags=("pill",)`** → tags that leave the canvas ON PURPOSE. `bounds_check` is a hard
+  fail, so without this a design whose MECHANISM is the bleed can never report clean. Accepted by
+  `preflight` and `render`, and passed on to `measure_dom`'s own off-canvas exemption.
 - `reading_order_check(parts)` → one SENTENCE split across placed boxes must scan in its own
   order. Catches an INVERSION and the COLUMN TRAP (parts 1 and 3 left-aligned with 2 between
   them, so they read as a column). HARD FAIL via `preflight(reading_order=[…])`.
@@ -381,6 +461,12 @@ also runs the full `preflight` at render time for free.
 - **`reconcile.reconcile_boxes(boxes, elements)` → advisory**, auto-run when `render(..., elements=…)`:
   declared tuples vs. what was drawn — `under_reported` and `untracked`.
 - `reconcile.probe(...)` → the legacy Workflow-A-only driver. Prefer `measure_dom`.
+- **`measure_dom` also reports `invisible_fill` (auto).** An element whose own opaque background
+  is the same colour as the first opaque thing painted BEHIND it. This replaced
+  `layout.same_as_bg_scan` in the auto gate, which compared every fill to the PAGE ground and so
+  called a cream badge on a full-bleed teal panel invisible on every render. A static scan cannot
+  know an element's real backing surface; the browser can. The static one stays as a manual
+  diagnostic.
 - **`measure_dom` also reports `buried_text` (ADVISORY, auto).** Type that is painted,
   laid out, correctly coloured, inside its box and on the canvas — and invisible, because
   something OPAQUE is in front of it. Catches the z-index trap (an explicit `z-index` on a
@@ -412,6 +498,10 @@ also runs the full `preflight` at render time for free.
   collision auditor — a piece should land within ~0.1 per axis before you call it done.
   (Caveat: flat-vector recreations read low on `vdr` vs. gradient/photo references — a known metric
   limitation, not a visual bug.)
+  **SECOND CAVEAT, the opposite direction (session 10f): `vdr` and `ink` INVERT on a dark-ground
+  piece.** Their dark-pixel heuristic cannot tell "headline ink" from "the page's own ink ground",
+  so a correct dark-ground story measured `vdr = 0.99` against a documented target of 0.06–0.20.
+  Do not chase these two numbers on a dark ground; the rest of `analyze()` still reads normally.
 
 ---
 
@@ -469,6 +559,18 @@ so AQ's LinkedIn art is landscape or square — never 4:5.
 **Contrast is MEASURED, never assumed** (all added session 10, from the live site's `tokens.css`):
 - `core.text_on(fill)` — the correct text colour ON a fill, decided by computing both candidates.
   (It used to read a hand-kept set and returned white on pink at **3.14:1, failing AA**; ink is 6.31:1.)
+- **`core.on_dark(accent, size_px)` — the same decision on the INK ground, which is where about a
+  third of the style bank lives.** Measured on `#0A0A0A`: teal is **4.00:1 and FAILS** small type
+  (it gets tinted to a lighter partner); mint and grape sit at 4.55:1 and just pass. If you are
+  typing a hex value for type on a dark field, you have skipped this.
+- `core.on_ground(accent, ground, size_px)` — the general form. It picks the direction by MEASURING
+  the ground (darken on light, lighten on dark) instead of assuming, and falls back to whichever
+  neutral actually wins there. `on_cream` and `on_dark` both delegate to it. Before it existed,
+  `on_cream(accent, 16, ground=INK)` — which that signature openly invites — returned **ink on ink,
+  1.00:1, invisible**, because its only fallback darkened.
+- `core.lit_of(accent)` — the computed lightened partner, mirroring `ink_of`. It walks the accent
+  toward paper in 5% steps and stops at the first value that clears the floor, so the department
+  hue survives.
 - `core.on_cream(accent, size_px)` — accent type on the page ground. **Accents may shout but may not
   whisper:** a 500px mint numeral on cream is 3.78:1 and passes the large-text floor; a 20px mint
   label is the same 3.78:1 and fails, so it swaps to the darkened partner.
@@ -478,7 +580,12 @@ so AQ's LinkedIn art is landscape or square — never 4:5.
 - `core.outline_of(surface)` · `core.hard_shadow(size)` · `core.keyline(ring_bg)` · `core.RADII`
   (32/22/14/pill) — the craft scales, shared with the site.
 
-**Stickers** — build every badge with `shapes.sticker()` and fit its label with
+**Stickers** — ⚠ `shapes.sticker()` renders a SQUARE `size`×`size` svg whatever the silhouette
+inside it looks like, so declare `(label, x, y, size, size)` in `elements` — always. Declaring a
+wide tag's apparent 220×150 earns a correct `OVERSIZE` report and a collision check that has been
+lied to. Its `rot=` is BAKED IN; do not also rotate the wrapping div or the angle applies twice
+(`layout.double_rotation_scan` catches that). `doodles.stamp()` behaves identically.
+Build every badge with `shapes.sticker()` and fit its label with
 `shapes.fit_font(measured_w, measured_at, kind, size)`. ⚠ `shapes.label(size=)` is in BOX
 units (0–100), NOT px: inside a 206px badge a 13 renders at 27px. `fit_font` returns box
 units and reports `fits=False` when a label simply cannot fit that silhouette — split it
@@ -577,6 +684,30 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `stylebank.canvas_shift` fired on a mockup's WHOLE-PHOTO aspect and stated a precise ratio that was not true of the design inside it | session 10f, judging agent | `canvas_shift` returns None for any kind in `MEASURED_SCOPE`; those already get the crop-first warning |
 | `stylebank.merge()` required `mechanism` AND `recipe` IN THE DROP-FILE, so a partial update ("a better recipe for an entry you already judged") was silently skipped | session 10f, judging agent | completeness is now checked on the MERGED RESULT, not the drop-file |
 
+| `shapes.sticker()` renders a SQUARE `size`x`size` svg whatever the silhouette looks like, and nothing said so — a wide cloud declared as 220x150 got a correct OVERSIZE report and a collision check that had been lied to | session 10f, agent c2 | docstring states it; declare `(label, x, y, size, size)` always |
+| `doodles.stamp(rot=)` / `shapes.sticker(rot=)` BAKE the angle into their own svg. Rotating the wrapping div too draws at the SUM — a star meant for 10° drew at 20°, and `rotated_bbox` (computed for 10°) under-reported the footprint by what looks like rounding | session 10f, agent c2 | **`layout.double_rotation_scan(html)`** (advisory, in `preflight`). Counter-rotation is legal and reports a SUM OF ZERO, which is the tell |
+| Two overlap checkers that did not cooperate: `collision_ignore` silenced `layout.collision_check` while `audit.py`'s DOM check kept printing the same overlaps from a closed `SKIP_PAIRS` vocabulary no caller could reach. The only thing that worked was DOM nesting, found by reading source | session 10f, agent c3 | `audit.audit(ignore_pairs=, margin=)`, forwarded by `render()` — ONE declaration now silences both. A gate nobody can silence is a gate everybody scrolls past |
+| `audit.py` carried its own `M=64`, a second hardcoded margin in a different file from `build.py`'s `M=64` — agreeing by coincidence of two literals, not because one reads the other | session 10f, agent c3 | `audit.audit(margin=)`, and `render()` passes `build.M` |
+| `stylebank._REPROP_WORDS` was a hidden acceptance list: a recipe could fail the canvas check with no way to see why | session 10f, judging agent | `RECIPE_RULE` now PRINTS the enforced tuple (derived, not retyped — the first draft of this fix drifted immediately, "square" vs "squar") |
+| `AGENTS.md` was a full second copy of this manual, frozen before session 10: `M = 48`, the render call that disables the measured tier, "all 44 processed" against a 74-item queue, and no knowledge of `measure_text`, `measure_dom`, the style bank or Workflow C. A harness reading it by convention got a confident, authoritative, four-sessions-stale manual | session 10f | `AGENTS.md` is now a pointer to this file. `test_repo_hygiene.py` asserts it stays one |
+
+| A cross-aspect score read as a quality number: a 0.275 phone crop against a 0.5625 story canvas scored 0.534 against a 0.16 accept line while the looking gate found every element present. Discovering that took a control run the builder had to think of | session 10f, agent r1 | **`compare.compare()` now WARNS on an aspect gap >25%** and names the control to run · `compare.aspect_gap()` |
+| Workflow C had no ruling for "the drawn style's recipe conflicts with a hard brand rule" (a reference set entirely in serif vs. §9's ≤1 accent word) or "the recipe's colour count vs. the fixed department hue". Both were re-derived from first principles by every builder | session 10f, agent c1 | **§2's precedence ladder** — hard brand rule beats recipe; a recipe's count is a target not a ceiling; the mechanism is the part you may not drop; record every adaptation |
+
+| `same_as_bg_scan` AUTO-RAN and compared every fill to the PAGE ground — so a cream badge on a full-bleed teal panel got "FILL SAME AS PAGE BG (element invisible)" on every single render. Its docstring claimed zero-false-positive. **Two independent agents reported it**, which makes it a spec defect: a static scan cannot know an element's real backing surface, and most AQ posters layer | session 10f, agents c3 and g3 | **`reconcile.measure_dom` → `invisible_fill`** asks the browser what is actually painted underneath. The static scan no longer auto-runs and stays a manual diagnostic |
+
+| **`build.render()` hardcoded `html=None` in its internal preflight**, so `css_var_check`, `img_src_check`, `invisible_craft_scan`, `wash_scan` and `double_rotation_scan` NEVER ran through the documented convenience path — while §6 claimed that one call was the whole gate | session 10f, agent g1 | `render()` passes the html. Its own `css_var_check` now runs only when there is no element list, so nothing is reported twice |
+| A design whose MECHANISM is bleeding off both edges printed a wall of `OFF-CANVAS`, and `bounds_check` is a HARD FAIL — so a correct full-bleed build could never report clean, which teaches you to read past a failing verdict | session 10f, agent g1 | `preflight(..., bleed_tags=("pill",))` and `render(..., bleed_tags=…)`. `measure_dom` always had it; nothing above exposed it |
+
+| **A MEASURED field was wrong.** `compare._bg_color` took the modal quantized colour of every pixel, assuming the ground is the largest flat area. On a dense poster it is not: a warm-yellow RISO-TEXTURED field scatters across buckets while solid black type lands in one, so black won and the bank recorded `ground: dark [0,0,0]` for a plainly yellow reference. `design.py` would have briefed a dark piece from it. Blurring first only moved the answer to the largest green plate | session 10f, agent g2 | **`_bg_color` samples the EDGE RING**, because the ground is whatever the design has not covered. 8 of 74 entries changed; the two other `poster` changes were verified by eye as corrections, one is a wash |
+| `cross_check` excluded only `mockup` from its ground comparison — the same reasoning covers every kind in `MEASURED_SCOPE`, and it surfaced the moment the ground sampler got accurate enough to read a sheet's dark backdrop correctly | session 10f | excludes all of `MEASURED_SCOPE` |
+| `audit.audit(ignore_pairs=)` matches the DOM's `data-tag` while `layout.collision_check` matches the caller's element LABELS — two namespaces behind one argument, so three plates sharing `data-tag="plate"` had the tuple-level ignore work and the DOM-level one silently miss, in the same render call | session 10f, agent g2 (a regression introduced earlier the same session) | `audit` reports ignore pairs matching no `data-tag`, and lists the tags that do exist |
+
+| `buried_text` required EVERY sampled point to be covered, so a plate label with its bottom half sliced off by an overlapping sibling passed with 2 of 5 points clear — and shipped, "SINCE 2021" cut through the middle of its letters. You cannot read the top half of a word | session 10f, g2_v6 | a **3x3 grid** instead of the 5-point X (judging "is half of this covered" needs vertical resolution), reported at a 60% majority — a corner tuck is 1/9 and stays silent |
+| "Size it oversize, then clip it with `overflow:hidden`" is a real technique, and `CLIPPED` fired on a visually correct render. The agent worked around its own gate rather than ship a render whose log reads as broken | session 10f, agent g4 | `render(..., crop_tags=("photo","frame"))`, honoured for the container and the child. A DIFFERENT element's accidental clip still fires |
+| `core.on_dark` / `on_ground` / `lit_of` existed but were absent from §9 — the section a brief about dark-ground contrast points you at | session 10f, agent g4 | added to §9 with the measured facts (teal 4.00:1 FAILS on ink; mint and grape just pass) |
+| `ref_metrics.vdr` and `ink` INVERT on a dark ground — their dark-pixel heuristic cannot tell headline ink from the page's own ink ground, so a correct dark story measured `vdr 0.99` against a 0.06–0.20 target | session 10f, agent g4 | documented in §7c as a second caveat, in the opposite direction from the one already there |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -653,12 +784,14 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (66) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_layout_rules.py` (76) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (32) ·
-  `test_stylebank.py` (54) · `test_buried_text.py` (10) · `test_repo_hygiene.py` (20)** —
-  **361 assertions total, all verified passing 2026-09-20**. All in `scratchpad/`.
+  `test_recreation.py` (39) ·
+  `test_stylebank.py` (64) · `test_buried_text.py` (21) · `test_repo_hygiene.py` (28)** —
+  **407 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
+  skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again

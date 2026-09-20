@@ -478,6 +478,20 @@ def sticker(path_d, fill, size=120, halo=True, shadow=False, rot=0, box=100,
     This is the rule that makes a dense pile of unrelated colours read as one set
     (VISUAL_DNA.md §1). Apply it to EVERY object in a piece, uniformly — the uniformity is
     the point, not the outline.
+
+    ⚠ THE RENDERED BOX IS ALWAYS `size` x `size`, SQUARE, whatever the silhouette
+    inside it looks like. A wide, short cloud still draws in a square svg; the shape
+    just sits in part of it. So DECLARE `(label, x, y, size, size)` in your element
+    list — always. Declaring the silhouette's apparent 220x150 gets you a correct
+    OVERSIZE report from `reconcile.measure_dom` and a collision check that has been
+    lied to. Nothing said this before; it had to be inferred from the `<svg>` tag
+    (session 10f, agent c2).
+
+    ⚠ `rot` IS BAKED INTO THIS SVG. Do not also rotate the wrapping div — that
+    applies the angle TWICE. A star meant to sit at 10° drew at 20°, and
+    `layout.rotated_bbox` (computed for 10°) then under-reported its real footprint.
+    Pick ONE rotation source: this argument, or your wrapper. `doodles.stamp()`
+    behaves identically. `layout.double_rotation_scan(html)` reports the mistake.
     """
     halo_col = lighten(fill, halo_amt)
     parts = []
