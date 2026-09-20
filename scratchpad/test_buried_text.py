@@ -199,6 +199,48 @@ async def main():
        "ONE collision_ignore declaration now silences the DOM audit too")
     ok("ISSUES" not in declared and "CLEAN" in declared,
        "...and the render reports clean rather than contradicting its own preflight")
+    # ── INVISIBLE FILL, MEASURED (session 10f, agents c3 and g3) ────────────
+    # layout.same_as_bg_scan compares every declared background against the PAGE
+    # ground and called itself zero-false-positive. It is not: a cream badge on a
+    # full-bleed teal panel is plainly visible and got "FILL SAME AS PAGE BG" on
+    # EVERY render. Two independent agents reported it, which makes it a spec
+    # defect — a static scan cannot know what is behind an element, and most AQ
+    # posters layer. The browser knows exactly.
+    from playwright.async_api import async_playwright as _apw
+    async with _apw() as p2:
+        b2 = await p2.chromium.launch()
+        pg2 = await b2.new_page(viewport={"width": W, "height": H})
+
+        async def fills(inner):
+            await pg2.set_content(page(inner), wait_until="load")
+            return (await rec.measure_dom(pg2, W, H))["invisible_fill"]
+
+        visible = await fills(
+            "<div data-tag='panel' style='position:absolute;inset:0;"
+            "background:#0E7C86'></div>"
+            "<div data-tag='badge' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:#F4EFE0'></div>")
+        ok(not any(t[0] == "badge" for t in visible),
+           "a cream badge on a full-bleed TEAL panel is NOT flagged (the c3/g3 false positive)")
+
+        gone = await fills(
+            "<div data-tag='badge' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:#F4EFE0'></div>")
+        ok(any(t[0] == "badge" for t in gone),
+           "...while a cream badge on the CREAM page still IS — the real bug survives")
+        _row = [t for t in gone if t[0] == "badge"][0]
+        ok(_row[3] and _row[4] < 18,
+           "...and the report names what is painted behind it, with the measured distance")
+
+        # a translucent fill is a deliberate tint, not an invisible shape
+        tinted = await fills(
+            "<div data-tag='wash' style='position:absolute;left:100px;top:300px;"
+            "width:300px;height:120px;background:rgba(244,239,224,0.4)'></div>")
+        ok(not any(t[0] == "wash" for t in tinted),
+           "a translucent fill over the same colour is a tint, not a vanished shape")
+
+        await b2.close()
+
     try:
         os.remove(tmp)
     except OSError:

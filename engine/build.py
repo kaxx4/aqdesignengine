@@ -172,10 +172,17 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
         _m = re.search(r'\.p\{[^}]*?background:\s*([^;}]+)', html or "")
         if _m:
             _bg = _m.group(1).strip()
-    if _bg is not None:
-        same = layout.same_as_bg_scan(html, _bg, core)
-        if same:
-            print(f"[{name}] ⚠ FILL SAME AS PAGE BG (element invisible): {same}")
+    # same_as_bg_scan USED TO AUTO-RUN HERE and no longer does. It compares every
+    # declared background against the PAGE ground, which is only the real backing
+    # surface when nothing is layered — and most AQ posters layer. A cream badge on a
+    # full-bleed teal panel is plainly visible and got "FILL SAME AS PAGE BG" on every
+    # single render. Two independent agents reported that (session 10f, c3 and g3),
+    # which makes it a spec defect and not bad luck: a static scan cannot know what is
+    # behind an element, and its docstring's "zero-false-positive" claim was wrong.
+    #
+    # reconcile.measure_dom answers the same question EXACTLY, by asking the browser
+    # what is actually painted underneath (`invisible_fill`, below). The static scan
+    # remains available as a manual pre-render diagnostic, like antipattern_scan.
     if elements is not None:
         # collision_ignore/auto_nudge pass THROUGH. Without them the render-time
         # convenience gate re-reported by-design overlaps that the caller's own

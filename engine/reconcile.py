@@ -95,6 +95,35 @@ _MEASURE_JS = """els => els.map(e => {
              }
              return seen ? { seen, ok, top } : null;
            })(),
+           // What is ACTUALLY painted behind this element's own background? Walk the
+           // stack below it and take the first opaque thing. See invisible_fill.
+           behind: (() => {
+             const cs2 = getComputedStyle(e);
+             const own = cs2.backgroundColor || "";
+             const m = own.match(/rgba?\\(([^)]+)\\)/);
+             if (!m) return null;
+             const p = m[1].split(",").map(parseFloat);
+             if (p.length >= 4 && p[3] < 0.9) return null;   // not an opaque fill
+             if ((cs2.backgroundImage || "none") !== "none") return null;
+             if (r.width < 4 || r.height < 4) return null;
+             const stack = document.elementsFromPoint(r.x + r.width / 2,
+                                                      r.y + r.height / 2);
+             let past = false;
+             for (const t of stack) {
+               if (t === e) { past = true; continue; }
+               if (!past) continue;                          // above us; not the backing
+               if (e.contains(t)) continue;                  // our own child
+               const s3 = getComputedStyle(t);
+               if ((s3.backgroundImage || "none") !== "none") return null;
+               const m3 = (s3.backgroundColor || "").match(/rgba?\\(([^)]+)\\)/);
+               if (!m3) continue;
+               const q = m3[1].split(",").map(parseFloat);
+               if (q.length >= 4 && q[3] < 0.9) continue;    // see through it
+               return { own: own, behind: s3.backgroundColor,
+                        tag: t.dataset.tag || t.className || t.tagName.toLowerCase() };
+             }
+             return null;
+           })(),
            clip: (() => {
              // nearest ancestor that actually CLIPS, and its rect
              let p = e.parentElement;
@@ -136,6 +165,19 @@ _SEL = ".p [data-tag], .p [class*=measure], .p div, .p span, .p img, .p svg"
 # .86-.92 overshoots 7-9%, which is just how tight leading paints — flagging it
 # would fire on essentially every poster and teach everyone to ignore the gate.
 # A genuine "your bbox is a lie" case (line-height .78 at 470px) overshoots 32%.
+def _rgb_tuple(css):
+    """(r,g,b) from a computed `rgb()`/`rgba()` string, else None."""
+    import re as _re
+    m = _re.match(r"rgba?\(([^)]+)\)", (css or "").strip())
+    if not m:
+        return None
+    parts = [p.strip() for p in m.group(1).split(",")]
+    try:
+        return tuple(int(float(p)) for p in parts[:3])
+    except ValueError:
+        return None
+
+
 _SPILL_MIN_RATIO = 1.20
 _SPILL_MIN_PX = 24
 
@@ -156,7 +198,7 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
     """
     els = await page.eval_on_selector_all(_SEL, _MEASURE_JS)
     out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": [],
-           "buried_text": []}
+           "buried_text": [], "invisible_fill": []}
     for e in els:
         if e["cw"] == 0 and e["ch"] == 0:
             continue                                   # not laid out; nothing to say
@@ -230,6 +272,28 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
         #
         # Only elements with their OWN text are tested. A decorative div legitimately
         # sits behind things; a word does not.
+        # INVISIBLE FILL, measured against what is REALLY behind the element.
+        #
+        # layout.same_as_bg_scan answers this statically by comparing every declared
+        # background against the PAGE background, and calls itself zero-false-positive.
+        # It is not: a cream badge sitting on a full-bleed teal panel is plainly
+        # visible, and got "FILL SAME AS PAGE BG" on every render. TWO independent
+        # agents reported that (session 10f, c3 and g3), which makes it a spec defect
+        # rather than bad luck — a static scan cannot know an element's real backing
+        # surface, and guessing the page ground is wrong the moment anything is
+        # layered, which is most AQ posters.
+        #
+        # The browser knows exactly. This compares an element's own opaque fill with
+        # the first opaque thing painted underneath it.
+        bh = e.get("behind")
+        if bh and bh.get("own") and bh.get("behind"):
+            ca, cb = _rgb_tuple(bh["own"]), _rgb_tuple(bh["behind"])
+            if ca and cb:
+                dist = sum((x - y) ** 2 for x, y in zip(ca, cb)) ** 0.5
+                if dist < 18:
+                    out["invisible_fill"].append(
+                        (e["tag"], bh["own"], bh["behind"], bh["tag"], round(dist, 1)))
+
         hit = e.get("hit")
         if e.get("ownText") and hit and hit["seen"] and hit["ok"] == 0:
             out["buried_text"].append(
@@ -347,6 +411,10 @@ def format_measure(flaws, name=""):
     for tag, axis, got, box in flaws.get("spilling", []):
         lines.append(f"OVERSIZE {tag}: real {axis} {got}px vs {box}px box "
                      f"— a hand-written bbox here under-reports by {got-box}px")
+    for tag, own, behind, btag, dist in flaws.get("invisible_fill", []):
+        lines.append(f"INVISIBLE FILL {tag}: its background {own} is the same as the "
+                     f"'{btag}' painted directly behind it ({behind}, distance {dist}) "
+                     f"— the shape is drawn and cannot be seen")
     for tag, txt, top, seen in flaws.get("buried_text", []):
         lines.append(f"BURIED (advisory) {tag}: \"{txt}\" is painted but not visible — "
                      f"an opaque '{top}' is in front of it at all {seen} sampled points. "

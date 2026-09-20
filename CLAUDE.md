@@ -318,7 +318,11 @@ text_pairs = [("headline", core.INK, "var(--bg)", 96, True),
 # CONTAINERS — a card/slab/panel that HOLDS things. Anything wholly inside one is
 # contained, not colliding. Beats hand-listing an ignore pair per child. The label
 # must be one you actually put in `elements`, or the check says so and holds nothing.
-containers = ()          # e.g. ("card",) once you have appended ("card", x, y, w, h)
+# ⚠ FILL THIS IN the moment your piece has a panel, card or slab with things ON it.
+#   Leaving it empty makes every child of that panel report as a collision with it —
+#   five false collisions on the first build that had a full-bleed panel, and the
+#   author went reading layout.py to find out why.
+containers = ()          # e.g. ("panel", "card") — each must also be in `elements`
 
 # ONE SENTENCE split across several boxes, in the order it is meant to be READ.
 # This example is the CORRECT placement — a clean diagonal stagger:
@@ -541,7 +545,12 @@ so AQ's LinkedIn art is landscape or square — never 4:5.
 - `core.outline_of(surface)` · `core.hard_shadow(size)` · `core.keyline(ring_bg)` · `core.RADII`
   (32/22/14/pill) — the craft scales, shared with the site.
 
-**Stickers** — build every badge with `shapes.sticker()` and fit its label with
+**Stickers** — ⚠ `shapes.sticker()` renders a SQUARE `size`×`size` svg whatever the silhouette
+inside it looks like, so declare `(label, x, y, size, size)` in `elements` — always. Declaring a
+wide tag's apparent 220×150 earns a correct `OVERSIZE` report and a collision check that has been
+lied to. Its `rot=` is BAKED IN; do not also rotate the wrapping div or the angle applies twice
+(`layout.double_rotation_scan` catches that). `doodles.stamp()` behaves identically.
+Build every badge with `shapes.sticker()` and fit its label with
 `shapes.fit_font(measured_w, measured_at, kind, size)`. ⚠ `shapes.label(size=)` is in BOX
 units (0–100), NOT px: inside a 206px badge a 13 renders at 27px. `fit_font` returns box
 units and reports `fits=False` when a label simply cannot fit that silhouette — split it
@@ -650,6 +659,8 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | A cross-aspect score read as a quality number: a 0.275 phone crop against a 0.5625 story canvas scored 0.534 against a 0.16 accept line while the looking gate found every element present. Discovering that took a control run the builder had to think of | session 10f, agent r1 | **`compare.compare()` now WARNS on an aspect gap >25%** and names the control to run · `compare.aspect_gap()` |
 | Workflow C had no ruling for "the drawn style's recipe conflicts with a hard brand rule" (a reference set entirely in serif vs. §9's ≤1 accent word) or "the recipe's colour count vs. the fixed department hue". Both were re-derived from first principles by every builder | session 10f, agent c1 | **§2's precedence ladder** — hard brand rule beats recipe; a recipe's count is a target not a ceiling; the mechanism is the part you may not drop; record every adaptation |
 
+| `same_as_bg_scan` AUTO-RAN and compared every fill to the PAGE ground — so a cream badge on a full-bleed teal panel got "FILL SAME AS PAGE BG (element invisible)" on every single render. Its docstring claimed zero-false-positive. **Two independent agents reported it**, which makes it a spec defect: a static scan cannot know an element's real backing surface, and most AQ posters layer | session 10f, agents c3 and g3 | **`reconcile.measure_dom` → `invisible_fill`** asks the browser what is actually painted underneath. The static scan no longer auto-runs and stays a manual diagnostic |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -730,8 +741,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (36) ·
-  `test_stylebank.py` (57) · `test_buried_text.py` (13) · `test_repo_hygiene.py` (28)** —
-  **385 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (57) · `test_buried_text.py` (17) · `test_repo_hygiene.py` (28)** —
+  **389 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
