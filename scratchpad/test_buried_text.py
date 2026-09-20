@@ -325,6 +325,35 @@ async def main():
     ok("ISSUES" not in done and "OFF-CANVAS" not in done,
        "ONE bleed_tags declaration silences all three at once")
 
+    # ── A HIDDEN DOODLE (session 10f, agent f2514) ──────────────────────────
+    # `.dood{z-index:4}` plus a sibling stacking context hid a lightning bolt behind
+    # a card regardless of DOM order. Undocumented, and invisible to every gate —
+    # found only by looking at the PNG. Three bugs had to be fixed before the check
+    # could see it, each verified against a real render rather than reasoned about:
+    #   1. an SVG's tagName is the lowercase "svg", so `=== "SVG"` matched nothing;
+    #   2. a doodle is a positioned DIV containing an svg — checking only the leaf
+    #      missed the element the author actually placed;
+    #   3. an SVG's className is an SVGAnimatedString, truthy, so it won every `||`
+    #      in the tag expression and reports read "OFF-CANVAS {}", naming nothing.
+    dd = _load("doodles")
+    BOLT = ('<div class="dood" data-tag="bolt" style="position:absolute;left:200px;'
+            'top:300px;width:160px;height:160px">'
+            + dd.stamp("lightning", "#FFC700") + '</div>'
+            '<div data-tag="card" style="position:absolute;left:150px;top:250px;'
+            'width:320px;height:280px;background:#1B8A5A;z-index:9"></div>')
+    buf7 = _io.StringIO()
+    with _ctx.redirect_stdout(buf7):
+        await B.render(B.page(W, H, "var(--bg)", BOLT, grain=False), tmp, W, H,
+                       elements=[("card", 150, 250, 320, 280), ("bolt", 200, 300, 160, 160)],
+                       collision_ignore={("card", "bolt")})
+    hid = buf7.getvalue()
+    ok("BURIED" in hid and "bolt" in hid,
+       "a doodle hidden by a stacking context IS reported (the f2514 bug)")
+    ok(hid.count("BURIED") == 1,
+       "...exactly once — the wrapper and its svg are one object, not two")
+    ok("{}" not in hid,
+       "...and no report names an element `{}` (the SVGAnimatedString className bug)")
+
     try:
         os.remove(tmp)
     except OSError:

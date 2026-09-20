@@ -723,6 +723,8 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `audit.py`'s `BLEED` and `MARGIN_OK` were closed vocabularies baked into that file, so a script with a deliberately bleeding element could not tell that gate — an agent dropped elements from it rather than live with permanent noise, ending with DOM coverage on 4 of 7 | session 10f, agents f80cb + f62f8 | `audit.audit(bleed_tags=)`, forwarded by `render` — ONE declaration now reaches `preflight`, `audit` and `measure_dom` |
 | `PAPER` (#FFFFFF) and `CREAM` (#F4EFE0) are **1.15:1** apart, so a white card on the cream page reads only by its outline. `invisible_color_check` flags the pair, correctly — but nothing said so, and it looked like a false positive | session 10f, agent f62f8 | stated in §9: the two tokens cannot carry a figure/ground relationship without a craft layer |
 
+| A doodle hidden by a CSS STACKING CONTEXT — `.dood{z-index:4}` plus a sibling `transform` — paints behind another element regardless of DOM order. Undocumented, gate-invisible, found only by looking at the PNG | session 10f, agent f2514 | `buried_text` reaches it, after THREE bugs in the check itself: an SVG's `tagName` is the lowercase `"svg"` so `== "SVG"` matched nothing; a doodle is a positioned DIV wrapping an svg, so checking only the leaf missed the element the author placed; and an SVG's `className` is an `SVGAnimatedString` — truthy — so it won every `\|\|` in the tag expression and reports literally read `OFF-CANVAS {}` |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -803,8 +805,8 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (47) ·
-  `test_stylebank.py` (64) · `test_buried_text.py` (24) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
-  **435 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (64) · `test_buried_text.py` (27) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
+  **438 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

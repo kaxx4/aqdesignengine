@@ -42,7 +42,15 @@ W,H=1080,1350; M=64
 
 _MEASURE_JS = """els => els.map(e => {
   const r = e.getBoundingClientRect(), cs = getComputedStyle(e);
-  return { tag: e.dataset.tag || e.className || e.tagName.toLowerCase(),
+  // AN SVG's `className` IS AN SVGAnimatedString, NOT A STRING. It is truthy, so it
+  // won every `||` here and the tag serialized as `{}` — real reports read
+  // "OFF-CANVAS {}" and "UNTRACKED {}", naming nothing you could act on.
+  const _tag = (el) => {
+    const c = el.className;
+    return el.dataset.tag || (typeof c === "string" && c) ||
+           (c && c.baseVal) || el.tagName.toLowerCase();
+  };
+  return { tag: _tag(e),
            x: Math.round(r.x), y: Math.round(r.y),
            w: Math.round(r.width), h: Math.round(r.height),
            right: Math.round(r.right), bottom: Math.round(r.bottom),
@@ -62,7 +70,18 @@ _MEASURE_JS = """els => els.map(e => {
            // agent f62f8). A logo is content, not decoration. An <img>/<svg> counts,
            // and so does anything the author tagged `logo`.
            ownText: [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
-                    || e.tagName === "IMG" || e.tagName === "SVG"
+                    // CASE MATTERS: an SVG element's tagName is the lowercase "svg",
+                    // not "SVG", because it lives in the SVG namespace. The first
+                    // version of this compared against "SVG" and therefore matched
+                    // nothing — every doodle stayed invisible to the check while
+                    // looking fixed. Verified against a real render, not assumed.
+                    || ["img", "svg"].includes(e.tagName.toLowerCase())
+                    // ...and the WRAPPER an author positions. A doodle is placed as a
+                    // div containing one svg; the div has no text and is not itself an
+                    // svg, so checking only the leaf missed the element that actually
+                    // went missing (session 10f, agent f2514).
+                    || (e.children.length === 1 &&
+                        ["img", "svg"].includes(e.children[0].tagName.toLowerCase()))
                     || (e.dataset.tag || "").toLowerCase().includes("logo"),
            hit: (() => {
              if (r.width < 2 || r.height < 2) return null;
@@ -103,8 +122,7 @@ _MEASURE_JS = """els => els.map(e => {
                }
                if (!blocked) { ok++; }
                else if (!top) {
-                 top = blocked.dataset.tag || blocked.className
-                       || blocked.tagName.toLowerCase();
+                 top = _tag(blocked);
                }
              }
              return seen ? { seen, ok, top } : null;
@@ -133,8 +151,7 @@ _MEASURE_JS = """els => els.map(e => {
                if (!m3) continue;
                const q = m3[1].split(",").map(parseFloat);
                if (q.length >= 4 && q[3] < 0.9) continue;    // see through it
-               return { own: own, behind: s3.backgroundColor,
-                        tag: t.dataset.tag || t.className || t.tagName.toLowerCase() };
+               return { own: own, behind: s3.backgroundColor, tag: _tag(t) };
              }
              return null;
            })(),
@@ -155,7 +172,7 @@ _MEASURE_JS = """els => els.map(e => {
                  const pr = p.getBoundingClientRect();
                  return { x: Math.round(pr.x), y: Math.round(pr.y),
                           r: Math.round(pr.right), b: Math.round(pr.bottom),
-                          tag: p.dataset.tag || p.className || p.tagName.toLowerCase() };
+                          tag: _tag(p) };
                }
                p = p.parentElement;
              }
@@ -212,6 +229,7 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
                   and the rest are reported, not failed.
     """
     els = await page.eval_on_selector_all(_SEL, _MEASURE_JS)
+    _buried_raw = []
     out = {"clipped": [], "spilling": [], "off_canvas": [], "boxes": [],
            "buried_text": [], "invisible_fill": []}
     for e in els:
@@ -336,15 +354,38 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
         if e.get("ownText") and hit and hit["seen"]:
             _blocked = hit["seen"] - hit["ok"]
             if _blocked and _blocked >= hit["seen"] * 0.6:
-                out["buried_text"].append(
-                    (e["tag"], ((e.get("txt") or "").strip() or "<image>")[:40],
-                     hit.get("top") or "?",
-                     f'{_blocked}/{hit["seen"]}'))
+                _buried_raw.append(
+                    ((e["tag"], ((e.get("txt") or "").strip() or "<image>")[:40],
+                      hit.get("top") or "?", f'{_blocked}/{hit["seen"]}'),
+                     (e["x"], e["y"], e["w"], e["h"])))
 
         if e["tag"] in bleed_tags:
             continue
         if e["right"] > W + 2 or e["bottom"] > H + 2 or e["x"] < -2 or e["y"] < -2:
             out["off_canvas"].append((e["tag"], e["x"], e["y"], e["right"], e["bottom"]))
+    # ONE LINE PER OBJECT. A doodle is a positioned div containing an svg that
+    # carries its own class, so the wrapper and the child reported the same burial
+    # twice under different names. Keep the box the AUTHOR positioned (the outer one)
+    # and drop anything nested inside it blamed on the same occluder.
+    for i, (row, bx) in enumerate(_buried_raw):
+        inner = False
+        for j, (row2, bx2) in enumerate(_buried_raw):
+            if i == j or row[2] != row2[2]:
+                continue
+            # A doodle svg is width:100%/height:100% of its wrapper, so the two
+            # boxes are IDENTICAL and a strict `bigger` test never fired. On a tie,
+            # keep whichever came first — querySelectorAll yields DOM order, so the
+            # parent the author positioned precedes the child it contains.
+            a1, a2 = bx[2] * bx[3], bx2[2] * bx2[3]
+            bigger = a2 > a1 or (a2 == a1 and j < i)
+            inside = (bx[0] >= bx2[0] - 2 and bx[1] >= bx2[1] - 2 and
+                      bx[0] + bx[2] <= bx2[0] + bx2[2] + 2 and
+                      bx[1] + bx[3] <= bx2[1] + bx2[3] + 2)
+            if bigger and inside:
+                inner = True
+                break
+        if not inner:
+            out["buried_text"].append(row)
     return out
 
 
