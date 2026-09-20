@@ -391,10 +391,15 @@ async def probe(name, archetype, content, accent_idx):
              right:Math.round(r.right),bottom:Math.round(r.bottom),
              sw:e.scrollWidth,cw:e.clientWidth}})""")
         await b.close()
+    # Measure against the canvas this piece was actually rendered at. These were the
+    # literals 1080 and 1350, so probe() reported a phantom bottom overflow on every
+    # element below y=1330 of a story poster. probe() is Workflow-A-only legacy and
+    # Workflow A is feed-only today, which is the sole reason it never bit.
+    pW, pH = W, H
     flaws=[]
     for e in els:
-        if e['right']>1080-20: flaws.append(f"{e['tag']} overflows RIGHT edge (right={e['right']})")
-        if e['bottom']>1350-20: flaws.append(f"{e['tag']} overflows BOTTOM (bottom={e['bottom']})")
+        if e['right']>pW-20: flaws.append(f"{e['tag']} overflows RIGHT edge (right={e['right']})")
+        if e['bottom']>pH-20: flaws.append(f"{e['tag']} overflows BOTTOM (bottom={e['bottom']})")
         if e['x']<M-20: flaws.append(f"{e['tag']} breaches LEFT margin (x={e['x']})")
         if e['sw']>e['cw']+4: flaws.append(f"{e['tag']} TEXT WIDER than container (scroll {e['sw']}>{e['cw']})")
     return flaws

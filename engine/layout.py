@@ -67,8 +67,12 @@ def quadrant_fill_check(W, H, elements, min_frac=0.55):
 
 def bounds_check(W, H, elements):
     """
-    Canvas is 1080x1350 for feed (NOT ~1700+) — two separate bespoke recreations
-    silently lost elements to `overflow:hidden` by assuming a taller canvas.
+    Checks against the W,H YOU PASS — this function has never assumed a canvas, and
+    a docstring that opened "Canvas is 1080x1350" read like it did, which is its own
+    small defect in a repo that also ships story, square, linkedin and li_square
+    (`core.SIZES`). The history it was recording: two bespoke recreations silently
+    lost elements to `overflow:hidden` by assuming a canvas TALLER than the feed's
+    1350. Pass the real size and that cannot happen.
     Call this on every (x,y,w,h) element list right before rendering; it returns
     a list of (index, x,y,w,h) that clip off-canvas so the bug is caught before
     a render, not discovered after by comparing a blank patch to the reference.

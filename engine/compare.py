@@ -30,7 +30,13 @@ import numpy as np
 from PIL import Image, ImageFilter
 from collections import Counter
 
-SIZE = (540, 675)          # common analysis resolution (feed aspect 4:5)
+# Common analysis resolution. BOTH images are resampled to this, so what is compared
+# is RELATIVE geometry — which is the intent, and why the feed aspect here does not
+# bias a square or landscape piece. It DOES mean a comparison between two different
+# aspects is distorting both to a common frame: that is fine for "is the mass in the
+# same place", and it is exactly why a mockup crop scored against a story canvas is
+# not comparable to a same-aspect recreation (see RECREATION_PROTOCOL.md, MOCKUPS).
+SIZE = (540, 675)          # feed aspect 4:5
 
 
 def _load(path, size=SIZE):
