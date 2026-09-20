@@ -12,7 +12,8 @@ _BOXES_JS = "els=>els.map((e,i)=>{const r=e.getBoundingClientRect();return{i,tag
 # nesting: for each measure el, is it inside another measure el?
 _NEST_JS = "els=>els.map((e,i)=>{let p=e.parentElement,inside=-1;while(p){if(p.classList&&p.classList.contains('measure')){inside=[...document.querySelectorAll('.measure')].indexOf(p);break}p=p.parentElement}return inside})"
 
-async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None):
+async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None,
+                bleed_tags=()):
     """Margin + overlap gate over the `.measure`-tagged DOM.
 
     `page`  — an ALREADY-LOADED playwright page showing this html. Pass it and the
@@ -32,6 +33,15 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
               found by reading this source after the documented parameter appeared
               to do nothing (session 10f, agent c3). A gate nobody can silence is a
               gate everybody learns to scroll past.
+    `bleed_tags` — tags that leave the safe area ON PURPOSE, added to this module's
+              BLEED and MARGIN_OK sets for this call. Those were closed vocabularies
+              baked into this file (`BLEED={"num"}`, plus a fixed MARGIN_OK list), so
+              a bespoke script with a deliberately bleeding element could not tell
+              this gate about it and either lived with permanent warning noise or
+              dropped the element from the gate entirely — an agent chose the latter
+              and got DOM coverage on 4 of its 7 elements (session 10f, f80cb/f62f8).
+              Same argument `preflight` and `measure_dom` already take, forwarded by
+              `build.render`, so ONE declaration reaches all three.
     `margin` — the safe-area inset. Defaults to this module's M, which is a SECOND
               hardcoded 64 living in a different file from build.py's M=64. They
               agree today by coincidence of two separate literals, not because one
@@ -39,6 +49,8 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
     """
     aW, aH = canvas if canvas else (W, H)
     aM = M if margin is None else margin
+    _bleed = set(BLEED) | {str(t) for t in (bleed_tags or ())}
+    _mok = set(MARGIN_OK) | {str(t) for t in (bleed_tags or ())}
     _ign = set()
     for it in (ignore_pairs or ()):
         if isinstance(it, (frozenset, set, tuple, list)) and len(it) == 2:
@@ -68,7 +80,7 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
               f"element LABELS. Tags present: {sorted(_tags)[:8]}")
     issues=[]
     for k,bx in enumerate(boxes):
-        if bx['tag'] not in BLEED and bx['tag'] not in MARGIN_OK and (bx['x']<aM-3 or bx['rgt']>aW-aM+3 or bx['b']>aH-36):
+        if bx['tag'] not in _bleed and bx['tag'] not in _mok and (bx['x']<aM-3 or bx['rgt']>aW-aM+3 or bx['b']>aH-36):
             issues.append(f"MARGIN {bx['tag']} breaches safe area (x{bx['x']} r{bx['rgt']} b{bx['b']})")
     def ov(a,c):
         ix=min(a['rgt'],c['rgt'])-max(a['x'],c['x']); iy=min(a['b'],c['b'])-max(a['y'],c['y'])
@@ -76,7 +88,7 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
     for i in range(len(boxes)):
         for j in range(i+1,len(boxes)):
             if nest[i]==j or nest[j]==i: continue          # skip parent/child
-            if boxes[i]['tag'] in BLEED or boxes[j]['tag'] in BLEED: continue
+            if boxes[i]['tag'] in _bleed or boxes[j]['tag'] in _bleed: continue
             if (boxes[i]['tag'],boxes[j]['tag']) in SKIP_PAIRS: continue  # bleed sits behind on purpose
             if frozenset((str(boxes[i]['tag']),str(boxes[j]['tag']))) in _ign: continue  # caller declared it
             ix,iy=ov(boxes[i],boxes[j])

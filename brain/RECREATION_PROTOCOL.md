@@ -62,6 +62,45 @@ Recreations strayed badly while metrics said "converged." Two mechanical causes,
 | `MISSING COLOUR` | Assign the nearest `core.ACCENTS` entry to an element that currently duplicates another colour. Colour *variation* is allowed (brand palette), colour *absence* is not — a missing hue means a missing element. |
 | `REGION UNDER-filled` | An element from your step-0 inventory is missing or too small there. Check the inventory first; only add filler as a last resort. |
 | `REGION OVER-filled` | You placed something the reference does not have there, or too large. |
+| **A PAIR of OVER- and UNDER-filled regions that are ADJACENT, and every inventory element is present** | **Not a missing element — a WRONG SHAPE.** Your element is there and is the wrong form, so its mass sits one cell over from where the reference puts it. Adding or resizing anything here makes it worse. STOP, zoom into that exact region of BOTH images (`compare.crop` at those grid fractions) and compare the outlines. |
+
+### WHEN THE REGION ROWS ARE LYING TO YOU
+
+The two `REGION` remedies above assume the cause is presence or scale. When it is
+neither, they actively misdirect: a recreation whose ribbon had the right colour,
+width, endpoints and bounding box — but a smooth diagonal where the reference has a
+quarter-turn into a flat run into a tight 180° hook — burned **3 of 6 iterations**
+adding and resizing filler because the table told it to (session 10f, `80cb7ed71a8cc9`).
+
+The tell is the PAIRING. A genuinely missing element leaves one under-filled region.
+A wrong shape displaces mass, so it produces an over-filled cell *beside* an
+under-filled one, with the totals roughly balanced. Read the two together before
+believing either.
+
+**The same is true of ARRANGEMENT, and it is easier to miss.** On `25143d758ea743`
+every element was present, correctly coloured and individually well made — and the
+recreation sorted them into two tidy horizontal bands (round stickers above, pills
+below) where the reference INTERLEAVES them into one pile at varied angles. The
+leftover region deltas were blamed on `scatter_solve`'s stochastic placement and four
+further iterations failed to move them, because the deltas were not noise: they were
+the band-versus-pile difference. A pile and a grid of the same objects have the same
+inventory and different geometry.
+
+So when you walk step 4, ask of each element:
+  * is it PRESENT — and
+  * is it the right SIZE relative to the frame (the same recreation's footer email
+    occupies 18% of the reference's height and 6% of the render's, a 3x miss on a
+    hero element that no gate flags because the hero is the pile), and
+  * is it in the right RELATIONSHIP to its neighbours — interleaved vs. sorted,
+    overlapping vs. spaced, varied vs. aligned.
+"Every element present" answers only the first, and it is the one most likely to feel
+like a pass.
+
+Diagnose it by looking, not by iterating: crop both images to the offending cells and
+compare the silhouettes. A curve family — how many bends, how tight, in what order —
+cannot be recovered by nudging control points, and `compare.py`'s 9x11 grid is
+extremely sensitive to the exact path of a thin element. If the shape family is wrong,
+rewrite the path from the reference's actual geometry.
 
 **BLOCKING set** = detail-too-low, content-too-small, too-dispersed. These are the three that made
 past recreations "stray," so they gate acceptance regardless of score.

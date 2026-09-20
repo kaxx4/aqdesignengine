@@ -221,7 +221,8 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
         await pg.set_content(html, wait_until="load")
         await _settle(pg)
         issues = await audit.audit(html, name, page=pg, canvas=(W, H),
-                                   ignore_pairs=collision_ignore, margin=M)
+                                   ignore_pairs=collision_ignore, margin=M,
+                                   bleed_tags=(bleed_tags or ()))
         # MEASURED geometry, on the page we already have. This is the only check
         # that can see what the hand-maintained (x,y,w,h) tuples structurally
         # cannot: a text block whose REAL rendered size is not what the author

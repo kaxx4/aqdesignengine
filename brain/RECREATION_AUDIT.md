@@ -2045,3 +2045,804 @@ preserved at `out/versions/110a5730e3710b/` (v1–v4 .py alongside their .png).
 - `engine/audit.py`'s margin check uses a HARDCODED `M=64` independent of whatever margin a
   bespoke script actually chose, so a legitimate tighter margin (appropriate for a
   mobile-UI recreation) prints as a false "MARGIN breaches safe area".
+
+## 62f8cc4d3c6135 — "Chat-bubble bleed rows" landscape strip  (session, 2026-09-20)
+
+Reference: `training_samples/reference_posters/62f8cc4d3c613590844bd12d49c81671.jpg` (805x524,
+aspect 1.536 — landscape). Judged canvas: `feed` (1080x1350, aspect 0.8 — portrait). Slug /
+output: `out/versions/62f8cc4d3c6135/`. Style bank entry (`brain/STYLE_BANK.json` key
+`62f8cc4d3c6135`) already carries a written recipe — quoted and followed below.
+
+**STEP 0 — MEASURED (`compare.geometry`):** content bbox x 0.000..0.998, y 0.068..0.932;
+margins L0 R0.002 T0.068 B0.068; vertical ratio 1:1 (space above == below); centroid
+(0.502, 0.504); coverage 0.121 (low — expected, it's an outline-heavy pill field, not solid
+fill). Occupancy grid confirms even horizontal spread across all 9 columns and a clear
+4-row banded structure vertically (bands of high fill separated by near-zero rows = the
+gaps between rows).
+
+Supplementary pixel measurement (white-pixel row profile, threshold RGB>243, since
+`compare.geometry`'s coverage metric undercounts a white-on-near-white pill field):
+background sampled at multiple points = solid RGB(230,220,219) (a dusty pink-taupe, NOT
+AQ cream — flagged as a substitution below). Pill fill = RGB(250,250,250) (near-white,
+distinct from bg by ~20 levels — low contrast, the pills read more by their DROP SHADOW
+than by a hard edge). Row bands (y, of 524 total): row1 ~8-128 (h~120), gap ~12px, row2
+~140-256 (h~116), gap ~12px, row3 ~264-384 (h~120), gap ~12px, row4 ~396-516 (h~120).
+Four full rows, near-edge-to-edge vertically (~8px top/bottom slack), each row ~120px
+tall with a ~12px gap — i.e. row pitch is almost exactly canvas-height/4, no dead margin
+top or bottom.
+
+**STEP 1 — FULL COMPOSITION DESCRIPTION (element inventory, the acceptance checklist):**
+
+**Canvas / ground.** One solid flat dusty pink-taupe field, RGB(230,220,219) / ~#E6DCDB,
+no texture, no gradient, fills the entire frame behind the pill rows.
+
+**Mechanism.** Four horizontal rows of rounded-rectangle "chat bubble" cards (large corner
+radius, NOT a full stadium/pill — corners look like ~36-40px radius on an ~120px-tall card,
+so top/bottom edges stay flat for a short run), each row offset left/right from its
+neighbours (brick/masonry offset, not a uniform grid), and **every row bleeds off BOTH the
+left and right canvas edges** — the first and last card in every row is truncated by the
+frame. This bleed is the whole point of the mechanism (confirmed both by eye and by the
+style-bank recipe's own words: "the endlessness IS the mechanism").
+
+**Element inventory, row by row, left to right (11 total pill-cards, 4 rows):**
+
+- Row 1 (y≈8-128, top row, NOT clipped top or bottom by frame — flush to canvas top):
+  1. "This is the future!" — full card. Circular avatar (gold/yellow-ochre bg) of a woman,
+     left-aligned inside the card; text right of avatar, dark ink, sans.
+  2. "Typing…" — full card. Circular avatar (neutral grey bg) of a bald man.
+  3. [cut by RIGHT edge] — avatar only visible (teal/mint-green bg, bearded man), no text
+     visible — the card's text portion is off-canvas.
+
+- Row 2 (y≈140-256), offset left relative to row 1 (starts partway through what would be
+  row 1's first card's x-range) — 4 cards, first and last both cut:
+  4. [cut by LEFT edge] — avatar only (pale lavender/periwinkle bg), no text visible.
+  5. "Yes." — full card, short text, avatar (dusty rose/mauve bg, woman, partially
+     visible/dim in the source).
+  6. "They're just a fad." — full card, avatar (mint/teal bg, bearded man with glasses).
+  7. "No way!" — full card, avatar (coral/tomato bg, man).
+
+- Row 3 (y≈264-384), offset again (different phase from rows 1 and 2) — 3 cards, last cut:
+  8. "Is there proven value?" — full card, avatar (light lavender bg, woman).
+  9. "I wouldn't." — full card, avatar (purple/violet bg, woman, blonde).
+  10. [cut by RIGHT edge] — avatar only (gold/yellow bg, woman), no text visible.
+
+- Row 4 (y≈396-516, bottom row, flush to canvas bottom) — 3 cards, first and last both cut:
+  11a. [cut by LEFT edge] — only a text fragment "…ping…" visible (the tail end of a
+     "Typing…" card whose avatar and card start are off-canvas — confirms the pattern
+     repeats/cycles rather than inventing new copy for every card).
+  11. "I agree, it's the future!" — full card, avatar (coral/tomato bg, man, dark hair).
+  12. "Midjourney." — cut by RIGHT edge but text still legible (card's right portion clipped),
+     avatar (light lavender bg, woman).
+
+**Card treatment (uniform across all 11+):** rounded-rect, near-white fill, soft drop
+shadow (card lifts off the taupe ground), circular avatar photo inset at the card's left
+end (avatar diameter ≈ card height, i.e. the avatar spans the full height of the pill),
+short 1-4-word caption in dark ink to the right of the avatar, single line, no wrapping.
+
+**Type:** one sans throughout, regular weight, dark ink on the white cards — no AQ display/
+mono/serif distinction visible in the source (it's a screenshot-style UI mock, not a
+branded poster) — acceptable to map onto AQ's own type system (`--e` body sans) per the
+real-assets/brand-substitution rule.
+
+**Real-assets-only rule applies:** all 11 avatars are stock headshot photos (fabricated
+people captioned with AI-hype one-liners — "This is the future!", "They're just a fad.",
+"Midjourney.", etc., i.e. this is itself a meme/mockup about AI reactions). AQ cannot use
+fabricated stock headshots. **Adaptation:** substitute each avatar with a flat solid-colour
+circle in an AQ accent (the same substitution already precedented in
+`scratchpad/gen_motifs_v6.py`'s `piece_b` "staggered bleed rows" motif, which used a small
+accent dot in place of an icon). Replace the AI-hype captions with short AQ programme/
+impact words (acceptable copy substitution, CLAUDE.md §5 step 4).
+
+**Re-proportioning per the style-bank recipe (quoted):** "Feed's taller portrait frame has
+far more vertical room than the reference's short wide strip, so stack noticeably more rows
+top to bottom (roughly double the reference's row count) rather than stretching row height
+or pill size to fill it... Do not enlarge the pills themselves to cover the added height —
+the field's density is the point, so more rows is the only correct way to fill a taller
+canvas." Reference: 4 rows in a 524px-tall, 1.536-aspect strip (row pitch ~131px, canvas
+h/row-pitch = 4.0). Feed target: 1350px tall, 0.8 aspect → applying the SAME row-pitch
+ratio (canvas-height / 4) would give ~10 rows if pill size is held constant relative to
+canvas width scaling. Kept pill height close to the reference's own absolute proportions
+(not rescaled to the wider canvas) and let row count fall out of `while y < H` — this
+also naturally produces MORE rows than a naive doubling, which is the direction the recipe
+argues for, not less.
+
+**Optional per recipe:** "Optionally pin one rotated ink slab over the field partway down,
+with a keyline ring so it reads as laid over the pills." Not present in the actual
+reference — treated as an OPTIONAL enhancement, not a required element, since the source
+image itself contains no such slab. Decision: add one, since AQ's own body of work
+(`gen_motifs_v6.py`) already uses this exact device for the same mechanism and CLAUDE.md's
+real-assets rule plus "board-level busy but audited clean" favours giving the piece an AQ
+identity/headline rather than shipping an unbranded field of chat bubbles with no message.
+
+
+## 80cb7ed71a8cc9
+
+**Reference:** `training_samples/reference_posters/80cb7ed71a8cc960d22e790ed09202dc.jpg`, 1199x675
+px (a genuine standalone poster, NOT a mockup — judged canvas `linkedin` 1200x628, aspect 1.91:1
+vs the source jpg's 1.78:1, close enough that no crop is needed).
+
+**Step 0 — measured geometry** (`compare.geometry`): content bbox x 0.074..0.970, y 0.000..0.999
+(the graphic bleeds off BOTH the top and bottom edges — not a margin oversight, a deliberate
+full-bleed ribbon). Margins L 0.074 R 0.030 T 0.000 B 0.001. Centroid (0.569, 0.540), coverage
+0.416. The 9x11 occupancy grid confirms: near-zero fill in the bottom-left cells (the subhead
+line is thin), heavy fill in the right two-thirds of every row (the ribbon), and two hot patches
+at top-center-right and mid-right-lower (the two sparkle motifs).
+
+**Step 1 — full composition description** (enumerated element by element, nothing summarized):
+
+1. **Background** — flat, full-bleed field, color sampled at multiple points = RGB(243,244,236)
+   / #F3F4EC. Extremely close to AQ's canonical cream `core.CREAM` #F4EFE0 (both a warm
+   off-white, never pure white). No texture, no grain, no gradient.
+2. **The blue ribbon** — a single continuous thick wavy band/"snake" shape, uniform width
+   (~9% of canvas width), flat-filled, NO visible ink outline or stroke of any kind (crisp
+   anti-aliased edge straight onto the cream). Color sampled mid-band = RGB(83,111,208) /
+   #536FD0, a cornflower/periwinkle blue-purple. It enters the canvas by BLEEDING OFF the
+   top edge (around x=0.55-0.68 of width) and exits by bleeding off the bottom edge (around
+   x=0.80-0.95 of width), snaking left-right in roughly 2.5 S-bends down the full height. It
+   occupies the center-right two-thirds of the canvas and is the single dominant graphic
+   element (largest by area, though not by "hero" scale in the number_hero sense — it reads
+   as a background/mid-ground motif that the type and sparkles sit in front of). Z-order:
+   above the cream background, below both sparkle characters and below the headline where
+   they overlap it.
+3. **Red sparkle/starburst character** — a single asymmetric 8-armed spiky sparkle shape,
+   flat-filled, NO ink outline, positioned upper-center (approx bbox in the 1199x675 source:
+   x 480-735, y 40-230, so roughly centered at (51%, 20%) of canvas, diameter ~21% of width).
+   Color sampled = RGB(234,68,42) / #EA4432 (AQ tomato #FF4D2E is the nearest brand accent).
+   It has a simple minimal FACE drawn in ink: two closed/happy eyes (short downward arcs) and
+   one curved smile, both thin black strokes, centered in the shape. It sits IN FRONT of
+   (occludes) the top of the blue ribbon.
+4. **Yellow/marigold flower-sparkle character** — a second asymmetric spiky burst shape, ~9
+   rounder petals (visually a "flower" register rather than the red one's "spark" register:
+   petals are wider/rounder, tips less needle-sharp), flat-filled, NO ink outline, NO face.
+   Positioned lower-right (approx bbox x 930-1160, y 395-620 of the 1199x675 source, centered
+   ~(87%, 75%), diameter ~19% of width). Color sampled = RGB(251,188,72) / #FBBC48, an amber/
+   marigold yellow (AQ lemon #FFC700 is the nearest brand accent, though lemon reads cleaner/
+   less orange than the reference — noted as a color adaptation, not a miss). Sits IN FRONT of
+   (occludes) a lower bend of the blue ribbon.
+5. **Headline** — three lines, left-aligned, huge bold black display type, tight leading
+   (lines nearly touch): "A WORLD" / "OF PURE" / "IMAGINATION." All-caps except that the
+   typeface itself carries decorative swash/script flourishes baked into specific letterforms
+   (the "W" in WORLD is drawn as a single continuous looped/cursive mark rather than four
+   straight strokes; the "R" in PURE and the second "O" in IMAGINATION carry an open cursive
+   loop/tail). This is a single bespoke display font the reference uses; AQ has no equivalent
+   swash face, so the recreation uses AQ's own display font (`core.FONT_D`, NeutralFace 900
+   uppercase) straight, accepting the loss of the swash flourish as an unavoidable font
+   substitution (AQ's real-assets-only rule covers fabricated imagery, not "must clone a
+   third-party display typeface's decorative ligatures"). Color = ink black (sampled RGB as
+   low as (7,3,4), matching `core.INK` #0A0A0A almost exactly). Left margin starts at x≈0.079
+   of canvas width, matching the measured left content margin (0.074).
+6. **Subhead** — one line of small, bold, lowercase sans/mono-weight text directly under the
+   headline: "aprender inglês fazendo arte." (Portuguese: "learning English by making art").
+   Same ink black, left-aligned flush with the headline's left edge, size roughly 1/9 the
+   headline's cap-height. AQ adaptation: keep the Portuguese line (AQ literally does bilingual
+   outreach copy) rendered in `core.FONT_M` (JetBrains Mono) to match AQ's own eyebrow/label
+   voice register, since the reference's subhead is itself a plain grotesk/mono-leaning face.
+
+**Not present in the reference** (so NOT added): no logo, no footer/handle, no CTA, no chips,
+no additional doodles, no photo, no texture/grain overlay. This is a deliberately sparse,
+4-element composition (ribbon + 2 sparkle characters + one text block) — CLAUDE.md's "taste =
+subtraction" principle in its purest form in this corpus.
+
+**Engine-primitive mapping decided before coding:**
+- Ribbon → no matching `shapes.SILHOUETTES` entry exists for a long flowing multi-bend stroke;
+  built as a bespoke SVG `<path>` (a fine-grained polyline through a sampled sine-derived
+  centerline) drawn with `stroke` + `stroke-width` + `stroke-linecap:round` + `stroke-linejoin:
+  round`, `fill:none` — matching the reference's own construction (a stroked ribbon, not a
+  filled outline shape). Colour: nearest `core.ACCENTS` entry by measured RGB distance to the
+  7 accents is grape `#7E5BFF` (66.8 vs sky's 76.1), used as `A[5]`.
+- Red sparkle + yellow flower → `shapes.starburst(points, R, r)` (parametric, point-count
+  matches a spiky sparkle family) with `points=8` for the red one and `points=9, r/R` closer to
+  1 (rounder) for the yellow one. Deliberately NOT run through `shapes.sticker()` — the
+  reference's own sparkle motifs carry no ink outline/halo at all, and forcing AQ's usual
+  craft-layer sticker treatment here would ADD a visual feature the reference does not have,
+  which is exactly the "REGION OVER-filled" / invented-element failure mode the recreation
+  protocol warns against, just applied to treatment rather than geometry. Colours: tomato
+  `A[3]` for the star, lemon `A[2]` for the flower (nearest brand accents to the sampled hues).
+- Face on the red sparkle → hand-drawn inline SVG strokes (two short arcs + one smile arc),
+  same convention as `doodles.py`'s own hand-authored paths.
+- Headline/subhead → `core.FONT_D` / `core.FONT_M` via `B.measure_text()` to size the three
+  headline lines and the subhead before placing anything, per CLAUDE.md §6's "measure text
+  before you size anything around it."
+
+## Sample e7b32bd307aac4 — "Intake/Production/Review/Delivery" workflow-pile LinkedIn card (session, 2026-09-20)
+
+**File:** `training_samples/reference_posters/e7b32bd307aac4af6e385929ffd7016b.jpg`, 1199x628 —
+matches `core.SIZES['linkedin']` (1200x628) almost exactly. Not a mockup: it is a single flat
+design in its own frame (a receding-box/portal illustration), genuinely scorable at full canvas.
+
+**Step 0 — measured geometry** (`compare.geometry`):
+- content bbox x 0.033..0.998, y 0.000..0.999 — content runs edge to edge (the corner photo
+  bleeds touch all four sides), NOT a comfortably margined poster.
+- margins L 0.033 R 0.002 T 0.000 B 0.001 — asymmetric: a real left margin, none anywhere else.
+- centroid (0.551, 0.500), coverage 0.243 — centroid is slightly right of canvas centre (the pile
+  itself sits right-of-centre inside the card) and overall painted coverage is low (a lot of flat
+  cream ground even though the piece reads "busy").
+- occupancy 9x11 grid: heaviest cells are column 5 (the vertical band roughly x 0.44-0.55) rows
+  4-7 (y 0.36-0.73) all >=0.6, matching the dense pile/book-photo/green-rect column. Column 1
+  (x 0.0-0.11) is near-zero except rows 6-7 (bottom-left book-photo bleed) and row 0 is near-zero
+  except cols 3-4 (top-left seat photo) confirming the photo bleeds are real, not noise.
+
+**Step 1 — full element inventory** (every element, no "a few stickers"):
+
+*Ground layer*
+1. Full-bleed cream field, close to AQ's `core.CREAM` (#F4EFE0) — no substitution needed.
+2. Decorative background wireframe: thin, low-contrast diagonal + vertical guide lines radiating
+   from the central card's four corners out to the canvas edges, plus two vertical lines roughly
+   at x=160 and x=950, giving the illusion of the card floating inside a receding glass box/portal
+   (a "cube-net" reading). This is what makes the corner photo bleeds below read as "other faces of
+   the box peeking through" rather than random crops.
+
+*Photo/paper bleed panels (each a diagonally-clipped triangle/kite pinned to a canvas edge,
+behind the wireframe box, only visible in the gaps the box leaves)* — 8 separate elements, not
+"a few photos":
+3. Top-left, small sliver, x approx 0.20-0.38 y 0.00-0.07: a dark teal/near-black photo (theater
+   seats, stock).
+4. Left-mid, taller triangle, x approx 0.20-0.25 y 0.25-0.53: a person in a cream/white draped
+   outfit standing on dark green grass (stock, fashion-editorial).
+5. Bottom-left corner, large triangle, x approx 0.00-0.13 y 0.53-1.00: pale blue photo of open
+   book pages with elegant white serif type fragments ("gro", "am", "onia" partially legible —
+   literal foreign-language text baked into the stock photo, not a design instruction; per
+   RECREATION_PROTOCOL rule 4, do not copy it).
+6. Top-right, small kite, x approx 0.745-0.795 y 0.00-0.25: white daisies against denim-blue
+   fabric (stock, still-life).
+7. Top-right corner, x approx 0.795-1.00 y 0.00-0.30: a close-up pink tulip on olive-green
+   ground (stock, still-life) — visually the loudest single colour patch in the piece (warm pink
+   on olive).
+8. Right-mid, large triangle, x approx 0.835-1.00 y 0.48-0.89: yellow buttercup flowers against
+   blue sky (stock, nature).
+9. Bottom-right corner, x approx 0.835-1.00 y 0.76-1.00, overlapping/in front of #8: a
+   torn/folded green paper swing-tag with bold black text — "Returns an[d]...", "THANK YOU",
+   "WASH-ING AND CARE", a small orange warning-triangle glyph — a garment-care/thank-you tag
+   graphic, not a photo (literal copy again, not to be imitated verbatim).
+10. Bottom-mid, small triangle, x approx 0.48-0.60 y 0.94-1.00: a red/orange moulded chair
+    (stock, product/furniture).
+
+*Central card*
+11. A large cream rounded-rect "window", corners very rounded (approx 40-48px), roughly
+    x 345-865 y 63-565 (approx 520x500px, nearly square, close to canvas centre but sitting
+    slightly left of the pile's own centroid), extremely subtle drop shadow — this is the "paper
+    ground" the whole pile sits on, distinct in tone from the outer cream field only by the
+    shadow, not by fill colour (a same-cream card is easy to lose if the shadow isn't kept).
+
+*Step list, inside the card, left-flanking the pile, in a descending zig-zag (not a straight
+column — Production and Delivery are indented right of Intake and Review)*
+12. "- Intake" + superscript "01", top-left inside the card, bold sans, black.
+13. "- Production" + superscript "02", one line down, indented right of #12.
+14. "- Review" + superscript "03", lower-left, back at #12's indent.
+15. "- Delivery" + superscript "04", same row as #14, indented right (mirrors #12/#13's stagger).
+
+*The pile itself (11 objects, deliberately overlapping — this is the "hero"), roughly centred in
+the card, occupying the card's right two-thirds*
+16. A tiny stack of 3 layered rounded-square sticky notes/icons at the very top of the pile,
+    approx 55x45px each: a bright pink/lime top note with a tiny dark asterisk/leaf glyph, a
+    small dark green note behind-right, a larger tan/beige note peeking out at the base.
+17. A small white rounded-rect "document" card with a folded top-right corner and a few grey
+    line-rules standing in for body text, labelled "01 Campaign" — mid-left of the pile, its own
+    small drop shadow.
+18. A pink pill/chip, "For review", black text, overlapping the beige card's (#19) left edge.
+19. A tall beige/orange card headed with a bold black "Q" and 6-7 lines of grey lorem-ipsum body
+    copy ("Mus u...", "pellentesque", "lacus", "Diam imper...", "sociis", "eget t...", "aenean",
+    "phare...", "fugiat risus nam et duis. Nu...") — mostly BURIED by the objects in front of it;
+    only a approx 60px-wide sliver of text is visible down its left edge. This is the deepest
+    element in the z-stack.
+20. A photographic image — an open book with white pages against a strong blue backdrop — large
+    (approx 230x300px), sitting behind the green tiles but in front of the beige card.
+21. A tall vertical rectangle with a ribbed/corrugated texture in two greens (looks like a green
+    cardboard spine or a folder edge), anchoring the BOTTOM of the pile, partly under the book
+    photo.
+22. A large, translucent grey/frosted rounded-square tile (approx 150x180px) with a bold white
+    "Aa" — a type/typography app icon — upper-right of the pile, mostly in front of everything
+    except the sticky-note stack.
+23. A smaller lime-green rounded-square tile (approx 110x110px) with a black italic serif "Au" —
+    a second, contrasting type-app icon — tilted, overlapping the Aa tile's lower-left corner and
+    the top of the book photo. Aa and Au are a DISTINCT PAIR (two different type-tool icons), not
+    one element — a recreation that draws only one is a miss.
+24. A green "Approved" pill/chip, white/black text, sitting at the base of the green ribbed
+    rectangle / book photo, near the bottom of the visible pile.
+25. A white "Feedback" comment/chat card, bottom-left of the pile: bold header "Feedback  2h ago",
+    body text "I like the simplicity of having a pure visual here, do we want to introduce a fun
+    line?", small rounded rect with its own soft shadow (reads as a UI comment bubble, no visible
+    tail).
+26. Two small file-type tiles at the pile's bottom-right, overlapping each other: a light-blue
+    rounded-square tile labelled ".jpg" (further back/left), and a pink/magenta rounded-square
+    tile labelled ".mp4" (in front/right, slightly lower) — a DISTINCT PAIR, both must appear.
+
+**Total: 26 discrete elements** (2 ground/ambient + 8 photo-bleed panels + 1 card + 4 list items
++ 11 pile objects). Nothing in this list may be collapsed into "a few stickers."
+
+**Step 0 note on real-assets-only (CLAUDE.md section 9):** 6 of the 8 bleed panels and 1 of the
+pile objects are stock/fake imagery (theater seats, fashion photo, book-page photo, daisy
+still-life, tulip still-life, buttercup photo, chair photo, the blue book-photo tile).
+Substitution plan, declared up front as acceptable adaptation, not a miss:
+- Right-mid buttercup triangle (#8, the single largest bleed panel) -> real AQ photo
+  `core.PHOTOS['edu']`.
+- Top-right tulip corner (#7, second-largest, loudest colour patch) -> real AQ photo
+  `core.PHOTOS['diwali']`.
+- Left-mid fashion sliver (#4) -> real AQ photo `core.PHOTOS['xmas']`.
+- Pile's blue book-photo tile (#20) -> real AQ photo `core.PHOTOS['food']`.
+- The 4 smallest/least-legible bleed slivers (#3 seats, #6 daisy kite, #5 book-pages corner,
+  #10 chair) -> flat AQ-accent colour panels (a flat colour fill is a sanctioned swap for stock
+  imagery too small to carry a real photo's context) — position, size and clip-angle preserved;
+  only pixel content swapped.
+- The bottom-right swing-tag (#9)'s literal garment-care copy -> real AQ copy ("thank you for
+  showing up" register), never the reference's literal words per RECREATION_PROTOCOL rule 4.
+- Pile's fake "Aa"/"Au" type-app icons, document icon, chips and file-type tiles are synthetic
+  UI chrome (not stock photography) — recreated as flat vector tiles directly, same precedent as
+  the `522f2d898b827f`/`110a5730e3710b` "app UI mockup" recreations already in this file.
+
+**Acceptance checklist (all 26 elements above, each present, positioned and proportioned per the
+bboxes recorded in step 1) — will be walked item-by-item at step 4/5 below.**
+
+## Sample 25143d758ea743 — "Aleksandr Yaremenko" social-sticker pile (session, 2026-09-20)
+
+Reference: `training_samples/reference_posters/25143d758ea743e15ec374876a41192d.jpg` (1000x499,
+native aspect 2.004:1). Judged canvas: `linkedin` 1200x628 (1.911:1, ~4.7% narrower than native —
+noted as a minor aspect adaptation, not a mockup, so no crop needed). This is a genuine poster
+(single design in its own frame), not a mockup — fully scorable.
+
+### STEP 0 — MEASURED GEOMETRY (compare.geometry, run before writing the description)
+
+content bbox x 0.035..0.967, y 0.056..0.945. margins L 0.035 R 0.033 T 0.056 B 0.055. vertical
+ratio 1.03:1. centroid (0.453, 0.614), coverage 0.305. 9x11 occupancy grid: rows 1-2 carry ink
+only in columns 1-2 (top-left wordmark) and a trace in column 9 (top-right icon); row 3 is
+completely empty (a genuine gap, not to be filled); rows 4-9 are the pile, densest in columns
+2-7, tapering at columns 1 and 8-9; rows 10-11 (the bottom ~18% of canvas height) carry a thin,
+near-full-width band (the footer line of text). Pixel sampling (PIL) confirms background
+~rgb(32,32,32) (near-black, warmer than pure #000) and sticker fill ~rgb(255,255,243) (near-white
+cream).
+
+### STEP 1 — FULL COMPOSITION DESCRIPTION (written before any code; this is the acceptance checklist)
+
+Canvas / ground: solid near-black field, full-bleed, no gradient/texture/vignette (confirmed flat
+by sampling three corners + mid-right, all ~(32,32,32)).
+
+Element inventory, top to bottom:
+
+1. Full-bleed near-black ground.
+2. Top-left, two-line small-caps serif wordmark, cream/off-white, wide letter-spacing:
+   "ALEKSANDR" / "YAREMENKO", with a small circular flourish mark (a stylised ring/monogram
+   glyph, too small to resolve exactly at source resolution) immediately after "YAREMENKO" at
+   the line-2 baseline. Bbox approx x 0.035-0.22, y 0.056-0.18.
+3. Top-right, a small thin-outline ornamental cross/plus mark (line-art, not a functional icon),
+   cream/off-white stroke, roughly diamond-oriented, approx 6-7% of canvas width. Bbox approx
+   x 0.895-0.965, y 0.03-0.17.
+4. Row 3 of the occupancy grid (roughly y 0.18-0.27) is EMPTY — a deliberate gap between the
+   header row and the pile. Not to be filled.
+5. THE PILE (hero), 7 distinct objects, occupying roughly x 0.10-0.90, y 0.27-0.83, all sharing
+   ONE uniform treatment: cream/off-white fill, black ink outline, hard-edged (no soft shadow
+   visible under the flat objects):
+   a. Round scalloped die-cut sticker #1 ("rock-on hand"), upper-left of the pile. Contains an
+      inner concentric ring with repeating mono/caps text "Drag me" (x4, diamond-bullet
+      separated) running around it, and centred inside: a small flesh-tone "rock on"
+      hand-gesture illustration (index + pinky extended, thumb out, a black wristband/cuff with
+      two rings on the fingers). Slight counter-clockwise tilt (~-8 degrees).
+   b. Capsule/pill "LINKEDIN" - cream fill, black outline, bold black uppercase text, rotated
+      roughly -12 to -15 degrees, lower-left of the pile, its top edge touching/slightly
+      overlapping sticker (a)'s bottom edge.
+   c. Round scalloped die-cut sticker #2 ("tongue-out"), centre of the pile, the LARGEST single
+      object and the one most in front (a small triangular "peeling corner" is drawn at its
+      bottom-right, the classic printed-sticker mockup detail, only legible because the object
+      is on top of whatever it overlaps). Same inner "Drag me" ring treatment. Centred
+      illustration: red cartoon lips with the tongue out. Rotation near 0 degrees.
+   d. Capsule "INSTAGRAM" - cream/black/black, rotated slightly positive (~+6 degrees),
+      upper-middle of the pile.
+   e. Capsule "DRIBBBLE" - cream/black/black (note: the correct spelling of the platform IS
+      three b's), rotated similarly (+6 to +8 degrees), to the right of and roughly level with (d).
+   f. Capsule "BEHANCE" - cream/black/black, rotated positive, BELOW and BETWEEN (d) and (e),
+      overlapping both of their lower edges.
+   g. Capsule "FACEBOOK" - cream/black/black, rotated positive (~+8 degrees), lower-right of the
+      pile.
+   h. Round scalloped/starburst die-cut sticker #3 ("broken heart"), far right of the pile, edge
+      reads slightly more pointed than sticker (a)'s smoother scallop. Same inner "Drag me" ring.
+      Centred illustration: a red heart split by a black lightning bolt. Rotation near 0 degrees.
+   Overlaps observed: (c) sits in front of and overlaps (b)'s top edge and (f)'s left edge; (d),
+   (e), (f), (g) form a loosely chained, mutually overlapping run of capsules; (a) and (h) sit
+   mostly independent at the pile's two ends, each lightly touching one neighbour.
+6. Bottom band (~y 0.82-0.95), a single line of very large cream/off-white lowercase text
+   spanning almost the full content width: "yaremenko.designer@gmail.com" - a plain
+   geometric sans/serif, not the header's tracked small-caps face.
+
+Type system: the wordmark is a tracked serif small-caps face; the pill labels are a bold
+uppercase geometric sans; the footer line is a large plain sans/serif, lowercase. No colour text
+anywhere except the black labels on cream - everything on the black ground itself is cream/white.
+
+Colour: effectively a two-tone piece (near-black ground, cream/white objects + black ink
+outlines/text) with exactly one hue of "pop" - a warm red/pink used only inside the two
+decorative illustrations (lips, heart) and the skin-tone hand icon. No AQ accent appears anywhere
+in the reference; the only accent-shaped opportunity is that one warm-red illustration hue.
+
+The mechanism worth stealing: an almost monochrome dark-ground piece where EVERY object gets
+identical treatment (cream fill + ink outline, no variation), which is what lets seven completely
+unrelated objects (2 stickers + 5 pills) read as one designed "sticker pack" rather than a mess -
+directly the uniform-sticker-treatment lesson in RECREATION_PROTOCOL.md.
+
+### AQ ADAPTATION (acceptable substitutions, declared up front)
+- Reference is a personal designer's business-card/portfolio piece; the literal name
+  "ALEKSANDR YAREMENKO" and email "yaremenko.designer@gmail.com" are the mockup's own fake/
+  personal brand and are swapped for AQ identifiers per the real-assets/no-fabrication rule and
+  RECREATION_PROTOCOL rule 4 (never copy literal reference text as if it were a design
+  instruction) - replaced with an AQ wordmark ("AQUATERRA") + tagline, and a real AQ contact
+  handle in the footer line.
+- The reference's wordmark has NO pill/card behind it - it is raw tracked text directly on the
+  black ground. CLAUDE.md §9 says the LOGO IMAGE ASSET gets a pill on dark backgrounds, but that
+  rule is written for the coloured bitmap wordmark (core.LOGO); recreating the reference's actual
+  mechanism (a typographic name-mark, no icon, no card) more faithfully means setting AQ's name
+  as tracked mono/display TEXT directly on ink rather than dropping in the bitmap logo + pill.
+  Flagged explicitly as a judgment call, not a change to the pill rule - see friction doc.
+- Hand / lips / heart illustrations -> AQ doodle-vocabulary substitutes (the engine has no hand,
+  lips or cracked-heart glyphs): thumbsup for the rock-on hand, heart for the lips-sticker's
+  "playful" register (nearest available "fun/social" mark), and heart + lightning overlaid for
+  the broken-heart sticker (a genuinely close match: reference literally shows heart + bolt).
+- The reference's one "pop" hue (warm red in the illustrations) maps to AQ tomato/pink rather
+  than being invented as a new colour.
+- Small circular flourish glyph beside the wordmark (unresolvable in the source at this
+  resolution) -> a small AQ-accent dot/ring doodle, colour picked via core.on_dark() (see
+  friction doc for the exact numbers) rather than by eye.
+
+### ACCEPTANCE CHECKLIST (each must be present and correctly proportioned) — walked against v6
+- [x] full-bleed near-black ground, no gradient/texture
+- [x] top-left two-line tracked wordmark + small flourish mark, cream on ink
+- [x] top-right small thin cream outline cross/plus ornament
+- [x] empty gap band between header and pile (not filled with anything)
+- [x] round scalloped stickers (uniform cream+ink-outline treatment, inner "Drag me" ring +
+      centred illustration) — built as 3, not 2 (matching the reference's actual hand/tongue/
+      heart trio; the step-1 summary undercounted this at "two ends" — corrected here)
+- [x] 5 capsule pills (uniform cream+ink-outline treatment, bold black caps text), rotated,
+      overlapping into one connected chain, reading LINKEDIN / INSTAGRAM / DRIBBBLE / BEHANCE /
+      FACEBOOK (kept literal - these are real, generic platform names, not fabricated stats).
+      All 5 fully legible in v6 — v5 clipped LINKEDIN and INSTAGRAM at earlier overlap settings.
+- [x] one object (the largest sticker, the pink heart standing in for "tongue") visibly larger
+      and roughly centred in the pile. NOT implemented: the reference's small peeling-corner
+      fold detail on that sticker — a minor craft/silhouette embellishment the shapes.py
+      vocabulary has no primitive for; noted as a real, if minor, miss, not fixed.
+- [x] full-width giant cream footer line near the bottom edge, AQ contact handle substituted for
+      the reference's personal email
+- [~] centroid / coverage / dispersion within compare.py's decision-table tolerances — YES for
+      centroid (delta 0.013/0.002, well inside 0.06) and gyration (0.95, inside 0.84-1.18); area
+      ratio 0.918 also inside 0.75-1.3. The three residual REGION over/under-fill cells
+      (non-blocking per the decision table) never fully closed across 4 further iterations
+      (v6-v9) — see the iteration log for what was tried and why v6 was kept as final anyway.
+
+Build + iteration log continues below.
+
+### BUILD + ITERATION LOG
+
+Bespoke script: `scratchpad/gen_25143d75_vN.py` (v1-v9, all preserved alongside their PNGs in
+`out/versions/25143d758ea743/`). Built from `engine/core.py` + `engine/build.py` +
+`engine/doodles.py` + `engine/shapes.py` + `engine/layout.py` directly, never `engine.py`'s
+ARCHETYPES. `layout.scatter_solve` placed every pile object (never hand-typed coordinates);
+`layout.resolve_label_z` protected each pill's label / each sticker's illustration+ring rather
+than the object's whole silhouette.
+
+- **v1** — first build. `layout.preflight` reported CLEAN, but the heart+lightning "broken
+  heart" sticker rendered with NO visible lightning bolt at all — found by the looking gate, not
+  any gate. Root cause: `build.page()`'s global `.dood{position:absolute;z-index:4}` rule means
+  every doodle SVG's z-index:4 is scoped to whatever LOCAL stacking context contains it. The
+  heart's wrapper div had no `transform` (no new stacking context), so its z=4 escaped upward
+  into the shared ancestor context; the lightning's wrapper div DID have a `transform` (added
+  for a small offset), which creates an isolating stacking context, trapping its z=4 child so
+  the WHOLE subtree only competed at z=auto(0) against the escaped z=4 heart. 0 < 4, so the
+  lightning painted invisibly underneath regardless of DOM order. Not documented anywhere in
+  CLAUDE.md/DECISIONS.md. Fixed by giving both wrapper divs explicit z-index (1 and 2) so
+  stacking-context isolation can never silently reorder them again.
+- **v2** — the z-index fix; broken heart now renders correctly. `compare.compare` score 0.31,
+  BLOCKING critique `CONTENT TOO SMALL (0.68x reference coverage)`.
+- **v3** — scaled the whole composition 1.22x about its own footprint per the decision table
+  (RECREATION_PROTOCOL: "do NOT fix this by adding new elements"), shifted the pile zone per the
+  `CENTROID OFF` critique. Score 0.219, no more blocking critique, but the pile visibly read as
+  two SEPARATE flanking pill-clusters either side of a sticker row — not the reference's
+  tangled single pile.
+- **v4** — tightened the scatter_solve zone to force more overlap (RECREATION_PROTOCOL rule 5:
+  "reference piles overlap — recreating one requires allow_occlusion intent, not nudging").
+  Visually better interleaving, but score got WORSE (0.232) and `layout.preflight` surfaced a
+  real bug: `collision_check` flagged `('tongue','heart_illustration')` even though the two
+  STICKERS were correctly overlap-exempt and do not visually touch — a circular sticker's
+  declared bbox is its bounding SQUARE, so two adjacent circles' square corners can overlap on
+  paper with zero real ink touching, and that false-positive risk extends to anything nested
+  inside (the illustration). Fixed by extending collision_ignore to every pile object AND every
+  illustration, not just each illustration's own parent.
+- **v5** — tried a single global `max_pair_overlap=0.38` to get the tangle without missing
+  pieces; scatter_solve's placement search then let two PILLS overlap enough that "LINKEDIN"
+  rendered as "LINKED" behind the DRIBBBLE pill — `resolve_label_z` correctly reported it
+  UNRESOLVED (two full-label boxes overlapping that much cannot be fixed by re-stacking, the
+  composition has to move). Root cause: one global overlap ceiling cannot serve both object
+  types — a sticker can absorb heavy overlap (its ring text repeats 4x, its illustration is
+  redundant with the sticker family) but a pill's entire box IS its one-shot label. Also hit
+  `scatter_solve`'s honest failure mode twice (`UNPLACED: [...]`) while over-constraining the
+  zone with a keep_out block + tight bounds + low overlap all at once — real, not silent:
+  affected pills were simply absent from the render until fixed.
+- **v6 (ACCEPTED)** — split sticker and pill placement into two `scatter_solve` calls: stickers
+  first (their own moderate `max_pair_overlap`), then pills with the placed stickers passed as
+  `protect` (`max_protect_cover=0.20`, so a pill may dip into a sticker's outer ring but not bury
+  its own centre) and a low pill-vs-pill `max_pair_overlap=0.17`. `resolve_label_z` returned zero
+  unresolved labels; `scatter_solve` placed all 8 objects. **Score 0.169** (area_ratio 0.918,
+  gyration_ratio 0.95 — both inside RECREATION_PROTOCOL's tolerance band — bbox_iou 0.985,
+  palette_dist 1.2). No BLOCKING critique. Looking gate: every step-1 checklist item present,
+  correctly proportioned, legible, no clipping, no off-canvas, no invisible fill.
+- **v7** — tried SCALE 1.22->1.27 to push area_ratio closer to 1.0 (0.97 achieved) but the
+  region deltas got WORSE in aggregate; score regressed to 0.189. Reverted.
+- **v8** — same as v6 with a different pill-placement seed (41 vs 29), to check whether v6's
+  residual region deltas were a seed artifact. Score 0.172 — statistically the same as v6,
+  confirming the residual gap is structural (see below), not a seed-lottery issue.
+- **v9** — tried decomposing sticker placement into 3 separate `scatter_solve` calls, one per
+  sticker, each biased into a left/centre/right third of the zone matching the step-1 written
+  order (hand=left, tongue=centre, heart=right), to directly address the recurring
+  under/over-filled region critique. Score got WORSE (0.241) and the LEFT pill cluster piled
+  onto the hand sticker while the heart sticker sat isolated with a large empty gap beside it —
+  worse both by the metric and by eye. Rejected; v6 stands as final.
+
+**Score vs. eye, where they disagreed:** v4 looked MORE like the reference by eye (genuine
+interleaving) than v3, but scored worse (0.232 vs 0.219) — `compare.py`'s region grid rewards
+matching the reference's specific empty/full cells, which is not the same thing as "looks
+appropriately tangled." v7's area_ratio moved closer to the reference's 1.0 ideal (0.97 vs
+v6's 0.918) yet the total score still got worse, because the OTHER 3 grid cells got
+proportionally worse as everything grew. Neither gap is a metric bug — both are the metric
+correctly measuring something the eye weights differently (overall tangle-iness vs. exact
+regional occupancy) — but they are real, reportable disagreements between SCORE and EYE.
+
+**Outcome: v6 ACCEPTED.** Score 0.169 (essentially at the 0.16 line, not chased further past v9's
+regression), no blocking critique, looking gate clean. `runqueue.py record 25143d758ea743 0.169 9
+"..."`.
+
+**Steps 2-3 — build + render.** Bespoke script `scratchpad/gen_80cb7ed7_vN.py` (copies
+preserved alongside every PNG in `out/versions/80cb7ed71a8cc9/`), built from
+`core`+`build`+`doodles`+`layout`+`shapes` directly, never `engine.py`'s ARCHETYPES.
+
+**Step 4-5 — look + iterate (6 versions, ~35 min total):**
+- **v1** (~12 min: geometry measurement + first build + gate debugging). Preflight caught 3
+  REAL bugs on the first pass, all fixed before ever looking at the PNG: (a) `star`/`ribbon`
+  and `flower`/`ribbon` flagged as collisions (both are intentional occlusions per the
+  reference's own z-order — added to `collision_ignore`); (b) a blind vertical-centering
+  formula put "A WORLD" 43px into the star's bbox (`layout.collision_check` caught it —
+  fixed by anchoring the headline off the star's measured bottom edge + a gap instead of
+  centering); (c) a redundant full-canvas `<div style="background:var(--bg)">` (leftover
+  habit from an earlier template) tripped `reconcile.measure_dom`'s `invisible_fill` scan —
+  harmless but real, removed rather than suppressed. Once clean, LOOKING at v1 showed the
+  overall structure right but the ribbon's top two-thirds sitting ~150-250px too far right
+  (an eyeballed 5-waypoint path, not measured). `compare.report` confirmed: **0.391**, with
+  `REGION OVER-filled row1/col7` (ribbon touching the top edge too far right) and
+  `REGION UNDER-filled row3/col6` + `row6/col8` (the reference's real crest/hairpin zone,
+  which v1's path never reached).
+- **v2** (~5 min). Re-measured the ribbon's centerline directly off the reference PIXELS
+  (scanned every 20th row for near-`#536FD0` runs, took each run's midpoint) instead of
+  eyeballing from crops. Score dropped to **0.246** — the single biggest jump of the run.
+  Looking gate: ribbon shape now reads as a believable continuous flowing band; "IMAGINATION."
+  now runs onto the ribbon exactly like the reference's own "...ION." does.
+- **v3** (~4 min). Denser waypoints (22 vs. 9) sampled at every 20px of height. Score barely
+  moved (**0.251**, marginally worse) — flagged three DIFFERENT region misses this time.
+- **v4** (~3 min, a false lead). Bumped headline size 92->102 to close a `MISSING COLOUR
+  dark/ink` + `area 0.951x` gap. `area_ratio` improved to a near-perfect 1.007, but score was
+  unchanged (**0.256**) and it introduced a real regression: `ribbon`/`headline_l1` collision
+  + a 1px `MARGIN subhead breaches safe area` — reverted the font size, kept everything else.
+- **v5** (~8 min, the real fix). Zoomed crops (`scratchpad/crop_zoom1.png`, `crop_zoom2.png`)
+  revealed the ribbon's top-right is NOT a smooth sine bend at all: it is a quarter-turn from
+  vertical into a flat horizontal run, then a TIGHT ~180-degree hook hugging the right canvas
+  edge, then another flat run back left — a shape family a sparse Catmull-Rom through 5-9
+  points cannot approximate (it always rounds a hook into a shallow diagonal, which is
+  exactly why v2/v3/v4 kept under-filling the flat bands and over-filling the diagonal).
+  Rebuilt the waypoints to describe the actual hook. Score: **0.243** (best of the run);
+  `area 1.003`, `detail 0.819`, `spread 0.979`, `bbox IoU 0.962` — all comfortably inside
+  the decision table's non-blocking ranges. Visually this is a very close match: the hook
+  reads as a real "S-with-a-loop" ribbon, not an approximation.
+- **v6** (~3 min, a regression, kept for the record). Tried shifting the whole hook ~70px
+  earlier based on v5's two remaining worst cells. Score got WORSE (**0.335**) — the hook
+  moved far enough to clip into the top-right corner (`REGION OVER-filled row2/col9`, 0.98)
+  and a lower flat band vanished entirely (`row6/col7-8`, both 1.00 under-filled). Discarded;
+  v5 stands as final.
+
+**Persistent, diagnosed-not-fixed critique — `MISSING COLOUR dark/ink rgb(0,0,0)` (identical
+on every version v1-v6).** Investigated directly (`compare._palette` on both images): the
+reference's JPEG compression noise splits its near-black ink into TWO adjacent 32-wide
+quantization buckets, `(32,0,0)@11.1%` and `(0,0,0)@5.4%`; the render's clean SVG/CSS text
+produces ONE consolidated bucket, `(0,0,0)@18.4%`. `compare._match_palette` is a GREEDY
+1:1 matcher — the reference's more-common `(32,0,0)` bucket claims the render's only
+near-black candidate first (distance 32, well under the 110 threshold), so by the time the
+matcher reaches the reference's `(0,0,0)` bucket, nothing near-black is left to match it to,
+even though the render plainly has ~18% near-black ink on screen. Confirmed this is a
+matching-algorithm artifact, not a missing element, by inspecting both palettes directly
+(see `scratchpad/friction4/f80cb.md` for the exact numbers). Not fixable from the bespoke
+script's side.
+
+**Final disposition: `v5`, score 0.243, 5 real iterations (v6 was a discarded regression).**
+This is ABOVE `RECREATION_PROTOCOL.md`'s 0.16 accept line. Recorded as `attempted`, not
+`done`, via `runqueue.py record` — not `fail`/parked, because this is a real poster (not a
+mockup) and the mechanism is faithful. Looking gate: PASSED. Every item on the step-1
+checklist is present and correctly proportioned — cream ground, the full-bleed wavy ribbon
+(now with a correctly-shaped hook, not a smoothed-out approximation), the red sparkle-with-
+face, the yellow flower, the 3-line tight-leaded headline, the Portuguese subhead — nothing
+from the inventory is missing, nothing collides, nothing is invisible. The residual ~0.24
+gap is diagnosed as concentrated in the ribbon's EXACT wiggle at the coarse 9x11 grid
+`compare.py` uses: a 108px-wide hand-vector ribbon threading a 133x57px grid cell produces
+large fractional deltas for what are, by eye, small real-world offsets — the metric's
+sensitivity for a thin/long/wiggly single element is fundamentally coarser than for a
+blocky or centered one. Per CLAUDE.md's own precedent (77e7bb34: the score can mislead in
+EITHER direction — that case passed a real miss; this one fails a real match), and per this
+task's explicit instruction not to accept OR reject on score alone, this is recorded
+honestly as unconverged-by-the-number but visually accepted, for a human or a future
+session with more time to decide whether to keep refining the ribbon's vector path.
+
+### STEP 2-6 — BUILD, RENDER, LOOK, ITERATE, LOG (62f8cc4d3c6135)
+
+**Build.** `scratchpad/gen_62f8cc4d_v1.py` / `v2.py`, from `core`+`build`+`doodles`+`layout`
+primitives directly (no `engine.py` ARCHETYPES). Row loop (`while y < H+70: while x < W+40:`)
+places pill divs left-to-right per row with a brick-offset starting `x` cycled from a 10-entry
+offset list, avatar = flat accent circle + one AQ doodle, caption = measured-width AQ-voice
+one-liner. Pinned rotated ink slab (optional per the style-bank recipe) carries the one real
+figure on the piece ("126 CAME BACK." / "RETURN VISITS TO PATHER SATHI - 2021-2026" - CLAUDE.md
+S12's logged "126 returns to Pather Sathi").
+
+**Gate stack actually run (S7).** `layout.preflight` with `color_pairs`, `page_bg`, `bleed_tags`
+(computed per-pill, only pills that geometrically cross an edge - not a blanket exemption) and
+`collision_ignore` (computed per-pill, only pills that geometrically overlap the pinned slab -
+not a blanket ignore); `build.render(..., elements=, color_pairs=, page_bg=, bleed_tags=,
+collision_ignore=)` which auto-runs `css_var_check`, `audit.audit` (DOM margin/overlap),
+`reconcile.measure_dom` (clipped/spilling/off_canvas) and `reconcile.reconcile_boxes`
+(declared-vs-drawn) for free. `preview.critique` and `compare.report` run by hand afterward.
+
+**v1 -> v2, two REAL bugs the gate stack caught (not the eye).**
+1. `reconcile.measure_dom` reported `CLIPPED span: width 164px inside a 132px box` plus two
+   `CLIPPED {} (by span): 30px past its container's right/bottom edge`, once per avatar (~37x).
+   Root cause: the avatar's icon was wrapped in a flex-centered `<span width:68 height:68>` and
+   the icon SVG (`width="100%" height="100%"`) resolved its percentage against the OUTER
+   avatar's 132px border-box content area, not the inner 68px flex child - a real box-model bug
+   that happened to look fine by eye ONLY because the outer avatar's own `overflow:hidden`
+   masked the oversized icon at this specific avatar size. Fixed by dropping flex entirely and
+   using the codebase's own proven pattern (an absolutely positioned div with explicit pixel
+   width/height, matching the module-level `doodle()` helper every bespoke script already uses).
+2. Widening the top fade (to fix the issue below) made it 100% opaque cream over the full
+   0-114px band. `build.logo()` hardcodes `z-index:20` (can't edit `engine/build.py`); the fade
+   div was `z-index:50`. Result: the AQUATERRA wordmark rendered COMPLETELY INVISIBLE - not just
+   faded, gone - since it now sat fully behind an opaque layer. Fixed by wrapping `B.logo()`'s
+   output in `<div style="position:absolute;inset:0;z-index:60;pointer-events:none">`, an
+   inset:0 wrapper so the `<img>`'s own top/left stay anchored correctly while its stacking
+   context lifts above the fade.
+
+**v1 -> v2, one real LOOKING-GATE miss (S3, legibility).** In v1 the top fade was only
+150px/40%-stop (60px fully solid), and the logo (top:56, height:32 -> spans y56-88) sat inside
+the still-fading 33%-opacity zone, so the first pill row's avatar/border visibly bled through
+behind the wordmark (a zoomed crop confirmed a washed-out double-image). Widened to
+190px/60%-stop (114px fully solid) - this is what triggered bug #2 above; final v2 has the logo
+fully legible on clean cream (re-verified by re-zooming the crop after the z-index fix).
+
+**Looking gate walkthrough (v2 against the step-1 checklist, item by item).** Dusty-taupe ground
+swapped for AQ cream (documented substitution) present; rows of brick-offset pill cards bleeding
+off BOTH left and right edges present (visible: "ame back." / "Jus" cut at row-1 edges, same on
+every other row) and off top/bottom too (the style bank's own "endless" tag applied to both
+axes, a deliberate extension beyond the reference's literal 4-row crop - see the scoring note
+below); avatar circle spanning the full pill height, flush left, present on all ~37 pills;
+single-line dark-ink caption to the right of the avatar present on all; uniform ink-outline +
+hard-shadow card treatment present and consistent across every pill (the "uniformity is the
+unifier" rule from RECREATION_PROTOCOL.md); real-assets substitution (flat accent circle + one
+AQ doodle per avatar, cycling heart/star/thumbsup/plus/speech/sparkle, in place of the
+reference's fabricated stock headshots) present; AQ-voice caption substitution present,
+including one real, qualified figure ("126 and counting."); the recipe's OPTIONAL pinned
+rotated ink slab added, carrying the piece's one real statistic, cream keyline ring, mono
+subtext in lemon, correctly proportioned and not clipping; logo top-left and footer (left handle
++ right tagline) both legible on a clean fade. No listed element from the step-1 inventory is
+missing. `preview.critique`: fill 0.70, contrast 0.30, all four quadrants within 0.69-0.71 (no
+dead quadrant, no flat_dominant, no sparse/crammed - clean).
+
+**SCORING - the most important finding of this recreation, not a footnote.**
+`compare.report(ref, v2)` = SCORE 0.903 (aspect-mismatch warning: ref 1.536:1 vs canvas 0.8:1,
+48% apart - "NOT comparable to a same-aspect recreation"). Per protocol, ran the control:
+1. Stacked the reference with itself vertically (805x1048, aspect 0.768 - a 4% gap from 0.8,
+   well under the tool's own 25% warn threshold) to isolate whether the aspect gap ALONE
+   explained the score. Result: SCORE 0.951 - statistically the SAME as the raw 0.903, not
+   lower. This proves the aspect mismatch is NOT the dominant driver here (unlike the
+   `522f2d89`/`110a5730` mockup precedents, where a same-aspect control returned near-zero).
+2. Isolated the pinned ink slab's own contribution by blanking it out of the v1 PNG directly
+   (diagnostic only): score dropped from 0.951 to 0.775 with the slab removed - real, but far
+   from sufficient to reach 0.16 alone, and removing a recipe-endorsed hero to chase a number
+   would leave the piece under-branded.
+3. Traced the remainder to `compare.py`'s `content_mask` (RGB-distance-from-background > 46):
+   the reference's own pill FILL (measured RGB 250,250,250 on a 230,220,219 ground, distance
+   ~20) sits well under that threshold and is therefore invisible to the metric - the reference
+   is scored almost entirely on its photo avatars and thin dark text, not its cards. AQ's
+   mandatory ink-outline-and-shadow craft layer (CLAUDE.md S9, "always on") and solid-fill
+   accent avatars are, by construction, far above that threshold on every pixel - so the exact
+   same mechanism, built to AQ's own standing brand rules, will always measure as having
+   dramatically more "content" than this specific reference, independent of layout fidelity.
+   This is the same class of documented limitation as the existing "flat-vector recreations read
+   low on `vdr` vs. gradient/photo references" caveat in CLAUDE.md S7c, just on the opposite
+   metric (`content_mask`/area, not `vdr`) and in the opposite direction (reads HIGH, not low).
+   The "MISSING COLOUR dark/ink" and "orange/warm" lines are the mirror of the real-assets
+   substitution: the reference's stock-photo skin tones and a specific near-black cluster this
+   flat-vector build has no equivalent for, which is the intended, documented consequence of the
+   real-assets-only rule, not a missed element.
+
+**Verdict: NOT calling this `done` by the tool's own mechanical rule** (`runqueue.py record`
+sets `status=done` iff `score<=0.16`; there is no "accepted by looking gate despite score" state
+in the tool). Logged via `record` (not `fail`/parked) with the true score, because - unlike the
+mockup precedents - this genuinely is a scorable, non-mockup poster and the looking gate found
+zero missing/wrong elements; "attempted" is the mechanically honest status, not a euphemism for
+giving up. Recorded for whichever session resumes this slug next: further iteration on THIS
+mechanism is very unlikely to move the score materially - the gap is structural (metric
+sensitivity to flat-fill-vs-low-contrast-photo content, plus AQ's own mandatory craft layer),
+not a fidelity defect the looking gate can still find. The three real, non-score-alone reasons
+this is a strong recreation: (1) zero missing elements against the step-1 inventory, (2) two
+real box-model/z-index bugs were found and fixed by the gate stack itself (not by chasing a
+number), (3) `preview.critique`'s independent pixel critique is clean with no
+flat/dead-quadrant/sparse flags.
+
+### OUTCOME — v11, score 0.253, not under the 0.16 accept line (session, 2026-09-20/21)
+
+11 iterations. Full script history + every render preserved at
+`out/versions/e7b32bd307aac4/gen_e7b32bd3_v1.py` .. `v11.py` / `v1.png` .. `v11.png`.
+
+**Looking gate: PASSED.** Every one of the 26 elements enumerated in the step-1 inventory
+above is present, in the right place, at the right relative proportion: the cream field,
+the schematic wireframe, all 8 photo/paper bleed panels (4 real AQ photos + 4 declared flat
+swaps + the swing tag), the card, all 4 zig-zagged step labels, and all 11 pile objects
+including the Aa/Au pair and the jpg/mp4 pair, both distinctly readable. No collision, no
+off-canvas element, no undefined var, no invisible fill — `layout.preflight` reports CLEAN
+on every version from v6 onward. `layout.resolve_label_z` reports zero unresolved labels
+by v6 (it started with `bookphoto` unresolved in v1-v5, fixed by moving the whole
+book/Aa/Au cluster down to the position measured directly off the reference crop).
+
+**Score history** (`compare.compare`, accept line 0.16): v1(gate-fail, unscored) -> v2 0.463
+(first clean gate) -> v3 (font/photo-caption fixes, unscored standalone) -> v4 0.463 (same,
+after ribbed-rect/sticky depth fixes) -> v5 0.384 (left/right bleed-panel vertical trims)
+-> v6 0.337 (re-measured the whole book/Aa/Au/Approved/sticky cluster off a direct crop of
+the reference, closing the "gap above the pile" the earlier versions never left) -> v7
+0.288 -> v8 0.267 -> v9 0.267 (plateau: several individual-cell fixes traded one grid
+cell's error for a neighbour's, net zero) -> v10 0.247 (best) -> v11 0.253 (deliberately
+kept a small regression — see below).
+
+**Why it did not reach 0.16.** `bbox_iou` held at 0.967 the entire time (the render's
+overall extent matches the reference closely) and `detail_ratio`/`gyration_ratio` stayed
+inside the DECISION TABLE's non-blocking bands throughout (0.79-0.86 and 0.96-0.99
+respectively — the accept thresholds are 0.72-1.45 and 0.84-1.18). **No BLOCKING critique
+(detail-too-low, content-too-small, too-dispersed) ever fired.** The remaining gap is
+`area_ratio` (~1.18-1.25, i.e. this render paints 18-25% more "content" pixels than the
+reference) plus a persistent set of individual 9x11 grid-cell mismatches concentrated in
+the AMBIENT DECORATIVE BLEED PANELS (the diagonal-clipped corner/edge shapes), not the
+hero pile. Root cause, confirmed by direct measurement each time: this build approximates
+every bleed panel as an axis-aligned bbox + a straight-line polygon clip, while the
+reference's actual shapes are more organic tapered wedges. Fixing one cell's error by
+resizing a panel's bbox reliably shifted the error into an adjacent cell (documented in
+`gen_e7b32bd3_v9.py`'s and `v10.py`'s own comments: widening the chair panel fixed
+row11/col6 but broke row11/col7; taller ribbed-rect fixed row8/col5 but broke row8/col6).
+Closing this fully would need per-panel polygon tracing at a precision beyond a rectangular
+clip-path, which is a real, named limitation of the bespoke-script approach for this
+specific reference, not a missing or misjudged element.
+
+**v10 -> v11, a deliberate SCORE regression kept on purpose.** Looking at v10.png directly
+(not just the score) surfaced a real defect the metric never flagged: `core.PHOTOS['edu']`
+(used for the right-mid buttercup bleed) carries its own baked-in caption
+("CREATING MOMENTS ETCHED IN THEIR HEARTS FOREVER"), and it rendered CLIPPED AND ILLEGIBLE
+across the bottom of that small triangle — the same defect already caught and fixed once
+for `core.PHOTOS['food']` on the book-photo tile, just missed here until an actual visual
+review. Fixing it (an oversized top-anchored `background-size` crop, same technique) made
+the render score 0.006 WORSE (0.247 -> 0.253) because it reduced total "content" pixels in
+that cell slightly further from the reference's own value there — but it is unambiguously
+the right fix; CLAUDE.md Sec3/Sec5 is explicit that the looking gate outranks the score, and
+this is a concrete instance of the score rewarding a visible defect. Kept.
+
+**A genuine tension between two gates, not resolved, documented instead.** The card had to
+be tinted away from CREAM (to `#D2CEC4`, a warm light grey — v3 first tried a light-grape
+wash, `#E2DAFF`, replaced for looking closer to an actual paper tone) to clear
+`layout.invisible_color_check`'s hard-fail 40-unit RGB threshold: the reference's own card
+is genuinely near-identical in colour to its page background (my own pixel sampling found
+~0 distance), distinguished only by a drop shadow. But `compare.py`'s `content_mask` uses
+essentially the same kind of distance-from-background threshold (tol=46) to decide what
+counts as "content" for scoring — so any card fill that clears the ENGINE's hard gate also
+gets classified as painted "content" by the SCORER, while the reference's own near-invisible
+card contributes ~nothing to its measured "content" area. A control render (card fill set
+back to literal CREAM, `scratchpad/_test_cardbg_same.py`, not part of the accepted version)
+scored 0.425 vs the accepted build's 0.463 at that point in the session — a real but smaller
+effect than expected, confirming the card is A contributor to the area_ratio gap but not
+the dominant one. There is no fill that satisfies both checks at once for this specific
+"paper card that's supposed to be nearly invisible" pattern; the engine rule was kept
+(never violate a hard-fail gate to chase a score) and the gap was documented instead of
+worked around.
+
+**Disposition:** recorded via `runqueue.py record` with the actual score (0.253), not
+"accepted" in the strict score<=0.16 sense, and not "parked" either (this is not a mockup —
+CLAUDE.md's parking precedent is reserved for structurally-unscorable references). The
+honest state: mechanism, hero pile, and every inventoried element are faithfully
+reproduced and pass the looking gate; the numeric gap that remains is fully accounted for,
+concentrated in decorative bleed-panel geometry, and further iteration showed diminishing/
+mixed returns (v9 and the ribbed-rect experiment in v10 each showed that shrinking one
+grid-cell's error reliably grew another's, for a net zero or negative score change on
+several attempts). Full mechanics, exact numbers and API friction are in
+`scratchpad/friction4/fe7b3.md`.

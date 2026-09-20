@@ -1,0 +1,129 @@
+
+## Sample e7b32bd307aac4 — "Intake/Production/Review/Delivery" workflow-pile LinkedIn card (session, 2026-09-20)
+
+**File:** `training_samples/reference_posters/e7b32bd307aac4af6e385929ffd7016b.jpg`, 1199x628 —
+matches `core.SIZES['linkedin']` (1200x628) almost exactly. Not a mockup: it is a single flat
+design in its own frame (a receding-box/portal illustration), genuinely scorable at full canvas.
+
+**Step 0 — measured geometry** (`compare.geometry`):
+- content bbox x 0.033..0.998, y 0.000..0.999 — content runs edge to edge (the corner photo
+  bleeds touch all four sides), NOT a comfortably margined poster.
+- margins L 0.033 R 0.002 T 0.000 B 0.001 — asymmetric: a real left margin, none anywhere else.
+- centroid (0.551, 0.500), coverage 0.243 — centroid is slightly right of canvas centre (the pile
+  itself sits right-of-centre inside the card) and overall painted coverage is low (a lot of flat
+  cream ground even though the piece reads "busy").
+- occupancy 9x11 grid: heaviest cells are column 5 (the vertical band roughly x 0.44-0.55) rows
+  4-7 (y 0.36-0.73) all >=0.6, matching the dense pile/book-photo/green-rect column. Column 1
+  (x 0.0-0.11) is near-zero except rows 6-7 (bottom-left book-photo bleed) and row 0 is near-zero
+  except cols 3-4 (top-left seat photo) confirming the photo bleeds are real, not noise.
+
+**Step 1 — full element inventory** (every element, no "a few stickers"):
+
+*Ground layer*
+1. Full-bleed cream field, close to AQ's `core.CREAM` (#F4EFE0) — no substitution needed.
+2. Decorative background wireframe: thin, low-contrast diagonal + vertical guide lines radiating
+   from the central card's four corners out to the canvas edges, plus two vertical lines roughly
+   at x=160 and x=950, giving the illusion of the card floating inside a receding glass box/portal
+   (a "cube-net" reading). This is what makes the corner photo bleeds below read as "other faces of
+   the box peeking through" rather than random crops.
+
+*Photo/paper bleed panels (each a diagonally-clipped triangle/kite pinned to a canvas edge,
+behind the wireframe box, only visible in the gaps the box leaves)* — 8 separate elements, not
+"a few photos":
+3. Top-left, small sliver, x approx 0.20-0.38 y 0.00-0.07: a dark teal/near-black photo (theater
+   seats, stock).
+4. Left-mid, taller triangle, x approx 0.20-0.25 y 0.25-0.53: a person in a cream/white draped
+   outfit standing on dark green grass (stock, fashion-editorial).
+5. Bottom-left corner, large triangle, x approx 0.00-0.13 y 0.53-1.00: pale blue photo of open
+   book pages with elegant white serif type fragments ("gro", "am", "onia" partially legible —
+   literal foreign-language text baked into the stock photo, not a design instruction; per
+   RECREATION_PROTOCOL rule 4, do not copy it).
+6. Top-right, small kite, x approx 0.745-0.795 y 0.00-0.25: white daisies against denim-blue
+   fabric (stock, still-life).
+7. Top-right corner, x approx 0.795-1.00 y 0.00-0.30: a close-up pink tulip on olive-green
+   ground (stock, still-life) — visually the loudest single colour patch in the piece (warm pink
+   on olive).
+8. Right-mid, large triangle, x approx 0.835-1.00 y 0.48-0.89: yellow buttercup flowers against
+   blue sky (stock, nature).
+9. Bottom-right corner, x approx 0.835-1.00 y 0.76-1.00, overlapping/in front of #8: a
+   torn/folded green paper swing-tag with bold black text — "Returns an[d]...", "THANK YOU",
+   "WASH-ING AND CARE", a small orange warning-triangle glyph — a garment-care/thank-you tag
+   graphic, not a photo (literal copy again, not to be imitated verbatim).
+10. Bottom-mid, small triangle, x approx 0.48-0.60 y 0.94-1.00: a red/orange moulded chair
+    (stock, product/furniture).
+
+*Central card*
+11. A large cream rounded-rect "window", corners very rounded (approx 40-48px), roughly
+    x 345-865 y 63-565 (approx 520x500px, nearly square, close to canvas centre but sitting
+    slightly left of the pile's own centroid), extremely subtle drop shadow — this is the "paper
+    ground" the whole pile sits on, distinct in tone from the outer cream field only by the
+    shadow, not by fill colour (a same-cream card is easy to lose if the shadow isn't kept).
+
+*Step list, inside the card, left-flanking the pile, in a descending zig-zag (not a straight
+column — Production and Delivery are indented right of Intake and Review)*
+12. "- Intake" + superscript "01", top-left inside the card, bold sans, black.
+13. "- Production" + superscript "02", one line down, indented right of #12.
+14. "- Review" + superscript "03", lower-left, back at #12's indent.
+15. "- Delivery" + superscript "04", same row as #14, indented right (mirrors #12/#13's stagger).
+
+*The pile itself (11 objects, deliberately overlapping — this is the "hero"), roughly centred in
+the card, occupying the card's right two-thirds*
+16. A tiny stack of 3 layered rounded-square sticky notes/icons at the very top of the pile,
+    approx 55x45px each: a bright pink/lime top note with a tiny dark asterisk/leaf glyph, a
+    small dark green note behind-right, a larger tan/beige note peeking out at the base.
+17. A small white rounded-rect "document" card with a folded top-right corner and a few grey
+    line-rules standing in for body text, labelled "01 Campaign" — mid-left of the pile, its own
+    small drop shadow.
+18. A pink pill/chip, "For review", black text, overlapping the beige card's (#19) left edge.
+19. A tall beige/orange card headed with a bold black "Q" and 6-7 lines of grey lorem-ipsum body
+    copy ("Mus u...", "pellentesque", "lacus", "Diam imper...", "sociis", "eget t...", "aenean",
+    "phare...", "fugiat risus nam et duis. Nu...") — mostly BURIED by the objects in front of it;
+    only a approx 60px-wide sliver of text is visible down its left edge. This is the deepest
+    element in the z-stack.
+20. A photographic image — an open book with white pages against a strong blue backdrop — large
+    (approx 230x300px), sitting behind the green tiles but in front of the beige card.
+21. A tall vertical rectangle with a ribbed/corrugated texture in two greens (looks like a green
+    cardboard spine or a folder edge), anchoring the BOTTOM of the pile, partly under the book
+    photo.
+22. A large, translucent grey/frosted rounded-square tile (approx 150x180px) with a bold white
+    "Aa" — a type/typography app icon — upper-right of the pile, mostly in front of everything
+    except the sticky-note stack.
+23. A smaller lime-green rounded-square tile (approx 110x110px) with a black italic serif "Au" —
+    a second, contrasting type-app icon — tilted, overlapping the Aa tile's lower-left corner and
+    the top of the book photo. Aa and Au are a DISTINCT PAIR (two different type-tool icons), not
+    one element — a recreation that draws only one is a miss.
+24. A green "Approved" pill/chip, white/black text, sitting at the base of the green ribbed
+    rectangle / book photo, near the bottom of the visible pile.
+25. A white "Feedback" comment/chat card, bottom-left of the pile: bold header "Feedback  2h ago",
+    body text "I like the simplicity of having a pure visual here, do we want to introduce a fun
+    line?", small rounded rect with its own soft shadow (reads as a UI comment bubble, no visible
+    tail).
+26. Two small file-type tiles at the pile's bottom-right, overlapping each other: a light-blue
+    rounded-square tile labelled ".jpg" (further back/left), and a pink/magenta rounded-square
+    tile labelled ".mp4" (in front/right, slightly lower) — a DISTINCT PAIR, both must appear.
+
+**Total: 26 discrete elements** (2 ground/ambient + 8 photo-bleed panels + 1 card + 4 list items
++ 11 pile objects). Nothing in this list may be collapsed into "a few stickers."
+
+**Step 0 note on real-assets-only (CLAUDE.md section 9):** 6 of the 8 bleed panels and 1 of the
+pile objects are stock/fake imagery (theater seats, fashion photo, book-page photo, daisy
+still-life, tulip still-life, buttercup photo, chair photo, the blue book-photo tile).
+Substitution plan, declared up front as acceptable adaptation, not a miss:
+- Right-mid buttercup triangle (#8, the single largest bleed panel) -> real AQ photo
+  `core.PHOTOS['edu']`.
+- Top-right tulip corner (#7, second-largest, loudest colour patch) -> real AQ photo
+  `core.PHOTOS['diwali']`.
+- Left-mid fashion sliver (#4) -> real AQ photo `core.PHOTOS['xmas']`.
+- Pile's blue book-photo tile (#20) -> real AQ photo `core.PHOTOS['food']`.
+- The 4 smallest/least-legible bleed slivers (#3 seats, #6 daisy kite, #5 book-pages corner,
+  #10 chair) -> flat AQ-accent colour panels (a flat colour fill is a sanctioned swap for stock
+  imagery too small to carry a real photo's context) — position, size and clip-angle preserved;
+  only pixel content swapped.
+- The bottom-right swing-tag (#9)'s literal garment-care copy -> real AQ copy ("thank you for
+  showing up" register), never the reference's literal words per RECREATION_PROTOCOL rule 4.
+- Pile's fake "Aa"/"Au" type-app icons, document icon, chips and file-type tiles are synthetic
+  UI chrome (not stock photography) — recreated as flat vector tiles directly, same precedent as
+  the `522f2d898b827f`/`110a5730e3710b` "app UI mockup" recreations already in this file.
+
+**Acceptance checklist (all 26 elements above, each present, positioned and proportioned per the
+bboxes recorded in step 1) — will be walked item-by-item at step 4/5 below.**

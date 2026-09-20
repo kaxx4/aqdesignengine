@@ -324,4 +324,24 @@ ok(lay.preflight(W, H, [("pill", -150, 500, 400, 80), ("oops", -80, 20, 200, 200
 ok(lay.preflight(W, H, [(-150, 500, 400, 80)], bleed_tags=("pill",))["clean"] is False,
    "an unlabelled box cannot be whitelisted by tag — bleed must be declared explicitly")
 
+# ── THE CRAFT LAYER IS AN EDGE (session 10f, agent fe7b3) ───────────────────
+# invisible_color_check is a HARD FAIL judging fill against surface. The AQ craft
+# layer makes a paper card on the cream page read by its ink outline and hard
+# shadow rather than its fill — house style, not a mistake. Judging fill alone
+# failed exactly that design; the author tinted the card to satisfy the gate, and
+# compare.py then scored the tint as extra content. Two engine components pulling
+# one build in opposite directions, proven with a control render.
+CARD = ("card", CREAM, CREAM)
+ok(lay.invisible_color_check([CARD], CREAM, core) != [],
+   "a bare cream card on the cream page IS still caught — the check is not weakened")
+ok(lay.invisible_color_check([CARD + (True,)], CREAM, core) == [],
+   "...declaring it EDGED (outline/shadow) clears it, which is the house style")
+ok(lay.invisible_color_check([CARD + (False,)], CREAM, core) != [],
+   "...and edged=False is an explicit 'no, it really is bare'")
+
+ok("AUTHORING TOOL" in lay.scatter_solve.__doc__,
+   "scatter_solve says plainly that it is an authoring tool, not a recreation tool")
+ok("TWO PASSES" in lay.scatter_solve.__doc__,
+   "...and documents the two-pass decomposition a mixed pile needs")
+
 print(f"\nALL {n} ASSERTIONS PASSED")
