@@ -105,4 +105,55 @@ for p in sorted(walk((".py",))):
     ok(len(banners) <= 1,
        f"{base} prints at most one pass banner (found {len(banners)})")
 
+# ── THE §6 TEMPLATE MUST ACTUALLY RUN ───────────────────────────────────────
+# CLAUDE.md §6 is a copy-paste skeleton. It carried a dead `os.chdir` for months
+# and BOTH building agents in session 10e hit it — a model following the manual
+# alone failed on line 2. Nothing caught that because nobody ever executed the
+# thing people are told to execute. Now the test suite does.
+#
+# This extracts the first ```python block under "## 6." and runs it end to end
+# (it renders, so it is the slowest assertion here and worth every second).
+import re as _re, subprocess as _sp, sys as _sys, tempfile as _tf
+
+_man = read("CLAUDE.md")
+_s6 = _man.index("## 6.")
+_s7 = _man.index("## 7.", _s6)
+_blocks = _re.findall(r"```python\n(.*?)```", _man[_s6:_s7], _re.S)
+ok(len(_blocks) >= 1, "§6 contains a python template block to copy")
+
+_tpl = _blocks[0]
+ok("os.path.abspath(__file__)" in _tpl and ":\\" not in _tpl,
+   "the template derives its own root and names no absolute path")
+ok("elements=elements" in _tpl,
+   "the template's render call passes elements= (without it the measured tier is off)")
+
+# Run it from a scratch copy, with its output redirected out of the repo.
+_out = _tf.mkdtemp(prefix="aq_tpl_")
+_run = _tpl.replace('f"out/versions/{slug}"', repr(_out)) \
+           .replace('f"out/versions/{slug}/v2.png"', repr(os.path.join(_out, "v2.png")))
+_p = os.path.join("scratchpad", "_tpl_smoke.py")
+io.open(_p, "w", encoding="utf-8").write(_run)
+try:
+    _env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    _r = _sp.run([_sys.executable, _p], capture_output=True, text=True,
+                 timeout=300, env=_env, errors="replace")
+    ok(_r.returncode == 0,
+       "the §6 template RUNS as written (stderr: %s)" % (_r.stderr or "")[-400:])
+    ok(os.path.exists(os.path.join(_out, "v2.png")),
+       "...and produces the PNG it claims to")
+    ok("[preflight]" in (_r.stdout or ""),
+       "...with the gate actually reporting, not silently skipped")
+    # A copy-paste template that prints errors on its first run teaches the reader
+    # that errors are normal. The declarations in it must be self-consistent: the
+    # first draft shipped a column-trap example and a container naming an element
+    # that was never appended, so it printed two failures out of the box.
+    ok("ISSUES" not in (_r.stdout or "") and "CLEAN" in (_r.stdout or ""),
+       "...and the template's OWN example passes its own gate (stdout: %s)"
+       % (_r.stdout or "")[-300:])
+finally:
+    try:
+        os.remove(_p)
+    except OSError:
+        pass
+
 print(f"\nALL {N} ASSERTIONS PASSED")

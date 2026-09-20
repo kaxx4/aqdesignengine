@@ -274,11 +274,40 @@ elements.append((M, H-70, 300, 20))
 inner = "".join([f'<div style="position:absolute;inset:0;background:var(--bg)"></div>', hero, footer])
 html = B.page(W, H, "var(--bg)", inner, grain=False)   # grain=True adds photo-grain overlay
 
-# color_pairs: (label, fill) or (label, fill, surface) for every shape whose fill could vanish
+# ---- DECLARE WHAT THE GATE CANNOT INFER ------------------------------------------
+# Each of these is OPT-IN and simply never fires unless you pass it. They are not
+# extras: every one exists because a poster shipped broken without it. Declare the
+# ones your piece actually has and delete the rest.
+
+# SHAPES whose fill could vanish into what is behind them:  (label, fill[, surface])
 color_pairs = [("hero_bg", A[4], "var(--bg)")]
 
+# TYPE, against the surface it sits ON:  (label, text, surface[, size_px[, bold]])
+# Different question from color_pairs — that asks "is it the same colour", this asks
+# "can it be read". White on a pale card is a big distance AND 1.44:1. HARD FAIL.
+text_pairs = [("headline", core.INK, "var(--bg)", 96, True),
+              ("label",    core.on_cream(A[4], 16), "var(--bg)", 16, True)]
+
+# CONTAINERS — a card/slab/panel that HOLDS things. Anything wholly inside one is
+# contained, not colliding. Beats hand-listing an ignore pair per child. The label
+# must be one you actually put in `elements`, or the check says so and holds nothing.
+containers = ()          # e.g. ("card",) once you have appended ("card", x, y, w, h)
+
+# ONE SENTENCE split across several boxes, in the order it is meant to be READ.
+# This example is the CORRECT placement — a clean diagonal stagger:
+reading_order = [("chip1", 48, 672, 520, 80), ("chip2", 300, 772, 520, 80),
+                 ("chip3", 552, 872, 520, 80)]
+# The same three at x=48 / x=560 / x=48 would HARD FAIL as a column trap: chips 1
+# and 3 share a left edge, so the eye reads them as a column and the sentence scans
+# "chip1 -> chip3 -> chip2". That shipped once (out/session10f/c1_v3.png) and two
+# rounds of iteration did not catch it, because nothing about it is measurable in a
+# pixel histogram.
+
 # ONE gate call before render. clean==False means a real bug — fix before rendering.
+# (You can skip this entirely and let render() do it — see the render call below.)
 pf = lay.preflight(W, H, elements, html=html, color_pairs=color_pairs,
+                   text_pairs=text_pairs, containers=containers,
+                   reading_order=reading_order,
                    page_bg="var(--bg)", core=core, expect_hero=True)
 
 async def main():
@@ -289,8 +318,15 @@ async def main():
     # elements.append() is invisible to EVERY check. That exact omission put a lemon
     # star on top of the words "SIGN-UPS OPEN NOW" while preflight printed CLEAN
     # (out/session10f/c2_v3.png). The template used to show the short call.
+    #
+    # render() forwards EVERY preflight option, so this one call is the whole gate:
+    # the static checks, the DOM measurement (clipped / oversize / off-canvas /
+    # buried), and the declared-vs-drawn reconciliation. Calling preflight by hand
+    # and then rendering without elements= is the failure mode this replaced.
     await B.render(html, f"out/versions/{slug}/v2.png", W, H,
                    elements=elements, color_pairs=color_pairs,
+                   text_pairs=text_pairs, containers=containers,
+                   reading_order=reading_order,
                    page_bg="var(--bg)", expect_hero=True)
     print("done")
 asyncio.run(main())
@@ -657,8 +693,10 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (32) ·
-  `test_stylebank.py` (54) · `test_buried_text.py` (10) · `test_repo_hygiene.py` (20)** —
-  **361 assertions total, all verified passing 2026-09-20**. All in `scratchpad/`.
+  `test_stylebank.py` (54) · `test_buried_text.py` (10) · `test_repo_hygiene.py` (27)** —
+  **368 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
+  skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
