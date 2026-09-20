@@ -241,6 +241,28 @@ async def main():
 
         await b2.close()
 
+    # ── render() MUST ACTUALLY PASS THE HTML TO PREFLIGHT (agent g1) ─────────
+    # It hardcoded html=None, so css_var_check, img_src_check, invisible_craft_scan,
+    # wash_scan and double_rotation_scan never ran through the documented convenience
+    # path no matter what the caller passed — while §6 claimed this one call was the
+    # whole gate. Found by reading build.py after the agent's own manual scans caught
+    # things render() had just reported clean.
+    buf3 = _io.StringIO()
+    with _ctx.redirect_stdout(buf3):
+        await B.render(
+            B.page(W, H, "var(--bg)",
+                   '<div data-tag="a" style="position:absolute;left:100px;top:200px;'
+                   'width:200px;height:100px;color:var(--typo)">x</div>', grain=False),
+            tmp, W, H, elements=[("a", 100, 200, 200, 100)])
+    ok("--typo" in buf3.getvalue(),
+       "an undefined css var reaches preflight THROUGH render (html is no longer None)")
+    ok(buf3.getvalue().count("--typo") == 1,
+       "...and is reported exactly once, not by two checkers at once")
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
+
     try:
         os.remove(tmp)
     except OSError:

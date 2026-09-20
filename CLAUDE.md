@@ -324,6 +324,11 @@ text_pairs = [("headline", core.INK, "var(--bg)", 96, True),
 #   author went reading layout.py to find out why.
 containers = ()          # e.g. ("panel", "card") — each must also be in `elements`
 
+# TAGS THAT BLEED OFF THE CANVAS ON PURPOSE. Full-bleed is a real AQ move and
+# bounds_check is a HARD FAIL, so without this a design whose MECHANISM is the bleed
+# can never report clean and you learn to read past a failing verdict.
+bleed_tags = ()          # e.g. ("pill",) for a field that runs off both edges
+
 # ONE SENTENCE split across several boxes, in the order it is meant to be READ.
 # This example is the CORRECT placement — a clean diagonal stagger:
 reading_order = [("chip1", 48, 672, 520, 80), ("chip2", 300, 772, 520, 80),
@@ -338,7 +343,7 @@ reading_order = [("chip1", 48, 672, 520, 80), ("chip2", 300, 772, 520, 80),
 # (You can skip this entirely and let render() do it — see the render call below.)
 pf = lay.preflight(W, H, elements, html=html, color_pairs=color_pairs,
                    text_pairs=text_pairs, containers=containers,
-                   reading_order=reading_order,
+                   reading_order=reading_order, bleed_tags=bleed_tags,
                    page_bg="var(--bg)", core=core, expect_hero=True)
 
 async def main():
@@ -357,7 +362,7 @@ async def main():
     await B.render(html, f"out/versions/{slug}/v2.png", W, H,
                    elements=elements, color_pairs=color_pairs,
                    text_pairs=text_pairs, containers=containers,
-                   reading_order=reading_order,
+                   reading_order=reading_order, bleed_tags=bleed_tags,
                    page_bg="var(--bg)", expect_hero=True)
     print("done")
 asyncio.run(main())
@@ -661,6 +666,9 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 
 | `same_as_bg_scan` AUTO-RAN and compared every fill to the PAGE ground — so a cream badge on a full-bleed teal panel got "FILL SAME AS PAGE BG (element invisible)" on every single render. Its docstring claimed zero-false-positive. **Two independent agents reported it**, which makes it a spec defect: a static scan cannot know an element's real backing surface, and most AQ posters layer | session 10f, agents c3 and g3 | **`reconcile.measure_dom` → `invisible_fill`** asks the browser what is actually painted underneath. The static scan no longer auto-runs and stays a manual diagnostic |
 
+| **`build.render()` hardcoded `html=None` in its internal preflight**, so `css_var_check`, `img_src_check`, `invisible_craft_scan`, `wash_scan` and `double_rotation_scan` NEVER ran through the documented convenience path — while §6 claimed that one call was the whole gate | session 10f, agent g1 | `render()` passes the html. Its own `css_var_check` now runs only when there is no element list, so nothing is reported twice |
+| A design whose MECHANISM is bleeding off both edges printed a wall of `OFF-CANVAS`, and `bounds_check` is a HARD FAIL — so a correct full-bleed build could never report clean, which teaches you to read past a failing verdict | session 10f, agent g1 | `preflight(..., bleed_tags=("pill",))` and `render(..., bleed_tags=…)`. `measure_dom` always had it; nothing above exposed it |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -737,12 +745,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (72) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_layout_rules.py` (76) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (36) ·
-  `test_stylebank.py` (57) · `test_buried_text.py` (17) · `test_repo_hygiene.py` (28)** —
-  **389 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (57) · `test_buried_text.py` (19) · `test_repo_hygiene.py` (28)** —
+  **395 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

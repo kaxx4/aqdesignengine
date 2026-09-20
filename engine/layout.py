@@ -1115,7 +1115,8 @@ def img_src_check(html):
 def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=None,
               expect_hero=False, min_hero_frac=0.12, quad_min_frac=0.35,
               collision_ignore=frozenset(), containers=(), auto_nudge=False, cascade_stacks=None,
-              contains=None, occlusion=None, reading_order=None, text_pairs=None):
+              contains=None, occlusion=None, reading_order=None, text_pairs=None,
+              bleed_tags=()):
     """
     ONE pre-render gate that runs every static check the session-8 revisit pass
     turned into a rule. The pass showed the recurring bugs slipped through because
@@ -1161,7 +1162,14 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         r['nudged_elements'] = elements
     # legacy checks want plain (x,y,w,h); collision_check keeps labels for readable output
     plain = [e[-4:] for e in elements]
-    r['off_canvas'] = bounds_check(W, H, plain)
+    # Bleeding off the canvas edge is a documented AQ move (the staggered-pill field
+    # bleeds 28 pills on purpose), and bounds_check is a HARD FAIL — so a design whose
+    # MECHANISM is the bleed could never report clean, and the author learns to read
+    # past a failing verdict. Declaring which tags bleed is the same contract
+    # reconcile.measure_dom already had; preflight simply never offered it.
+    _bleed = {str(t) for t in (bleed_tags or ())}
+    _checked = [e for e in elements if not (len(e) == 5 and str(e[0]) in _bleed)]
+    r['off_canvas'] = bounds_check(W, H, [e[-4:] for e in _checked])
     r['collisions'] = collision_check(elements, ignore_pairs=collision_ignore,
                                       containers=containers)
     r['under_filled_quadrants'] = quadrant_fill_check(W, H, plain, min_frac=quad_min_frac)  # advisory

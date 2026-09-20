@@ -306,4 +306,22 @@ _pf4 = lay.preflight(1080, 1350, [("s", 100, 100, 90, 90)], html=_bug, core=core
 ok(_pf4["clean"] is True and _pf4["double_rotation"],
    "preflight reports it as ADVISORY — counter-rotation is legal, so it cannot block")
 
+# ── DELIBERATE EDGE BLEED (session 10f, agent g1) ───────────────────────────
+# Bleeding off the canvas edge is a documented AQ move — one drawn style's whole
+# mechanism is a pill field bleeding off both edges. bounds_check is a HARD FAIL,
+# so that design could never report clean, and a wall of OFF-CANVAS printed for
+# every element doing exactly what it was meant to. An author who sees a failing
+# verdict on a correct build learns to read past the verdict.
+BLEED = [("pill", -150, 500, 400, 80), ("body", 100, 100, 300, 200)]
+ok(lay.preflight(W, H, BLEED)["clean"] is False,
+   "an UNDECLARED bleed is still a hard fail — the check is not weakened")
+_pfb = lay.preflight(W, H, BLEED, bleed_tags=("pill",))
+ok(_pfb["clean"] is True and not _pfb["off_canvas"],
+   "declaring the bleeding tag lets the same design report genuinely clean")
+ok(lay.preflight(W, H, [("pill", -150, 500, 400, 80), ("oops", -80, 20, 200, 200)],
+                 bleed_tags=("pill",))["clean"] is False,
+   "...and an ACCIDENTAL off-canvas element beside it is still caught")
+ok(lay.preflight(W, H, [(-150, 500, 400, 80)], bleed_tags=("pill",))["clean"] is False,
+   "an unlabelled box cannot be whitelisted by tag — bleed must be declared explicitly")
+
 print(f"\nALL {n} ASSERTIONS PASSED")
