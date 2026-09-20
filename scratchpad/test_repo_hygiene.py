@@ -84,10 +84,24 @@ ok(absolute_chdir == [],
 # by convention — still got the broken one.
 COPIES = ["CLAUDE.md", "AGENTS.md", "AQ Design Engine/Manual/06 The Bespoke Script.md"]
 present = [p for p in COPIES if os.path.exists(p)]
-ok(len(present) >= 2, f"the manual really does exist in several copies: {present}")
+ok(len(present) >= 2, f"the manual is referenced from several places: {present}")
+
+# A copy that carries the template must teach the self-locating root. A copy that
+# carries NO template (a pointer to CLAUDE.md) is the strongest agreement available
+# and is what AGENTS.md became — it had frozen four sessions behind while claiming
+# to be the manual, which is worse than being absent.
 for p in present:
-    ok("os.path.dirname(os.path.abspath(__file__))" in read(p),
-       f"{p} teaches a self-locating repo root")
+    body = read(p)
+    has_template = "os.chdir(" in body
+    if has_template:
+        ok("os.path.dirname(os.path.abspath(__file__))" in body,
+           f"{p} carries the template and teaches a self-locating root")
+    else:
+        ok("CLAUDE.md" in body,
+           f"{p} carries no template and points at CLAUDE.md instead")
+
+ok("os.chdir(" not in read("AGENTS.md"),
+   "AGENTS.md is a pointer, not a second manual that can drift out of step")
 
 # ── ONE PASS BANNER PER TEST FILE ───────────────────────────────────────────
 # test_stylebank.py had accumulated THREE "ALL {N} ASSERTIONS PASSED" prints, two

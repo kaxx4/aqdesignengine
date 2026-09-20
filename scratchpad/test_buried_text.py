@@ -164,6 +164,46 @@ async def main():
 
         await b.close()
 
+    # ── THE TWO OVERLAP CHECKERS MUST COOPERATE (session 10f, agent c3) ──────
+    # layout.collision_check takes collision_ignore for by-design overlaps. But
+    # build.render ALSO auto-runs audit.py's DOM overlap check, which had its own
+    # closed SKIP_PAIRS vocabulary baked into that file and reachable by no caller.
+    # So a script could silence one report and the other kept printing the same five
+    # overlaps on every render. The only thing that actually worked was DOM
+    # parent/child nesting, found by reading engine source after the documented
+    # parameter appeared to do nothing. A gate nobody can silence is a gate everybody
+    # learns to scroll past.
+    B = _load("build")
+    inner = ('<div class="measure" data-tag="word" style="position:absolute;left:120px;'
+             'top:400px;width:700px;height:200px;background:#1B8A5A"></div>'
+             '<div class="measure" data-tag="sticker" style="position:absolute;left:300px;'
+             'top:450px;width:160px;height:160px;background:#FF4D8C"></div>')
+    html2 = B.page(W, H, "var(--bg)", inner, grain=False)
+    els = [("word", 120, 400, 700, 200), ("sticker", 300, 450, 160, 160)]
+    tmp = os.path.join(os.environ.get("TEMP", "."), "_aq_overlap.png")
+
+    import io as _io, contextlib as _ctx
+    buf = _io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        await B.render(html2, tmp, W, H, elements=els)
+    undeclared = buf.getvalue()
+    ok("OVERLAP word x sticker" in undeclared,
+       "an undeclared overlap is reported by the DOM audit (it is a real report)")
+
+    buf = _io.StringIO()
+    with _ctx.redirect_stdout(buf):
+        await B.render(html2, tmp, W, H, elements=els,
+                       collision_ignore={("word", "sticker")})
+    declared = buf.getvalue()
+    ok("OVERLAP word x sticker" not in declared,
+       "ONE collision_ignore declaration now silences the DOM audit too")
+    ok("ISSUES" not in declared and "CLEAN" in declared,
+       "...and the render reports clean rather than contradicting its own preflight")
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
+
     print(f"\nALL {N} ASSERTIONS PASSED")
 
 

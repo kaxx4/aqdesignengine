@@ -753,6 +753,47 @@ def scatter_solve(items, W, H, protect=(), keep_out=(), zones=None, margin=28,
             unplaced)
 
 
+_ROT_RE = re.compile(r"rotate\(\s*(-?[\d.]+)\s*deg\s*\)", re.I)
+_TAG_RE = re.compile(r"<(div|span|svg)\b[^>]*>|</(div|span|svg)>", re.I)
+
+
+def double_rotation_scan(html, min_deg=1.0):
+    """An element rotated by its wrapper AND by itself draws at the SUM of both.
+
+    THE BUG (session 10f, agent c2). `doodles.stamp(kind, col, rot=10)` and
+    `shapes.sticker(..., rot=10)` both bake `transform:rotate(10deg)` into the SVG
+    they return. Wrapping that in a div which ALSO rotates — the natural thing to do
+    once you have written a generic `at(x, y, rot=...)` helper for your cards — draws
+    it at 20°. Every rotated doodle in two versions was at twice its intended angle,
+    and `layout.rotated_bbox(x, y, w, h, 10)` then under-reported the real footprint
+    by an amount that looks like a rounding error and is not.
+
+    Reports (outer_deg, inner_deg, sum) per nesting. ADVISORY: counter-rotation is a
+    real technique — rotate a card, then rotate its label back so the type stays
+    level — and that shows up here as a sum near zero, which is the tell. A sum that
+    is roughly double either angle is the bug.
+    """
+    out = []
+    stack = []
+    pos = 0
+    for m in _TAG_RE.finditer(html):
+        tag = m.group(0)
+        if tag.startswith("</"):
+            if stack:
+                stack.pop()
+            continue
+        if tag.rstrip().endswith("/>"):
+            continue                       # self-closing: cannot contain anything
+        rots = _ROT_RE.findall(tag)
+        deg = float(rots[0]) if rots else 0.0
+        if abs(deg) >= min_deg:
+            for outer in stack:
+                if abs(outer) >= min_deg:
+                    out.append((round(outer, 2), round(deg, 2), round(outer + deg, 2)))
+        stack.append(deg)
+    return out
+
+
 def reading_order_check(parts, align_tol=24, band_tol=0.35):
     """One SENTENCE broken across several placed boxes must scan in its own order.
 
@@ -1136,6 +1177,10 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         # through body copy (friendship_day). Can't tell a halftone-over-photo from a
         # wash-over-paper in a string, so it reports and never blocks.
         r['faint_wash'] = wash_scan(html, W, H)
+        # ADVISORY: an element rotated by BOTH its wrapper and itself draws at the
+        # sum. Counter-rotation is legitimate and shows up here with a sum near
+        # zero, so this reports rather than blocks.
+        r['double_rotation'] = double_rotation_scan(html)
         # antipattern_scan is NOT run here — it cannot be told apart from a normal
         # full-width footer without nesting analysis (false-positives on nearly every
         # poster). Call layout.antipattern_scan(html) manually when chasing a blank card.
@@ -1163,7 +1208,7 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
             hidden.extend((gi, i, frac) for i, frac in cascade_peek_check(stack))
         r['cascade_hidden'] = hidden
     ADVISORY = {'under_filled_quadrants', 'nudged_elements', 'invisible_craft',
-                'cascade_hidden', 'faint_wash', 'occluded'}
+                'cascade_hidden', 'faint_wash', 'occluded', 'double_rotation'}
     hard = {k: v for k, v in r.items() if k not in ADVISORY}
     clean = all(not v for v in hard.values())
     r['clean'] = clean

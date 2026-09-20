@@ -189,16 +189,18 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
                          occlusion=occlusion, auto_nudge=auto_nudge)
     # The DOM audit and the screenshot both need this html LOADED in a browser.
     # They now share one page load instead of cold-starting a browser each.
-    return await _shoot(html, out_png, W, H, name, elements=elements)
+    return await _shoot(html, out_png, W, H, name, elements=elements,
+                        collision_ignore=collision_ignore)
 
-async def _shoot(html, out_png, W, H, name, elements=None):
+async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=()):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
     async def _work(pg):
         await pg.set_content(html, wait_until="load")
         await _settle(pg)
-        issues = await audit.audit(html, name, page=pg, canvas=(W, H))
+        issues = await audit.audit(html, name, page=pg, canvas=(W, H),
+                                   ignore_pairs=collision_ignore, margin=M)
         # MEASURED geometry, on the page we already have. This is the only check
         # that can see what the hand-maintained (x,y,w,h) tuples structurally
         # cannot: a text block whose REAL rendered size is not what the author

@@ -273,4 +273,37 @@ _pf3 = lay.preflight(1080, 1350, CARD, containers=("card",))
 ok(len(_pf3["collisions"]) == 2,
    "preflight carries containers through to the collision check")
 
+# ── DOUBLE ROTATION (session 10f, agent c2) ─────────────────────────────────
+# doodles.stamp(rot=) and shapes.sticker(rot=) BAKE the angle into the svg they
+# return. Wrapping one in a div that also rotates draws it at the SUM. Every
+# rotated doodle in two versions came out at twice its intended angle, and
+# rotated_bbox — computed for the angle the author thought they applied — then
+# under-reported the real footprint by an amount that looks like rounding.
+dd_m = load("doodles")
+_star = dd_m.stamp("star", "#FFC700", rot=10)
+
+_bug = f'<div style="position:absolute;transform:rotate(10deg)">{_star}</div>'
+_hits = lay.double_rotation_scan(_bug)
+ok(len(_hits) == 1 and _hits[0] == (10.0, 10.0, 20.0),
+   "the c2 bug is caught, and the report shows the SUM that was actually drawn")
+
+_ok_wrap = f'<div style="position:absolute;left:10px">{_star}</div>'
+ok(lay.double_rotation_scan(_ok_wrap) == [],
+   "the §6 template's own pattern (unrotated wrapper) does not fire")
+
+_counter = ('<div style="transform:rotate(12deg)">'
+            '<span style="transform:rotate(-12deg)">level</span></div>')
+_c = lay.double_rotation_scan(_counter)
+ok(len(_c) == 1 and _c[0][2] == 0.0,
+   "deliberate counter-rotation reports a SUM OF ZERO — the tell that it was meant")
+
+ok(lay.double_rotation_scan('<div style="transform:rotate(0deg)">x</div>') == [],
+   "a 0deg transform is not a rotation and does not fire")
+ok(lay.double_rotation_scan("<div>plain</div>") == [],
+   "html with no transforms at all is silent")
+
+_pf4 = lay.preflight(1080, 1350, [("s", 100, 100, 90, 90)], html=_bug, core=core)
+ok(_pf4["clean"] is True and _pf4["double_rotation"],
+   "preflight reports it as ADVISORY — counter-rotation is legal, so it cannot block")
+
 print(f"\nALL {n} ASSERTIONS PASSED")

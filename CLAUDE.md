@@ -613,6 +613,13 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `stylebank.canvas_shift` fired on a mockup's WHOLE-PHOTO aspect and stated a precise ratio that was not true of the design inside it | session 10f, judging agent | `canvas_shift` returns None for any kind in `MEASURED_SCOPE`; those already get the crop-first warning |
 | `stylebank.merge()` required `mechanism` AND `recipe` IN THE DROP-FILE, so a partial update ("a better recipe for an entry you already judged") was silently skipped | session 10f, judging agent | completeness is now checked on the MERGED RESULT, not the drop-file |
 
+| `shapes.sticker()` renders a SQUARE `size`x`size` svg whatever the silhouette looks like, and nothing said so — a wide cloud declared as 220x150 got a correct OVERSIZE report and a collision check that had been lied to | session 10f, agent c2 | docstring states it; declare `(label, x, y, size, size)` always |
+| `doodles.stamp(rot=)` / `shapes.sticker(rot=)` BAKE the angle into their own svg. Rotating the wrapping div too draws at the SUM — a star meant for 10° drew at 20°, and `rotated_bbox` (computed for 10°) under-reported the footprint by what looks like rounding | session 10f, agent c2 | **`layout.double_rotation_scan(html)`** (advisory, in `preflight`). Counter-rotation is legal and reports a SUM OF ZERO, which is the tell |
+| Two overlap checkers that did not cooperate: `collision_ignore` silenced `layout.collision_check` while `audit.py`'s DOM check kept printing the same overlaps from a closed `SKIP_PAIRS` vocabulary no caller could reach. The only thing that worked was DOM nesting, found by reading source | session 10f, agent c3 | `audit.audit(ignore_pairs=, margin=)`, forwarded by `render()` — ONE declaration now silences both. A gate nobody can silence is a gate everybody scrolls past |
+| `audit.py` carried its own `M=64`, a second hardcoded margin in a different file from `build.py`'s `M=64` — agreeing by coincidence of two literals, not because one reads the other | session 10f, agent c3 | `audit.audit(margin=)`, and `render()` passes `build.M` |
+| `stylebank._REPROP_WORDS` was a hidden acceptance list: a recipe could fail the canvas check with no way to see why | session 10f, judging agent | `RECIPE_RULE` now PRINTS the enforced tuple (derived, not retyped — the first draft of this fix drifted immediately, "square" vs "squar") |
+| `AGENTS.md` was a full second copy of this manual, frozen before session 10: `M = 48`, the render call that disables the measured tier, "all 44 processed" against a 74-item queue, and no knowledge of `measure_text`, `measure_dom`, the style bank or Workflow C. A harness reading it by convention got a confident, authoritative, four-sessions-stale manual | session 10f | `AGENTS.md` is now a pointer to this file. `test_repo_hygiene.py` asserts it stays one |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -689,12 +696,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (66) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_layout_rules.py` (72) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (32) ·
-  `test_stylebank.py` (54) · `test_buried_text.py` (10) · `test_repo_hygiene.py` (27)** —
-  **368 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (57) · `test_buried_text.py` (13) · `test_repo_hygiene.py` (28)** —
+  **381 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

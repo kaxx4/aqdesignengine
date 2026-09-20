@@ -288,4 +288,19 @@ _noslug["file"] = "abcdef1234567890.jpg"
 assert "abcdef12345678" in sb.brief(_noslug, "s")
 ok("brief() works on a style read straight out of the bank (no injected slug)")
 
+# ── THE ACCEPTANCE LIST MUST BE VISIBLE, AND MUST BE THE REAL ONE ───────────
+# A judging agent reported `_REPROP_WORDS` as a hidden acceptance test: it could be
+# failed by a recipe that plainly DID address its frame, with no way to know why.
+# Publishing a hand-retyped copy would only swap an invisible contract for one free
+# to drift — and the first draft of that fix drifted immediately ("square" in the
+# prose, "squar" in the code). So the rule PRINTS the tuple.
+_printed = sb.RECIPE_RULE
+for _w in sb._REPROP_WORDS:
+    assert _w in _printed, _w
+ok("every enforced re-proportion word appears in the published RECIPE_RULE")
+assert "hidden acceptance test" in _printed
+ok("...and the rule says plainly that the list is part of the contract")
+assert "DOES NOT COUNT AGAINST" in _printed
+ok("the sentence budget no longer competes with the re-proportioning requirement")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

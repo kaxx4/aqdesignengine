@@ -394,9 +394,28 @@ CANVAS_RULE = """
   feed 1080x1350 | story 1080x1920 | square 1080x1080 | linkedin 1200x628 | li_square 1200x1200
 """
 
+# The words `validate()` accepts as "this recipe addresses its own canvas shift".
+# DEFINED HERE, above RECIPE_RULE, because that rule PRINTS this tuple rather than
+# restating it. A judge reported the list as a hidden acceptance test it could not
+# see; publishing a hand-retyped copy of it would only have replaced an invisible
+# contract with one free to drift — and it immediately did, "square" vs "squar".
+_REPROP_WORDS = ("compress", "re-proportion", "reproportion", "landscape", "portrait",
+                 "wider", "taller", "side by side", "side-by-side", "stack", "aspect",
+                 "squar", "column", "row of", "band")
+
 RECIPE_RULE = """
   3-5 sentences of INSTRUCTIONS, not observations. Ground, proportions, what goes where,
   and what the RESTRAINT is (the thing you must NOT add).
+  RE-PROPORTIONING DOES NOT COUNT AGAINST THE 3-5. When the mechanism has to compress
+  into a differently-shaped canvas, say how — what stacks vs. sits side by side, what
+  bleeds off which edge, what gives up size — and treat that as a REQUIRED extra
+  sentence, not a competitor for the budget. A judge repairing seven of these had to
+  trim working instructions to make room, which is the wrong trade.
+  The check for it looks for any of these words, and this list is part of the contract
+  rather than a hidden acceptance test — if your sentence says it plainly it will match:
+""" + "    " + ", ".join(sorted(_REPROP_WORDS)) + """
+  (If it does not match and you believe the recipe DOES address the frame, say so —
+  the word list is the crude part, not your judgment.)
   SCOPE: describe ONE extractable move, matching the recreation protocol's standing
   ruling for multi-slide references (CLAUDE.md section 5). A moodboard of eight unrelated
   artefacts gets the ONE mechanism a builder would copy, not a tour of all eight.
@@ -507,11 +526,6 @@ def cross_check(verbose=True):
         else:
             print("no judgment contradicts its measured ground")
     return out
-
-
-_REPROP_WORDS = ("compress", "re-proportion", "reproportion", "landscape", "portrait",
-                 "wider", "taller", "side by side", "side-by-side", "stack", "aspect",
-                 "squar", "column", "row of", "band")
 
 
 def validate(verbose=True, advisory=True):
