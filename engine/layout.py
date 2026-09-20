@@ -111,7 +111,7 @@ def _norm_ignore(ignore_pairs):
     return frozenset(out)
 
 
-def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
+def collision_check(elements, min_overlap=12, ignore_pairs=frozenset(), containers=()):
     """
     Pairwise bbox-overlap detector for the manual element list — the tuple-world
     twin of audit.py's DOM OVERLAP check. Catches the collision class that hit
@@ -125,6 +125,18 @@ def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
       only. Matches audit.py's 12px threshold.
     ignore_pairs: set of frozenset({label_a,label_b}) the caller declares an
       intentional overlap (e.g. a chip tucked under a hero on purpose).
+    containers: labels that HOLD other elements — a card, a slab, a panel. Anything
+      whose box falls entirely inside a declared container is contained, not
+      colliding, and is skipped against THAT container only (it is still checked
+      against everything else, including its siblings inside the card).
+
+      WHY THIS IS EXPLICIT AND NOT AUTOMATIC. Full containment alone does not mean
+      "intended": a doodle dropped entirely inside a headline's bbox is exactly the
+      collision this function was built to catch (samples 26, 27, 32). Only the
+      author knows which boxes are furniture. Before this, every card-based layout
+      had to hand-list one ignore pair per child — a four-card UI recreation needed
+      a dozen — and a forgotten pair was indistinguishable from a real bug, while a
+      typo'd one silently whitelisted nothing (session 10f, agent r1).
 
     Returns list of (a, b, ox, oy) for each real collision, a/b being the label
     or index. Empty list == no collisions (the pass condition).
@@ -137,12 +149,45 @@ def collision_check(elements, min_overlap=12, ignore_pairs=frozenset()):
             x, y, w, h = e; lbl = i
         norm.append((lbl, x, y, w, h))
     _ign = _norm_ignore(ignore_pairs)
+    # An ignore pair naming a label that was never DECLARED is the loudest available
+    # signal that the author built an element and forgot elements.append(). Seen in
+    # out/session10f/c2_v3.png: the script whitelisted ("book","card") and
+    # ("umbrella","card") while book, umbrella and a lemon star were all missing from
+    # `elements` — so collision_check could not see them, preflight printed CLEAN, and
+    # the star landed squarely on the words "SIGN-UPS OPEN NOW". The author had
+    # clearly thought about those overlaps; they just never entered the gate's world.
+    _known = {n[0] for n in norm}
+    _ghosts = sorted({str(l) for pr in _ign for l in pr if l not in _known},
+                     key=str)
+    if _ghosts:
+        print(f"   [collision_check] IGNORE PAIRS NAME UNDECLARED ELEMENTS: {_ghosts}"
+              f" — these are invisible to every static check. Did you forget"
+              f" elements.append() for them?")
+    _cont = {c for c in (containers or ())}
+    _missing = sorted({str(c) for c in _cont if c not in _known}, key=str)
+    if _missing:
+        print(f"   [collision_check] CONTAINERS NOT IN THE ELEMENT LIST: {_missing}"
+              f" — a container that was never declared holds nothing, so every child"
+              f" inside it will still be reported")
+
+    def _inside(inner, outer, pad=2):
+        ix, iy, iw, ih = inner
+        ox_, oy_, ow, oh = outer
+        return (ix >= ox_ - pad and iy >= oy_ - pad
+                and ix + iw <= ox_ + ow + pad and iy + ih <= oy_ + oh + pad)
+
     out = []
     for i in range(len(norm)):
         for j in range(i + 1, len(norm)):
             la, ax, ay, aw, ah = norm[i]
             lb, bx, by, bw, bh = norm[j]
             if frozenset({la, lb}) in _ign:
+                continue
+            # containment is not collision — but only against a DECLARED container,
+            # and only when one box genuinely sits wholly inside the other.
+            if la in _cont and _inside((bx, by, bw, bh), (ax, ay, aw, ah)):
+                continue
+            if lb in _cont and _inside((ax, ay, aw, ah), (bx, by, bw, bh)):
                 continue
             ox = min(ax + aw, bx + bw) - max(ax, bx)
             oy = min(ay + ah, by + bh) - max(ay, by)
@@ -527,6 +572,53 @@ def invisible_color_check(pairs, page_bg, core=None, thresh=40):
     return out
 
 
+def text_contrast_check(text_pairs, page_bg=None, core=None):
+    """Flag TYPE that does not clear its WCAG floor against the surface behind it.
+
+    THE BUG. A recreation put white 30px copy on a lavender card and DECLARED the
+    pair honestly — `("card2_title", WHITE, LAVENDER)` was right there in
+    `color_pairs`. invisible_color_check ran on it and passed, because its job is
+    "is this the SAME colour as its backing" (an RGB distance), and #FFFFFF vs
+    #DAD1FF are plainly different colours. They are also **1.44:1**, which is barely
+    above invisible to read. `core.text_on(LAVENDER)` would have returned ink at
+    13.71:1. The engine knew the answer; nothing asked the question.
+
+    So this is the legibility half that `invisible_color_check` never covered:
+    same input shape, different question. Distance says "is it there"; contrast
+    says "can it be read".
+
+    text_pairs: (label, text_color, surface_color[, size_px[, bold]]).
+      size_px/bold default to 16/True — the WCAG large-text relief (3.0:1) only
+      applies at >=24px bold, so anything unstated is held to the 4.5:1 floor.
+      Colours may be '#hex' or 'var(--token)'; unresolvable ones are SKIPPED, never
+      guessed — same contract as invisible_color_check.
+    page_bg: default surface for 2-tuples.
+    core: the loaded core module (for var()->hex and contrast()).
+
+    Returns (label, text_hex, surface_hex, ratio, floor, suggestion) per failure,
+    `suggestion` being what core.text_on(surface) would have given you.
+    """
+    if core is None:
+        return []
+    tokens = _token_map(core)
+    out = []
+    for p in text_pairs:
+        lbl, txt = p[0], p[1]
+        surf = p[2] if len(p) >= 3 else page_bg
+        size = p[3] if len(p) >= 4 else 16
+        bold = p[4] if len(p) >= 5 else True
+        th, sh = _resolve(txt, tokens), _resolve(surf, tokens)
+        if th is None or sh is None:
+            continue
+        if _to_rgb(th) is None or _to_rgb(sh) is None:
+            continue
+        floor = core.AA_LARGE if (bool(bold) and size >= 24) else core.AA_NORMAL
+        ratio = core.contrast(th, sh)
+        if ratio < floor:
+            out.append((lbl, th, sh, round(ratio, 2), floor, core.text_on(sh)))
+    return out
+
+
 def css_var_check(html, core=None):
     """
     Catch references to CSS custom properties that were never defined — the
@@ -655,6 +747,59 @@ def scatter_solve(items, W, H, protect=(), keep_out=(), zones=None, margin=28,
 
     return ([(items[i][0], *out[items[i][0]]) for i in order if items[i][0] in out],
             unplaced)
+
+
+def reading_order_check(parts, align_tol=24, band_tol=0.35):
+    """One SENTENCE broken across several placed boxes must scan in its own order.
+
+    `parts`: (label, x, y, w, h) in the order the words are meant to be READ.
+
+    THE BUG. A welfare poster set "showing up again and again" as three chips:
+    SHOWING at x=70, UP AGAIN at x=830, AND AGAIN at x=70. Each chip was legible,
+    nothing collided, no quadrant was dead, and the pixel critique was happy — but
+    SHOWING and AND AGAIN shared a left edge, so they read as a COLUMN and the eye
+    went showing -> and again -> up again. The sentence came apart.
+
+    A Sonnet agent iterated this piece twice. It fixed the empty quadrant (which
+    preview.critique names in numbers) and never touched this (which only the eye
+    catches), so it is exactly the class section 8 exists to convert into a rule.
+
+    Two failures, both narrow on purpose — this is opt-in and must not cry wolf:
+      INVERTED — a later part sits entirely above an earlier one. Unambiguous.
+      COLUMN TRAP — parts i and i+2 are left-aligned with each other while i+1 is
+        not, and i+1 sits vertically between them. Alignment then beats sequence,
+        which is the failure above.
+    A normal left-aligned stack passes (all three share the edge, so i+1 is aligned
+    too). A clean diagonal stagger passes (i and i+2 are not aligned). Returns a
+    list of strings; empty means pass.
+    """
+    out = []
+    P = [_wh(p) for p in parts]
+    for i in range(len(P) - 1):
+        (la, xa, ya, wa, ha), (lb, xb, yb, wb, hb) = P[i], P[i + 1]
+        if yb + hb <= ya:
+            out.append(f"READING ORDER INVERTED: '{lb}' sits entirely ABOVE '{la}', "
+                       f"but is read after it")
+    for i in range(len(P) - 2):
+        (la, xa, ya, wa, ha) = P[i]
+        (lb, xb, yb, wb, hb) = P[i + 1]
+        (lc, xc, yc, wc, hc) = P[i + 2]
+        aligned_ac = abs(xa - xc) <= align_tol
+        aligned_ab = abs(xa - xb) <= align_tol
+        between = ya < yb + hb and yb < yc + hc          # i+1 falls between i and i+2
+        if aligned_ac and not aligned_ab and between:
+            out.append(
+                f"COLUMN TRAP: '{la}' and '{lc}' share a left edge (x={xa} / x={xc}) "
+                f"with '{lb}' (x={xb}) between them — they will read as a column, so "
+                f"the sentence scans '{la}' -> '{lc}' -> '{lb}'")
+    return out
+
+
+def _wh(p):
+    """(label,x,y,w,h) from a labelled or bare box; labels default to their index."""
+    if len(p) == 5:
+        return (str(p[0]), p[1], p[2], p[3], p[4])
+    return ("?", p[0], p[1], p[2], p[3])
 
 
 def occlusion_check(items, min_visible=0.45):
@@ -924,8 +1069,8 @@ def img_src_check(html):
 
 def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=None,
               expect_hero=False, min_hero_frac=0.12, quad_min_frac=0.35,
-              collision_ignore=frozenset(), auto_nudge=False, cascade_stacks=None,
-              contains=None, occlusion=None):
+              collision_ignore=frozenset(), containers=(), auto_nudge=False, cascade_stacks=None,
+              contains=None, occlusion=None, reading_order=None, text_pairs=None):
     """
     ONE pre-render gate that runs every static check the session-8 revisit pass
     turned into a rule. The pass showed the recurring bugs slipped through because
@@ -965,13 +1110,15 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
     """
     r = {}
     r['nudged_elements'] = None
-    if auto_nudge and collision_check(elements, ignore_pairs=collision_ignore):
+    if auto_nudge and collision_check(elements, ignore_pairs=collision_ignore,
+                                      containers=containers):
         elements, _ = collision_nudge(elements, W, H, ignore_pairs=collision_ignore)
         r['nudged_elements'] = elements
     # legacy checks want plain (x,y,w,h); collision_check keeps labels for readable output
     plain = [e[-4:] for e in elements]
     r['off_canvas'] = bounds_check(W, H, plain)
-    r['collisions'] = collision_check(elements, ignore_pairs=collision_ignore)
+    r['collisions'] = collision_check(elements, ignore_pairs=collision_ignore,
+                                      containers=containers)
     r['under_filled_quadrants'] = quadrant_fill_check(W, H, plain, min_frac=quad_min_frac)  # advisory
     if html is not None:
         r['undefined_css_vars'] = css_var_check(html, core)
@@ -990,12 +1137,22 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
         # poster). Call layout.antipattern_scan(html) manually when chasing a blank card.
     if color_pairs is not None:
         r['invisible_colors'] = invisible_color_check(color_pairs, page_bg, core)
+    if text_pairs is not None:
+        # HARD FAIL: copy that cannot be read is never the intent. Opt-in, and every
+        # pair is one the author explicitly declared as "this type sits on that
+        # surface" — so a failure here is a real one, not an inference.
+        r['unreadable_text'] = text_contrast_check(text_pairs, page_bg, core)
     if expect_hero:
         r['missing_hero'] = dominance_check(elements, W, H, min_hero_frac)
     if occlusion is not None:
         r['occluded'] = occlusion_check(occlusion)
     if contains is not None:
         r['not_contained'] = contains_check(contains)
+    if reading_order:
+        # HARD FAIL: a sentence that scans in the wrong order is not a taste call,
+        # it is copy the reader assembles incorrectly. Opt-in, so it only ever runs
+        # on boxes the author has declared to be one sentence.
+        r['reading_order'] = reading_order_check(reading_order)
     if cascade_stacks:
         hidden = []
         for gi, stack in enumerate(cascade_stacks):

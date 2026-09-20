@@ -1211,3 +1211,170 @@ measured ground is the BACKDROP and not the design's — mockups are skipped. A 
 is genuinely both saturated and dark, so that pair no longer cries wolf.
 
 Self-test: `test_stylebank.py` (33). **Suite now 265 assertions across 11 files.**
+
+
+### SESSION 10f (2026-09-20) — a second Sonnet cycle, and what the briefs were actually saying
+
+Cycle 1 (10e) fixed what stopped agents from STARTING. Cycle 2 gave four agents real
+builds on the fixed manual — two of them on canvases nobody had exercised — and watched
+where the output went wrong rather than where the tooling did. The defects this time are
+deeper, because the agents got further.
+
+**The style bank was handing out the wrong numbers, for 49 of 74 styles.**
+`brief()` printed each style's measured `coverage`, `centroid` and `content_bbox` under
+the line "build to THESE numbers". Those fractions are honest measurements OF THE
+REFERENCE IMAGE — which is only a build target when that image is a single design shot
+in the frame you are building in. Counted:
+
+  * 25 of 74 are a same-frame `poster`. For these the numbers ARE targets.
+  * 45 are a `sheet`, `mockup`, `asset` or `carousel`. Their fractions describe a page of
+    twelve artefacts, a photograph of a phone on a table, or — for the tbh website
+    screenshot `4939a628d6deb2` — a whole page scroll. None of that is a composition.
+  * 17 are judged onto a canvas more than 25% away from their own aspect, `4939a628d6deb2`
+    worst at a 2.9x swing (a 0.667 portrait judged `linkedin`, 1.911).
+
+So `brief()` now states which frame every number belongs to. `MEASURED_SCOPE` says what a
+non-poster's fractions really measure and what to do instead (for a mockup: crop first,
+per section 5 step 0). `canvas_shift()` compares the target frame to the measured one and
+prints an explicit RE-PROPORTION block naming what transfers — mechanism, ground, palette,
+restraint, z-order, relative weight — and what does not. `design.py` passes its `--canvas`
+through, because the canvas the CALLER asked for can differ from the style's own.
+
+**CANVAS_RULE had already anticipated this and nothing checked it.** The schema told
+judges that a mechanism compressed into a different shape "should then say how" in the
+recipe. Unchecked, 7 of the 17 cross-aspect recipes never mention the frame. `validate()`
+now names them. Same standing lesson as 10e's footgun-pinning test, from the other side:
+a rule with no check is a rule that half the work quietly ignores.
+
+`validate()` also grew an `advisory=False` mode, so a hard schema violation (a field
+outside its enum, an empty recipe) stays separable from a completeness warning. Same
+ADVISORY-vs-hard split `layout.preflight` already makes, for the same reason.
+
+**`on_cream(accent, 16, ground=INK)` returned ink on ink.** The function took a `ground=`
+argument, which invites exactly that call for a dark-ground poster — and a third of the
+bank is dark-ground. But its only fallback was `ink_of()`, which DARKENS. On a dark ground
+that walks the wrong way, fails again, and falls through to a hardcoded `else INK`:
+`#0A0A0A` on `#0A0A0A`, contrast 1.00:1, invisible. The catalog's oldest failure class,
+emitted by the helper built to prevent it.
+
+Fixed by generalising: `on_ground(accent, ground, size_px, bold)` chooses the direction by
+MEASURING the ground rather than assuming "darker", and its last resort is `text_on(ground)`
+— the neutral that actually wins there — never a fixed INK. `lit_of()` is the computed
+mirror of `ink_of()`: it walks the accent toward paper in 5% steps and returns the FIRST
+tint that clears the floor, so the department hue survives. Teal, the one accent that fails
+small type on ink (4.00:1), becomes `#268992` at 4.79:1. `on_cream` and the new `on_dark`
+both delegate, so the two grounds cannot diverge again.
+
+**THE COLUMN TRAP — the find that matters most for the loop.** Agent c1 set "showing up
+again and again" as three chips at x=48 / x=560 / x=48. Every chip legible, nothing
+colliding, no dead quadrant, the pixel critique content. But chips 1 and 3 share a left
+edge, so they read as a COLUMN: the sentence scans "showing -> and again -> up again".
+
+The agent iterated that poster TWICE. It fixed the empty quadrant — which
+`preview.critique` names in numbers — and never once touched the scrambled sentence, which
+only the eye catches. That is the whole thesis of section 3 failing in practice on a
+smaller model, so it became a rule. `layout.reading_order_check(parts)` takes the boxes of
+one sentence in reading order and reports two things: an outright INVERSION, and the COLUMN
+TRAP (parts i and i+2 left-aligned with i+1 between them but not aligned). Both are narrow
+on purpose — a plain left-aligned stack passes, a clean diagonal stagger passes. Opt-in via
+`preflight(..., reading_order=[...])`, and a HARD FAIL when asked, because a sentence the
+reader assembles in the wrong order is not a taste call.
+
+**The template was still teaching the weak render call.** Section 6 ended with
+`await B.render(html, out, W, H)`. Without `elements=` you get `css_var_check` and nothing
+else — `reconcile_boxes` never runs, so an element you built and forgot to
+`elements.append()` is invisible to EVERY check. Agent c2 hit exactly that: a lemon star,
+a book and an umbrella were all built and never declared, preflight printed CLEAN, and the
+star landed squarely on the words "SIGN-UPS OPEN NOW". The template now shows the full call.
+
+**And the same script whitelisted collisions for elements that did not exist.** Its ignore
+list named ("book","card") and ("umbrella","card") while neither was in `elements`. That is
+the loudest available signal that an author built something and forgot to declare it — they
+had clearly thought about those overlaps. `collision_check` now reports any ignore pair
+naming an undeclared label.
+
+A harness defect, found while adding all this: `test_stylebank.py` had accumulated THREE
+`ALL {N} ASSERTIONS PASSED` banners, two of them mid-file. A run that died at line 127
+still printed "ALL 18 ASSERTIONS PASSED" first, so anything grepping for the pass string
+read a failure as a success. Removed. Also `brief()` required a `slug` key that only
+`pick()` injects, so the obvious call `brief(bank["styles"][s], ...)` raised KeyError.
+
+**Suite: 309 assertions across 11 files.**
+
+
+### SESSION 10f, part 2 — what the four agents' reports actually cost
+
+The reports were worth more than the posters. Every item below came from an agent
+building or judging, not from reading code, and each was verified against the repo
+before anything changed.
+
+**Italic was unmeasurable.** `measure_text()` had no `font-style` parameter, and its
+canvas `TextMetrics` call omitted the style from the font shorthand — where order
+matters (style, weight, size, family). Instrument Serif (`--s`) is only ever used
+italic in this brand, so EVERY `--s` string came back measured upright: 107px / 10.7%
+narrow on a 300px wordmark, which bled it off-canvas and was caught only after render.
+That is the exact "sized by guess" class `measure_text` exists to retire, reintroduced
+through a missing argument. `'s'` now defaults to italic and any item can pass `style`.
+
+**BURIED TEXT — a check, its false positive, and the distinction that fixes it.**
+Agent c1's v1 rendered a whole body-copy paragraph 100% invisible: it had no z-index
+while a sibling background rectangle had `z-index:1`, and in CSS any explicit z-index
+paints above `auto` regardless of DOM order. preflight printed CLEAN, render's gates
+printed CLEAN, and Playwright's own `is_visible()` and `bounding_box()` both reported
+it present — by every DOM measure it WAS. Only the PNG showed it.
+
+So `measure_dom` now hit-tests each text element against what is actually painted on
+top. The first version used `elementFromPoint` and shipped a false positive within the
+hour: agent c2 found it flagging "WELCOME TO THE" and "OPEN", both plainly visible.
+The cause is worth recording, because it is a genuine limit of the technique —
+**`elementFromPoint` reports GEOMETRIC stacking, not visual coverage.** A headline at
+the house's tight line-height HIT-TESTS ABOVE ITS OWN BORDER BOX: the headline's box
+began at y=168 and the browser returned it for a point at y=141, so a kicker 27px
+higher was "covered" by an element that is fully transparent there.
+
+Opacity is the discriminator, and it is the only thing separating c2's false positive
+from c1's real bug, where the occluder was an opaque cream rectangle. The check now
+walks the whole stack (`elementsFromPoint`) and only an element with a real background
+counts as blocking. It is ADVISORY, not a hard fail — a repeated-card deck legitimately
+hides its back copies' text, and c2_v5 correctly reports exactly that.
+
+**Text that is present, correctly coloured, and still unreadable.** A recreation put
+white 30px copy on a lavender card and DECLARED the pair honestly —
+`("card2_title", WHITE, LAVENDER)` was in `color_pairs`. `invisible_color_check` ran on
+that exact pair and passed it, because its question is "is this the SAME colour as its
+backing", an RGB distance, and #FFFFFF vs #DAD1FF plainly are not. They are also
+**1.44:1**. `core.text_on()` would have returned ink at 13.71:1. The engine knew the
+answer and nothing asked the question. `layout.text_contrast_check` asks it: same input
+shape as its sibling, different question — distance says "is it there", contrast says
+"can it be read". HARD FAIL in preflight, opt-in, and it honours the WCAG large-text
+split so a 500px mint numeral still passes where a 20px mint label does not.
+
+**Containment is not collision.** A four-card UI recreation had to hand-list one ignore
+pair per child; a forgotten pair is indistinguishable from a real bug and a typo'd one
+whitelists nothing. `collision_check(..., containers=("card",))` declares the furniture
+once. Explicit, never automatic: a doodle dropped entirely inside a headline's bbox is
+full containment too, and that is exactly the bug this function was built to catch.
+
+**A hardcoded path had reached 50 files.** The dead pre-move root broke the self-tests
+twice, CLAUDE.md's template in 10e, a checked-in example script, and FOUR scripts inside
+a live skill. Each time it was fixed where it was noticed. It was also in `AGENTS.md` —
+which many harnesses read by convention — and in the Obsidian vault's copy of the same
+manual: THREE documents carrying the same broken template, of which 10e fixed one.
+Swept all 50, then found 17 more (including five self-tests) naming the CURRENT root,
+which is the identical time bomb with a newer address. All now derive the root from the
+script's own location, verified by EXECUTING each header and asserting where it lands —
+which is how the first sweep's off-by-one was caught, after reading it had looked fine.
+
+`test_repo_hygiene.py` is new and exists so this cannot creep back: no instruction file
+may name the dead root, no script may chdir to an absolute path, every copy of the
+manual must teach the self-locating form, and no test file may print more than one pass
+banner. That last one caught `test_recreation.py` immediately — a second banner at line
+149 meant a run dying later still printed "ALL PASSED" first.
+
+**And `render()` is now a complete front door.** It forwarded four of preflight's
+options and silently dropped the rest, so a script needing `cascade_stacks` had to call
+preflight by hand and then call `render()` WITHOUT `elements=` — which also silently
+disabled `suppress_handled` and `reconcile_boxes`. Every preflight option now passes
+through.
+
+**Suite: 361 assertions across 13 files.**

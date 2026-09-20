@@ -126,4 +126,57 @@ ok("outline_of flips to cream on dark fields — the friendship_day craft bug")
 assert core.outline_of("var(--bg)") == INK
 ok("outline_of tolerates var() input")
 
+# ── TYPE ON A DARK GROUND (session 10f) ─────────────────────────────────────
+# on_cream() took a `ground=` argument, which invites `on_cream(a, 16, ground=INK)`
+# for a dark-ground poster. Its only fallback was ink_of(), which DARKENS — so on a
+# dark ground it walked the wrong way, failed again, and hit a hardcoded `else INK`.
+# It returned #0A0A0A ON #0A0A0A: contrast 1.00:1, invisible. The catalog's oldest
+# failure class, emitted by the helper that exists to prevent it.
+
+TEAL = core.ACCENTS[6]
+assert round(core.contrast(TEAL, INK), 2) == 4.00
+ok("MEASURED: teal on ink is 4.00:1 — the one accent that fails small type there")
+
+_was_the_bug = core.on_cream(TEAL, 16, ground=INK)
+assert _was_the_bug != INK, "the exact historical return value"
+assert core.contrast(_was_the_bug, INK) >= core.AA_NORMAL
+ok("on_cream(teal, 16, ground=INK) no longer returns ink-on-ink")
+
+assert core.on_dark(TEAL, 16) == _was_the_bug
+ok("on_dark() is the named entry point for it, and agrees with on_cream(ground=INK)")
+
+# the tint must be the SMALLEST step that passes — the department hue has to survive
+_r, _g, _b = core._chan(core.on_dark(TEAL, 16))
+assert _b > _r and _g > _r, "still teal, not a grey or a wash"
+ok("...and the lightened partner keeps the hue (blue+green still dominate red)")
+assert core.contrast(core.on_dark(TEAL, 16), INK) < 6.0, "no bigger a jump than needed"
+ok("...tinting stops at the first value that clears the floor, not the brightest")
+
+for a in core.ACCENTS:
+    got = core.on_dark(a, 16)
+    assert core.contrast(got, INK) >= core.AA_NORMAL, (a, got)
+ok("every accent is legible as small type on ink after on_dark()")
+
+# accents may still shout: display type keeps the raw accent under the 3.0 floor
+assert core.on_dark(TEAL, 48) == TEAL
+ok("at 48px bold teal clears the large-text floor and is returned untouched")
+
+# the cream path must not have shifted while generalising
+assert core.on_cream(core.ACCENTS[1], 16) == core.ink_of(core.ACCENTS[1])
+assert core.on_cream(core.ACCENTS[1], 48) == core.ACCENTS[1]
+ok("on_cream's own behaviour is unchanged — small darkens, display shouts")
+
+# direction is MEASURED from the ground, not assumed
+assert core.on_ground(TEAL, CREAM, 16) == core.ink_of(TEAL)   # light ground -> darken
+assert core.on_ground(TEAL, INK, 16) != core.ink_of(TEAL)     # dark ground  -> lighten
+ok("on_ground picks the direction by measuring the ground, both ways")
+
+# a ground no accent can serve returns the winning NEUTRAL, never a fixed INK
+_on_grape = core.on_ground(core.ACCENTS[0], core.ACCENTS[5], 16)
+assert _on_grape == core.text_on(core.ACCENTS[5])
+ok("when no accent can clear the floor, the neutral that WINS on that ground is used")
+
+assert core.on_ground(TEAL, "var(--bg)", 16) == TEAL
+ok("on_ground never guesses at a var()/gradient ground — it returns the accent unchanged")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

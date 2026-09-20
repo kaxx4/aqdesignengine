@@ -1,3 +1,4 @@
+import os
 """SHOWCASE 5d — five HIGH-GRANULARITY families, testing the detail hypothesis.
 
 DETAIL HYPOTHESIS (this batch is the experiment):
@@ -16,7 +17,12 @@ Every piece here is deliberately built from MANY SMALL LABELLED PARTS. If detail
  20 3bb3f9582d  numbered brief      -> white sheet on dark, 01-07 list, per-item accent rotation
 """
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

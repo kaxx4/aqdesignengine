@@ -1,3 +1,4 @@
+import os
 """QUIET CENSUS — companion art piece for the AQ 2026 workshop carousel batch.
 
 Every value plotted is MEASURED from the 171 source photographs (out/companion/census.json):
@@ -16,7 +17,12 @@ import json, os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 F = r"C:\Users\kanis\.claude\skills\canvas-design\canvas-fonts"
 OUT = "out/companion"
 

@@ -1,9 +1,15 @@
+import os
 """RECREATION — 17c7de5509caae, iteration 3. Grid starts higher (fixes row-1 under-fill) and
 three tiles get ONE small restrained sticker each (fixes DETAIL TOO LOW without dot-pattern
 clutter — the lesson from 11e7d9a3ff6761 earlier this session: cheap texture that makes flat
 fields look busy is worse than accepting a lower detail score)."""
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

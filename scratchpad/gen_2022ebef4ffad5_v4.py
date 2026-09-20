@@ -11,7 +11,9 @@ tip with no gap; each card carries a dense row of stick figures + motion lines (
 grey checkered disco ball sized to read; RSVP moved clear of the bottle.
 """
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
+# Repo root from THIS FILE's location. A hardcoded root has broken this repo
+# five times; the last fix just swapped in a NEW absolute path.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

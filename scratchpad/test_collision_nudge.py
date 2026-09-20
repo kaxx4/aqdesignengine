@@ -1,5 +1,7 @@
 import os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\Code\AquaTerra\AQ_CODEBASE")
+# Repo root from THIS FILE's location. A hardcoded root has broken this repo
+# five times; the last fix just swapped in a NEW absolute path.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 spec = importlib.util.spec_from_file_location("layout", os.path.join(ENGINE_DIR, "layout.py"))

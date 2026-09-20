@@ -192,7 +192,9 @@ recreations, updated to call the standing gate (§7).
 
 ```python
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — never an absolute path. A hardcoded
+# root has broken something five times now; it reached 50 files before a sweep.
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE_DIR = os.path.join(os.getcwd(), "engine")
 sys.path.insert(0, ENGINE_DIR)
 def load(n):

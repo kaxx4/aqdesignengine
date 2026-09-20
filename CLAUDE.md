@@ -29,6 +29,12 @@ produce a companion design-philosophy (.md) + art piece (.pdf/.png). This is ind
 poster's own gate stack (§7) and looking gate (§3) — it does not replace or block them, it runs in
 addition. Do this automatically; do not wait to be asked each time.
 
+> **SCOPE (clarified 2026-09-20).** This rule binds the SESSION, not every delegated sub-task. If
+> you are a subagent working a narrow brief with a fixed output list, build what you were asked for
+> and say in your report that the companion piece is outstanding — do not widen your own scope to
+> produce one. The session that dispatched you owns it. (A Sonnet agent hit this exact conflict and
+> correctly flagged it instead of guessing; that is the right move, and now it has an answer.)
+
 ---
 
 ## 0. TABLE OF CONTENTS
@@ -234,6 +240,11 @@ def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join(ENGINE_DIR, n+".py"))
     m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 core = load("core"); B = load("build"); dd = load("doodles"); lay = load("layout")
+# shapes/tex are NOT optional extras — they are where badges, silhouettes and every
+# texture live (§9). The template used to load only the four above, so an agent that
+# needed a starburst and a checkerboard found them by running `wc -l engine/*.py`.
+shapes = load("shapes"); tex = load("tex")     # sticker/fit_font/ink_mark · the 15 textures
+vis = load("vision")                           # ONLY for real-photo pieces (plan_spots)
 W, H = core.SIZES["feed"]; M = 64          # feed canvas is 1080x1350 — NEVER assume taller
                                            # M=64 matches build.py's own margin constant and
                                            # ~10 of the 14 recent bespoke scripts. The template
@@ -273,7 +284,14 @@ pf = lay.preflight(W, H, elements, html=html, color_pairs=color_pairs,
 async def main():
     slug = "8988345ad4963e"                              # first ~14 chars of the reference hash
     os.makedirs(f"out/versions/{slug}", exist_ok=True)
-    await B.render(html, f"out/versions/{slug}/v2.png", W, H)  # css_var_check auto-runs here
+    # ALWAYS pass elements= (and the rest). Without it you get css_var_check and
+    # nothing else: reconcile_boxes never runs, so an element you built but forgot to
+    # elements.append() is invisible to EVERY check. That exact omission put a lemon
+    # star on top of the words "SIGN-UPS OPEN NOW" while preflight printed CLEAN
+    # (out/session10f/c2_v3.png). The template used to show the short call.
+    await B.render(html, f"out/versions/{slug}/v2.png", W, H,
+                   elements=elements, color_pairs=color_pairs,
+                   page_bg="var(--bg)", expect_hero=True)
     print("done")
 asyncio.run(main())
 ```
@@ -305,6 +323,17 @@ Three tiers. Run the cheap static ones BEFORE render, the pixel/DOM ones AFTER.
   in any shape (`('a','b')`, `{'a','b'}`, `frozenset({'a','b'})`); anything that is not a pair is
   now reported rather than silently ignored → any two elements really overlapping
   (doodle over text, badge over shape). Accepts `(x,y,w,h)` or `(label,x,y,w,h)`; echoes labels.
+- `text_contrast_check(text_pairs, page_bg, core)` → TYPE that does not clear its WCAG
+  floor against the surface behind it. The legibility half `invisible_color_check` never
+  covered: same inputs, different question — distance says "is it there", contrast says
+  "can it be read". White on a light lavender card is a large DISTANCE and **1.44:1**.
+  Honours the large-text split (>=24px bold -> 3.0). HARD FAIL via `preflight(text_pairs=…)`.
+- `collision_check(..., containers=("card","slab"))` → declare the furniture ONCE instead of
+  hand-listing an ignore pair per child. Explicit on purpose: a doodle dropped entirely
+  inside a headline's bbox is containment too, and that is the bug the check exists for.
+- `reading_order_check(parts)` → one SENTENCE split across placed boxes must scan in its own
+  order. Catches an INVERSION and the COLUMN TRAP (parts 1 and 3 left-aligned with 2 between
+  them, so they read as a column). HARD FAIL via `preflight(reading_order=[…])`.
 - `invisible_color_check(pairs, page_bg, core)` → any fill/stroke whose resolved color ≈ the
   surface behind it (the "drawn but invisible" bug). Resolves `var(--token)`; skips gradients/named.
 - `css_var_check(html, core)` → `var(--typo)` referenced but never defined (renders transparent).
@@ -352,6 +381,16 @@ also runs the full `preflight` at render time for free.
 - **`reconcile.reconcile_boxes(boxes, elements)` → advisory**, auto-run when `render(..., elements=…)`:
   declared tuples vs. what was drawn — `under_reported` and `untracked`.
 - `reconcile.probe(...)` → the legacy Workflow-A-only driver. Prefer `measure_dom`.
+- **`measure_dom` also reports `buried_text` (ADVISORY, auto).** Type that is painted,
+  laid out, correctly coloured, inside its box and on the canvas — and invisible, because
+  something OPAQUE is in front of it. Catches the z-index trap (an explicit `z-index` on a
+  sibling paints above `z-index:auto` whatever the DOM order) and anything else that puts a
+  solid object over a word. It walks `elementsFromPoint` and counts only an element with a
+  real background as blocking, because `elementFromPoint` alone reports GEOMETRIC stacking:
+  a headline at a tight line-height hit-tests ABOVE its own border box and "covers" things
+  it does not hide. A repeated-card deck legitimately hides its back copies' text and will
+  report here — that is what a deck IS, so this stays advisory.
+
 
 ### 7c. Pixel / metric — `engine/preview.py` & `engine/ref_metrics.py`
 - `preview.critique(png)` / `preview.report(png, name)` → `dead_quadrant`, `sparse`, `crammed`,
@@ -521,6 +560,23 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | One object in a deliberately overlapping pile covers ANOTHER'S LABEL. `collision_check` is silent (the overlap IS the design) and `occlusion_check` measures whole objects, so a capsule 60% visible reads fine when the hidden 40% is exactly the words | 522f2d89 | **`layout.resolve_label_z`** — protect the LABEL box, not the object. Raises the buried one just clear; reports `unresolved` when no stacking can fix it |
 | A mockup reference (phones on a backdrop) is unscorable — comparing a poster to a picture of three phones on grey measures the grey, so every mockup recreation was parked with NO number | ~1/3 of the corpus | **`compare.crop(path, x0,y0,x1,y1)`** — cut the chosen screen and score against that |
 
+| A style brief printed the reference image's `coverage`/`centroid`/`content_bbox` under "build to THESE numbers" — but that image is a single design in your frame for only **25 of 74** entries. The other 49 measure a 12-up sticker sheet, a photo of a phone on a table, or a whole page scroll | style bank, session 10f | **`stylebank.MEASURED_SCOPE`** (what a non-poster's fractions really describe + what to do instead) and **`stylebank.canvas_shift()`** (an explicit RE-PROPORTION block naming what transfers and what does not) |
+| `CANVAS_RULE` told judges a re-proportioned mechanism "should then say how" in the recipe. Nothing checked, so 7 of the 17 cross-aspect entries never mention the frame | style bank, session 10f | **`stylebank.validate()`** reports them as `recipe/canvas`; hard violations are separable via `validate(advisory=False)` |
+| **`on_cream(accent, 16, ground=INK)` returned `#0A0A0A` ON `#0A0A0A`** — 1.00:1, invisible. The `ground=` parameter invited the call, but the only fallback (`ink_of`) DARKENS, so on a dark ground it walked the wrong way and fell through to a hardcoded `else INK` | whole dark-ground corpus (~1/3 of the bank) | **`core.on_ground()`** picks the direction BY MEASURING the ground and falls back to `text_on(ground)`, never a fixed INK · **`core.lit_of()`**, the computed mirror of `ink_of` · **`core.on_dark()`** as the named entry point |
+| One sentence split across three chips placed at x=48 / x=560 / x=48: chips 1 and 3 share a left edge, so they read as a COLUMN and the copy scans "showing → and again → up again". Everything legible, nothing colliding, no dead quadrant, pixel critique happy. **A Sonnet agent iterated the piece twice, fixed the quadrant the metrics named, and never saw this** | c1_v3, session 10f | **`layout.reading_order_check(parts)`** — INVERSION + COLUMN TRAP, opt-in via `preflight(..., reading_order=[...])`, HARD FAIL when asked |
+| The section 6 template's render call omitted `elements=`, so `reconcile_boxes` never ran and an element built-but-never-`append`ed was invisible to EVERY check — a lemon star landed on the words "SIGN-UPS OPEN NOW" while preflight printed CLEAN | c2_v3, session 10f | template fixed to the full call; see section 6 |
+| An `ignore_pairs` entry naming a label that is not in `elements` — the author thought about the overlap but never declared the object | c2_v3, session 10f | **`layout.collision_check`** reports ignore pairs naming undeclared labels |
+| A test file accumulated THREE `ALL {N} ASSERTIONS PASSED` banners; a run dying at assertion 19 still printed "ALL 18 ASSERTIONS PASSED" first, so grepping for the pass string read a failure as a success | `test_stylebank.py`, session 10f | rule: exactly ONE pass banner, at the end of the file |
+
+| `measure_text()` had no `font-style`, and its canvas TextMetrics call left the style out of the font shorthand — so every Instrument Serif string, whose ONLY brand use is italic, measured **10.7% narrow** and bled off-canvas | session 10f, agent c3 | **`build.measure_text(style=)`**, defaulting to italic for the `'s'` token |
+| Type painted, laid out, correctly coloured, inside its box and on canvas — and invisible, because a sibling with an explicit `z-index` buries an element with `z-index:auto` regardless of DOM order. preflight CLEAN, render CLEAN, Playwright `is_visible()` **True** | session 10f, agent c1 | **`reconcile.measure_dom` → `buried_text`** (advisory, auto). Walks `elementsFromPoint` and counts only an OPAQUE element as blocking — `elementFromPoint` reports geometric stacking, and a tight line-height hit-tests above its own box, which made v1 of this check flag visible text |
+| Text declared honestly in `color_pairs` as white-on-lavender: `invisible_color_check` passed it (distance is large) while the pair is **1.44:1** and unreadable | session 10f, `110a5730` v4 | **`layout.text_contrast_check`** — HARD FAIL in `preflight(text_pairs=…)`, honours the WCAG large-text split, and reports what `core.text_on()` would have chosen |
+| Every child of a card had to be hand-listed in `collision_ignore`; a forgotten pair looks exactly like a real bug | session 10f, agent r1 | **`collision_check(..., containers=(…))`** — containment is not collision, declared explicitly because a doodle inside a headline's bbox is containment too |
+| A hardcoded repo root reached **50 Python files**, `AGENTS.md` and a second copy of the manual in the vault — 10e fixed one of three documents. Then 17 more named the CURRENT root, the same bomb with a newer address | five occurrences, session 10f | full sweep to a self-locating root + **`scratchpad/test_repo_hygiene.py`**, which also forbids a second pass banner in any test file |
+| `build.render()` forwarded four of `preflight`'s options and silently dropped the rest, so a script needing `cascade_stacks` called preflight by hand and then rendered WITHOUT `elements=` — disabling `suppress_handled` and `reconcile_boxes` too | session 10f, agent c2 | `render()` now forwards every preflight option |
+| `stylebank.canvas_shift` fired on a mockup's WHOLE-PHOTO aspect and stated a precise ratio that was not true of the design inside it | session 10f, judging agent | `canvas_shift` returns None for any kind in `MEASURED_SCOPE`; those already get the crop-first warning |
+| `stylebank.merge()` required `mechanism` AND `recipe` IN THE DROP-FILE, so a partial update ("a better recipe for an entry you already judged") was silently skipped | session 10f, judging agent | completeness is now checked on the MERGED RESULT, not the drop-file |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -597,11 +653,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (31) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
-  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (23) ·
+  `test_layout_rules.py` (66) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (32) ·
-  `test_stylebank.py` (33)** — **265 assertions total, all verified passing 2026-09-19**. All in `scratchpad/`.
+  `test_stylebank.py` (54) · `test_buried_text.py` (10) · `test_repo_hygiene.py` (20)** —
+  **361 assertions total, all verified passing 2026-09-20**. All in `scratchpad/`.
   Run them before trusting the gate stack.
   (`test_layout_rules.py` had been cited here as 21 assertions while missing from disk entirely;
   rebuilt 2026-08-03 — if a doc cites a test, open it before repeating the claim. Verified again
@@ -623,6 +680,13 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   output in `out/session10/`.
 - The looking gate is only as good as the checklist + the eye. It runs EVERY time; that is its value.
   **Keep converting each new visual catch into an encoded rule (§8).**
+- **STYLE BANK BRIEFS NOW STATE WHICH FRAME THEIR NUMBERS ARE IN (session 10f).** Only
+  **25 of 74** entries are a same-frame `poster` whose measured fractions are build
+  targets; 45 are a sheet/mockup/asset/carousel measuring something that is not a
+  composition, and 17 are judged onto a canvas >25% from their own aspect. `brief()`
+  prints a RE-PROPORTION block and a MEASURED_SCOPE warning accordingly.
+  **7 recipes still owe a re-proportioning sentence** — `python engine/stylebank.py validate`
+  names them.
 - **STYLE BANK (new, session 10e): `brain/STYLE_BANK.json` holds all 74 references as
   usable STYLES — measured fields from the pixels, judged fields from eyes, all 74 judged.**
   `python design.py "<subject>"` draws one educated-random and prints a build brief; see

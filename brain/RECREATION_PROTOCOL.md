@@ -96,6 +96,34 @@ Tooling built and validated this session: `engine/compare.py`, `engine/shapes.py
 (proof sheet: `scratchpad/proof/shapes_sheet.png`, all 10 silhouettes verified by eye after fixing
 two real defects — spiked gear teeth, and arc text collapsing to one glyph).
 
-Per-poster convergence runs: **not yet started.** Queue = all 44 in
+Per-poster convergence runs: **in progress since 2026-07.** Queue = all 74 in
 `training_samples/reference_posters/`. Track per-poster outcome in `brain/RECREATION_AUDIT.md` and
 flip status in `brain/RECREATION_PROGRESS.md`.
+
+
+## MOCKUPS — when the SCORE is structurally meaningless
+
+Roughly a third of the corpus is a mockup: the design photographed on a phone, in
+print, in a shopping basket, or three screens on a backdrop. Two rules, both learned
+the expensive way:
+
+1. **Crop before you measure.** `compare.crop(ref, x0,y0,x1,y1, out)` (canvas
+   fractions), then measure and score against the CROP. Scoring a full-bleed poster
+   against a photo of four phones on grey measures the grey.
+2. **A crop's aspect is usually not a canvas we can render.** A phone screen is around
+   0.28:1; `story` is 0.56:1. The remaining gap is then an ARTIFACT of the aspect
+   difference, not a content gap, and no number of iterations will close it.
+
+**Decision table addition.** When the looking gate passes against the full step-1
+checklist AND the score is still far above the accept line AND the reference is a
+mockup whose crop aspect differs from your canvas by more than ~1.5x:
+
+  * run a control first — score your render against a downscaled copy of ITSELF. On
+    522f2d89 the control returned 1.12x against a measured 2.49x, so most of that gap
+    was real. If your control comes back near zero, the gap is the aspect.
+  * then **PARK it** with `runqueue.py fail`, with a note saying the score is not
+    comparable to a same-aspect recreation. Do NOT accept it on the score, and do not
+    keep iterating against a number that cannot move.
+
+Precedents: `522f2d898b827f` (0.619, 4 iters, parked) and `110a5730e3710b` (0.534,
+4 iters, parked, control 0.001). Both had clean looking gates.

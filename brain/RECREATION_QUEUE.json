@@ -311,10 +311,10 @@
     },
     "110a5730e3710b": {
       "file": "110a5730e3710ba94e525ee2c5850981.jpg",
-      "status": "pending",
+      "status": "blocked",
       "score": null,
       "iters": 0,
-      "note": ""
+      "note": "PARKED at v4 (compare score 0.534, NOT comparable -- see note). Sociosphere 3-phone app mockup; picked the front-centre screen, cropped it (compare.crop 0.345,0.088,0.678,1.0 -> scratchpad/crops/110a5730_mid.png, 246x895, aspect 0.275). Looking gate PASSES: full-bleed tomato ground (matches AQ tomato almost exactly), logo-in-cream-pill top-left (never-white-inverted rule), search icon, 2-line white headline, 3-pill category row with the 3rd pill genuinely truncated at the margin (right_flush border-radius trick, not an off-canvas element), 4 stacked cards -- photo card, lavender squiggle break-the-pattern card (dd.stamp squiggle), and two text-only cards -- all present, correctly proportioned, no collisions, no missing elements vs the step-1 inventory. Built on STORY aspect (1080x1920) rather than feed, following the 522f2d89 precedent for phone-screen mockups. Score stays high for reasons diagnosed and shown NOT to be real: (1) aspect mismatch -- crop is 0.275, story is 0.5625, compare.py forces both to 4:5, so the crop is stretched far more than the render (confirmed: scoring v2.png against a same-aspect downscaled copy of itself gives 0.001, not ~0.5); (2) DETAIL TOO LOW 0.66x is dominated by that stretch, not genuine missing linework; (3) three REGION UNDER-filled cells at top-right are the phone screenshot's own rounded-corner bezel (lavender backdrop bleeding through the screen's corner radius) registering as reference 'content' that a rectangular render structurally cannot have -- verified by zooming that exact region. v1 (feed, broken: off-canvas card bleed + doubled body-text height bug) -> v2 (feed, gate-clean, but card3 had a dead blank zone) -> v3 (story, fixed card3 but card4 had a NEW huge dead zone from a title-only peek in too much leftover room) -> v4 (story, card4 given full title+body+byline+read content, matching the reference's own card4 inventory). Scripts preserved at out/versions/110a5730e3710b/ (v1-v4 .py + .png). Same disposition as 522f2d89: mechanism faithful, looking gate passes, score not accepted as a number."
     },
     "114f2b19c46119": {
       "file": "114f2b19c46119a6a2b27273256182a7.jpg",

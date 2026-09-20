@@ -1,3 +1,4 @@
+import os
 """SHOWCASE 5g — five more. AREA is now the binding constraint (detail is solved), so every
 piece here targets area ~0.9-1.1x: content pushed to all four margins, no dead bands, and no
 oversized flat masses (which inflate area while crushing detail — the 5e tension rule).
@@ -9,7 +10,12 @@ oversized flat masses (which inflate area while crushing detail — the 5e tensi
  35 684fb8df55  single-slide stack       -> banded layout with dense per-band sub-copy
 """
 import asyncio, os, sys, importlib.util, math
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))

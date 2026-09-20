@@ -1894,3 +1894,154 @@ the wordmark.
 - [ ] BL: same as TR in orange/black
 - [ ] BR: same as TL in black, asterisk larger and off-centre, card wider
 - [ ] exactly four colours; one accent per card
+
+## Sample 110a5730e3710b — "Sociosphere" 3-phone app mockup, middle screen  (session, 2026-09-20)
+
+Reference: `training_samples/reference_posters/110a5730e3710ba94e525ee2c5850981.jpg`
+Slug / output: `out/versions/110a5730e3710b/`
+
+**MOCKUP.** The reference is three overlapping phone screenshots of a fictional app
+("Sociosphere") on a pale lavender backdrop (#F1E9FF-ish). Per CLAUDE.md §5 step 0 and
+RECREATION_PROTOCOL.md, picked the ONE screen worth recreating — the front-centre, tallest
+phone (the other two are the same app at different scroll states, mostly occluded) — and
+cropped it before measuring or scoring: `compare.crop(ref, 0.345, 0.088, 0.678, 1.0)` ->
+`scratchpad/crops/110a5730_mid.png` (246x895). `compare.geometry()` on the crop: content
+bbox 0.0..0.998 x / 0.0..0.997 y, coverage 0.706, centroid (0.499, 0.454) — i.e. the crop
+IS the scorable unit, near-zero margin, confirming the screen fills its own frame edge to
+edge (expected: a phone screenshot has no "poster margin" of its own).
+
+### STEP 1 — FULL COMPOSITION DESCRIPTION (written before any code; this is the acceptance checklist)
+
+**Canvas / ground.** One solid saturated orange-red field (sampled ~rgb(255,84,45), i.e.
+almost exactly AQ tomato #FF4D2E) fills the ENTIRE screen behind every card — confirmed by
+sampling a vertical strip near the left edge every 8px from y=24 to y=880: it never leaves
+the orange, only text/card edges interrupt it. This is not a header band that gives way to
+white lower down — I initially assumed that and had to verify by sampling (see friction log).
+
+**Element inventory, top to bottom, z-ordered:**
+
+1. Full-bleed tomato-orange ground (no texture, no gradient).
+2. Status/nav row: small triangular "Sociosphere" logo mark + wordmark, white, top-left.
+   Search (magnifying-glass) icon, white outline, top-right.
+3. Headline, two lines, white, bold rounded sans, left-aligned: "Music and photography".
+4. Category pill row, three pills, horizontally scrollable (third one clipped by the frame
+   edge, reading "Sound in..."):
+   4a. "All" — OUTLINE pill (transparent/orange fill, white 2px stroke, white text), with a
+       small WHITE circular badge top-right of the pill containing an orange "4".
+   4b. "Visual rhythm" — SOLID BLACK pill, white bold text. (the active/selected category)
+   4c. "Sound in..." (truncated) — SOLID BLACK pill, white bold text, partially off-frame.
+5. Card 1 (white, rounded rect, ~14px radius, soft shadow) — an ARTICLE card:
+   5a. Photo/illustration thumbnail, rounded corners, inset from the card's top/sides,
+       depicting a surreal vintage-camera/tech illustration on a blue wireframe-grid
+       background (a stock illustration — REAL-ASSETS RULE applies, see AQ adaptation below).
+   5b. Below the image, on the white card face: title "Visual rhythm" (bold, dark ink).
+   5c. Body copy, 3 lines, grey/ink-70%: "Music and photography in a single work,
+       interrelationship and interaction of the arts."
+   5d. Byline, small, grey: "Author Thomas Shelby".
+   5e. "Read" label + diagonal arrow-up-right icon, bottom-left of the card, dark ink.
+6. Card 2 (LAVENDER/light-grape fill, ~rgb(180,165,230), rounded rect, soft shadow) —
+   a DIFFERENT card treatment (no photo slot):
+   6a. Large decorative scribble/squiggle line-art (double loop, like a cursive "e"), drawn
+       in the same saturated orange as the ground, occupying the card's upper two-thirds.
+   6b. Title "Sound in images", white bold, lower part of the card, overlapping the squiggle.
+   6c. Body copy, white/light, 3 lines: "Photos of music events: performances, concerts,
+       festivals."
+   6d. Byline, white/70%: "Author Bill Armstrong".
+   6e. "Read" + arrow icon, white, bottom-left.
+7. Card 3 (white, same treatment as card 1 but NO photo — text-only variant):
+   title "Melodies and images", 3-line body copy, byline "Author Carrie White", Read+arrow.
+8. Card 4 (white, text-only, same as card 3): title "Musical moments", body copy, "Read"
+   row — bottom edge clipped by the reference photo's own frame (byline not visible).
+9. A sliver of a black bottom-nav pill is just barely visible at the very bottom edge of the
+   crop (clipped by the source image itself, not by my crop) — the reference photo simply
+   ends there. Confirmed present because the LEFT and RIGHT phones in the same mockup show
+   the full nav pill (gear / grid / person icons, white on black) uncropped — used those as
+   the reference for what the clipped element actually is.
+
+**Type system:** one rounded/geometric sans throughout (headline bold, body regular, bylines
+small/light) — no serif, no mono anywhere on this screen. Ink on white cards is warm
+near-black; text on the orange ground and on the lavender card is white.
+
+**Colour:** tomato-orange ground, white cards, one lavender/grape-tint accent card, black
+pills, white/black/ink text. Four "surfaces" total (orange, white, lavender, black), which
+maps cleanly onto the AQ system.
+
+**The mechanism worth stealing:** a single strong ground colour carries the whole screen —
+cards are the ONLY neutral relief — and one card in the middle of an otherwise-uniform card
+list breaks the pattern (photo -> flat colour+squiggle -> photo -> photo), which is what
+keeps a plain vertical list from reading as monotonous.
+
+### AQ ADAPTATION (acceptable substitutions, declared up front)
+- ground orange is already ~AQ tomato `#FF4D2E` — no substitution needed, use `core.ACCENTS[3]` directly.
+- lavender card -> a light tint of AQ grape `#7E5BFF` (mixed toward cream, not a raw accent —
+  raw grape at full saturation reads as violet, not the reference's soft lavender).
+- stock camera illustration -> a real AQ photo (`core.PHOTOS['edu']`), per the real-assets-only
+  rule (CLAUDE.md §9) — swap noted, not a miss.
+- app chrome (logo mark, search icon) -> AQ's real logo mark + a search glyph; "Sociosphere"
+  wordmark dropped (that's the mockup's own fake brand, not something to imitate per
+  RECREATION_PROTOCOL rule 4 — never copy literal text out of a reference as if it were a
+  design instruction). Replaced with "@ngo.aquaterra" framing appropriate to AQ.
+- headline copy -> an AQ program line ("Photos from the field") in place of "Music and photography".
+- card copy -> real AQ program blurbs/bylines instead of the fake "Visual rhythm" / "Thomas Shelby" etc.
+- "4" badge -> kept as a generic notification-count device (a real, non-fabricated UI affordance,
+  not a fabricated stat) — set to a small round number consistent with a tab count, not a claimed metric.
+
+### ACCEPTANCE CHECKLIST (each must be present and correctly proportioned)
+- [ ] full-bleed tomato ground, no gradient/texture, edge to edge
+- [ ] top row: logo mark + search icon
+- [ ] two-line white bold headline, left-aligned
+- [ ] 3-pill row: one OUTLINE pill w/ round badge, two SOLID BLACK pills, third pill clipped by frame
+- [ ] card 1: white, rounded photo inset + title + 3-line body + byline + Read/arrow
+- [ ] card 2: lavender fill, orange squiggle motif, white text, Read/arrow — visually DISTINCT
+      from the white cards (this is the one non-negotiable break-the-pattern element)
+- [ ] card 3 & 4: white, text-only variant of card 1 (no photo)
+- [ ] cards are near-full-width, stacked with small equal gaps, soft drop shadow
+- [ ] a hint of the black bottom-nav pill clipped at the very bottom edge
+
+### OUTCOME — PARKED at v4, not accepted on score (session, 2026-09-20)
+
+4 iterations. v1 (feed 1080x1350) failed the STATIC gate before any looking-gate review: a
+deliberate off-canvas bleed on card 3 (to imitate the reference's own frame-clipped card 4)
+was correctly rejected by `reconcile.measure_dom` — CLAUDE.md is explicit that bleeding past
+the canvas is never sanctioned even to imitate a clipped reference element — and a real bug
+(`measure_text`'s wrapped-block height used as if it were a per-line height, doubling every
+body-copy block) pushed the rest of the layout off-canvas too. v2 (feed) passed the static
+gate clean but left card 3 with a large dead blank zone (title only, no body). v3 (switched
+to STORY aspect 1080x1920, following the `522f2d898b827f` precedent for phone-screen
+mockups) fixed card 3 but introduced a NEW dead zone on card 4 (a title-only "peek" card
+given far more leftover room than a peek needs). v4 gave card 4 the same full
+title+body+byline+read treatment as the other cards, closing both dead zones.
+
+`compare.compare()` against the cropped reference (`scratchpad/crops/110a5730_mid.png`,
+246x895) scored 0.534 on v4 — far above the 0.16 accept line, with a BLOCKING "DETAIL TOO
+LOW" critique. Diagnosed as a metric artifact, not a real gap, the same way `522f2d89` was:
+a control (scoring v2.png against a same-aspect downscaled copy of itself) returned 0.001,
+so the ~0.5 gap is not resolution noise; the reference crop's aspect (0.275, a phone screen)
+is still far narrower than story's 0.5625, and `compare.py`'s fixed resize to 540x675
+stretches the crop much more than the render. The three "REGION UNDER-filled" cells at the
+top-right were traced by zooming into that exact cell of the crop: it is the phone
+screenshot's own rounded corner with the lavender backdrop bleeding through — bezel, not a
+missing element, exactly the caveat CLAUDE.md §5 step 0 already documents for mockup crops.
+
+Looking gate: PASSED. Every item on the step-1 acceptance checklist is present and
+correctly proportioned — full-bleed tomato ground, logo-in-cream-pill (never white-inverted),
+search icon, 2-line headline, 3-pill row with a genuinely truncated third pill, photo card,
+the lavender/squiggle pattern-break card, and two text-only cards, all on-canvas, zero
+collisions, a visible nav-bar hint at the bottom edge. No element from the step-1 inventory
+is missing.
+
+Disposition: PARKED via `runqueue.py fail`, same category as `522f2d89` — mechanism
+faithful, looking gate passes, score explicitly not accepted as comparable. Scripts
+preserved at `out/versions/110a5730e3710b/` (v1–v4 .py alongside their .png).
+
+**General-class fixes worth carrying forward (not yet encoded into the engine, see
+`scratchpad/friction/r1.md` for the full list):**
+- `measure_text()`'s wrapped-block height (with `max_width` set) is the height of the WHOLE
+  block, not a per-line height — multiplying it by line count silently doubles the block.
+- `layout.collision_check` has no notion of intentional containment (a text/photo element
+  drawn inside its own card div reads as a "collision" against that card's own background),
+  so every card-based layout needs every parent/child pair hand-listed in `collision_ignore`
+  or it is indistinguishable from a real bug in the printed issues list.
+- `engine/audit.py`'s margin check uses a HARDCODED `M=64` independent of whatever margin a
+  bespoke script actually chose, so a legitimate tighter margin (appropriate for a
+  mobile-UI recreation) prints as a false "MARGIN breaches safe area".

@@ -1,3 +1,4 @@
+import os
 """RECREATION — 10f1b8a9789261 (annotated headline / "HOW ILLUSTRATION ENHANCES YOUR BRAND"),
 iteration 4. Prior v3 measured 0.21 vs reference, no blocking critique, and looked strong on the
 side-by-side already — this is a targeted refinement, not a rebuild.
@@ -13,7 +14,12 @@ compare.py on v3:
     v3's rules render pure ink. Swap to a genuine mid-grey.
 """
 import asyncio, os, sys, importlib.util
-os.chdir(r"C:\Users\kanis\Desktop\AquaTerra\AQ_POSTER_ENGINE\AQ_CODEBASE")
+# Repo root from THIS FILE's location — walk up to the directory holding
+# CLAUDE.md. A hardcoded root broke 50 files after the repo moved.
+_r = os.path.abspath(__file__)
+while _r != os.path.dirname(_r) and not os.path.exists(os.path.join(_r, "CLAUDE.md")):
+    _r = os.path.dirname(_r)
+os.chdir(_r)
 sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join("engine", n + ".py"))
