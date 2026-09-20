@@ -535,7 +535,11 @@ eye is needed less next time.
 ---
 
 ## 9. BRAND CONSTANTS & VOCABULARY (`engine/core.py` is the source of truth)
-**Colors** — bg cream `#F4EFE0` (NEVER white) · ink `#0A0A0A`. Accents (`core.ACCENTS`, index them
+**Colors** — bg cream `#F4EFE0` (NEVER white) · ink `#0A0A0A`.
+⚠ **`PAPER` (#FFFFFF) and `CREAM` (#F4EFE0) are 1.15:1 apart** — a white card on the cream page is
+very nearly invisible as a FILL and reads ONLY by its outline or its hard shadow. `invisible_color_check`
+flags that pair, correctly; it is not a false positive, it is the two tokens telling you they cannot
+carry a figure/ground relationship on their own. Give the card its craft layer, or change one of them. Accents (`core.ACCENTS`, index them
 by `A[i]`), used as PUNCTUATION only (~30% of the piece, never a flooded field):
 `A[0]` pink `#FF4D8C` · `A[1]` mint `#1B8A5A` · `A[2]` lemon `#FFC700` · `A[3]` tomato `#FF4D2E` ·
 `A[4]` sky `#3DA9FC` · `A[5]` grape `#7E5BFF` · `A[6]` teal `#0E7C86`. (Also `--mintbright #00E5A0`.)
@@ -711,6 +715,14 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | **The standing auto-resume rule was jammed.** `record()` wrote status `in_progress` whenever a score missed the accept line, so "attempted, did not converge" and "a session is working on this right now" became the same value. `nxt()` resumes in-progress work first and returns the FIRST such entry — so with **36 of them, every new window got the same stuck poster** and the 26 never-touched references were unreachable through the documented entry point. The run sat at 3 done of 74 while 36 had been worked. All 36 carried a score; not one was a real interruption | session 10f | **`runqueue._status()`** derives `attempted` from the data (derived, not migrated — four agents were writing to the JSON at the time), `record()` stores it going forward, and `nxt()` now prefers untouched work then falls back to the attempt CLOSEST to converging. Self-test: `scratchpad/test_runqueue.py` |
 | `runqueue.py`'s own docstring told you to run `python engine/queue.py` — a file that does not exist and must not, since a module named `queue.py` in `engine/` shadows the stdlib and broke every bespoke script once already (this same table) | session 10f | every command in it names the real file; the self-test asserts it |
 
+| **No primitive for a flowing BAND** — 12 of the 74 styles call for one (a winding ribbon, a swooping arrow-band, a wavy torn panel edge). A recreation had to hand-write a Catmull-Rom generator from scratch, and every future reference with the motif would hit the same wall | session 10f, agent f80cb | **`shapes.ribbon(points, width=, taper=, closed=)`** — a thick band through control points, with a documented limit: a bend tighter than its own half-width pinches the inner edge |
+| `compare.report()` RETURNED its text and printed nothing, while RECREATION_PROTOCOL step 3 is literally `python -c "...compare.report(ref, gen)"` followed by "This prints SCORE + a directed critique list". The documented measure step produced total silence | session 10f, agent f80cb | it prints by default; `echo=False` for a caller that wants the string |
+| A persistent `MISSING COLOUR dark/ink` on EVERY version of a recreation whose render was full of that exact black: `_match_palette` is strictly 1:1, and JPEG noise had split the reference's flat black across two adjacent quantization buckets, so the second could never match | session 10f, agent f80cb | **`compare._merge_near`** folds near-duplicates first, at a tolerance READ FROM the quantization step — a guessed 30 missed the real 32 by one unit and the false positive survived the first fix |
+| The decision table's `REGION under/over-filled` remedies assume a missing or mis-scaled element. When the cause is a WRONG SHAPE FAMILY they actively misdirect — a ribbon with the right colour, width, endpoints and bbox but a smooth diagonal where the reference hooks burned **3 of 6 iterations** adding filler because the table said to | session 10f, `80cb7ed71a8cc9` | a new row plus "WHEN THE REGION ROWS ARE LYING TO YOU" in `RECREATION_PROTOCOL.md`: the tell is an over-filled cell BESIDE an under-filled one with balanced totals |
+| `buried_text` keyed on "has own text", so a buried IMAGE was invisible to it — a fade layer above `build.logo()`'s hardcoded `z-index:20` made the wordmark vanish completely with every gate clean | session 10f, agent f62f8 | an `<img>`/`<svg>`, or anything tagged `logo`, now counts as content |
+| `audit.py`'s `BLEED` and `MARGIN_OK` were closed vocabularies baked into that file, so a script with a deliberately bleeding element could not tell that gate — an agent dropped elements from it rather than live with permanent noise, ending with DOM coverage on 4 of 7 | session 10f, agents f80cb + f62f8 | `audit.audit(bleed_tags=)`, forwarded by `render` — ONE declaration now reaches `preflight`, `audit` and `measure_dom` |
+| `PAPER` (#FFFFFF) and `CREAM` (#F4EFE0) are **1.15:1** apart, so a white card on the cream page reads only by its outline. `invisible_color_check` flags the pair, correctly — but nothing said so, and it looked like a false positive | session 10f, agent f62f8 | stated in §9: the two tokens cannot carry a figure/ground relationship without a craft layer |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -790,9 +802,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_layout_rules.py` (76) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
-  `test_recreation.py` (39) ·
-  `test_stylebank.py` (64) · `test_buried_text.py` (21) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
-  **424 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_recreation.py` (47) ·
+  `test_stylebank.py` (64) · `test_buried_text.py` (24) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (16)** —
+  **435 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

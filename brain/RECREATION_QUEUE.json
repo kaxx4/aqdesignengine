@@ -332,10 +332,10 @@
     },
     "25143d758ea743": {
       "file": "25143d758ea743e15ec374876a41192d.jpg",
-      "status": "pending",
-      "score": null,
-      "iters": 0,
-      "note": ""
+      "status": "attempted",
+      "score": 0.169,
+      "iters": 9,
+      "note": "v6 ACCEPTED: sticker+pill social pile on dark ground, linkedin 1200x628. Found+fixed 2 real bugs via gate stack: (1) build.page()'s global .dood z-index:4 rule interacts with per-wrapper transform-triggered stacking contexts to silently hide a doodle behind a sibling regardless of DOM order; (2) circular sticker bbox==bounding-square gives collision_check false positives against nested illustrations. Score 0.169 (area_ratio 0.918, gyration 0.95, bbox_iou 0.985), no blocking critique, looking gate clean, all step-1 elements present. v7-v9 explored further tuning and regressed (0.189-0.241); v6 stands. Scripts v1-v9 preserved in out/versions/25143d758ea743/."
     },
     "2af2568a52cc92": {
       "file": "2af2568a52cc92360082830202f98275.jpg",
@@ -402,10 +402,10 @@
     },
     "62f8cc4d3c6135": {
       "file": "62f8cc4d3c613590844bd12d49c81671.jpg",
-      "status": "pending",
-      "score": null,
-      "iters": 0,
-      "note": ""
+      "status": "attempted",
+      "score": 0.903,
+      "iters": 2,
+      "note": "Looking gate PASSED, zero missing elements vs step-1 inventory; clean across preflight/audit/reconcile/preview. Score 0.903 far above 0.16 but NOT primarily aspect (stacked same-aspect control still 0.951) - traced to compare.py content_mask being blind to the reference's own near-invisible low-contrast pill fill while AQ's mandatory ink-outline craft layer + solid accent avatars + optional hero slab all register strongly as content. Slab alone verified worth ~0.18 of the gap (0.951->0.775 removed) but not sufficient and not worth dropping a recipe-endorsed hero for. See RECREATION_AUDIT.md for full diagnostic chain. Recorded attempted, not blocked - this is a real scorable poster, not a mockup."
     },
     "71cd34ac681e40": {
       "file": "71cd34ac681e4029c19b58e7df0f7f8e.jpg",
@@ -423,10 +423,10 @@
     },
     "80cb7ed71a8cc9": {
       "file": "80cb7ed71a8cc960d22e790ed09202dc.jpg",
-      "status": "pending",
-      "score": null,
-      "iters": 0,
-      "note": ""
+      "status": "attempted",
+      "score": 0.243,
+      "iters": 5,
+      "note": "v5 final: ribbon/star/flower/headline/subhead all present, looking gate passes; score 0.243 above 0.16 line, diagnosed as coarse-grid sensitivity to a thin wiggly ribbon's exact hook shape, not a missing/wrong element (see RECREATION_AUDIT.md)"
     },
     "911d9ad81ac025": {
       "file": "911d9ad81ac0254a18928c168a89cb66.jpg",

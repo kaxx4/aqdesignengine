@@ -79,6 +79,96 @@ def wave_banner(w=100, h=44, waves=1.5, amp=7):
     return d + " Z"
 
 
+def ribbon(points, width=14, taper=None, closed=False, tension=0.5, samples=24):
+    """A thick flowing BAND through `points` — the corpus's most-wanted missing shape.
+
+    12 of the 74 references call for one: a winding ribbon threading down a page, a
+    swooping arrow-band behind a headline, a wavy torn edge between two panels. There
+    was no primitive, so a recreation had to hand-write a Catmull-Rom generator from
+    scratch, and any reference with this motif hit the same wall (session 10f, f80cb).
+
+    points : [(x, y), ...] centreline control points, in the 0..100 box like every
+             other shape here. THREE OR MORE. The curve passes THROUGH each one.
+    width  : band thickness in box units.
+    taper  : optional [w0, w1, ...] per-point widths, interpolated along the run — a
+             ribbon that thins as it leaves the frame reads as drawn rather than
+             extruded. Overrides `width` when given.
+    closed : join the last point back to the first.
+    tension: 0 = angular, 0.5 = natural Catmull-Rom, 1 = very loose.
+
+    ON TIGHT BENDS. A sparse control set cannot express a quarter-turn into a flat run
+    into a 180° hook — that exact mismatch cost a recreation three iterations of
+    chasing region deltas that were really a wrong shape FAMILY. Put control points
+    where the curvature actually changes: two at the entry and exit of a hook, not one
+    at its apex. More points is the fix, not more tension.
+
+    KNOWN LIMIT, stated rather than hidden: the band is built by offsetting the
+    centreline, so where the bend RADIUS is tighter than the ribbon's own half-width
+    the inner edge crosses itself and pinches — a small notch on the inside of the
+    turn, visible on a 180° hook at full width. It is a property of naive offsetting,
+    not a bug to be tuned away. Widen the bend or narrow the ribbon; at AQ's usual
+    weights (10–16 in a 100 box) ordinary S-curves are clean.
+
+    Returns an SVG path `d` for a CLOSED band (offset out and back), fillable and
+    usable with sticker()/ink_mark() like any other silhouette.
+    """
+    import math
+    pts = [(float(x), float(y)) for x, y in points]
+    if len(pts) < 2:
+        return ""
+    if closed and pts[0] != pts[-1]:
+        pts = pts + [pts[0]]
+
+    # Catmull-Rom through the control points, sampled densely enough to offset.
+    def _cr(p0, p1, p2, p3, t):
+        t2, t3 = t * t, t * t * t
+        a = -tension * t3 + 2 * tension * t2 - tension * t
+        b = (2 - tension) * t3 + (tension - 3) * t2 + 1
+        c = (tension - 2) * t3 + (3 - 2 * tension) * t2 + tension * t
+        d = tension * t3 - tension * t2
+        return (a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0],
+                a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1])
+
+    ext = [pts[0]] + pts + [pts[-1]]
+    spine = []
+    for i in range(len(ext) - 3):
+        for s in range(samples):
+            spine.append(_cr(ext[i], ext[i + 1], ext[i + 2], ext[i + 3], s / samples))
+    spine.append(pts[-1])
+    if len(spine) < 2:
+        return ""
+
+    # width at each sample: constant, or interpolated through the taper list
+    n = len(spine)
+    if taper and len(taper) >= 2:
+        ws = []
+        for i in range(n):
+            u = i / (n - 1) * (len(taper) - 1)
+            j = min(int(u), len(taper) - 2)
+            f = u - j
+            ws.append(taper[j] * (1 - f) + taper[j + 1] * f)
+    else:
+        ws = [width] * n
+
+    left, right = [], []
+    for i, (x, y) in enumerate(spine):
+        px, py = spine[max(0, i - 1)]
+        qx, qy = spine[min(n - 1, i + 1)]
+        dx, dy = qx - px, qy - py
+        L = math.hypot(dx, dy) or 1.0
+        nx, ny = -dy / L, dx / L               # unit normal
+        h = ws[i] / 2.0
+        left.append((x + nx * h, y + ny * h))
+        right.append((x - nx * h, y - ny * h))
+
+    def _poly(seq):
+        return " ".join(f"L{x:.2f},{y:.2f}" for x, y in seq)
+
+    d = (f"M{left[0][0]:.2f},{left[0][1]:.2f} " + _poly(left[1:]) + " " +
+         _poly(reversed(right)) + " Z")
+    return d
+
+
 def blob(seed=1, lobes=7, r=44, wobble=0.18):
     """Organic rounded blob — smooth, NOT a polygon. Uses quadratic beziers through midpoints."""
     import random

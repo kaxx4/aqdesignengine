@@ -287,4 +287,41 @@ async def crop_tests():
 
 asyncio.run(crop_tests())
 
+# ── shapes.ribbon — the corpus's most-wanted missing silhouette ─────────────
+# 12 of the 74 references call for a flowing band: a winding ribbon threading down
+# a page, a swooping arrow-band behind a headline, a wavy torn panel edge. There
+# was no primitive, so a recreation hand-wrote a Catmull-Rom generator from scratch
+# and every future reference with the motif would have hit the same wall.
+S_ = [(12, 18), (52, 26), (70, 50), (40, 64), (30, 80), (66, 86), (88, 70)]
+r_ = sh.ribbon(S_, width=13)
+assert r_.startswith("M") and r_.rstrip().endswith("Z")
+ok("ribbon() returns a CLOSED path, so it fills like any other silhouette")
+assert r_.count("L") > 100
+ok("...sampled densely enough to read as a curve, not a polyline")
+
+assert sh.ribbon([(0, 0)]) == "" and sh.ribbon([]) == ""
+ok("fewer than two points degrades to empty instead of raising")
+
+_w8, _w20 = sh.ribbon(S_, width=8), sh.ribbon(S_, width=20)
+assert _w8 != _w20
+ok("width actually changes the band")
+
+_tap = sh.ribbon(S_, taper=[4, 15, 15, 13, 10, 15, 4])
+assert _tap != r_
+ok("a taper list overrides the constant width — a ribbon that thins reads as drawn")
+
+_closed = sh.ribbon(S_, closed=True)
+assert _closed != r_ and _closed.count("L") > r_.count("L")
+ok("closed=True joins the run back to its start")
+
+# the exact shape family the agent could not reach: flat run into a 180 hook
+_hook = sh.ribbon([(20, 20), (70, 20), (84, 20), (88, 32), (76, 40), (64, 36), (60, 26)],
+                  width=11)
+_xs = [float(t.split(",")[0]) for t in _hook.replace("M", "L").split("L")[1:] if "," in t]
+assert max(_xs) > 88 and min(_xs) < 22
+ok("a flat run into a tight 180 hook spans its full intended extent (80cb7ed7)")
+
+assert sh.ribbon(S_, width=13) == sh.ribbon(S_, width=13)
+ok("ribbon is deterministic — the same points give the same path")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

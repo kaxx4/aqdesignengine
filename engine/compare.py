@@ -132,8 +132,45 @@ def _palette(a, mask, k=6):
     return [(np.array(c, dtype=np.float32), n / tot) for c, n in cnt.most_common(k)]
 
 
+_QSTEP = 32          # _palette quantizes with `// 32 * 32`; these must agree.
+
+
+def _merge_near(pal, tol=_QSTEP):
+    """Fold near-duplicate entries in one palette together, summing their weights.
+
+    TOLERANCE IS THE QUANTIZATION STEP, not a taste constant. Two colours one bucket
+    apart on a single channel are exactly `_QSTEP` apart, and that is precisely the
+    artefact being merged — the reference here held [32,0,0] at 0.111 AND [0,0,0] at
+    0.054, one flat black that JPEG noise had straddled across the bucket boundary.
+    A guessed 30 missed it by one unit and the false positive survived the fix, which
+    is why this reads the step instead.
+
+    THE FALSE POSITIVE THIS KILLS (session 10f, agent f80cb). `_match_palette` is
+    strictly 1:1 — a matched render colour is consumed. A JPEG reference splits one
+    flat black across two adjacent quantization buckets, so the palette holds two
+    near-identical near-blacks; the first claims the render's black, the second can
+    never match, and `MISSING COLOUR dark/ink` printed on EVERY version of a
+    recreation whose render was full of that exact black. The agent chased it, then
+    traced it to the matcher.
+
+    Merging first fixes the cause rather than loosening the matcher, which would have
+    started accepting genuinely different colours as equal.
+    """
+    out = []
+    for c, w in pal:
+        for i, (c2, w2) in enumerate(out):
+            if float(np.sqrt(((c - c2) ** 2).sum())) <= tol:
+                # keep the heavier entry's colour, take both weights
+                out[i] = (c2 if w2 >= w else c, w2 + w)
+                break
+        else:
+            out.append((c, w))
+    return out
+
+
 def _match_palette(pa, pb):
     """Greedy nearest-colour matching; returns (mean_dist_of_matched, unmatched_from_a)."""
+    pa, pb = _merge_near(pa), _merge_near(pb)
     used, dists, unmatched = set(), [], []
     for ca, wa in pa:
         best, bi = None, None
@@ -371,10 +408,23 @@ def geometry(path, gw=9, gh=11):
     return out
 
 
-def report(ref_path, gen_path):
+def report(ref_path, gen_path, echo=True):
+    """Score + directed critique, PRINTED and returned.
+
+    RECREATION_PROTOCOL.md step 3 is literally
+        python -c "...compare.report(ref, gen)"
+    followed by "This prints SCORE + a directed critique list". It did not print: it
+    returned a string, so the documented measure step produced total silence and the
+    reader had to work out that they needed to wrap it in print() (session 10f, agent
+    f80cb). Printing by default makes the documented invocation do what it says;
+    `echo=False` is there for a caller that wants the string only.
+    """
     r = compare(ref_path, gen_path)
     lines = [f"SCORE {r['score']}  (0 = match)",
              f"  area {r['area_ratio']}x | detail {r['detail_ratio']}x | "
              f"spread {r['gyration_ratio']}x | bbox IoU {r['bbox_iou']} | palette {r['palette_dist']}"]
     lines += ["  - " + c for c in r["critique"]]
-    return "\n".join(lines)
+    out = "\n".join(lines)
+    if echo:
+        print(out)
+    return out

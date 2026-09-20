@@ -56,7 +56,14 @@ _MEASURE_JS = """els => els.map(e => {
            // point "hits" when elementFromPoint returns this element or something
            // inside it. See buried_text in measure_dom for why this exists.
            txt: (e.textContent || "").trim().slice(0, 40),
-           ownText: [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()),
+           // "Has own text" was the whole test, so a buried IMAGE was invisible to the
+           // check: a fade layer landed above build.logo()'s hardcoded z-index:20 and
+           // the wordmark vanished completely, with nothing reported (session 10f,
+           // agent f62f8). A logo is content, not decoration. An <img>/<svg> counts,
+           // and so does anything the author tagged `logo`.
+           ownText: [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())
+                    || e.tagName === "IMG" || e.tagName === "SVG"
+                    || (e.dataset.tag || "").toLowerCase().includes("logo"),
            hit: (() => {
              if (r.width < 2 || r.height < 2) return null;
              // OPACITY IS THE WHOLE POINT. elementFromPoint reports GEOMETRIC
@@ -330,7 +337,8 @@ async def measure_dom(page, W, H, margin=64, bleed_tags=("num", "bleed", "hero-b
             _blocked = hit["seen"] - hit["ok"]
             if _blocked and _blocked >= hit["seen"] * 0.6:
                 out["buried_text"].append(
-                    (e["tag"], (e.get("txt") or "")[:40], hit.get("top") or "?",
+                    (e["tag"], ((e.get("txt") or "").strip() or "<image>")[:40],
+                     hit.get("top") or "?",
                      f'{_blocked}/{hit["seen"]}'))
 
         if e["tag"] in bleed_tags:
