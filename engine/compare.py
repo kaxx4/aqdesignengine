@@ -322,6 +322,75 @@ def compare(ref_path, gen_path, gw=9, gh=11):
                 critique=crit)
 
 
+def find_panels(path, min_frac=0.04, max_frac=0.60, tol=34, gap=6):
+    """Find the rectangular SCREENS/CARDS sitting on a mockup's backdrop.
+
+    THE BOTTLENECK THIS REMOVES (session 10f, agent f114f). `crop()` takes fractions,
+    which have to come from somewhere — and that somewhere was 15-20 minutes of manual
+    pixel-scanning per reference. **Seventeen mockups remain in the queue**, so that is
+    five hours of a step no one should be doing by hand, and doing it by eye also
+    silently poisons step 0: leave a sliver of bezel curve in the crop and
+    `compare.geometry` reports a confident "content fills the whole frame" bbox.
+
+    The backdrop is whatever the edge ring says it is (`_bg_color`). Everything that is
+    NOT the backdrop forms columns and rows; the gaps between them separate the panels.
+    Deliberately simple and axis-aligned, because that is what a mockup layout is — a
+    row of phones, a grid of cards. It does NOT find a rotated or perspective-warped
+    screen, and says so by returning nothing rather than guessing.
+
+    Returns [(x0, y0, x1, y1), ...] as FRACTIONS, left-to-right then top-to-bottom,
+    ready to hand straight to `crop()`. Verify against the image before trusting it —
+    this narrows a five-hour manual step to a look, not to nothing.
+    """
+    im = Image.open(path).convert("RGB")
+    a = np.asarray(im).astype(np.float32)
+    H_, W_ = a.shape[:2]
+    bg = _bg_color(a)
+    fg = (np.sqrt(((a - bg) ** 2).sum(-1)) > tol)
+
+    def _runs(occupied, span):
+        """Contiguous True runs longer than min_frac of the span."""
+        out, start = [], None
+        for i, v in enumerate(list(occupied) + [False]):
+            if v and start is None:
+                start = i
+            elif not v and start is not None:
+                if (i - start) >= span * min_frac:
+                    out.append((start, i))
+                start = None
+        return out
+
+    # a column/row counts as occupied when a real share of it is not backdrop
+    cols = _runs(fg.mean(axis=0) > 0.12, W_)
+    rows = _runs(fg.mean(axis=1) > 0.12, H_)
+    if not cols or not rows:
+        return []
+
+    # merge runs separated by less than `gap` px — antialiasing splits an edge
+    def _merge(runs):
+        out = [list(runs[0])]
+        for s, e in runs[1:]:
+            if s - out[-1][1] <= gap:
+                out[-1][1] = e
+            else:
+                out.append([s, e])
+        return out
+
+    cols, rows = _merge(cols), _merge(rows)
+    panels = []
+    for (ry0, ry1) in rows:
+        for (cx0, cx1) in cols:
+            w, h = (cx1 - cx0) / W_, (ry1 - ry0) / H_
+            if not (min_frac <= w <= max_frac and min_frac <= h <= max_frac * 1.6):
+                continue
+            block = fg[ry0:ry1, cx0:cx1]
+            if block.size and block.mean() < 0.25:
+                continue                      # mostly backdrop — a gap, not a panel
+            panels.append((round(cx0 / W_, 4), round(ry0 / H_, 4),
+                           round(cx1 / W_, 4), round(ry1 / H_, 4)))
+    return panels
+
+
 def crop(path, x0, y0, x1, y1, out_path=None):
     """Cut one region out of a reference and save it as a scorable target.
 

@@ -740,6 +740,14 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 
 | `nxt()` took pending strictly in key order, which was fine until the last unstarted POSTER was consumed. After that **all 22 remaining pending entries were mockups or sheets** — references the protocol says to crop and usually PARK — while **23 attempted posters** sat with real scores, the closest **0.009** from accepting. Every new session would have been handed an unscorable mockup while the convergeable work stayed unreachable: the same jam as the status conflation, one day later and from a different cause | session 10f, day two | `runqueue._kind()` reads the style bank (best-effort; a missing bank degrades to the old ordering) and `nxt()` prefers a pending POSTER. A mockup is still handed out, never skipped — now with the crop-first instruction attached so step 0 is not a surprise |
 
+| **Fixing an arrangement made the SCORE WORSE, measured.** `compare.py` scores occupancy on a 9x11 grid, and two tidy separated bands align with a rectangular grid better than a genuinely tangled pile does. v6 (sorted into bands) scored **0.169**; v13 (the reference's real interleaved pile, every centre hand-measured to 1%) scored **0.208** — worse, and unambiguously more faithful | session 10f, `25143d758ea743` | RECREATION_PROTOCOL's "THE SCORE PREFERS TIDY TO TRUE": keep the faithful version, record the honest number. The queue is not a leaderboard |
+| The mockup control rule had two branches — near-zero means the aspect, large means a real gap — and a control landed **0.159 against an accept line of 0.16**: the resampling noise alone consumes the whole budget, so no recreation of that crop can ever pass | session 10f, agent f114f | a THIRD branch: a control above ~half the accept line means the score cannot discriminate at all — judge by eye and park WITH the control's number in the note |
+| Finding a mockup's screen boundary was 15-20 minutes of manual pixel-scanning per reference, with **17 mockups still queued**, and `compare.geometry` silently reports "content fills the whole frame" if any bezel curve survives the crop | session 10f, agent f114f | **`compare.find_panels(path)`** returns the panel rects as fractions, ready for `crop()`. Axis-aligned only; returns nothing rather than guessing at a rotated or warped screen |
+| **An opt-in check silently does not run.** `text_contrast_check` is documented as a HARD FAIL; across TWO sessions and 14 iterations of one poster nobody passed `text_pairs`, so it never ran once — on a piece with five text-on-surface decisions including a deliberately low-contrast footer | session 10f, agent f2514b | `render()` prints one advisory line when `elements` is passed and `text_pairs` is not. "A check that exists but does not run is worth nothing" was already a standing ruling; the opt-in design was wearing it as a disguise |
+| `bleed_tags` can only exempt a LABELLED tuple in `preflight`, while `measure_dom` matches the DOM's `data-tag` — so an author using bare `(x,y,w,h)` tuples declared a bleed, saw nothing change, and reported the parameter as broken | session 10f, agent f6780 | `preflight` says when `bleed_tags` matched no element, and why |
+| **The queue's stored scores had no provenance.** Two agents independently found a recorded score that no file reproduced — one entry's 0.27 had been measured against an unrelated demo render. `verify` now re-scores every recorded entry: **39 of 50 drift from the newest render on disk**, in both directions, one by 0.63 | session 10f, agents f6780 + fcfec | `record()` stores the render it scored; **`runqueue.py verify`** re-scores and reports drift. Historical entries have no provenance, so verify falls back to the newest PNG and labels that assumption |
+| The ignore-pair name warning added the day before fired on EVERY render of a 14-iteration recreation, because that author's element labels and DOM `data-tag`s are simply different naming schemes | session 10f, agent f2514b | it fires only on a PARTIAL mismatch now — all-miss is a different namespace by design, some-miss is probably a typo |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -816,12 +824,12 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   visibly broken: static checks can only ever verify what the author TYPED.
   **Render is ~9x faster** (16.81s → 1.86s/poster in a `B.session()`), output verified pixel-identical.
   **Self-tests (all passing, verified 2026-08-03) — each assertion reproduces a real historical bug:**
-  `test_layout_rules.py` (81) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
+  `test_layout_rules.py` (86) · `test_collision_nudge.py` (9) · `test_invisible_craft.py` (11) ·
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (47) ·
   `test_stylebank.py` (64) · `test_buried_text.py` (27) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (22)** —
-  **449 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  **454 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

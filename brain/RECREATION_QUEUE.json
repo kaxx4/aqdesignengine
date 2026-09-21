@@ -115,10 +115,10 @@
     },
     "67805068493b45": {
       "file": "67805068493b4522f5c3944723bee7d2.jpg",
-      "status": "in_progress",
-      "score": 0.328,
-      "iters": 2,
-      "note": "showcase5h final batch"
+      "status": "done",
+      "score": 0.159,
+      "iters": 6,
+      "note": "story canvas not feed (0.5625:1, orphaned v1-3 were wrong-aspect); rebuilt v4-v9; ring-of-stickers + interleaved sentence + wordmark gap; accepted <=0.16"
     },
     "67b12a3cd48f43": {
       "file": "67b12a3cd48f435e3583b8ba56db8c2a.jpg",
@@ -255,10 +255,10 @@
     },
     "cfec9bd415fff2": {
       "file": "cfec9bd415fff2e8fc3ebd264932e783.jpg",
-      "status": "in_progress",
-      "score": 0.27,
-      "iters": 2,
-      "note": "showcase5f; small-text rule validated - detail 0.88-1.29 all five"
+      "status": "done",
+      "score": 0.158,
+      "iters": 7,
+      "note": "v10 ACCEPTED (li_square canvas, not feed -- ref is native 1.333:1, feed gave a 40% aspect-mismatch score of 0.664 on the old v1-v3). Prior 0.27/showcase5f note scored an unrelated render. Fixed a systematic MAT_Y0-double-added bug that silently mispositioned every element for 6 iterations. Score 0.664->0.158, no blocking critique, looking gate passed."
     },
     "d252704dc5e5f3": {
       "file": "d252704dc5e5f32f202f854401f845fe.jpg",
@@ -318,14 +318,14 @@
     },
     "114f2b19c46119": {
       "file": "114f2b19c46119a6a2b27273256182a7.jpg",
-      "status": "pending",
+      "status": "blocked",
       "score": null,
       "iters": 0,
-      "note": ""
+      "note": "MOCKUP, phone screen crop (left phone, note+clip+star+fire). 4 iters, out/versions/114f2b19c46119/v1-v4. Looking gate PASSES: every step-1 element present, correctly proportioned (measured off gridded crop), correct front/behind relationships. compare.report vs crop scratchpad/friction5/114f2b19_crop_v3.png = 0.554 (v3) / 0.576 (v4), far above 0.16 accept line; v3->v4 change is whack-a-mole (fixing one region grew another), not convergence. CONTROL RUN (required before parking): downscaled v2.png to the crop's own 141x251 px and scored full-res vs that downscaled copy of itself = 0.159 -- NOT near-zero like prior mockup precedents (522f2d89, 110a5730), so unlike those this is NOT cleanly 'the whole gap is the aspect'. Net of the ~0.159 resolution/fidelity artifact a real residual of ~0.4 remains that iteration could not close. Parked because it is still a mockup (score structurally not comparable to a same-aspect/same-resolution recreation) AND the looking gate passes AND further iteration demonstrated diminishing/whack-a-mole returns. Full writeup: brain/RECREATION_AUDIT.md ## 114f2b19c46119; friction report scratchpad/friction5/f114f.md"
     },
     "139c5a6f43a6da": {
       "file": "139c5a6f43a6da226328cd18f7f8db0d.jpg",
-      "status": "pending",
+      "status": "in_progress",
       "score": null,
       "iters": 0,
       "note": ""
@@ -333,9 +333,9 @@
     "25143d758ea743": {
       "file": "25143d758ea743e15ec374876a41192d.jpg",
       "status": "attempted",
-      "score": 0.169,
-      "iters": 9,
-      "note": "v6 ACCEPTED: sticker+pill social pile on dark ground, linkedin 1200x628. Found+fixed 2 real bugs via gate stack: (1) build.page()'s global .dood z-index:4 rule interacts with per-wrapper transform-triggered stacking contexts to silently hide a doodle behind a sibling regardless of DOM order; (2) circular sticker bbox==bounding-square gives collision_check false positives against nested illustrations. Score 0.169 (area_ratio 0.918, gyration 0.95, bbox_iou 0.985), no blocking critique, looking gate clean, all step-1 elements present. v7-v9 explored further tuning and regressed (0.189-0.241); v6 stands. Scripts v1-v9 preserved in out/versions/25143d758ea743/."
+      "score": 0.208,
+      "iters": 14,
+      "note": "v13: fixed arrangement (interleaved single pile matching reference tangle, not sorted into sticker-row/pill-row bands; full-bleed low-contrast footer at ~18pct height running through pile bottom, not a contained 6pct high-contrast line). Score regressed vs v6's 0.169 -- compare.py's region grid rewards matching specific empty/full cells over overall tangle fidelity (documented tension, now seen twice on this slug). Kept v13 over v6 per explicit brief: do not accept/optimize on score alone when it trades away arrangement fidelity. v14 tried closing 3 more region deltas, scored 0.205, but broke the reference's mutually-overlapping pill chain -- rejected, kept for record. iters=14 total (9 prior + v10-v14 this session)."
     },
     "2af2568a52cc92": {
       "file": "2af2568a52cc92360082830202f98275.jpg",

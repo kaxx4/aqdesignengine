@@ -344,4 +344,40 @@ ok("AUTHORING TOOL" in lay.scatter_solve.__doc__,
 ok("TWO PASSES" in lay.scatter_solve.__doc__,
    "...and documents the two-pass decomposition a mixed pile needs")
 
+# ── AN OPT-IN CHECK SILENTLY DOES NOT RUN (session 10f, agent f2514b) ───────
+# text_contrast_check is documented as a HARD FAIL. Across TWO sessions and 14
+# iterations of one poster nobody ever passed `text_pairs`, so it never ran once —
+# on a piece with five separate text-on-surface decisions including a deliberately
+# low-contrast footer. "A check that exists but does not run is worth nothing" is
+# already a standing ruling; the opt-in design was wearing it as a disguise.
+import inspect as _insp
+ok("text_declared" in _insp.getsource(load("build")),
+   "render tracks whether text_pairs was declared at all")
+
+# the audit ghost warning must only fire on a PARTIAL mismatch
+_asrc = _insp.getsource(load("audit").audit)
+ok("len(_ghosts) < len(_named)" in _asrc,
+   "the ignore-pair warning fires only on a PARTIAL name mismatch, not a whole "
+   "different naming scheme — it printed identical noise on every render otherwise")
+
+def _say_pf(els, bleed):
+    _b = _io.StringIO()
+    with _ctx.redirect_stdout(_b):
+        lay.preflight(W, H, els, bleed_tags=bleed)
+    return _b.getvalue()
+
+
+# ── bleed_tags THAT MATCHES NOTHING (session 10f, agent f6780) ──────────────
+# preflight can only exempt a LABELLED tuple; reconcile.measure_dom matches the
+# DOM's data-tag. Same argument name, two namespaces. An author using bare
+# (x,y,w,h) tuples declares a bleed, sees nothing change, and reports that the
+# parameter does not work — which is what happened.
+_bare = _say_pf([(-150, 500, 400, 80)], ("pill",))
+ok("MATCHED NO ELEMENT" in _bare,
+   "a bleed_tags that matches no element says so instead of silently doing nothing")
+ok("MATCHED NO ELEMENT" not in _say_pf([("pill", -150, 500, 400, 80)], ("pill",)),
+   "...and a matching labelled tuple stays silent")
+ok("MATCHED NO ELEMENT" not in _say_pf([("pill", -150, 500, 400, 80)], ()),
+   "...and declaring no bleed at all is silent too")
+
 print(f"\nALL {n} ASSERTIONS PASSED")

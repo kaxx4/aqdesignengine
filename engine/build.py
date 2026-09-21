@@ -210,10 +210,10 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements,
                         collision_ignore=collision_ignore, bleed_tags=bleed_tags,
-                        crop_tags=crop_tags)
+                        crop_tags=crop_tags, text_declared=text_pairs is not None)
 
 async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
-                 bleed_tags=None, crop_tags=()):
+                 bleed_tags=None, crop_tags=(), text_declared=True):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
@@ -247,6 +247,25 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
             flaws = reconcile.suppress_handled(flaws, elements)
         for line in reconcile.format_measure(flaws):
             print(f"[{name}] ⚠ {line}")
+        # AN OPT-IN CHECK SILENTLY DOES NOT RUN. text_contrast_check is documented in
+        # §7a as a HARD FAIL, and across TWO sessions and 14 iterations of one poster
+        # nobody ever passed `text_pairs` — so it never ran once, on a piece with five
+        # separate text-on-surface decisions including a deliberately low-contrast
+        # footer (session 10f, f2514b). "A check that exists but does not run is worth
+        # nothing" is already a standing ruling in DECISIONS.md; this is that, wearing
+        # the opt-in design as a disguise.
+        #
+        # Only nudges when the author is already using the gate (elements passed) and
+        # the page really does carry text, so it cannot fire on a build that opted out
+        # of everything, and it names the count so the line carries information.
+        if elements and not text_declared:
+            _txt = sum(1 for b in flaws.get("boxes", []) if b[0] not in ("p", "?"))
+            _has = [e for e in flaws.get("boxes", []) if e]
+            if _has:
+                print(f"[{name}] ⚠ (advisory) text_pairs NOT DECLARED — "
+                      f"layout.text_contrast_check did not run. Every piece of type on "
+                      f"this page is unchecked for legibility against what is behind "
+                      f"it. See §6's template.")
         # When the caller declared an element list, check it against reality. This
         # is CLAUDE.md §10's "stale bbox" row, whose guard until now was the word
         # "discipline".

@@ -140,6 +140,29 @@ Per-poster convergence runs: **in progress since 2026-07.** Queue = all 74 in
 flip status in `brain/RECREATION_PROGRESS.md`.
 
 
+## THE SCORE PREFERS TIDY TO TRUE — measured, not suspected
+
+`compare.py` scores occupancy on a 9x11 grid, and a grid rewards mass that lands in
+the same CELLS. That is not the same thing as the same design.
+
+Measured on `25143d758ea743`: v6 sorted an interleaved pile into two clean horizontal
+bands and scored **0.169**. v13 rebuilt the same objects as the reference's genuinely
+tangled pile, with every centre hand-measured off the reference to 1% precision, and
+scored **0.208** — worse, while being unambiguously more faithful. Two tidy separated
+bands happen to align with a rectangular grid better than a tangle does.
+
+**So a score regression is not automatically a mistake.** When you fix an arrangement
+and the number gets worse:
+  * say so plainly, with both numbers;
+  * keep the more faithful version;
+  * record the honest score, not the flattering one.
+The queue is not a leaderboard. `runqueue.py record` stores what you measured, and a
+`attempted 0.208` that looks right beats a `attempted 0.169` that looks sorted.
+
+The same caution runs the other way — §12's standing rule is that a recreation is NOT
+done at an accepting score. Both halves are the same point: the number is a proxy, and
+you are the one who has seen both images.
+
 ## MOCKUPS — when the SCORE is structurally meaningless
 
 Roughly a third of the corpus is a mockup: the design photographed on a phone, in
@@ -160,6 +183,25 @@ mockup whose crop aspect differs from your canvas by more than ~1.5x:
   * run a control first — score your render against a downscaled copy of ITSELF. On
     522f2d89 the control returned 1.12x against a measured 2.49x, so most of that gap
     was real. If your control comes back near zero, the gap is the aspect.
+
+**READ THE CONTROL AGAINST THE ACCEPT LINE, NOT JUST AGAINST ZERO.** The rule above
+had two branches — near-zero means the aspect, large means the gap is real — and a
+control can land between them. On `114f2b19c46119` it returned **0.159 against an
+accept line of 0.16**: the resampling noise ALONE consumes essentially the entire
+budget, so no recreation of that crop can ever score inside the gate however faithful
+it is. The measurement cannot discriminate at that geometry.
+
+So there are three branches, not two:
+
+| control | what it means | what to do |
+|---|---|---|
+| ≈ 0 | the pipeline adds no noise here; a large score is a REAL content gap | iterate |
+| > ~half the accept line | the noise floor is comparable to the threshold — the score cannot tell a good recreation from a bad one | judge by EYE alone, park with the control's number in the note |
+| in between | partly artefact, partly real | iterate, but stop when the remaining gap approaches the control |
+
+Always put the control's number in the `runqueue.py fail` note. "Parked, score 0.554,
+control 0.159 (noise floor ≈ accept line)" tells the next session something; "parked,
+score too high" tells it nothing.
   * then **PARK it** with `runqueue.py fail`, with a note saying the score is not
     comparable to a same-aspect recreation. Do NOT accept it on the score, and do not
     keep iterating against a number that cannot move.
