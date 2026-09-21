@@ -120,4 +120,51 @@ ok(os.path.exists(os.path.join(ENGINE, "runqueue.py"))
    and not os.path.exists(os.path.join(ENGINE, "queue.py")),
    "and on disk it really is runqueue.py, with no stdlib-shadowing queue.py beside it")
 
+# ── A PENDING POSTER BEATS A PENDING MOCKUP (session 10f, day two) ──────────
+# Taking pending in key order was fine until the last unstarted POSTER was consumed.
+# After that all 22 remaining pending entries were mockups or sheets — which the
+# protocol says to crop and usually PARK — while 23 attempted posters sat with real
+# scores, the closest 0.009 from accepting. `next` would have handed every session an
+# unscorable mockup and left the convergeable work unreachable: the same jam as the
+# status conflation above, with a different cause.
+ok(rq._kind("25143d758ea743") == "poster" and rq._kind("114f2b19c46119") == "mockup",
+   "the queue can read a reference's KIND from the style bank")
+ok(rq._kind("definitely-not-a-slug") is None,
+   "...and an unknown slug degrades to None rather than raising")
+
+_tmp2 = tempfile.mkdtemp(prefix="aq_q2_")
+_real2 = rq.QPATH
+rq.QPATH = os.path.join(_tmp2, "q.json")
+try:
+    # the mockup sorts FIRST by key, so key order alone would pick it
+    rq._save({"accept_score": 0.16, "items": {
+        "114f2b19c46119": {"file": "a.jpg", "status": "pending", "score": None,
+                           "iters": 0, "note": ""},
+        "25143d758ea743": {"file": "b.jpg", "status": "pending", "score": None,
+                           "iters": 0, "note": ""},
+    }})
+    out = run(rq.nxt)
+    ok("NEXT 25143d758ea743" in out,
+       "next() picks the pending POSTER over a pending mockup that sorts before it")
+
+    rq._save({"accept_score": 0.16, "items": {
+        "114f2b19c46119": {"file": "a.jpg", "status": "pending", "score": None,
+                           "iters": 0, "note": ""},
+    }})
+    out = run(rq.nxt)
+    ok("NEXT 114f2b19c46119" in out,
+       "a mockup-only queue still hands the mockup out — nothing is skipped")
+    ok("compare.crop" in out and "MOCKUPS" in out,
+       "...with the crop-first instruction attached, so step 0 is not a surprise")
+
+    # a bank that cannot be read must not stop the run
+    _saved_bank, rq._BANK = rq._BANK, {}
+    out = run(rq.nxt)
+    ok("RESUME 114f2b19c46119" in out or "NEXT" in out,
+       "with no bank data at all, next() still returns work")
+    rq._BANK = _saved_bank
+finally:
+    rq.QPATH = _real2
+    shutil.rmtree(_tmp2, ignore_errors=True)
+
 print(f"\nALL {N} ASSERTIONS PASSED")

@@ -73,6 +73,29 @@ def _status(v):
     return st
 
 
+_BANK = None
+
+
+def _kind(slug):
+    """The style bank's judged `kind` for a slug, or None when it has no entry.
+
+    The queue does not know what a reference IS; the bank does. That matters for
+    ordering, because a `mockup` or a `sheet` cannot be scored as it stands — the
+    protocol says crop the design out first and expect to PARK it — while a `poster`
+    scores honestly. Reading the bank is best-effort: a missing or unreadable bank
+    must never stop the run, so any failure degrades to None and the old ordering.
+    """
+    global _BANK
+    if _BANK is None:
+        try:
+            with open(os.path.join(ROOT, "brain", "STYLE_BANK.json"), "r",
+                      encoding="utf-8") as f:
+                _BANK = json.load(f).get("styles", {})
+        except Exception:
+            _BANK = {}
+    return (_BANK.get(slug) or {}).get("kind")
+
+
 def init():
     q = _load()
     files = sorted(f for f in os.listdir(REFDIR) if f.lower().endswith((".jpg", ".png")))
@@ -119,10 +142,26 @@ def nxt():
         if _status(v) == "in_progress":
             print(f"RESUME {k}\nfile: {v['file']}\niters so far: {v['iters']}\nnote: {v['note']}")
             return
-    for k, v in it.items():
-        if v["status"] == "pending":
+    # 2. Start something NEW — but a PENDING POSTER before a pending mockup.
+    #
+    # THE ORDERING BUG (session 10f, found the day after the status fix above). Taking
+    # pending strictly in key order was fine until the last unstarted POSTER was
+    # consumed. After that, all 22 remaining pending entries are mockups or sheets —
+    # references the protocol says to crop and usually PARK — while 23 attempted
+    # posters sat with real scores, the closest 0.009 from accepting. `next` would
+    # have handed every new session an unscorable mockup and left the convergeable
+    # work unreachable: the same shape of jam as the status conflation above, with a
+    # different cause.
+    _pend = sorted(((k, v) for k, v in it.items() if v["status"] == "pending"),
+                   key=lambda kv: 0 if _kind(kv[0]) == "poster" else 1)
+    for k, v in _pend:
+        if True:
             v["status"] = "in_progress"
             _save(q)
+            if _kind(k) in ("mockup", "sheet"):
+                print(f"NOTE: this is a {_kind(k)} — crop the design out first "
+                      f"(compare.crop), then measure and score against the CROP. Read "
+                      f"RECREATION_PROTOCOL.md's MOCKUPS section; expect to park it.")
             print(f"NEXT {k}\nfile: {v['file']}\n"
                   f"reference: training_samples/reference_posters/{v['file']}\n"
                   f"output dir: out/versions/{k}/\n"
