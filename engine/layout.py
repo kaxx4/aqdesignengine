@@ -1201,6 +1201,16 @@ def preflight(W, H, elements, html=None, color_pairs=None, page_bg=None, core=No
     # reconcile.measure_dom already had; preflight simply never offered it.
     _bleed = {str(t) for t in (bleed_tags or ())}
     _checked = [e for e in elements if not (len(e) == 5 and str(e[0]) in _bleed)]
+    # SAY SO WHEN IT MATCHES NOTHING. This can only exempt a LABELLED tuple, while
+    # reconcile.measure_dom matches the DOM's data-tag — the same argument name
+    # reaching two namespaces again. An author using bare (x,y,w,h) tuples declares a
+    # bleed here, sees nothing change, and concludes the parameter does not work
+    # (session 10f, agent f6780 reported exactly that). An exemption that exempts
+    # nothing should not be silent.
+    if _bleed and len(_checked) == len(elements):
+        print(f"   [preflight] bleed_tags {sorted(_bleed)} MATCHED NO ELEMENT — this "
+              f"exempts labelled tuples, i.e. ('pill', x, y, w, h). Bare (x,y,w,h) "
+              f"tuples carry no label to match.")
     r['off_canvas'] = bounds_check(W, H, [e[-4:] for e in _checked])
     r['collisions'] = collision_check(elements, ignore_pairs=collision_ignore,
                                       containers=containers)

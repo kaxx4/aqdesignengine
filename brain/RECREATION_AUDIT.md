@@ -2584,6 +2584,86 @@ regional occupancy) — but they are real, reportable disagreements between SCOR
 regression), no blocking critique, looking gate clean. `runqueue.py record 25143d758ea743 0.169 9
 "..."`.
 
+### RESUMED SESSION (2026-09-21) — v6's "CLEAN" was wrong on ARRANGEMENT, not inventory
+
+A separate review of the accepted v6 found it had SORTED the pile into two clean bands (3
+round stickers in a row above, 5 pills in a row below) where the reference INTERLEAVES both
+families into one tangled pile at varied heights, and that v6's footer was a small, contained,
+high-contrast centred line (~6% of canvas height) where the reference's footer is a full-bleed,
+LOW-CONTRAST wash running up into the pile's bottom row at ~18% of canvas height. Both are real
+— confirmed again here by re-measuring the reference from scratch (see friction5/f2514b.md for
+the complete account) — and this is now the source example cited in
+`brain/RECREATION_PROTOCOL.md`'s "WHEN THE REGION ROWS ARE LYING TO YOU" section.
+
+**Re-measurement (step 0, redone).** `compare.geometry` reconfirmed the original numbers
+unchanged (content bbox, centroid, coverage all identical — this is a static reference image).
+What changed was reading the pile's actual per-object geometry at higher precision: a 5%-grid
+overlay is not fine enough to place 8 heavily-overlapping objects; a 1%-grid with labels burned
+into each crop (not relying on labels surviving a later crop, which silently produced WRONG
+numbers once — see friction doc) was needed. That finer pass found the "heart" (broken-heart)
+sticker sits at x-center ~0.74, NOT ~0.88 as BOTH the original 5%-grid read and a first 2%-grid
+re-read both said — the far-right canvas space (x 0.86-0.97) belongs to the top-right cross
+ornament, a separate header-row element, not the pile.
+
+**Build.** `scratchpad/gen_25143d75_v10.py` through `v14.py` (v10-v13 progressively refined,
+v14 explored and rejected — all preserved alongside their PNGs in
+`out/versions/25143d758ea743/`). Per this session's explicit brief, **`layout.scatter_solve`
+was NOT used** — all 8 pile-object centers are hand-placed from the reference measurement, a
+placement `layout.resolve_label_z` then z-orders (a distinct operation: it fixes which object
+paints in front, it does not choose where anything sits).
+
+- **v10** — first placement pass off the 5%-grid overlay. Score **0.225** (worse than v6's
+  0.169). Visually a dramatic improvement (genuine interleaving, no more two-band sort) but
+  `compare.report` flagged real region gaps: `REGION UNDER-filled row6-7/col3` and `row7/col7`
+  — a true negative-space gap between the hand/linkedin cluster and the tongue/behance/dribbble
+  cluster that the reference does not have.
+- **v11** — re-measured with a 2%-grid crop, shifted "tongue" left (0.415->0.370) to close the
+  col3 gap. Score **0.215**. `row7/col7` gap persisted.
+- **v12** — root-caused the `row7/col7` gap: a 1%-grid re-read (labels burned into the crop
+  itself, so they can't be lost to a later crop boundary — the exact mistake that produced a
+  wrong number for "heart" in the two coarser passes) found "heart" belongs at x~0.74, not
+  ~0.88. Moving it fixed the region gap, but the closer packing this creates buried
+  "INSTAGRAM" behind "BEHANCE" (rendered as "INSTAGR"), and `resolve_label_z` reported
+  `UNRESOLVED: ['dribbble']` — a different label than the one visibly broken (see friction doc
+  for why: a 3-way overlap cycle among instagram/behance/dribbble has no single pairwise
+  z-fix, and the tool's report names whichever one it tried last, not necessarily the one that
+  reads broken on screen).
+- **v13** — fixed the v12 label burial two ways: (a) re-seeded z so BEHANCE sits BEHIND both
+  its neighbours (matching the reference, where BEHANCE tucks under, not over), (b) shrunk a
+  PILL's protected "label" box from the whole rounded capsule to the inner region that actually
+  holds the word, so an end-cap graze no longer counts as equivalent to clipping a word — and
+  nudged BEHANCE's centre down/left by ~2% to reduce the raw overlap area rather than relying on
+  z-order alone. Result: zero unresolved labels, all 8 objects fully legible, genuine tangle.
+  Score **0.208**.
+- **v14** (rejected) — tried nudging dribbble/behance/facebook further to close 3 more region
+  deltas (`row5/col6` over, `row8/col5` over, `row9/col5` under). Score improved marginally to
+  **0.205**, but the reposition pulled DRIBBBLE fully clear of BEHANCE, breaking the "loosely
+  chained, mutually overlapping run of capsules" the original step-1 inventory explicitly
+  recorded for this exact object group — a small numeric gain paid for with a real arrangement
+  regression (this task's own explicit instruction: do not chase score at the cost of
+  arrangement). Rejected; kept for the record at
+  `out/versions/25143d758ea743/{gen_25143d75_v14.py,v14.png}`.
+
+**Outcome: v13 is the new best-arranged version, score 0.208 — WORSE than v6's 0.169.** This is
+reported plainly, not hidden: v6's score was better because two tidy bands happen to line up
+with `compare.py`'s occupancy grid more evenly than a genuinely tangled pile does (the same
+score-vs-eye tension the protocol already documents for v3-vs-v4 and v6-vs-v7 in this exact
+sample's own earlier log, three paragraphs up). v13 is kept over v6 because the arrangement
+defect it fixes — sorting into bands instead of interleaving, and a 3x-undersized, high-contrast,
+centred footer instead of a full-bleed low-contrast one running through the pile — is exactly the
+"looks right vs. is measured right" gap `RECREATION_PROTOCOL.md`'s own decision table cannot
+detect on its own (region over/under-fill rows have no vocabulary for "sorted into bands"; only
+looking, plus a written three-question checklist, catches it). See `scratchpad/friction5/f2514b.md`
+for the full friction report, including whether the protocol's own new guidance would have caught
+this without being told about it in advance.
+
+`runqueue.py record 25143d758ea743 0.208 14 "v13: fixed arrangement (interleaved pile + full-
+bleed low-contrast footer, matching the reference's actual mechanism) — score regressed vs v6's
+0.169 because compare.py's region grid rewards matching specific empty/full cells over overall
+tangle fidelity, a known and now twice-documented tension. Kept v13 over v6 per explicit brief:
+do not accept/optimize on score alone when it trades away the arrangement. iters=14 (9 prior + 5
+this session: v10-v14, v14 rejected)."`
+
 **Steps 2-3 — build + render.** Bespoke script `scratchpad/gen_80cb7ed7_vN.py` (copies
 preserved alongside every PNG in `out/versions/80cb7ed71a8cc9/`), built from
 `core`+`build`+`doodles`+`layout`+`shapes` directly, never `engine.py`'s ARCHETYPES.
@@ -2846,3 +2926,400 @@ mixed returns (v9 and the ribbed-rect experiment in v10 each showed that shrinki
 grid-cell's error reliably grew another's, for a net zero or negative score change on
 several attempts). Full mechanics, exact numbers and API friction are in
 `scratchpad/friction4/fe7b3.md`.
+
+## 114f2b19c46119 - "You're doing awesome!" onboarding note, left phone screen (session, 2026-09-21)
+
+Reference: `training_samples/reference_posters/114f2b19c46119a6a2b27273256182a7.jpg` (640x399,
+a low-res JPEG). Style bank: kind=mockup, hero=grid, ground=paper, canvas=linkedin (1200x628).
+
+**MOCKUP.** Three iPhone mockups side by side on a cream backdrop, showing a language-learning
+app's onboarding flow. Left phone: an encouragement note ("You're doing awesome!") pinned by a
+binder clip, with a star and a fire-emoji sticker. Middle phone: "What's your job?" text-input
+screen with a keyboard - mostly generic OS chrome, not much design content. Right phone: the
+same note-card mechanism in Chinese, plus a speech-bubble ("OMG") and a cursor sticker.
+Per CLAUDE.md section 5 step 0 / RECREATION_PROTOCOL's MOCKUPS section, picked the ONE screen with the
+richest, most self-contained design mechanism - the LEFT phone (clipped note + stickers) - over
+the middle phone (keyboard chrome only) and the right phone (same mechanism, redundant, Chinese
+copy).
+
+**Choosing and measuring the crop (step 0).** No rule existed for where to put the crop box, so
+this was done by binary-search-by-eye against the raw pixels, not a formula:
+1. Resampled the reference 3x-4x with `PIL.Image.resize(..., LANCZOS)` and re-`Read` it, because
+   at native 640x399 the bezel-vs-screen edge is 2-3px wide and invisible at a glance.
+2. Took horizontal (`y=200`) and vertical (`x=75`, `x=140`) pixel scans with numpy to find the
+   bezel's near-black band numerically rather than by eye: left screen edge ~x=69, right ~x=213,
+   top bezel band (avoiding the notch) ~y=42-51, screen resumes ~y=54, bottom bezel ~y=351-357.
+   The notch itself is a SEPARATE black rectangle centered top (found via a scan at `x=140`,
+   spanning y=49-60) that sits fully inside the "screen interior" y-range - a first crop
+   (`x0=0.108,y0=0.135,x1=0.333,y1=0.880`) therefore still included a sliver of the notch and the
+   status-bar icons at the very top.
+3. Iterated the box three times by re-cropping + re-viewing at 5x (`crop_v1` -> `crop_v2` ->
+   `crop_v3`), each time trimming a few more pixels until no bezel/notch was visible at 5x zoom.
+   Final box in ORIGINAL pixel coords: `(70, 63, 211, 345)` of 640x399 -> saved 141x282.
+   This deliberately EXCLUDES the status bar (9:41 / signal / wifi / battery) as mockup
+   presentation chrome, not app design, and keeps the back-arrow + progress bar as the first
+   real design element (they sit directly above the note and read as part of its screen).
+4. This is a REAL RULE GAP: there is nothing in CLAUDE.md or RECREATION_PROTOCOL.md that says
+   "scan pixel rows for the bezel boundary" or "trim below the notch" - an agent has to
+   improvise numpy pixel-scanning from scratch every time. A `compare.find_bezel(path)` helper
+   that returns a candidate interior box (find the largest near-uniform light rectangle inside a
+   near-black rounded-rect band) would turn ~15 minutes of manual scan-crop-view-repeat into one
+   call. See friction report `scratchpad/friction5/f114f.md`.
+
+**Canvas choice.** Crop aspect = 141/282 = 0.500:1. Of `core.SIZES`, `story` (1080x1920,
+0.5625:1) is the closest - gap = |0.500-0.5625|/0.5625 = 11.1%, well under `compare._ASPECT_WARN`
+(0.25), unlike a feed canvas (0.8:1, a 42% gap) or square (1:1, a 78% gap). Built on STORY,
+following the `522f2d898b827f` / `110a5730e3710b` precedent for phone-screen mockups.
+
+**`compare.geometry()` on the crop** (`scratchpad/friction5/114f2b19_crop_v3.png`):
+content bbox x 0.000..0.998, y 0.034..0.999 (near edge-to-edge - the progress bar itself
+runs almost the full width, so this is genuine, NOT bezel pollution, unlike the v1 crop before
+trimming, where geometry() reported bbox 0.000..0.998 x 0.000..0.999 in BOTH axes because a
+sliver of the phone's rounded top/bottom corners was still inside the box and got read as
+"content" on all four edges). Centroid (0.505, 0.505), coverage 0.129. Occupancy grid (9x11)
+confirms: row 2 col 2 = star, row 3 cols 4-6 = clip peak, rows 4-7 cols 2-6 = text block, rows
+8-10 cols 6-7 = flame (0.92-1.00 peak). This is a second, more subtle rule gap: `geometry()`'s
+content_mask has no bezel-awareness, so a loosely-cropped mockup silently reports a bogus
+"content fills the whole frame" bbox that would send a builder chasing full-bleed margins that
+aren't real. Tightening the crop by eye fixed it here, but there is no check that flags "your
+crop still has a rounded-corner artifact" - you find it only by noticing the bbox looks
+suspiciously exactly 0..1.
+
+### STEP 1 - FULL COMPOSITION DESCRIPTION (the acceptance checklist)
+
+**Ground.** Flat light warm-grey app background, ~rgb(241,241,241) (NOT the cream `#F4EFE0`
+AQ page ground - this is a cooler, lighter neutral, an app UI grey). No texture, no gradient.
+
+**Element inventory, top to bottom, z-order:**
+1. Back arrow (`<-`), thin black stroke, top-left, small (~20px at this scale).
+2. Progress/stepper bar: a thin horizontal track spanning nearly the full width just right
+   of the back arrow, mostly light grey, with the LEFT ~12% filled solid red/orange -
+   an in-progress step indicator, not a slider.
+3. A five-point star sticker, solid yellow/gold fill with a thin darker-gold outline,
+   rotated slightly (~-15 degrees), positioned upper-left, PARTIALLY OVERLAPPING the note card's
+   top-left corner (the note sits on top of/beside it - the star's right point tucks
+   behind the note's edge).
+4. A binder/bulldog clip icon, cream/tan colored (matches AQ's tan doodle tone), drawn in
+   flat vector style with a visible pivot dot and ridge lines on the clamp - centered
+   horizontally near the top of the note, its "jaws" gripping the note's top edge from
+   above (the clip itself sits ABOVE and slightly overlapping the note card, the note
+   appears to hang FROM it).
+5. The note card itself: a near-white rounded-rectangle "sticky note" / index card,
+   rotated a few degrees (~-3 to -5, tilted left), drop-shadow (soft, offset down-right,
+   giving it lift off the grey background) - occupies the vertical-center band of the
+   screen, roughly 65% of the screen width and 45% of its height.
+6. Body copy on the note: 6 short lines, a SERIF font (this is the one spot where
+   Instrument Serif's presence in the AQ system maps directly), left-aligned, dark
+   ink-near-black: "You're doing awesome! / Let's take your English to the next level -
+   soon you'll be chatting like a local!" Not uppercase, not bold-display - reads as
+   handwritten/friendly note copy.
+7. A fire-emoji sticker (red/orange/yellow flame, thin dark-red outline), bottom-right,
+   OVERLAPPING the note's bottom-right corner - the flame's base sits on/over the note
+   edge, its tip breaks past the note's right edge into the grey ground.
+8. (Excluded from crop, presentation chrome only:) OS status bar (9:41, signal/wifi/
+   battery glyphs) and the phone bezel/notch/home-indicator - these are the MOCKUP's
+   frame, not the app's design, per CLAUDE.md's "decide what the DESIGN is versus what
+   the PHOTOGRAPH/PRESENTATION is."
+
+**The mechanism worth stealing:** a tilted, clipped note card as the sole "hero" surface, with
+exactly two small sticker accents (one behind/beside, one overlapping in front) breaking its
+rectangle - the clip is what makes it read as a physical object pinned to the screen rather
+than a plain card, and the two stickers straddle it front-and-back rather than both floating
+free, which is what makes them feel attached to the note instead of scattered near it.
+
+### AQ ADAPTATION (declared up front)
+- App-grey ground (`rgb(241,241,241)`) kept close to literal (a light warm neutral) rather than
+  forced to AQ cream `#F4EFE0` - the mechanism here is "app screen", and an app UI reads as
+  neutral-grey, not paper-cream; using cream would misrepresent what this screen even is.
+  (Precedence ladder section 2 point 1 note: this is a case where the reference's own surface colour
+  is representationally load-bearing, not a decorative choice free to swap.)
+- Binder-clip icon: no exact primitive in `engine/doodles.py` or `engine/shapes.py` - built as a
+  small bespoke inline SVG (tan fill, matches the reference's cream/tan clip) rather than
+  substituting an unrelated doodle; this is the acceptable-adaptation category "substituting an
+  engine doodle for an icon the engine lacks" run in reverse (hand-drawn primitive, still flat
+  and outlined in the house craft style).
+- Star -> `dd.stamp('star', A[2])` (lemon accent) with an ink outline (house craft layer, the
+  reference's star has none - CLAUDE.md section 9's craft layer is always-on).
+- Fire emoji -> no fire doodle in the vocabulary; built as a bespoke flat SVG flame (tomato/lemon
+  flat fill per the house "flat on solid colors" rule) with ink outline, same category as the clip.
+- Literal copy kept close to the reference's own voice (it is generic encouragement copy, not a
+  competitor's brand name or fabricated stat) and set in Instrument Serif for the note body,
+  matching the reference's own serif choice for that one card.
+- Back arrow + progress bar kept as literal generic UI chrome (not fabricated data, not a fake
+  screenshot of a real product) - these read as universal OS affordances, not a specific app's
+  UI being imitated.
+
+### ACCEPTANCE CHECKLIST
+- [x] flat light-grey app ground, no texture
+- [x] back arrow, top-left
+- [x] progress bar, ~12% filled red/orange, spanning near-full width
+- [x] star sticker, upper-left, tucked behind the note's corner
+- [x] binder clip, centered, gripping the note's top edge, note "hanging" from it
+- [x] tilted note card (rounded rect, soft shadow, near-white) — MEASURED off the gridded
+      crop at build time as ~83% width x ~59% height (corrected from this checklist's own
+      eyeballed "~65%x~45%" guess, written before the grid overlay existed — a small
+      instance of exactly the eyeballed-proportion trap `compare.geometry()` exists to
+      prevent, except here it hit the WRITTEN INVENTORY, which has no equivalent tool)
+- [x] serif-voice body copy on the note, left-aligned, dark ink — ADAPTED per CLAUDE.md
+      section 9's hard ceiling of <=1 accent word in Instrument Serif italic: the reference
+      sets its ENTIRE paragraph in an upright serif, which the engine's brand rule forbids
+      wholesale; built as Eina body copy with exactly one word ("amazing") in italic
+      Instrument Serif, keeping the mechanism (a warmer, human voice on the note) without
+      breaking the rule (precedence ladder, section 2: hard rule beats the recipe)
+- [x] fire sticker, bottom-right — CORRECTED during build: the checklist's initial guess
+      ("tip breaking past its right edge") was wrong; measured off the gridded crop, it is
+      the flame's BASE that breaks past the note's BOTTOM edge, tip stays on-card. Fixed
+      before v1 was built, not caught after.
+- [x] no status bar / bezel / notch (excluded as presentation chrome)
+
+### STEPS 2-5 — BUILD, RENDER, LOOK, ITERATE
+
+Bespoke scripts: `scratchpad/gen_114f2b19_v1.py` .. `v4.py`. Canvas: STORY (1080x1920).
+Primitives used: `dd.stamp('star', ...)` for the star (its only reference-vocabulary hit);
+everything else — back arrow, progress bar, binder clip, flame — is a bespoke inline SVG,
+since neither `doodles.py` nor `shapes.py` has a clip or flame silhouette.
+
+**v1.** First assembly. `layout.preflight` caught real bugs before any looking-gate
+review: a redundant full-bleed ground `<div>` painted the identical colour already set by
+`B.page()`'s own `.p` background (`reconcile.measure_dom` -> `invisible_fill`, distance
+0.0 — correctly flagged, not a false positive: a genuinely pointless element); the star,
+declared as a 210x210 box and rotated -18deg, drew a rotated bounding box of ~265x265
+(`210*(|cos18|+|sin18|)`), which put it 17px OFF-CANVAS at its declared position —
+`reconcile.measure_dom` caught this too (`OFF-CANVAS dood: box (-17,273)-(247,537)`).
+Fixed both, then looked at the render: the star was **almost entirely hidden** behind the
+note card (only a jagged black sliver of its outline visible) and the body text filled
+only the card's top ~15%, leaving a large dead-white gap through the card's middle —
+both are "present but wrong SIZE/RELATIONSHIP" failures per RECREATION_PROTOCOL's three
+questions, not caught by any static gate (preflight was CLEAN at this point).
+
+**v2.** Moved the star up and left so it clears the card's top edge (only its bottom-right
+tip now tucks behind the corner, matching the reference); enlarged the body copy and
+switched from natural wrap to explicit short line-breaks so it fills a comparable band of
+the card's height. This surfaced a genuine reconcile_boxes lesson: the declared
+`note_text` box (guessed at 720x800) was **larger** than what actually got drawn (761x665
+measured) once the text got its own explicit breaks, and the leftover empty space in the
+over-declared box was reported as a `collision` with the `fire` element below it —
+correct about the RECTANGLES overlapping, wrong about anything being visually wrong
+(confirmed by eye: no pixels touch). Declaring the pair in `collision_ignore` with a
+comment recording why (rather than shrinking the box further, which would just have
+guessed a new wrong number) is the honest fix. `compare.report()` against the crop:
+**0.57**, `DETAIL TOO HIGH (3.42x)`, an OVER/UNDER-filled region PAIR at row2/col5 and
+row3/col5 — the RECREATION_PROTOCOL "wrong shape, not a missing element" tell (adjacent
+cells, one over one under, roughly balanced) — diagnosed as the clip's mass sitting too
+high relative to the reference's, which concentrates at the note's top edge.
+
+**v3.** Shifted the clip down ~65px per that diagnosis; darkened the progress track
+toward one of the two "MISSING COLOUR near-neutral" tones the report named; trimmed the
+card's ink border 3px->2px. Score: **0.554**. The row2/row3-col5 pair the clip fix
+targeted is GONE from the critique — confirms the diagnosis was right. `DETAIL TOO HIGH`
+barely moved (3.42x -> 3.27x).
+
+**v4.** Widened the body-copy box and let it wrap naturally instead of hand-breaking
+every line (a new UNDER-filled cell at row6/col6 said the reference's paragraph runs
+further right than mine); enlarged and dropped the flame lower (two UNDER-filled cells
+at row9/col6 and row10/col7 said its reach was short). Score: **0.576** — went UP
+slightly, and the fixed cells were replaced by a DIFFERENT over/under pair (row7/col3
+under, row4/col6 over) that neither v3 nor v4's diagnosis targeted. This is the exact
+whack-a-mole CLAUDE.md's bug catalog already documents for `fe7b3` ("shrinking one
+grid-cell's error reliably grew another's, for a net zero or negative score change") —
+independently reproduced here on a completely different poster, which is worth noting
+as a second, unrelated confirmation that this failure mode is real and not one
+recreation's bad luck.
+
+**THE CONTROL (required by RECREATION_PROTOCOL's MOCKUPS section before parking).**
+Downscaled v2.png (2160x3840, the session's 2x render scale) to 141x251 — the reference
+crop's own pixel dimensions — then scored the FULL-RES render against that downscaled
+copy of ITSELF: **`compare.report` = 0.159**. Every prior parked mockup in this queue
+(`522f2d898b827f`: control 1.12 vs measured 2.49, i.e. small relative to the gap;
+`110a5730e3710b`: control 0.001) had a control that was unambiguously near-zero, cleanly
+assigning the ENTIRE score gap to the aspect/resolution artifact. **This one does not.**
+0.159 sits almost exactly ON the accept line (0.16) — not "near zero" by any reading, and
+the detail-ratio direction flips with it: scoring full-res-vs-downscaled reports `DETAIL
+TOO LOW (0.29x)` (the downscale destroys fine linework), while scoring
+crop-vs-full-render reports `DETAIL TOO HIGH (3.1-3.4x)` (my crisp vector strokes read as
+"more detail" than a soft, JPEG-compressed, 640x399-native photo of a phone). Both
+directions are the SAME underlying artifact — `compare.py`'s edge-density detail metric
+is not resolution-invariant — but it does not fully explain the 0.554-0.576 score: net of
+the ~0.16 the control assigns to resolution/fidelity alone, a real residual of roughly
+0.4 remains, consistent with the genuine (if repeatedly whack-a-moled) region deltas the
+critique kept finding.
+
+**Looking gate: PASSES.** Every step-1 inventory item is present, at the measured
+proportions, in the correct front/behind relationship (star mostly clear with its tip
+tucked, clip gripping the top edge, text filling the card's upper-middle band, flame
+hanging off the card's bottom edge into the grey ground) — verified by side-by-side
+`Read` of `scratchpad/friction5/114f2b19_crop_v3.png` against `v4.png`.
+
+### DISPOSITION — PARKED via `runqueue.py fail` (session, 2026-09-21)
+
+4 iterations. Final: `out/versions/114f2b19c46119/v4.png` (v3, at 0.554, is marginally
+lower-scoring but visually and structurally equivalent — the difference is inside the
+whack-a-mole noise floor demonstrated above). Looking gate passes against the full
+step-1 checklist. `compare.report` score 0.554-0.576, far above the 0.16 accept line.
+Control run per protocol returned **0.159** — NOT near-zero like every prior mockup
+precedent, which is the load-bearing finding of this run: the MOCKUPS section's binary
+"control near zero -> park on aspect; control large -> the gap is real" does not have a
+branch for a control that lands ON the accept line itself. Disposition here is PARK, not
+accept, because (a) it remains a mockup — the same category CLAUDE.md reserves parking
+for — (b) the raw score is nowhere near 0.16 even after subtracting the control's
+~0.159, leaving a genuine ~0.4 residual that four iterations could not close (and two of
+those iterations demonstrated whack-a-mole rather than convergence), and (c) the
+looking gate, which is the actual quality bar per CLAUDE.md section 3, passes. Not
+recorded as a numeric "attempted" via `runqueue.py record`, because that would present
+0.554-0.576 as a comparable, meaningful number the way it is for a same-aspect,
+same-resolution recreation — which the control shows it partly, but only partly, is.
+
+Full API friction, the crop-selection method (there is no rule for it — this session
+improvised numpy pixel-scanning from scratch), and every gate surprise are in
+`scratchpad/friction5/f114f.md`.
+
+## 67805068493b45 (session, 2026-09-21)
+
+**Reference:** `training_samples/reference_posters/67805068493b4522f5c3944723bee7d2.jpg`,
+1200x2133 px = **0.5625:1 — a STORY canvas** (`core.SIZES['story']` = 1080x1920, same
+ratio exactly), NOT feed. This is the load-bearing finding of the session: the queue
+carried a "current best score 0.328" for this slug with no script on disk that produces
+it, and the only surviving related script (`scratchpad/gen_showcase5h.py`'s
+`orbit_stickers()`, job "36_orbit_stickers") renders on the FEED canvas (1080x1350).
+Re-scoring the three orphaned PNGs in `out/versions/67805068493b45/` (v1-v3, dated
+2026-07-14, script lost) against the reference gives 0.474 / 0.435 / 0.435 — all WORSE
+than 0.328 — and `compare.compare()` prints `ASPECT MISMATCH 0.563:1 vs 0.8:1 (30%
+apart)` on every one of them. Treated as unreproducible per the brief; this session
+starts a fresh build on the correct canvas, v4 onward.
+
+**compare.geometry(ref):** content bbox y 0.157..0.793 (top margin 15.7%, bottom margin
+20.7% — a large deliberate empty strip at the very bottom); centroid (0.493, 0.446);
+coverage 0.181; vertical ratio 0.76:1.
+
+**Step 1 — composition (full inventory in the session transcript / friction doc):** a
+loose, INTERLEAVED, OVERLAPPING ring of ~19 individually-styled cute-mascot illustration
+stickers (flowers, a bear, a bird, stars, kite/diamond shapes, coiled spirals, an
+elongated stretching character) arranged around a ten-word sentence ("What does it take
+to think outside the box?") woven through the ring at varying font/size/rotation/case,
+with one word ("think") set in a distinct italic serif. Below the ring, clearly
+separated by empty cream space, a two-line wordmark ("PLAYBOOK") + a thumbs-up icon.
+Two elements bleed off the canvas edge (a red starburst, left; on closer crop-check a
+yellow shield does NOT reach the edge despite first appearing to).
+
+**Adaptations (all recorded in the script's own docstring, `scratchpad/gen_67805068_v9.py`):**
+- Reference mascot FACES dropped — recreating a licensed character illustration set's
+  faces would be copying character IP, not a layout mechanism; silhouette family, colour,
+  scale and interleaved arrangement are what's targeted.
+- Sentence swapped for AQ's own line ("what does it take to show up for someone else?")
+  and wordmark swapped from the reference's own unrelated brand ("PLAYBOOK") to
+  "AQUATERRA" + thumbsup — real-assets / literal-brand-copy rule, CLAUDE.md §9.
+  Reference's TWO italicised words ("show"/"up") from the prior lost script were reduced
+  to ONE ("show"), per §9's <=1 accent-word rule for Instrument Serif.
+  - Reference's warm browns (bear, one flower) have no `core.ACCENTS` entry; derived via
+  `core.ink_of(A[2])` (mustard) and a manual lemon/tomato blend for a second, more
+  orange-leaning brown — closer to the measured target hue but still not an exact match
+  (see below).
+
+**Iterations (v4-v9, this session; v1-v3 pre-existing/orphaned, not counted):**
+v4 0.474(re-scored)->0.218, v5 0.181, v6 0.176, v7 0.168, v8 0.164, **v9 0.159 — ACCEPTED.**
+Each iteration fixed real, specific `compare.report` region deltas cross-checked against
+`compare.crop` on the reference (e.g. v4->v5 found the AQUATERRA wordmark drawn directly
+on top of the bear sticker, both dense, where the reference leaves a clear gap —
+confirmed with `compare.crop(ref, 0.35,0.60,0.65,0.85,...)` before touching the script).
+One direct MISSING COLOUR fix (v6) narrowed the residual to the low 0.16-0.18 band; the
+remaining iterations (v7-v9) were the classic decision-table pattern of one region's fix
+displacing mass into an adjacent cell, resolved by nudging rather than adding filler,
+except ONE genuine last-resort filler element (`fillerGap`, v8) for a gap nothing else
+reached.
+
+**Looking gate: PASSES.** All ~19 sticker elements present, individually legible,
+overlapping/interleaved (not sorted into bands — checked explicitly per the "three
+questions" in RECREATION_PROTOCOL.md), the sentence reads in order, the wordmark sits in
+a clear gap below the ring, and the reference's large empty bottom strip is preserved.
+Remaining residual: `MISSING COLOUR orange/warm rgb(160,96,0)` (7% of reference content)
+never fully resolved — the derived brown got close (`#9E4A06` = rgb(158,74,6), R within 2,
+B within 6, G off by 22) but never matched closely enough to register, and is not
+BLOCKING (area 0.998x, detail 1.027x, spread 1.036x — all comfortably inside range).
+
+### DISPOSITION — ACCEPTED via `runqueue.py record` (session, 2026-09-21)
+
+Final: `out/versions/67805068493b45/v9.png` (script: `scratchpad/gen_67805068_v9.py`).
+Score 0.159 <= 0.16 accept line, no BLOCKING critique, looking gate passes. 6 iterations
+(v4-v9) from a cold start (wrong-canvas orphaned prior attempt, script lost).
+
+Full gate-stack friction, API surprises, and where score vs. eye disagreed are in
+`scratchpad/friction5/f6780.md`.
+
+## cfec9bd415fff2 — resumed convergence pass (session, 2026-09-21)
+
+Prior state: `brain/RECREATION_PROGRESS.md` row 37 marked this `revisit-done` from session 8
+(v1->v3, pre-`compare.py`, pre-`runqueue.py`). `brain/RECREATION_QUEUE.json` separately carried
+this slug at `score: 0.27, iters: 2, note: "showcase5f; small-text rule validated - detail
+0.88-1.29 all five"` — that note describes a DIFFERENT build entirely
+(`scratchpad/gen_showcase5f.py`'s `flat_lay()`, a generic "kit checklist" card unrelated to this
+reference's actual cutting-mat desk scene, rendered to `out/showcase5/27_flat_lay.png`, never to
+`out/versions/cfec9bd415fff2/`). The 0.27 almost certainly scored the wrong image. Full detail in
+`scratchpad/friction5/fcfec.md`.
+
+**Step 0 — measured** (`compare.geometry`): content bbox x 0.000-0.946, y 0.009-0.919, coverage
+0.667, vertical ratio 0.11:1 (content runs edge-to-edge, no headline room). Reference native size
+1000x750 (aspect 1.333:1) — `compare.report` on the existing v3.png immediately flagged
+`ASPECT MISMATCH 1.333:1 vs 0.8:1 (40% apart)` against the `feed` canvas v1-v3 used, scoring 0.664,
+mostly measuring squeeze-distortion, not a design gap. The style bank's own judged entry for this
+slug (`brain/STYLE_BANK.json`) records `canvas: 'linkedin'` — this was never meant to be a 4:5 feed
+post. Re-based the recreation onto `li_square` (1080x1080, aspect 1.0), the closest registered AQ
+canvas by log-ratio.
+
+**Step 1 — composition** carried over from the existing `## Sample 37` inventory above (still
+accurate): navy speckled ground, double-layered mat (orange under-sheet peeking at two opposite
+corners), green cutting mat with ruler numbers 1-13 + top tick marks + inset frame, confetti
+cluster (leaf/circle/heart/diamond), gradient note card with illegible scribble marks + flower
+doodle, two-tone pencil, mug with tea-tag, two-tone eraser, red circle, pink diamond+heart sticker,
+yellow set-square with dotted hypotenuse.
+
+**Step 2-3 — build+render**: new bespoke script `scratchpad/gen_cfec9bd_v4.py` (v1-v3's original
+script is lost — this repo has no other file referencing this slug except the unrelated
+showcase5f.py above), built on `li_square`, positions computed as LOCAL FRACTIONS of a measured
+mat box so the reference's internal arrangement transfers even though the outer canvas aspect
+changed.
+
+**Step 4-5 — iterate, per `compare.report` + crops + the eye, 10 versions:**
+- v4 (first render, feed->li_square switch alone): 0.282, no aspect-mismatch warning. Region
+  critique flagged 3 over-filled cells.
+- v5: dropped the under-layer's padding (was drawing a near-uniform orange OUTLINE all round,
+  confirmed by cropping `_ref_tr.png` vs `_gen_tr.png`, `_ref_bl.png` vs `_gen_bl.png` side by
+  side) -> 0.215.
+- v6/v7: re-added small padding + more rotation chasing the same corner delta -> 0.214-0.215,
+  barely moved. Diagnosed via a FULL grid diff (`compare._grid_occupancy` on both images, not
+  just the top-3 critique lines compare.report prints) rather than more guessing.
+- v8: the full grid diff showed the mechanism was never a rotated-rect taper — the reference's
+  bottom-left mat corner is measurably SPARSE (low coverage, mostly open background), not padded
+  wide with orange. Replaced the rotation trick with an explicit `clip-path` diagonal notch cut
+  into the mat's top-right and bottom-left corners, orange under-layer showing through -> 0.196.
+- v9: pushed the mat down slightly (more open background above, matching measured row1 values)
+  and enlarged the notch -> 0.183. Introduced a real regression here: the yellow triangle's
+  bottom-right corner started hanging off the mat into open background (confirmed by
+  `compare.crop` on both images side by side) — traced to a bug, not a design choice.
+- **v10: found and fixed a systematic bug** — every element's Y-coordinate had `MAT_Y0` added
+  TWICE (once inside the `loc()` helper, which already returns an absolute position, and again
+  at every call site: `at(x, MAT_Y0 + y, ...)`). X-coordinates were correct (no double-add); only
+  Y was wrong, on all 11 placed elements. This silently shifted every object down by a full
+  `MAT_Y0` (138px) versus its intended position for 6 straight iterations (v4-v9) and was very
+  likely the real cause behind several of the "over-filled region" critiques those iterations
+  chased with padding/rotation tweaks instead. Fixed with a script-wide correction (not a hand
+  patch to one element) -> **SCORE 0.158 <= 0.16 accept line.**
+
+**Looking gate**: all 11 inventoried objects present, individually legible, correctly sized
+relative to the mat, and in the reference's arrangement (confetti cascade top-center, note card
+dominant left-of-center, mug/eraser/red-circle cluster upper-right, pink diamond + yellow
+set-square lower-right) — not sorted into bands, not collapsed to one corner. `preflight`/
+`build.render`'s DOM audit reports `margins/overlap CLEAN`. Remaining advisory-only warnings
+(`BBOX UNDER-REPORTS` on rotated elements, `UNTRACKED` on nested child SVGs, one `CLIPPED div`
+1064px-in-1058px) are cosmetic gate noise, not visual defects — checked against the rendered PNG
+by eye. No BLOCKING critique (`detail 0.774x` clears the 0.72x floor; `area 1.056x`,
+`spread 1.029x` both inside range).
+
+### DISPOSITION — ACCEPTED via `runqueue.py record` (session, 2026-09-21)
+
+Final: `out/versions/cfec9bd415fff2/v10.png` (script: `scratchpad/gen_cfec9bd_v4.py`, canvas
+`li_square` 1080x1080 — NOT `feed`, see Step 0). Score 0.158 <= 0.16 accept line, no BLOCKING
+critique, looking gate passes. 7 iterations (v4-v10) from a cold start (wrong-canvas v1-v3,
+original script lost, prior queue score measured a different, unrelated render).
+
+Full gate-stack friction, API surprises, the double-Y-offset bug, and where score vs. eye
+disagreed are in `scratchpad/friction5/fcfec.md`.

@@ -73,8 +73,14 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
     # silently miss, in the same render call (session 10f, agent g2). Say so rather
     # than let one half of a declaration quietly do nothing.
     _tags = {str(b.get('tag')) for b in boxes}
-    _ghosts = sorted({l for pr in _ign for l in pr if l not in _tags})
-    if _ghosts:
+    _named = {l for pr in _ign for l in pr}
+    _ghosts = sorted(_named - _tags)
+    # PARTIAL mismatch only. If NONE of the ignored labels match a data-tag, the author
+    # is simply using a different naming scheme for their element tuples than for the
+    # DOM — legitimate, and warning about it printed identical noise on every render of
+    # a 14-iteration recreation (session 10f, f2514b). If SOME match and some do not,
+    # that asymmetry is the signal: one name in a working set is probably a typo.
+    if _ghosts and len(_ghosts) < len(_named):
         print(f"   [{name}] IGNORE PAIRS NAME NO data-tag IN THE DOM: {_ghosts} — "
               f"this gate matches data-tag, while layout.collision_check matches your "
               f"element LABELS. Tags present: {sorted(_tags)[:8]}")
