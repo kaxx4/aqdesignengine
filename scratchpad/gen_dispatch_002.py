@@ -5,14 +5,22 @@ Run:  PYTHONIOENCODING=utf-8 python scratchpad/gen_dispatch_002.py
 Outputs into out/dispatch/no02/:
   wa_poster.png     the ONE WhatsApp promotional poster (1080x1350)
   s00_cover.png     story 1: the contents page
-  s01..s05_*.png    one story per item (1080x1920)
+  s01..s04_*.png    one story per item (1080x1920)
   copy.md           the WhatsApp message + the Instagram caption
 
-Sourced from a verbal brief, 2026-09-23. Two open items, both handled by not
-overstating them (VOICE.md sec. 1.5 - a claim comes from the brief or it is
-omitted):
-  - disco diwali is explicitly a TEASE, not a confirmed return - worded as
-    such rather than stated as fact.
+Sourced from a verbal brief, 2026-09-23, revised same day per follow-up
+direction. Open items, handled by not overstating them (VOICE.md sec. 1.5 -
+a claim comes from the brief or it is omitted):
+  - disco diwali does NOT get its own item/section - it is folded into the
+    terrathon item as a one-line, un-emphasized tease ("maybe a ... giveaway
+    or two"), per the follow-up brief.
+  - shikshaq carries two facts: the past papers collection is finally under
+    internal review, AND the shikshaq website itself is undergoing a full
+    redesign. These are two different things under one department, not to
+    be confused with the "ops" item's new NGO-wide internal website.
+  - the digital magazine item is written with more weight: it is the team's
+    first-ever issue, and the copy names the real effort behind it (meet
+    after meet, every detail) rather than a flat announcement.
   - no real AQ photo in core.PHOTOS (food/edu/diwali/xmas) is a true match for
     any of this week's items, so no photo/cover_photo is set. The existing
     "diwali" photo is from a past fundraiser, not this year's Disco Diwali
@@ -51,7 +59,7 @@ BRIEF = {
     "tagline": "what's / moving",
     "handle": "@ngo.aquaterra",
     "site": "ngoaquaterra.com",
-    "story_cta": "swipe for all five.",
+    "story_cta": "swipe for all four.",
     "wa_signoff": ("the detail on each one is in the poster. if your team did "
                    "something that isn't here, reply and it goes in no. 03."),
     "ig_signoff": ("the detail on each one is in the stories. not in the volunteer "
@@ -63,50 +71,37 @@ BRIEF = {
             "dept": "events",
             "chip": "terrathon",
             "head": "terrathon is oct 2-4",
-            "line": ("terrathon runs october 2 to 4 this year, and a mini carnival runs "
-                     "alongside it. the events team is deep into planning now."),
+            "line": ("terrathon runs october 2 to 4 this year, with a mini carnival "
+                     "alongside it, and maybe a disco diwali ticket giveaway or two "
+                     "along the way."),
             "story": ("terrathon is confirmed for october 2, 3 and 4, with a mini "
                       "carnival running alongside it this year for the first time. the "
-                      "events team is deep into planning both, and more details on "
-                      "registration, venue and the carnival lineup will follow in the "
-                      "coming weeks. if your team is helping put either one together, "
-                      "that work is already underway."),
+                      "events team is deep into planning both, and more on "
+                      "registration, venue and the carnival lineup follows soon. also, "
+                      "quietly: there may be a disco diwali ticket giveaway or two "
+                      "along the way, so it is worth keeping half an eye on this "
+                      "space."),
             "wa": ("terrathon is confirmed for october 2, 3 and 4, and a mini carnival "
-                   "runs alongside it this year. the events team is deep into planning, "
-                   "more details on registration and the carnival lineup coming soon."),
-        },
-        {
-            "dept": "events",
-            "chip": "disco diwali",
-            "head": "disco diwali teaser drops",
-            "line": ("disco diwali is being teased for a return this year, with ticket "
-                     "giveaways in the works. watch this space for more."),
-            "story": ("disco diwali looks like it's coming back this year, and the "
-                      "events team is hinting at ticket giveaways before anything is "
-                      "official. nothing is confirmed yet, so treat this as a tease "
-                      "rather than an announcement, but if giveaways do happen they "
-                      "will run through this channel first, so it is worth keeping an "
-                      "eye out."),
-            "wa": ("disco diwali is being teased for a return this year, and the events "
-                   "team is hinting at ticket giveaways before anything is official. "
-                   "nothing confirmed yet - watch this space."),
+                   "runs alongside it this year. more on registration and the carnival "
+                   "lineup coming soon, and yes, disco diwali tickets might make an "
+                   "appearance too."),
         },
         {
             "dept": "labs",
             "chip": "shikshaq",
-            "head": "past papers move to review",
-            "line": ("shikshaq's past papers collection is moving into internal "
-                     "checking within the ngo aq community, the step before it reaches "
-                     "a wider audience."),
-            "story": ("shikshaq's past papers collection is entering internal checking, "
-                      "run inside the ngo aq community before it goes out more widely. "
-                      "the review is meant to catch errors and gaps before students "
-                      "start relying on the papers, so it is a deliberate step rather "
-                      "than a delay. once it clears, the collection opens up beyond the "
-                      "community."),
-            "wa": ("shikshaq's past papers collection is moving into internal checking "
-                   "within the ngo aq community, the step before it goes out more "
-                   "widely."),
+            "head": "past papers under review",
+            "line": ("shikshaq's long-awaited past papers collection is finally under "
+                     "internal review, and the shikshaq website itself is now going "
+                     "through a full redesign."),
+            "story": ("shikshaq's past papers collection, long asked for, is finally "
+                      "moving into internal review inside the ngo aq community before "
+                      "it goes out more widely. alongside that, the shikshaq website "
+                      "itself is going through a full redesign, so expect a different "
+                      "look and feel once both land. no firm date yet, but both are "
+                      "properly underway."),
+            "wa": ("shikshaq's past papers collection is finally under internal "
+                   "review, and the shikshaq website itself is going through a full "
+                   "redesign. both are properly underway."),
         },
         {
             "dept": "ops",
@@ -125,20 +120,20 @@ BRIEF = {
         },
         {
             "dept": "content",
-            "chip": "magazine",
-            "head": "magazine's first issue coming",
-            "line": ("aq's new digital magazine is putting together its first edition, "
-                     "with new blogs and designs from across the community lined up "
-                     "for it."),
-            "story": ("aq's new digital magazine is assembling its first edition, and "
-                      "it is pulling in new blogs and designs from across the "
-                      "community rather than just the usual small team. if you have "
-                      "something written, drawn or designed that you want in it, this "
-                      "is the edition to get it into, before the first issue goes "
-                      "out."),
-            "wa": ("aq's new digital magazine is putting together its first edition, "
-                   "with new blogs and designs from across the community lined up for "
-                   "it."),
+            "chip": "digital magazine",
+            "head": "digital magazine's first issue",
+            "line": ("aq's first-ever digital magazine issue is almost here, built "
+                     "through meet after meet of planning, execution and getting "
+                     "every single detail right."),
+            "story": ("aq's first-ever digital magazine issue is almost ready, and it "
+                      "has taken meet after meet to get here: planning the sections, "
+                      "chasing down every blog and design, and going over every "
+                      "detail more than once. the team pulling this together has put "
+                      "in real hours for it, and it shows in how far along it "
+                      "already is."),
+            "wa": ("aq's first-ever digital magazine issue is almost here, built "
+                   "through meet after meet of planning, execution and getting every "
+                   "detail right. the team has put in real work for this one."),
         },
     ],
 }
@@ -162,7 +157,7 @@ async def main():
 
     # pixel critique - the headless proxy for the looking gate, never a substitute
     print("\n=== PIXEL CRITIQUE ===")
-    for f in ("wa_poster", "s00_cover", "s01_events", "s03_labs"):
+    for f in ("wa_poster", "s00_cover", "s01_events", "s02_labs"):
         c = prev.critique("%s/%s.png" % (OUT, f))
         print("  %-12s fill=%.2f  %s" % (f, c["fill"], [i[0] for i in c["issues"]]))
 
