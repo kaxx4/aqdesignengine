@@ -93,7 +93,12 @@ class RenderSession:
     async def start(self):
         from playwright.async_api import async_playwright
         self._pw = await async_playwright().start()
-        self._browser = await self._pw.chromium.launch()
+        # A container's pip-installed playwright version can want a newer Chromium
+        # revision than the one pre-baked into the image; fall back to that one by
+        # its stable symlink rather than downloading a second copy.
+        kw = {"executable_path": "/opt/pw-browsers/chromium"} if os.path.exists(
+            "/opt/pw-browsers/chromium") else {}
+        self._browser = await self._pw.chromium.launch(**kw)
         return self
 
     async def page(self, W, H):

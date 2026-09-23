@@ -28,6 +28,10 @@ scratchpad/vision_debug/
 scratchpad/yearbook/
 scratchpad/yearbook_src/
 
+# canvas-design companion pieces: keep the HTML build source + philosophy note, drop the
+# copied-in skill fonts (external assets, not this repo's brand fonts) and rendered PNGs.
+scratchpad/canvas_dispatch*/fonts/
+
 # Python / OS / editor noise
 __pycache__/
 *.pyc

@@ -102,11 +102,12 @@ W_STORY, H_STORY = core.SIZES["story"]
 # A department that is not here is a real error: a new team needs a colour
 # decision made once, on purpose, not silently defaulted to pink.
 DEPTS = {
-    "events":  "events",
-    "welfare": "welfare",
-    "labs":    "labs",
-    "ops":     "ops",
-    "content": "content",
+    "events":   "events",
+    "welfare":  "welfare",
+    "labs":     "labs",
+    "ops":      "ops",
+    "content":  "content",
+    "startups": "startups",   # Roots / AQ.Ventures / Shikshaq — added no.02, tomato accent
 }
 
 MAX_ITEMS = 6                                     # R2

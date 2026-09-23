@@ -236,11 +236,15 @@ def ink_of(accent_hex):
 # pink — visually fine, but it broke the one colour-code the audience is being
 # taught everywhere else. A poster about a welfare workshop is MINT. Full stop.
 DEPT = {
-    "welfare": "#1B8A5A",   # mint   — site --c-welfare
-    "events":  "#3DA9FC",   # sky    — site --c-events
-    "labs":    "#FFC700",   # lemon  — site --c-labs
-    "ops":     "#0E7C86",   # teal   — site --c-ops (see DRIFT note below)
-    "content": "#7E5BFF",   # grape  — site --c-content
+    "welfare":  "#1B8A5A",   # mint   — site --c-welfare
+    "events":   "#3DA9FC",   # sky    — site --c-events
+    "labs":     "#FFC700",   # lemon  — site --c-labs
+    "ops":      "#0E7C86",   # teal   — site --c-ops (see DRIFT note below)
+    "content":  "#7E5BFF",   # grape  — site --c-content
+    "startups": "#FF4D2E",   # tomato — Roots / AQ.Ventures / Shikshaq (DISPATCH no.02,
+                             # 2026-09-23). The site has no --c-startups token yet; tomato
+                             # was chosen because it's the only ACCENTS entry not already
+                             # claimed by a department or reserved as brand furniture (pink).
 }
 # DRIFT, recorded not silently reconciled: the site's --c-ops/--teal is #12909C,
 # the engine's canon teal is #0E7C86. Changing ACCENTS[6] would restyle all 44
