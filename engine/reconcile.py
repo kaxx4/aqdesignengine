@@ -95,6 +95,14 @@ _MEASURE_JS = """els => els.map(e => {
              const opaque = (n) => {
                const s = getComputedStyle(n);
                if (parseFloat(s.opacity || "1") < 0.5) return false;
+               // A BLENDED layer cannot hide what is under it — that is what
+               // blending MEANS. tex.photo_ink() and tex.halftone() put a
+               // background-image scrim at mix-blend-mode:multiply over every
+               // treated photo, and the image-is-opaque test on the next line
+               // called each one buried at 9/9 points while the photograph was
+               // plainly visible in the render. Every photo_ink piece in the
+               // corpus cries wolf without this (found building DISPATCH).
+               if ((s.mixBlendMode || "normal") !== "normal") return false;
                if (s.backgroundImage && s.backgroundImage !== "none") return true;
                const m = (s.backgroundColor || "").match(/rgba?\\(([^)]+)\\)/);
                if (!m) return false;

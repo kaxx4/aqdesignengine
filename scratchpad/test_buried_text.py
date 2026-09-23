@@ -364,6 +364,41 @@ async def main():
     except OSError:
         pass
 
+    # ---- 28-29: A BLENDED SCRIM IS NOT A LID -------------------------------
+    # tex.photo_ink() and tex.halftone() lay a background-image halftone over a
+    # photo at mix-blend-mode:multiply. opaque() returned true for ANY element
+    # with a background-image, so every photo the engine treats reported as
+    # buried at 9/9 points while the photograph was plainly visible in the PNG.
+    # Found building the DISPATCH format, where the poster and five of six story
+    # slides each carried one. A blended layer composites with what is under it;
+    # that is what blending means, so it cannot hide it.
+    tx = _load("tex"); _c = _load("core")
+    SHOT = ('<div data-tag="shot" style="position:absolute;left:100px;top:200px;'
+            'width:400px;height:300px;z-index:8">'
+            + tx.photo_ink(_c.PHOTOS["edu"], "width:100%;height:100%") + '</div>')
+    buf8 = _io.StringIO()
+    with _ctx.redirect_stdout(buf8):
+        await B.render(B.page(W, H, "var(--bg)", SHOT, grain=False), tmp, W, H,
+                       elements=[("shot", 100, 200, 400, 300)])
+    ok("BURIED" not in buf8.getvalue(),
+       "a multiply-blended halftone scrim does NOT bury the photo under it")
+
+    # and the guard is NARROW: an opaque patterned lid still buries.
+    LID = SHOT + ('<div data-tag="lid" style="position:absolute;left:80px;top:180px;'
+                  'width:440px;height:340px;z-index:12;' + tx.checkerboard() + '"></div>')
+    buf9 = _io.StringIO()
+    with _ctx.redirect_stdout(buf9):
+        await B.render(B.page(W, H, "var(--bg)", LID, grain=False), tmp, W, H,
+                       elements=[("shot", 100, 200, 400, 300), ("lid", 80, 180, 440, 340)],
+                       collision_ignore={("lid", "shot")})
+    ok("BURIED" in buf9.getvalue(),
+       "...but an OPAQUE patterned lid over the same photo still is reported")
+
+    try:
+        os.remove(tmp)
+    except OSError:
+        pass
+
     print(f"\nALL {N} ASSERTIONS PASSED")
 
 

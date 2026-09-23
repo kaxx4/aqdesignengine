@@ -86,12 +86,23 @@ def duotone(src, shadow="#0A0A0A", highlight="#FF4D8C", size_css="width:100%;hei
             f'<div style="position:absolute;inset:0;background:{shadow};mix-blend-mode:lighten;'
             f'opacity:.18"></div>{scr}</div>')
 
-def photo_ink(src, size_css="width:100%;height:100%", contrast=1.35, radius="0", extra=""):
+def photo_ink(src, size_css="width:100%;height:100%", contrast=1.35, radius="0", extra="",
+              focus="50% 50%"):
     """High-contrast black-ink photo — the newsprint/zine treatment. One colour,
     maximum bite. Use when a photo must sit beside flat brand colour without
-    competing with it."""
+    competing with it.
+
+    `focus` is the CSS object-position: WHERE IN THE PHOTOGRAPH the crop keeps
+    when the container's aspect differs from the image's. It defaults to dead
+    centre, which is what this function always did and is right for a square or
+    portrait frame. It is wrong for a WIDE LETTERBOX over a portrait photo:
+    centring a 1080x384 band on a standing figure lands on the torso, and the
+    first DISPATCH story slide rendered a headless body holding a parcel. Faces
+    sit high, so a wide band wants something like "50% 22%".
+    """
     return (f'<div style="position:relative;overflow:hidden;{size_css};border-radius:{radius};{extra}">'
             f'<img src="{src}" style="width:100%;height:100%;object-fit:cover;'
+            f'object-position:{focus};'
             f'filter:grayscale(1) contrast({contrast}) brightness(1.02)">'
             f'<div style="position:absolute;inset:0;{halftone(INK, 5, 0.28)}'
             f'mix-blend-mode:multiply"></div></div>')

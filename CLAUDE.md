@@ -748,6 +748,11 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | **The queue's stored scores had no provenance.** Two agents independently found a recorded score that no file reproduced — one entry's 0.27 had been measured against an unrelated demo render. `verify` now re-scores every recorded entry: **39 of 50 drift from the newest render on disk**, in both directions, one by 0.63 | session 10f, agents f6780 + fcfec | `record()` stores the render it scored; **`runqueue.py verify`** re-scores and reports drift. Historical entries have no provenance, so verify falls back to the newest PNG and labels that assumption |
 | The ignore-pair name warning added the day before fired on EVERY render of a 14-iteration recreation, because that author's element labels and DOM `data-tag`s are simply different naming schemes | session 10f, agent f2514b | it fires only on a PARTIAL mismatch now — all-miss is a different namespace by design, some-miss is probably a typo |
 
+| `reconcile.buried_text`'s `opaque()` counted ANY element with a `background-image` as blocking, ignoring `mix-blend-mode`. `tex.photo_ink()` and `tex.halftone()` lay exactly such a scrim at `multiply` over every treated photo, so **every photo piece in the corpus reported its own photograph as buried at 9/9 points** while it was plainly visible in the PNG. A blended layer composites with what is beneath it; that is what blending means | session 10g, building DISPATCH | `opaque()` returns false for any non-`normal` `mix-blend-mode`. Self-test: `scratchpad/test_buried_text.py` 28-29, where 29 proves the guard stays NARROW (an opaque patterned lid over the same photo is still reported) |
+| A recurring SERIES had no home. A weekly internal roundup is neither Workflow A (not one of the 4 archetypes), B (no reference) nor C (a bespoke script is a one-off, and this runs every week by a different person). Built as a bespoke script, its geometry and colour semantics would be re-decided every issue by whoever had the file open | session 10g | **`engine/dispatch.py`** — a fourth shape: a FORMAT MODULE. The brief is validated by rule (`validate_brief` raises with the field named), the layout is solved from measured content, and the only hand-input is content. `brain/DISPATCH_PLAYBOOK.md` is its operator doc |
+| `tex.photo_ink` hard-coded dead-centre cropping, so a wide letterbox over a portrait photo landed on the torso — the first DISPATCH story slide showed a headless body holding a parcel | session 10g | **`tex.photo_ink(..., focus="50% 22%")`** — an additive object-position parameter; the default is unchanged, so every existing caller renders identically |
+| A format's own numbers contradicted each other IN PUBLIC: `dispatch` set `LINE_WORDS = 18` in a docstring that cited VOICE.md section 5, which says a poster body is <= 14. The row solver then refused to fit five items at any readable type size, which is how the contradiction surfaced at all | session 10g | the budget and its deviation from the cited source are both stated in R4, with the reason. A solver that refuses is better than one that shrinks type silently |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -762,13 +767,16 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
     `render`, element helpers, the render+audit gate) · `doodles.py` (icon vocabulary) ·
     `layout.py` (generalized pre-render checks + `preflight` — §7a) · `audit.py` (DOM margin/overlap
     gate) · `preview.py` (pixel critique) · `ref_metrics.py` / `metrics.py` (metric targets) ·
-    `reconcile.py` (headless DOM measurement) · `rhythm.py` (8px snap) · `tex.py` (textures) ·
+    `reconcile.py` (headless DOM measurement) · `rhythm.py` (8px snap) · `tex.py` (textures) · **`dispatch.py`** (the DISPATCH
+    internal-roundup series: one WhatsApp poster + one message + N stories from one brief) ·
     `whitespace.py` · `engine.py` (Workflow A: ARCHETYPES + self-correction) · `archetypes.py`
     (geometry for pending archetypes).
 - `brain/` — the full reasoning: `TASTE.md`, `VISUAL_REVIEW.md` (looking-gate protocol), `ENGINE.md`,
   `ENGINE_STATE.md`, `DECISIONS.md` (standing rulings + every encoded fix), `INSPIRATION.md`
   (reference teardowns), `RECREATION_AUDIT.md` (per-sample composition descriptions + outcomes),
-  `RECREATION_PROGRESS.md` (44-row status table), `AUDIT.md`, `CAROUSEL_PLAYBOOK.md` (real-photo
+  `RECREATION_PROGRESS.md` (44-row status table), `AUDIT.md`, **`DISPATCH_PLAYBOOK.md`** (the weekly internal
+  roundup: the brief's fields, what the engine decides, the voice notes and the looking gate,
+  written for a non-designer community manager), `CAROUSEL_PLAYBOOK.md` (real-photo
   carousel helper block + per-slide collision/margin checklist, for batch runs of many carousels),
   **`VISUAL_DNA.md`** (what all 44 references taught — the measured design vocabulary + the honest
   corpus-coverage audit; read before adding any archetype or gate), **`GENERATION_MAP.md`** (the
@@ -828,8 +836,9 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   `test_doodle_stamp.py` (25) · `test_vision_starve.py` (13) · **`test_brand_truth.py` (34) ·
   `test_texture.py` (25) · `test_measured_layout.py` (32) · `test_placement.py` (30) ·
   `test_recreation.py` (47) ·
-  `test_stylebank.py` (64) · `test_buried_text.py` (27) · `test_repo_hygiene.py` (28) · `test_runqueue.py` (22)** —
-  **454 assertions total, all verified passing 2026-09-20**. `test_repo_hygiene.py`
+  `test_stylebank.py` (64) · `test_buried_text.py` (29) · `test_repo_hygiene.py` (30) · `test_runqueue.py` (22) ·
+  `test_dispatch.py` (25)** —
+  **482 assertions total across 16 files, all verified passing 2026-09-23**. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
