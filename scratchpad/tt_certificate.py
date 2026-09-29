@@ -2,7 +2,7 @@
 
 Model: the user's Paradox certificate set (wordmark, spaced "CERTIFICATE OF ..." line, fill-in lines,
 signatory footer, faint globe watermark). One layout, three colour schemes:
-  * winner      : FULL BLACK ground, gradient keyline (orchid > blue > green), orchid wordmark, gold seal   (the sexy one)
+  * winner      : FULL BLACK ground, solid orchid keyline, orchid wordmark, gold seal   (the sexy one)
   * runner_up   : FULL BLACK ground, blue keyline, cream wordmark, silver seal
   * participant : WHITE paper in a black flecked frame (the original white design), green seal
 
@@ -38,7 +38,7 @@ CX = W / 2
 VARIANTS = {
     "winner": dict(
         dark=True, cert="CERTIFICATE OF MERIT", verb="HAS PLACED", rank="1ST", rank_col=GOLD,
-        keyline="linear-gradient(135deg,#DE68F0 0%,#0396FF 52%,#2FD284 100%)",
+        keyline=ORCHID,
         title_fill=ORCHID, title_stroke=CREAM, title_shadow=GREEN, rule=ORCHID,
         seal=GOLD, seal_rim="#B98A00", ribbon=ORCHID, seal_shadow=ORCHID, seal_words=("WINNER", None)),
     "runner_up": dict(
@@ -92,18 +92,17 @@ async def build(name, out, fill_name="", fill_event=""):
     # ---- ground ---------------------------------------------------------------------------
     rnd = random.Random(11)
     if dark:
-        pts = [(rnd.uniform(0, W), rnd.uniform(0, H)) for _ in range(150)]
+        pts = [(rnd.uniform(0, W), rnd.uniform(0, H)) for _ in range(26)]
     else:
         pts = [(rnd.uniform(0, W), rnd.uniform(0, H)) for _ in range(900)]
-        pts = [(x, y) for x, y in pts if not (F < x < W - F and F < y < H - F)][:120]
+        pts = [(x, y) for x, y in pts if not (F < x < W - F and F < y < H - F)][:45]
     specks = (f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">'
               + "".join(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{rnd.choice([.7, 1, 1.4, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for x, y in pts)
               + '</svg>')
     ground = ('' if dark else '<div style="position:absolute;inset:0;background:#000"></div>') + specks   # dark: the page itself is black
     if dark:
-        K, KW = 20, 4          # keyline: ONE div with a gradient border-image (no inner black block to report as invisible)
-        ground += (f'<div style="position:absolute;left:{K}px;top:{K}px;width:{W - 2 * K}px;height:{H - 2 * K}px;border:{KW}px solid {BLUE};'
-                   f'border-image:{v["keyline"]} 1;z-index:2"></div>')
+        K, KW = 20, 4          # keyline: ONE solid-border div (user: no gradient border)
+        ground += (f'<div style="position:absolute;left:{K}px;top:{K}px;width:{W - 2 * K}px;height:{H - 2 * K}px;border:{KW}px solid {v["keyline"]};z-index:2"></div>')
     else:
         ground += (f'<div style="position:absolute;left:{F}px;top:{F}px;width:{W - 2 * F}px;height:{H - 2 * F}px;'
                    f'background:{PAPER};border:3px solid {INK};z-index:2"></div>')
@@ -193,7 +192,7 @@ async def build(name, out, fill_name="", fill_event=""):
     stk = (sticker("cricket_set.png", "stk_cricket", LC - 66, 30, 132)
            + sticker("pickleball_set.png", "stk_pickle", RC - 71, 30, 142)
            + sticker("controller.png", "stk_ctrl", LC - 64, 322, 128))
-    for label, cxc, cyc, d in (("stk_star_r", RC, 366, 100), ("stk_star_l2", LC, 476, 64), ("stk_star_r2", RC, 476, 64)):
+    for label, cxc, cyc, d in (("stk_star_r", RC, 366, 100),):
         stk += (f'<img class="measure" data-tag="{label}" src="{shur}" style="position:absolute;left:{cxc - d / 2}px;top:{cyc - d / 2}px;'
                 f'width:{d}px;height:{d}px;z-index:8">')
         el(label, cxc - d / 2, cyc - d / 2, d, d)
