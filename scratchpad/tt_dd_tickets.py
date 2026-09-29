@@ -32,7 +32,7 @@ INK, WHITE, CTA_FILL = tt.INK, tt.WHITE, tt.CTA_FILL
 BLUE, GREEN, PURPLE, NAVY = "#0396FF", "#2FD284", "#D468E8", "#0A3D8F"
 
 CAP, BOX = 0.81, -0.02
-CONTENT = dict(head=("TICKETS ON SALE", "DISCO DIWALI"), price="RS. 550", tag="AT THE CARNIVAL",
+CONTENT = dict(head=("LIMITED TICKETS ON SALE", "DISCO DIWALI"), price="RS. 550", tag="AT THE CARNIVAL",
                date="3RD & 4TH OCT", venue="TURF XL", cta="DD TICKET STALL")
 
 
@@ -138,6 +138,7 @@ async def build(c, out, canvas="feed"):
     tw = [r["text_w"] for r in m]
     price_px = 100 * px(1180) / tw[2]
     tag_px = px(72) * min(1.0, px(1000) / tw[3])
+    h1_px = px(96) * min(1.0, 690 / tw[0]); h1_w = tw[0] * h1_px / px(96)
     h2_px = px(120) * min(1.0, px(1230) / tw[1])
 
     rnd = random.Random(7)
@@ -148,10 +149,10 @@ async def build(c, out, canvas="feed"):
 
     # ---- header (two lines, centred) ----
     HB = f'position:absolute;left:0;width:{W}px;text-align:center;color:{WHITE};z-index:6;white-space:nowrap;line-height:1;font-family:var(--d)'
-    hdr = (f'<div class="measure" data-tag="h1" style="{HB};top:{px(70) + dy}px;font-weight:400;font-size:{px(96)}px">{c["head"][0]}</div>'
+    hdr = (f'<div class="measure" data-tag="h1" style="{HB};top:{px(70) + dy}px;font-weight:400;font-size:{h1_px}px">{c["head"][0]}</div>'
            f'<div class="measure" data-tag="h2" style="{HB};top:{px(170) + dy}px;font-weight:900;font-size:{h2_px}px">{c["head"][1]}</div>')
-    el("h1", (W - tw[0]) / 2, px(78), tw[0], px(CAP * 96)); el("h2", (W - tw[1] * h2_px / px(120)) / 2, px(180), tw[1] * h2_px / px(120), px(CAP * 120))
-    hdr = hdr.replace(f'left:0;width:{W}px;text-align:center', f'left:{(W - tw[0]) / 2}px;width:{tw[0] + 4}px;text-align:center', 1)
+    el("h1", (W - h1_w) / 2, px(78), h1_w, h1_px * CAP); el("h2", (W - tw[1] * h2_px / px(120)) / 2, px(180), tw[1] * h2_px / px(120), px(CAP * 120))
+    hdr = hdr.replace(f'left:0;width:{W}px;text-align:center', f'left:{(W - h1_w) / 2}px;width:{h1_w + 4}px;text-align:center', 1)
     hw2 = tw[1] * h2_px / px(120)
     hdr = hdr.replace(f'left:0;width:{W}px;text-align:center', f'left:{(W - hw2) / 2}px;width:{hw2 + 4}px;text-align:center', 1)
 
