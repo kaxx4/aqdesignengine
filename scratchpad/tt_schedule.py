@@ -8,7 +8,7 @@ pickleball is at 11:11 Pick A Court, FIFA is at Battleground Gaming. Fixture dra
 Adaptations: stickers per row are the kit's real assets (cricket_set, pickleball_set, controller, carnival), cropped to alpha.
 The CTA pill says TURN UP EARLY (registrations may have closed by post day; no invented link).
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_schedule.py
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_schedule.py [story]   (story = 1080x1920, IG safe zones kept clear)
 """
 import asyncio, importlib.util, os, random
 
@@ -17,7 +17,6 @@ spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "s
 tt = importlib.util.module_from_spec(spec); spec.loader.exec_module(tt)
 core, B, W = tt.core, tt.B, tt.W
 GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL = tt.GROUND, tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.CTA_FILL
-H = 1350
 
 # (sticker, sport, venue, report-by, matches, tag)
 DAYS = [
@@ -28,11 +27,16 @@ DAYS = [
     ("SUN", "04", [("cricket_set.png", "CRICKET", "TURF XL, NEW ALIPORE", "9:45AM", "10AM TO 2PM", None),
                    ("carnival.png", "MINI-FETE", "TURF XL, NEW ALIPORE", None, "10AM TO 2PM", "OPEN TO ALL")]),
 ]
-CARD_X, CARD_W, COL_W, ROW_H, BORDER, GAP = 56, 968, 172, 118, 6, 24
-Y0 = 322
+CARD_X, CARD_W, COL_W, BORDER = 56, 968, 172, 6
 
 
-async def main():
+async def main(story=False):
+    H = 1920 if story else 1350                  # story: Instagram UI zones (top ~250, bottom ~270) kept clear
+    OY = 192 if story else 0                     # title block drop
+    ROW_H = 140 if story else 118
+    GAP = 32 if story else 24
+    Y0 = 470 if story else 322
+    FOOT = 270 if story else 0                   # footer lift off the bottom edge
     els = []
     def el(l, x, y, w, h): els.append((l, x, y, w, h))
     def sticker(name, label, x, y, hh, z=4):
@@ -46,12 +50,12 @@ async def main():
     m = await B.measure_text([dict(text="SCHEDULE", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
                               dict(text="2ND TO 4TH OCTOBER", font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
     tpx = 100 * 640 / m[0]["text_w"]; spx = 50 * min(1.0, 700 / m[1]["text_w"])
-    parts.append(f'<div class="measure" data-tag="t1" style="position:absolute;left:{(W - 420) / 2}px;width:420px;top:58px;text-align:center;color:{CREAM_HALO};font-family:var(--d);font-weight:400;font-size:44px;line-height:1;z-index:6">TERRATHON</div>')
-    parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 700) / 2}px;width:700px;top:112px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
+    parts.append(f'<div class="measure" data-tag="t1" style="position:absolute;left:{(W - 420) / 2}px;width:420px;top:{58 + OY}px;text-align:center;color:{CREAM_HALO};font-family:var(--d);font-weight:400;font-size:44px;line-height:1;z-index:6">TERRATHON</div>')
+    parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 700) / 2}px;width:700px;top:{112 + OY}px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
                  f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">SCHEDULE</div>')
-    parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{112 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
+    parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{112 + OY + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
                  f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">2ND TO 4TH OCTOBER</div>')
-    el("t1", (W - 300) / 2, 60, 300, 36); el("t2", (W - 640) / 2, 116, 640, tpx * .82); el("t3", (W - 700) / 2, 112 + tpx * 1.05 + 2, 700, spx * .82)
+    el("t1", (W - 300) / 2, 60 + OY, 300, 36); el("t2", (W - 640) / 2, 116 + OY, 640, tpx * .82); el("t3", (W - 700) / 2, 112 + OY + tpx * 1.05 + 2, 700, spx * .82)
 
     y = Y0
     for di, (dn, dd_, rows) in enumerate(DAYS):
@@ -63,7 +67,7 @@ async def main():
                f'<div style="font-weight:900;font-size:30px;line-height:1;margin-top:8px">{dd_} OCT</div></div>')
         body = ""
         for ri, (stk, sport, venue, rep, mt, tag) in enumerate(rows):
-            sh = 84
+            sh = 96 if story else 84
             simg, sw = sticker(stk, sport, 0, 0, sh)
             chip = ""
             rep_html = (f'<div style="font-weight:400;font-size:22px;line-height:1.1;margin-top:4px">REPORT BY <span style="font-weight:900">{rep}</span></div>' if rep
@@ -85,23 +89,25 @@ async def main():
                  f'FIXTURES ARE DRAWN ON THE DAY. A SQUAD NOT THERE WHEN CALLED FORFEITS.</div>')
     el("note1", (W - 960) / 2, yb + 4, 960, 30); el("note2", (W - 900) / 2, yb + 50, 900, 22)
 
-    ly = H - 27 - 56
+    ly = H - FOOT - 27 - 56
     parts.append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{ly}px;height:56px;z-index:9">'); el("logo", 27, ly, 320, 56)
-    cx, cw, ch2 = W - 27 - 380, 380, 70; cy = H - 13 - ch2
+    cx, cw, ch2 = W - 27 - 380, 380, 70; cy = H - FOOT - 13 - ch2
     el("cta", cx, cy, cw, ch2)
     parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{cx}px;top:{cy}px;width:{cw}px;height:{ch2}px;box-sizing:border-box;border:6px solid {ORCHID};border-radius:999px;background:{CTA_FILL};'
                  f'display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:32px;color:{INK}">TURN UP EARLY</div>')
-    for lab, x, yy, sz in (("star_tl", 44, 56, 100), ("star_tr", 936, 66, 100)):
+    for lab, x, yy, sz in (("star_tl", 44, 56 + OY, 100), ("star_tr", 936, 66 + OY, 100)):
         im, src = tt.crop_to_alpha("shuriken.png"); hh = sz * im.height / im.width; el(lab, x, yy, sz, hh)
         parts.append(f'<img src="{src}" class="measure" data-tag="{lab}" style="position:absolute;left:{x}px;top:{yy}px;width:{sz}px;height:{hh}px;z-index:5">')
 
     html = B.page(W, H, GROUND, "".join(parts), grain=False)
     text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("card", INK, CTA_FILL, 33, True),
                   ("chip", INK, ORCHID, 20, True), ("daycol", INK, ORCHID, 58, True), ("note", WHITE, GROUND, 24, False), ("cta", INK, CTA_FILL, 32, True)]
-    os.makedirs("out/collaterals", exist_ok=True)
+    out = "out/collaterals/stories/terrathon_schedule_story.png" if story else "out/collaterals/terrathon_schedule.png"
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     async with B.session():
-        await B.render(html, "out/collaterals/terrathon_schedule.png", W, H, elements=els, text_pairs=text_pairs,
+        await B.render(html, out, W, H, elements=els, text_pairs=text_pairs,
                        containers=("card0", "card1", "card2"), page_bg=GROUND, expect_hero=False, margin=12)
-    print("done", "out/collaterals/terrathon_schedule.png")
+    print("done", out)
 
-asyncio.run(main())
+import sys
+asyncio.run(main(story="story" in sys.argv[1:]))

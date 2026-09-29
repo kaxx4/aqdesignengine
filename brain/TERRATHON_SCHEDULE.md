@@ -1,6 +1,6 @@
 # TERRATHON SCHEDULE: Fri 2 to Sun 4 October 2026, Kolkata (updated 2026-09-29)
 
-Source: the live TerraThon site timetable (pasted by the user 2026-09-29) plus `brain/TERRATHON.md`. Mini-Fete rows were added on the user's instruction (3rd and 4th, Turf XL). Answers received 2026-09-29: Mini-Fete runs the SAME hours as cricket; pickleball is at 11:11 Pick A Court; FIFA is at Battleground Gaming; output is a static feed graphic (`scratchpad/tt_schedule.py` -> `out/collaterals/terrathon_schedule.png`).
+Source: the live TerraThon site timetable (pasted by the user 2026-09-29) plus `brain/TERRATHON.md`. Mini-Fete rows were added on the user's instruction (3rd and 4th, Turf XL). Answers received 2026-09-29: Mini-Fete runs the SAME hours as cricket; pickleball is at 11:11 Pick A Court; FIFA is at Battleground Gaming; output is a static feed graphic (`scratchpad/tt_schedule.py` -> `out/collaterals/terrathon_schedule.png`) plus a 1080x1920 story (`tt_schedule.py story` -> `out/collaterals/stories/terrathon_schedule_story.png`).
 
 **Rule printed on the site: turn up at the REPORTING time, not the match time.** Fixtures are drawn on the day; a squad not present when its name is called forfeits. Exact fixtures land in the WhatsApp group the night before. Sports registrations close Thu 1 Oct.
 
