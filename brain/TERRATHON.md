@@ -143,6 +143,23 @@ not TerraThon's. The STRUCTURE transfers to the Friday "all you need to know" po
 Two craft notes: the rules panel's fine print is unreadable at feed size (split it further or raise the size), and slides 5 and 3 depend
 on real assets (partner logos, an actual floor plan) that cannot be invented.
 
+## 5e. The marketing-points carousel: Paradox "13 reasons why" (`training_samples/terrathon/paradox_13_reasons_template.png`)
+
+The user's template for the Tuesday carousel (TerraThon/Carnival marketing points, "reusing the Paradox template"). The screenshot shows the cover and
+five point slides of a longer run; the 6th is cut off. 4:5 stories/posts. Grammar:
+
+| Slide | Mechanism |
+|---|---|
+| Cover | big red numeral (`13`), `REASONS WHY YOU SHOULD ATTEND`, event logo-type, then a strip: date, venue pin, clock, `LINK IN THE BIO` pill |
+| Point slide | circular photo (a real photo of the thing), red display headline (`NANDU JEE`, `POLAROID`, `CUTEST DECOR`, `PRESS-ONS`, `CHARMS BAR`), one snarky two-part tagline in black |
+| Artist slide | same as a point slide, headline `MUSIC BY` + name, supporting acts under it |
+| Every slide | title-sponsor strip at the top (`Realmark`, `TITLE SPONSOR`); footer `LIMITED SPOTS, REGISTER NOW!` above AQ logo (left) and Paradox logo (right) |
+
+Voice pairs (headline / tagline): `NANDU JEE / SERVING CHAOS AND CRAVINGS (ON THE HOUSE)`, `POLAROID / BECAUSE PHONES DIE, MEMORIES DON'T`,
+`PRESS-ONS / WALK IN EMPTY-HANDED. LEAVE LOOKING FRESH.` Each tagline is one benefit plus one wink, in capitals. Look: sand upper half, blue wave lower half, green palms
+in both top corners. Every point slide depends on a REAL photo in its circle and, on this template, a sponsor logo and a Paradox logo: none can be invented.
+Open questions before building: does the carnival carry a title sponsor, and which footer brand (TerraThon, Paradox or neither)?
+
 ## 6. Reference defects (do not copy)
 
 1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.
