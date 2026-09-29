@@ -94,7 +94,17 @@ def crop_to_alpha(name):
     return im, "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-async def build(ev, cta_text, out):
+STORY_DY = {"hdr": 210, "hero": 250, "slab": 280, "info": 310, "foot": 320}   # story reflow: group shifts (px) that keep Instagram's UI zones clear
+GROUP_OF = {"pp_label": "hdr", "pp_value": "hdr", "winner": "hdr", "runners": "hdr", "fest_pill": "hdr", "hero": "hero", "star_tr": "hero",
+            "star_ul": "hero", "star_rm": "hero", "star_ll": "hero", "slab": "slab", "cal": "info", "date": "info", "pin": "info",
+            "venue": "info", "fee0": "info", "fee1": "info", "logo": "foot", "cta": "foot"}
+
+
+async def build(ev, cta_text, out, canvas="feed", card="prize"):
+    """canvas: feed (1080x1350) | story (1080x1920). card: prize (the poster) | closing (registrations close 1 Oct) | fee (fee and team size)."""
+    story = canvas == "story"
+    Hc = 1920 if story else H
+    DY = STORY_DY if story else {k: 0 for k in STORY_DY}
     els = []
 
     def el(label, x, y, w, h):
@@ -109,10 +119,10 @@ async def build(ev, cta_text, out):
 
     # ground + flecks
     rnd = random.Random(7)
-    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
-                     f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
+    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, Hc):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
+                     f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * Hc / H)))
     ground = (f'<div style="position:absolute;inset:0;background:{GROUND}"></div>'
-              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
+              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{Hc}">{specks}</svg>')
 
     # header
     HB = f'position:absolute;left:{px(420)}px;width:{px(760)}px;text-align:center;color:{WHITE};z-index:6;white-space:nowrap;line-height:1'
@@ -127,6 +137,23 @@ async def build(ev, cta_text, out):
         f'RUNNERS UP<span style="{emo};font-size:{px(40)}px">🥈</span>: <b style="font-weight:900">{ev["runners"]}</b></div>')
     el("pp_label", px(420), px(104), px(760), px(103)); el("pp_value", px(420), px(212), px(760), px(103))
     el("winner", px(420), px(338), px(760), px(50)); el("runners", px(420), px(392), px(760), px(50))
+
+    if card != "prize":   # closing / fee: a different header, same boxes, same geometry
+        els[:] = [e for e in els if e[0] not in ("pp_label", "pp_value", "winner", "runners")]
+        feev = ev["fee"][0][1]; team = ev["fee"][1][1] if len(ev["fee"]) > 1 else None
+        if card == "closing":
+            l1, v1, l3 = "REGISTRATIONS", "CLOSE 1 OCT", None
+        else:
+            l1, v1, l3 = "PARTICIPATION FEE:", feev, (f'FOR A <b style="font-weight:900">{team}</b>' if team else None)
+        hm = await B.measure_text([dict(text=l1, font="d", size=100, weight=400), dict(text=v1, font="d", size=100, weight=900)])
+        s1 = 100 * min(px(113.5) / 100 * 1.0, px(690) / hm[0]["text_w"] * 1.0)
+        s2 = 100 * min((px(150) if card == "closing" else px(105)) / 100, px(690) / hm[1]["text_w"])   # the fee card keeps a third line below, so its value is smaller
+        hdr = (f'<div class="measure" data-tag="pp_label" style="{HB};top:{px(104)}px;font-family:var(--d);font-weight:400;font-size:{s1}px">{l1}</div>'
+               f'<div class="measure" data-tag="pp_value" style="{HB};top:{px(212)}px;font-family:var(--d);font-weight:900;font-size:{s2}px">{v1}</div>')
+        els.append(("pp_label", px(420), px(104), px(760), px(103))); els.append(("pp_value", px(420), px(212), px(760), px(103)))
+        if l3:
+            hdr += f'<div class="measure" data-tag="winner" style="{HB};top:{px(338)}px;font-family:var(--d);font-weight:400;font-size:{px(50)}px">{l3}</div>'
+            els.append(("winner", px(420), px(338), px(760), px(50)))
 
     # fest pill
     fx, fy, fw, fh = px(1198), px(78), px(377), px(120)
@@ -192,7 +219,7 @@ async def build(ev, cta_text, out):
     venue = f'<div class="measure" data-tag="venue" style="position:absolute;left:{vx}px;top:{px(ry)}px;{LBL}">{ev["venue"]}</div>'
     el("venue", vx, px(ry + 4), vw, FS)
     fees = ""
-    for i, (lab, val) in enumerate(ev["fee"]):
+    for i, (lab, val) in enumerate(ev["fee"] if card != "fee" else []):
         top = 1751 + fee_dy + i * 52
         fees += (f'<div class="measure" data-tag="fee{i}" style="position:absolute;left:{px(400)}px;width:{px(800)}px;text-align:center;'
                  f'top:{px(top)}px;{LBL}">{lab}<b style="font-weight:900">{val}</b></div>')
@@ -209,10 +236,13 @@ async def build(ev, cta_text, out):
            f'border:{px(9)}px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;'
            f'z-index:9;font-family:var(--d);font-weight:900;font-size:{px(44)}px;color:{INK}">{cta_text}</div>')
 
-    html = B.page(W, H, GROUND, f'<style>{FONT_CSS}</style>' + ground + hdr + fest + hero + stars + slab + info + logo + cta, grain=False)
+    grp = lambda g, h: f'<div style="position:absolute;left:0;top:{DY[g]}px;width:{W}px;height:{H}px">{h}</div>'
+    els[:] = [(l, x, y + DY.get(GROUP_OF.get(l, ""), 0), w, h_) for (l, x, y, w, h_) in els]
+    html = B.page(W, Hc, GROUND, f'<style>{FONT_CSS}</style>' + ground + grp("hdr", hdr + fest) + grp("hero", hero + stars) + grp("slab", slab)
+                  + grp("info", info) + grp("foot", logo + cta), grain=False)
     text_pairs = [("prize", WHITE, GROUND, 96, True), ("info", WHITE, GROUND, 40, False),
                   ("title", INK, SLAB, 100, True), ("cta", INK, CTA_FILL, 34, True), ("pill", INK, "#FFFFFF", 36, True)]
-    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
+    await B.render(html, out, W, Hc, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
                    expect_hero=True, collision_ignore={("hero", "slab"), ("star_ll", "slab")}, margin=12)
 
 

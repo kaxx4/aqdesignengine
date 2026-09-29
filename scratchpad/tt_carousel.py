@@ -36,6 +36,19 @@ REASONS = [   # key, headline, tagline, sticker file, recolour-orchid-to-green? 
     ("lottery", "LOTTERY AT LOCATION", "LUCK HAS A STALL TOO.", "basketball.png", False),
     ("dd_tickets", "DD TICKET STALL", "YOUR PASS TO THE PARTY IS ONE STALL AWAY.", "carnival.png", False),
 ]
+KNOW = [   # the "all you need to know" deck: ONLY facts the user gave (timings, directions and rules are still missing and are NOT invented)
+    ("when", "WHEN", "3RD AND 4TH OCTOBER, 2026.", "flower.png", False),
+    ("where", "WHERE", "TURF XL, NEW ALIPORE.", "smiley.png", False),
+    ("who", "WHO CAN COME", "OPEN TO ALL. BRING YOUR PEOPLE.", "smiley.png", True),
+    ("what", "WHAT'S ON", "MINI-GAMES AND COMPETITIONS. WIN STUFF.", "controller.png", False),
+    ("stalls", "STALLS TO ENJOY", "ARTILY BOBA. CRAVE'LLA DESSERTS AND BROWNIES. CRFTD PRE-ORDERS.", "flower.png", True),
+    ("extras", "PHOTOBOOTH + LOTTERY", "POSE NOW. LUCK HAS A STALL TOO.", "basketball.png", False),
+    ("dd", "DISCO DIWALI PASSES", "GET YOURS AT THE DD TICKET STALL.", "carnival.png", False),
+    ("why", "ALL FOR CHARITY", "SHOW UP. HAVE FUN. DO GOOD.", "flower.png", False),
+]
+DECKS = {"reasons": dict(items=REASONS, head=("7 REASONS", "TO SHOW UP"), swipe="SWIPE FOR THE 7"),
+         "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN")}
+DECK = DECKS["reasons"]
 N = len(REASONS)
 
 LAYOUT = {   # canvas px. story keeps Instagram's UI zones clear (top 250, bottom 260)
@@ -96,19 +109,19 @@ async def slide(kind, canvas, out, idx=None):
     # ---- measure every fitted string, in its real face ----
     items = []
     if kind == "point":
-        head = REASONS[idx][1]
+        head = DECK["items"][idx][1]
         items = [dict(text=head, font="d", size=100, weight=900)]
     elif kind == "close":
         items = [dict(text="WHATSAPP GROUP", font="d", size=96, weight=900)]
     elif kind == "cover":
         items = [dict(text="TERRATHON", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=ST_F),
                  dict(text="MINI-FEETE", font="StretchPro", size=100, weight=400, letter_spacing="-0.02em", features=ST_F),
-                 dict(text="7 REASONS", font="d", size=124, weight=900), dict(text="TO SHOW UP", font="d", size=80, weight=400)]
+                 dict(text=DECK["head"][0], font="d", size=124, weight=900), dict(text=DECK["head"][1], font="d", size=80, weight=400)]
     m = await B.measure_text(items, extra_css=tt.FONT_CSS) if items else []
 
     # ---- hero (tucked ~14% behind the slab) ----
     if kind == "point":
-        key, _, _, sfile, rc = REASONS[idx]
+        key, _, _, sfile, rc = DECK["items"][idx]
         ph = photo_src(key)
         if ph:   # a real photo replaces the sticker, inside a circle
             D = 560; cx, cy = W / 2, slab_top - 0.86 * D + D / 2
@@ -145,10 +158,11 @@ async def slide(kind, canvas, out, idx=None):
     # ---- cover header ----
     if kind == "cover":
         hy = L["cover_head_y"]; w1, w2 = m[2]["text_w"], m[3]["text_w"]
+        kf = min(1.0, 700 / w1); f1, f2 = 124 * kf, 80 * kf; w1, w2 = w1 * kf, w2 * kf      # a long header shrinks so it clears the corner star
         parts.append(f'<div class="measure" data-tag="c_head1" style="position:absolute;left:{(W - w1) / 2}px;top:{hy}px;font-family:var(--d);font-weight:900;'
-                     f'font-size:124px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">7 REASONS</div>'
-                     f'<div class="measure" data-tag="c_head2" style="position:absolute;left:{(W - w2) / 2}px;top:{hy + 118}px;font-family:var(--d);font-weight:400;'
-                     f'font-size:80px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">TO SHOW UP</div>')
+                     f'font-size:{f1}px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">{DECK["head"][0]}</div>'
+                     f'<div class="measure" data-tag="c_head2" style="position:absolute;left:{(W - w2) / 2}px;top:{hy + 118 * kf}px;font-family:var(--d);font-weight:400;'
+                     f'font-size:{f2}px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">{DECK["head"][1]}</div>')
         el("c_head1", (W - w1) / 2, hy + 10, w1, 100); el("c_head2", (W - w2) / 2, hy + 128, w2, 64)
 
     # ---- slab content (flex-centred: no border-offset arithmetic) ----
@@ -159,7 +173,7 @@ async def slide(kind, canvas, out, idx=None):
         body = (f'<div style="{stx(t_px)}">TERRATHON</div><div style="{stx(b_px, 0.03, -0.02)};margin-top:6px">MINI-FEETE</div>'
                 f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DATE.replace("&", "&amp;")}</div>')
     elif kind == "point":
-        tag = REASONS[idx][2]
+        tag = DECK["items"][idx][2]
         head_px = min(104, 100 * 840 / m[0]["text_w"])
         body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head.replace("&", "&amp;")}</div>'
                 f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:18px;max-width:800px;text-wrap:balance">{tag}</div>')
@@ -174,7 +188,7 @@ async def slide(kind, canvas, out, idx=None):
                  f'align-items:center;justify-content:center;text-align:center;font-family:var(--d);color:{INK};white-space:nowrap">{body}</div>')
 
     # ---- strip under the slab ----
-    strip = {"cover": "SWIPE FOR THE 7", "point": f"{DATE}  |  {VENUE}", "close": f"{DATE}  |  {VENUE}"}[kind]
+    strip = {"cover": DECK["swipe"], "point": f"{DATE}  |  {VENUE}", "close": f"{DATE}  |  {VENUE}"}[kind]
     sfs = 44 if kind == "cover" else 34
     sm = await B.measure_text([dict(text=strip, font="d", size=sfs, weight=400)])
     sw_ = sm[0]["text_w"]
@@ -201,15 +215,21 @@ async def slide(kind, canvas, out, idx=None):
                    collision_ignore={("hero", "slab"), ("star_ml", "slab"), ("star_br", "slab"), ("star_tr", "hero"), ("star_tl", "hero")}, margin=12)
 
 
-async def main(canvases):
+async def main(canvases, decks=("reasons",)):
+    global DECK
     async with B.session():
-        for canvas in canvases:
-            d = f"out/versions/terrathon_carousel/{canvas}"; os.makedirs(d, exist_ok=True)
-            await slide("cover", canvas, f"{d}/00_cover.png")
-            for i, r in enumerate(REASONS):
-                await slide("point", canvas, f"{d}/{i + 1:02d}_{r[0]}.png", idx=i)
-            await slide("close", canvas, f"{d}/{N + 1:02d}_close.png")
-            print("done", canvas)
+        for dk in decks:
+            DECK = DECKS[dk]
+            for canvas in canvases:
+                d = f"out/versions/terrathon_carousel/{dk}/{canvas}"; os.makedirs(d, exist_ok=True)
+                await slide("cover", canvas, f"{d}/00_cover.png")
+                for i, r in enumerate(DECK["items"]):
+                    await slide("point", canvas, f"{d}/{i + 1:02d}_{r[0]}.png", idx=i)
+                await slide("close", canvas, f"{d}/{len(DECK['items']) + 1:02d}_close.png")
+                print("done", dk, canvas)
 
 if __name__ == "__main__":
-    asyncio.run(main(sys.argv[1:] or ["feed", "story"]))
+    args = sys.argv[1:]
+    decks = tuple(a for a in args if a in DECKS) or ("reasons",)
+    cvs = [a for a in args if a in ("feed", "story")] or ["feed", "story"]
+    asyncio.run(main(cvs, decks))
