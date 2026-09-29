@@ -197,6 +197,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Item | Builder | Status |
 |---|---|---|
 | Event posters, Mini-Fete post | `tt_events.py`, `tt_minifete.py` | done |
+| Disco Diwali ticket sale, Rs. 550, at the carnival (stickers-first: disco ball, diya, ticket; feed only) | `tt_dd_tickets.py` -> `out/collaterals/dd_tickets_550_carnival.png` | done, gate clean. **Price 550 is from the user's second message (first said 55); confirm.** No DD date/venue shown (not supplied). Story cut not built. Companion: `tt_companion_facet_ledger.py` |
 | 7-reasons carousel (feed + story), "all you need to know" deck (feed + story) | `tt_carousel.py reasons know` | done, stickers in the circles |
 | 10 sports promo stories (3 cards x 3 sports + umbrella) | `tt_promo.py`, `tt_umbrella.py` | done |
 | Single-slide WhatsApp graphic + verified QR | `tt_wa_graphic.py` | done |
@@ -207,6 +208,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
 | Rules cover (opener for the three rules posts; swipe order 02 PickleJam, 03 Wicket Wars, 04 Soccer Storm) | `tt_rules_cover.py` | done |
 | Rules posts (cricket, pickleball, FIFA), green boxes on black | `tt_rules_cricket.py cricket\|pickleball\|fifa` (copy condensed from the site's rules pages; clauses omitted are listed in the config comments) | done |
+| Certificates: Winner, Runner Up (full black ground) and Participant (white paper), A4 landscape, PNG + PDF, one layout, three colourways; single signatory Kanishk Agarwal, Co-Founder and Trustee | `tt_certificate.py` | done (rev 2). Modelled on the Paradox certificate set. Fillable: `--name`, `--event`. Rank (1ST / 2ND) is set at 46px; AQ LIVE sticker replaces the logo; sport and character stickers from the kit. Wordmark tracking is +0.012em, not the poster's -0.045em (the thick outline fuses E and the stretched R otherwise). Signature line is blank on purpose. On black, outlines go cream and hard shadows take the variant accent. Winner = solid orchid keyline + gold seal; runner up = blue keyline + silver seal; participant = green seal |
 | Video, welfare-impact numbers | none | not possible / blocked |
 
 ## 6. Reference defects (do not copy)
