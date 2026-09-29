@@ -125,3 +125,19 @@ Team AquaTerra 🌍
 
 ## NEEDED before more can be written (nothing here is invented)
 Timings and gates, directions to Turf XL, food and drinks details beyond the three stalls, rules text, the DD stall's offer, the registration link, the DD date, results, and any photos or clips. The Artily and CRFTD logo files are also still missing.
+
+---
+
+## 6. WHATSAPP PROMO CHAIN for the Mini-Fete (added 2026-09-29, broadcast voice, facts only)
+
+1. `*TERRATHON MINI-FETE* is landing at *Turf XL, New Alipore* 🌴` / `Mini-games to win, stalls to raid, and a photobooth for the evidence.` / `*3rd & 4th October.* Open to all 🚀`
+2. `🗓️: 3rd & 4th October, 2026` / `📍: Turf XL, New Alipore` / `Open to all, and *all for charity* 🤍🌎`  (add `🕚: [time] onwards` once the opening time is known)
+3. `The stalls are stacked. *Artily* for boba, *Crave'lla* for desserts and brownies, *CRFTD* for pre-orders on DIY T-shirts and custom orders.` / `Plus a *lottery* at the location, because luck deserves a stall too 😉`
+4. `Your *Disco Diwali passes* are one stall away 🎟️` / `Find the *DD ticket stall* at the fete and grab yours 🚀`
+5. `Every Mini-Fete update lands here 👇` / `*Get your friends here!*` / group link
+Day 1: `*TODAY* is the day 🎉 The Mini-Fete is on at *Turf XL, New Alipore*. Bring your people, win something, eat something.`
+Day 2: `*Day 2* of the Mini-Fete is on. If you missed yesterday, that's the FOMO talking, so fix it today 😉 The DD ticket stall is waiting.`
+
+## 7. DD TICKET-SALE STORIES (built): facts only
+Used: passes are sold at the DD ticket stall at the Mini-Fete (3rd & 4th Oct, Turf XL, New Alipore); the fete is open to all and all for charity. NOT used because not supplied: any DD price,
+DD date or venue, edition number, ticket count or scarcity. Add those and the cards can carry them.

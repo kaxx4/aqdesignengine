@@ -57,7 +57,7 @@ DD = [   # Disco Diwali ticket sales. FACTS ONLY: passes are sold at the DD tick
 TIMED = [   # single stories, no cover or close
     ("tomorrow", "DD PASSES ON SALE TOMORROW", "AT THE DD TICKET STALL. TURF XL, 3RD OCT.", "carnival.png", False),
     ("today", "DD PASSES ON SALE TODAY", "AT THE DD TICKET STALL. TURF XL, NEW ALIPORE.", "carnival.png", False),
-    ("lastday", "LAST DAY FOR DD PASSES", "DD TICKET STALL, TURF XL. TODAY ONLY AT THE FETE.", "carnival.png", False),
+    ("lastday", "LAST DAY AT THE FETE", "GET YOUR DD PASS AT THE DD TICKET STALL, TURF XL.", "carnival.png", False),
 ]
 DECKS = {"reasons": dict(items=REASONS, head=("7 REASONS", "TO SHOW UP"), swipe="SWIPE FOR THE 7"),
          "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN"),
@@ -70,7 +70,7 @@ LAYOUT = {   # canvas px. story keeps Instagram's UI zones clear (top 250, botto
     "feed":  dict(W=1080, H=1350, hero_max=(700, 520), slab_top=640, slab_h=430, strip_y=1102, foot_y=1235,
                   cover_head_y=52, cover_hero_top=290, cover_hero_h=540, cover_slab_top=744, cover_slab_h=340, cover_strip_y=1130, pill_y=53),
     "story": dict(W=1080, H=1920, hero_max=(760, 660), slab_top=980, slab_h=470, strip_y=1490, foot_y=1585,
-                  cover_head_y=280, cover_hero_top=580, cover_hero_h=680, cover_slab_top=1168, cover_slab_h=340, cover_strip_y=1535, pill_y=250),
+                  cover_head_y=280, cover_hero_top=540, cover_hero_h=680, cover_slab_top=1128, cover_slab_h=340, cover_strip_y=1492, pill_y=250),
 }
 
 
@@ -189,8 +189,16 @@ async def slide(kind, canvas, out, idx=None):
                 f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DATE.replace("&", "&amp;")}</div>')
     elif kind == "point":
         tag = DECK["items"][idx][2]
-        head_px = min(104, 100 * 840 / m[0]["text_w"])
-        body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head.replace("&", "&amp;")}</div>'
+        words = head.split(); two = m[0]["text_w"] * 1.04 > 840 and len(words) > 2   # wider than the slab at full size: two lines
+        if two:
+            cut = min(range(1, len(words)), key=lambda i: abs(len(" ".join(words[:i])) - len(" ".join(words[i:]))))
+            hl = [" ".join(words[:cut]), " ".join(words[cut:])]
+            mm = await B.measure_text([dict(text=t, font="d", size=100, weight=900) for t in hl])
+            head_px = min(104, 100 * 840 / max(r["text_w"] for r in mm))
+            head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
+        else:
+            head_px = min(104, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
+        body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
                 f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:18px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
         c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
