@@ -188,13 +188,15 @@ async def build(name, out, fill_name="", fill_event=""):
            f'<div style="font-family:var(--d);font-weight:900;font-size:13.5px;letter-spacing:.08em;color:{TXT};line-height:1;margin-top:5px">NGO AQUATERRA</div></div>')
     el("sig", sx, sig_y, sw, 78)
 
-    # ---- stickers: the sport objects at the top corners, characters down the sides ---------
-    stk = (sticker("cricket_set.png", "stk_cricket", 30, 30, 132)
-           + sticker("pickleball_set.png", "stk_pickle", W - 30 - 142, 30, 142)
-           + sticker("controller.png", "stk_ctrl", 26, 318, 128)
-           + sticker("flower.png", "stk_flower", 34, 440, 92)
-           + sticker("basketball.png", "stk_ball", W - 26 - 104, 314, 104)
-           + sticker("smiley.png", "stk_smile", W - 32 - 84, 436, 84))
+    # ---- stickers: 3 green sport stickers + stars, on two aligned side columns (centres x=96 and x=W-96) ----
+    LC, RC = 96, W - 96
+    stk = (sticker("cricket_set.png", "stk_cricket", LC - 66, 30, 132)
+           + sticker("pickleball_set.png", "stk_pickle", RC - 71, 30, 142)
+           + sticker("controller.png", "stk_ctrl", LC - 64, 322, 128))
+    for label, cxc, cyc, d in (("stk_star_r", RC, 366, 100), ("stk_star_l2", LC, 476, 64), ("stk_star_r2", RC, 476, 64)):
+        stk += (f'<img class="measure" data-tag="{label}" src="{shur}" style="position:absolute;left:{cxc - d / 2}px;top:{cyc - d / 2}px;'
+                f'width:{d}px;height:{d}px;z-index:8">')
+        el(label, cxc - d / 2, cyc - d / 2, d, d)
 
     html = B.page(W, H, SURF, f'<style>{FONT_CSS}</style>' + ground + wm + title + sub + rules + rows + live + seal + sig + stk, grain=False)
     text_pairs = [("body", TXT, SURF, 22, False), ("sub", TXT, SURF, 17, True), ("sig", TXT, SURF, 13.5, False),
