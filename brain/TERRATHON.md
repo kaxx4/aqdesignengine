@@ -160,6 +160,12 @@ Voice pairs (headline / tagline): `NANDU JEE / SERVING CHAOS AND CRAVINGS (ON TH
 in both top corners. Every point slide depends on a REAL photo in its circle and, on this template, a sponsor logo and a Paradox logo: none can be invented.
 Open questions before building: does the carnival carry a title sponsor, and which footer brand (TerraThon, Paradox or neither)?
 
+## 5f. Partner logos (`engine/assets/terrathon/partners/`)
+
+Real logos supplied by the user, one file each, used as-is (never redrawn): **`cravella.png`** (508x508 circular mark: plum ground, cream ring, a
+bow drawing, script wordmark `crave'lla`, handle `@cravella_kolkata`). Spelling for copy: **Crave'lla** (handle `cravella_kolkata`).
+Still awaited: Artily, CRFTD, and what each partner sells at the mini-fete (not printed until confirmed).
+
 ## 6. Reference defects (do not copy)
 
 1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.
