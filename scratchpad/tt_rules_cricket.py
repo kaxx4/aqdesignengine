@@ -44,18 +44,18 @@ async def main():
     parts.append(f'<div class="measure" data-tag="t1" style="position:absolute;left:{(W - 420) / 2}px;width:420px;top:38px;text-align:center;color:{CREAM_HALO};font-family:var(--d);font-weight:400;font-size:40px;line-height:1;z-index:6">TERRATHON</div>')
     parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 820) / 2}px;width:820px;top:88px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
                  f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">WICKEET WAARS</div>')
-    parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 560) / 2}px;width:560px;top:{88 + tpx * 1.05}px;text-align:center;color:{GREEN};font-family:SigmarOne;'
-                 f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {GREEN};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">THE RULES</div>')
+    parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 560) / 2}px;width:560px;top:{88 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
+                 f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">THE RULES</div>')
     el("t1", (W - 300) / 2, 40, 300, 34); el("t2", (W - 800) / 2, 92, 800, tpx * .82); el("t3", (W - 360) / 2, 88 + tpx * 1.05 + 2, 360, spx * .82)
     iy = 88 + tpx * 1.05 + spx + 26
     parts.append(f'<div class="measure" data-tag="info" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{iy}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:900;font-size:27px;line-height:1;white-space:nowrap;z-index:6">'
-                 f'SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  <span style="color:{GREEN}">REPORT BY 9:45AM</span></div>')
+                 f'SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  <span style="color:{ORCHID}">REPORT BY 9:45AM</span></div>')
     el("info", (W - 960) / 2, iy + 2, 960, 24)
     for lab, x, y in (("star_tl", 24, 46), ("star_tr", W - 24 - 104, 58)):
         im, src = tt.crop_to_alpha("shuriken.png"); hh = 104 * im.height / im.width; el(lab, x, y, 104, hh)
         parts.append(f'<img src="{src}" class="measure" data-tag="{lab}" style="position:absolute;left:{x}px;top:{y}px;width:104px;height:{hh}px;z-index:5">')
     for i, (head, body) in enumerate(CARDS):
-        acc = ORCHID if ((i // 2) + (i % 2)) % 2 == 0 else GREEN
+        acc = GREEN
         x = CX + (i % 2) * (CW + CG); y = CY0 + (i // 2) * (CH + RG)
         el(f"card{i}", x, y, CW, CH)
         parts.append(f'<div class="measure" data-tag="card{i}" style="position:absolute;left:{x}px;top:{y}px;width:{CW}px;height:{CH}px;box-sizing:border-box;border:6px solid {acc};border-radius:30px;background:{CTA_FILL};'
@@ -64,7 +64,7 @@ async def main():
                      f'<div style="font-weight:400;font-size:22px;line-height:1.22;margin-top:12px">{body}</div></div>')
     sy = CY0 + 3 * CH + 2 * RG + 24
     parts.append(f'<div class="measure" data-tag="strip1" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{sy}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:900;font-size:24px;line-height:1;white-space:nowrap;z-index:6">'
-                 f'TEAM REPORTS 20 MIN BEFORE ITS MATCH  |  <span style="color:{GREEN}">UMPIRE\'S DECISION IS FINAL</span></div>')
+                 f'TEAM REPORTS 20 MIN BEFORE ITS MATCH  |  <span style="color:{ORCHID}">UMPIRE\'S DECISION IS FINAL</span></div>')
     parts.append(f'<div class="measure" data-tag="strip2" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{sy + 38}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:400;font-size:22px;line-height:1;white-space:nowrap;z-index:6">'
                  f'NO ABUSE. NO VAPES, ALCOHOL OR SIMILAR SUBSTANCES.</div>')
     el("strip1", (W - 960) / 2, sy + 2, 960, 24); el("strip2", (W - 700) / 2, sy + 40, 700, 20)
@@ -74,7 +74,7 @@ async def main():
     parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{cx}px;top:{cy}px;width:{cw}px;height:{chh}px;box-sizing:border-box;border:6px solid {ORCHID};border-radius:999px;background:{CTA_FILL};'
                  f'display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:32px;color:{INK}">LINK IN THE BIO</div>')
     html = B.page(W, H, GROUND, "".join(parts), grain=False)
-    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("card", INK, CTA_FILL, 23, False), ("chip", INK, ORCHID, 26, True), ("chip_g", INK, GREEN, 26, True), ("sub_g", GREEN, GROUND, 50, True), ("hl_g", GREEN, GROUND, 24, True),
+    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("card", INK, CTA_FILL, 23, False), ("chip", INK, GREEN, 26, True),
                   ("info", WHITE, GROUND, 27, True), ("strip", WHITE, GROUND, 22, False), ("cta", INK, CTA_FILL, 32, True)]
     out = "out/collaterals/terrathon_cricket_rules.png"; os.makedirs("out/collaterals", exist_ok=True)
     async with B.session():
