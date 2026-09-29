@@ -167,7 +167,8 @@ bow drawing, script wordmark `crave'lla`, handle `@cravella_kolkata`). Spelling 
 **Seen but NOT on disk (inline images only, no file):** the Artily logo (black wordmark `ARTILY` with the line `ARTISANAL BEVERAGES`, so Artily sells
 **artisanal beverages** by its own logo) and the CRFTD logo (blocky red `CRFTD` wordmark with a small star on a cream ground, an opaque square, so it would be a tile,
 not a floating mark). Neither may be redrawn: real files are required. (A wrong `artily.png` that was a duplicate of the Cravella file was committed and removed the same day.)
-Still awaited: the Artily and CRFTD files, what the CRFTD orders are, and what Crave'lla sells at the mini-fete (not printed until confirmed).
+Confirmed by the user (2026-09-29): **Artily = boba**; **Crave'lla = desserts and brownies**; a **photobooth** is on site; **no title-sponsor strip** on the carnival carousel.
+Still awaited: the Artily and CRFTD files, and what the CRFTD orders are.
 
 ## 6. Reference defects (do not copy)
 
