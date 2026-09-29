@@ -148,7 +148,7 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
                  expect_hero=False, collision_ignore=frozenset(), containers=(),
                  text_pairs=None, cascade_stacks=None, reading_order=None,
                  contains=None, occlusion=None, bleed_tags=None, crop_tags=(),
-                 auto_nudge=False):
+                 auto_nudge=False, margin=None):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -210,10 +210,11 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements,
                         collision_ignore=collision_ignore, bleed_tags=bleed_tags,
-                        crop_tags=crop_tags, text_declared=text_pairs is not None)
+                        crop_tags=crop_tags, text_declared=text_pairs is not None,
+                        margin=margin)
 
 async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
-                 bleed_tags=None, crop_tags=(), text_declared=True):
+                 bleed_tags=None, crop_tags=(), text_declared=True, margin=None):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
@@ -221,7 +222,7 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
         await pg.set_content(html, wait_until="load")
         await _settle(pg)
         issues = await audit.audit(html, name, page=pg, canvas=(W, H),
-                                   ignore_pairs=collision_ignore, margin=M,
+                                   ignore_pairs=collision_ignore, margin=(M if margin is None else margin),
                                    bleed_tags=(bleed_tags or ()))
         # MEASURED geometry, on the page we already have. This is the only check
         # that can see what the hand-maintained (x,y,w,h) tuples structurally
@@ -283,7 +284,7 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
     async with session() as sess:
         return await _work(await sess.page(W, H))
 
-async def measure_text(items, W=1080, H=1350):
+async def measure_text(items, W=1080, H=1350, extra_css=""):
     """Measure how big text ACTUALLY renders, before you lay anything out.
 
     THE CLASS OF BUG THIS RETIRES. Every bespoke script sizes shapes from data
@@ -324,6 +325,15 @@ async def measure_text(items, W=1080, H=1350):
     ink_h=443. Flow the NEXT element off `h`; size a collision bbox off `ink_h`.
     Getting this backwards is how a sticker gets cleared onto a numeral.
 
+    `features` — CSS font-feature-settings for the item (e.g. "'liga' 1,'dlig' 1"). REQUIRED for a ligature face
+    the moment `letter_spacing` is non-zero: browsers switch optional ligatures OFF under any tracking, so StretchPro's
+    EE -> one stretched glyph silently degrades to two ordinary E's unless the feature is asked for explicitly.
+
+    `extra_css` — @font-face rules for any face that is NOT in core.FONTS. Without it a custom face
+    (TerraThon's StretchPro, Sigmar One) silently measures as the FALLBACK font, and StretchPro's
+    doubled-letter ligatures (EE -> one stretched glyph) are the worst case: the fallback measures
+    them ~30% narrow, so a title sized off that number overflows its slab.
+
     Costs one page load. Batch every string you need in ONE call, then lay out.
     """
     FAM = {"d": "var(--d)", "e": "var(--e)", "s": "var(--s)", "m": "var(--m)"}
@@ -346,6 +356,7 @@ async def measure_text(items, W=1080, H=1350):
             f'font-family:{fam};font-weight:{it.get("weight", 900)};font-style:{sty};'
             f'font-size:{it.get("size", 16)}px;'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'font-feature-settings:{it.get("features", "normal")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
         spans.append(
@@ -354,9 +365,10 @@ async def measure_text(items, W=1080, H=1350):
             f'font-size:{it.get("size", 16)}px;'
             f'line-height:{it.get("line_height", 1)};'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'font-feature-settings:{it.get("features", "normal")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
-    html = page(W, H, "var(--bg)", "".join(spans), grain=False)
+    html = page(W, H, "var(--bg)", (f"<style>{extra_css}</style>" if extra_css else "") + "".join(spans), grain=False)
 
     async def _work(pg):
         await pg.set_content(html, wait_until="load")

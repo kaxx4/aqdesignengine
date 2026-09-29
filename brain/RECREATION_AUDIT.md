@@ -3323,3 +3323,43 @@ original script lost, prior queue score measured a different, unrelated render).
 
 Full gate-stack friction, API surprises, the double-Y-offset bug, and where score vs. eye
 disagreed are in `scratchpad/friction5/fcfec.md`.
+
+
+## TerraThon / Wicket Wars (`training_samples/terrathon/wicket_wars_bio.png`) — 4 iterations, score 0.039
+
+Not one of the 74-item queue; a new fest FORMAT (see `brain/TERRATHON.md`). Superseded by the shared builder `scratchpad/tt_events.py` (same 0.039 through it). Output `out/versions/terrathon_wicket_wars/`.
+- v1: layout right (hero, stars, slab, tilt) but every header/info size 1.32x too big, so the header collided with the TERRATHON pill; title used a scaleX-stretched glyph with a mis-computed gap.
+- v2: sizes fixed from measured width ratios (a constant 0.757 across every line: NeutralFace confirmed as the reference face). User ruled NO stretched glyphs; title set plain, sized to fill the slab.
+- v3: swapped the cutouts for the user's REAL sticker files, aligned by alpha box; title moved off the slab border. Score 0.039.
+- v4: gate honesty. `render(margin=)` added (the series' 13-27px edge margins vs the hardcoded 64/36); sprites cropped to their alpha box so the declared box is the drawn box; hero-under-slab and star-over-corner declared as intended overlaps. Preflight CLEAN.
+- Residual: two over-filled cells in the slab (plain type is denser than the reference's stretched letters). Expected from the no-stretch ruling. Adaptations: Noto emoji for Apple; drawn dateless calendar; `core.LOGO` fitted by width.
+
+
+## TerraThon / PickleJam and Soccer Storm — 2 iterations each, scores 0.073 and 0.082
+
+Same skeleton as Wicket Wars, so both were built as DATA in `scratchpad/tt_events.py`. Refs: `picklejam_below.png`, `soccer_storm_below.png` (1620x2025).
+- v1: hero top-left positions measured from the refs' non-black components; info rows measured then centred on x=800; scores 0.070 / 0.082 first try. Wicket Wars reproduced 0.039 through the new builder (no regression).
+- v2: the looking gate caught PickleJam's subtitle running to within 25px of the slab border (the reference face is narrower per letter). Encoded as a max-width clamp (`SUB_MAX_W` 1265). No score change (0.073), which is the point: the metric could not see it.
+- Reference defects not copied: `A FIFA TOURNMENT` typo; Soccer Storm's bio variant omits the TERRATHON pill.
+- Residual: the same two-to-three over-filled slab cells as Wicket Wars, caused by plain type vs the reference's stretched letters (user ruling: no stretch).
+
+
+## TerraThon / MINI-FETE (`training_samples/terrathon/mini_fete_stunt.png`) — 4 iterations, score 0.047
+
+Marketing stunt for Disco Diwali passes; the carnival sticker is its hero. Own layout (see `brain/TERRATHON.md` 5b). Script `scratchpad/tt_minifete.py`; row/extent comparison helper `scratchpad/tt_bands.py`.
+- v1 (0.060): composition right; header 4% big and crowding the top-left star, body 9% big, bottom-right star drawn at the wrong scale and off-canvas by 8px.
+- v2 (0.047): every size solved from measured band heights and widths (header tracking solved to the reference widths, body 57px, info 47.5px, star_br at 0.9). Header, body and info within 3px.
+- v3: declarations fixed (header DOM box narrowed off the star; star_br declared as a bleed).
+- v4: the looking gate found the subtitle resting ON the slab's bottom border and all three tiers ~28px low. Cause: absolutely-positioned children measure from INSIDE the border, so slab-local offsets were off by exactly the 28px border. Encoded in the builder and in CLAUDE.md sec 10.
+- Residual: three over-filled slab cells (plain type vs the reference's stretched TERRATHON and MINI-FETE). Expected from the no-stretch ruling.
+
+
+## TerraThon posters re-rendered with the real fonts (2026-09-29)
+
+StretchPro (ligature stretch font, user-supplied) and Sigmar One (OFL) replace the NeutralFace stand-ins. Wicket Wars 0.046, PickleJam 0.068, Soccer Storm 0.081, Mini-Fete 0.060.
+- The stretch is a ligature (a doubled letter is one stretched glyph): `WICKEET`, `WAARS`, `PICKLEE`, `JAAM`, `SOCCER` (natural CC), `STOORM`, `TERRATHON` (natural RR), `MINI-FEETE`.
+- Iteration lessons: the title block first sat too high against the slab border (dropped ~35px, longer line fitted to 940 not 1010); `MINI-FETE` rendered with a NORMAL E until respelled `MINI-FEETE`.
+- Engine: `build.measure_text(extra_css=)` so a face outside `core.FONTS` measures as itself. Self-test `scratchpad/test_measure_custom_font.py` (3 assertions).
+- The metric barely moved (0.039 -> 0.046) though the posters are visibly far more faithful: a font change is invisible to `compare.py`. The looking gate decided it.
+
+- Stroke and tracking pass: scores 0.036 / 0.051 / 0.060 / 0.053. First attempt (letter-spacing only) DROPPED the stretch ligatures with no warning; found by looking at the render, fixed with `font-feature-settings`.
