@@ -192,6 +192,19 @@ blue shuriken on the left and right edges, and at the bottom a white card with a
 Sigmar One (`PICKLEBALL`, `FIFA`, `CRICKET`), then the info lines (date and venue, participation fee, team size), and the AQ logo under it.
 Note the card outline is GREEN here, not the orchid of the feed posters. Source photos are required as FILES (only the screenshot exists so far).
 
+## 5h. Collaterals built (2026-09-29): builders and what each needs
+
+| Item | Builder | Status |
+|---|---|---|
+| Event posters, Mini-Fete post | `tt_events.py`, `tt_minifete.py` | done |
+| 7-reasons carousel (feed + story), "all you need to know" deck (feed + story) | `tt_carousel.py reasons know` | done, stickers in the circles |
+| 10 sports promo stories (3 cards x 3 sports + umbrella) | `tt_promo.py`, `tt_umbrella.py` | done |
+| Single-slide WhatsApp graphic + verified QR | `tt_wa_graphic.py` | done |
+| Photo promotion stories, day stories | `tt_promo_photo.py` | template done; drop photos in `engine/assets/terrathon/promo_photos/<sport>/` and `day_photos/` |
+| Copy pack (captions, WhatsApp, reel briefs, Q&A) | `brain/TERRATHON_COPY_PACK.md` | drafted |
+| Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
+| Video, welfare-impact numbers | none | not possible / blocked |
+
 ## 6. Reference defects (do not copy)
 
 1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.

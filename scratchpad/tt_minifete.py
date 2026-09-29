@@ -37,7 +37,14 @@ CONTENT = dict(
     cta="OPEN TO ALL")
 
 
-async def build(c, out):
+STORY_DY = dict(hdr=210, hero=250, slab=280, info=305, foot=320)
+GROUP_OF = {"ask1": "hdr", "ask2": "hdr", "star_tl": "hdr", "hero": "hero", "star_tr": "hero", "star_ml": "hero", "slab": "slab", "star_br": "slab",
+            "cal": "info", "date": "info", "venue": "info", "body0": "info", "body1": "info", "body2": "info", "logo": "foot", "cta": "foot"}
+
+
+async def build(c, out, canvas="feed"):
+    story = canvas == "story"; Hc = 1920 if story else H
+    DY = STORY_DY if story else {k: 0 for k in STORY_DY}
     els = []
 
     def el(label, x, y, w, h):
@@ -73,10 +80,10 @@ async def build(c, out):
     # ---- ground ----
     import random
     rnd = random.Random(7)
-    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
-                     f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
+    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, Hc):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
+                     f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * Hc / H)))
     ground = (f'<div style="position:absolute;inset:0;background:{GROUND}"></div>'
-              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
+              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{Hc}">{specks}</svg>')
 
     # ---- header: the ask ----
     HB = f'position:absolute;left:{px(220)}px;width:{px(1160)}px;text-align:center;color:{WHITE};z-index:6;white-space:nowrap;line-height:1;font-family:var(--d)'
@@ -143,10 +150,13 @@ async def build(c, out):
            f'border:{px(9)}px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;'
            f'z-index:9;font-family:var(--d);font-weight:900;font-size:{px(44)}px;color:{INK}">{c["cta"]}</div>')
 
-    html = B.page(W, H, GROUND, f'<style>{tt.FONT_CSS}</style>' + ground + hdr + hero + stars + slab + info + body + logo + cta, grain=False)
+    grp = lambda g, h_: f'<div style="position:absolute;left:0;top:{DY[g]}px;width:{W}px;height:{H}px">{h_}</div>'
+    els[:] = [(l, x, y + DY.get(GROUP_OF.get(l, ""), 0), w_, h_) for (l, x, y, w_, h_) in els]
+    html = B.page(W, Hc, GROUND, f'<style>{tt.FONT_CSS}</style>' + ground + grp("hdr", hdr) + grp("hero", hero + stars) + grp("slab", slab)
+                  + grp("info", info + body) + grp("foot", logo + cta), grain=False)
     text_pairs = [("ask", WHITE, GROUND, 96, True), ("body", WHITE, GROUND, 48, True), ("info", WHITE, GROUND, 40, False),
                   ("title", INK, SLAB, 100, True), ("cta", INK, CTA_FILL, 34, True)]
-    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
+    await B.render(html, out, W, Hc, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
                    expect_hero=True, collision_ignore={("hero", "slab"), ("star_br", "slab"), ("star_ml", "slab")}, margin=12,
                    bleed_tags=("star_br",))   # the reference star sits 5px from the right edge
 
@@ -156,6 +166,8 @@ async def main():
     out = f"out/versions/terrathon_minifete/v{os.environ.get('TT_V', '1')}.png"
     async with B.session():
         await build(CONTENT, out)
+        os.makedirs("out/collaterals/stories", exist_ok=True)
+        await build(CONTENT, "out/collaterals/stories/minifete_story.png", canvas="story")
     print("done", out)
 
 if __name__ == "__main__":
