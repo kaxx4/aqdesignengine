@@ -3342,3 +3342,13 @@ Same skeleton as Wicket Wars, so both were built as DATA in `scratchpad/tt_event
 - v2: the looking gate caught PickleJam's subtitle running to within 25px of the slab border (the reference face is narrower per letter). Encoded as a max-width clamp (`SUB_MAX_W` 1265). No score change (0.073), which is the point: the metric could not see it.
 - Reference defects not copied: `A FIFA TOURNMENT` typo; Soccer Storm's bio variant omits the TERRATHON pill.
 - Residual: the same two-to-three over-filled slab cells as Wicket Wars, caused by plain type vs the reference's stretched letters (user ruling: no stretch).
+
+
+## TerraThon / MINI-FETE (`training_samples/terrathon/mini_fete_stunt.png`) — 4 iterations, score 0.047
+
+Marketing stunt for Disco Diwali passes; the carnival sticker is its hero. Own layout (see `brain/TERRATHON.md` 5b). Script `scratchpad/tt_minifete.py`; row/extent comparison helper `scratchpad/tt_bands.py`.
+- v1 (0.060): composition right; header 4% big and crowding the top-left star, body 9% big, bottom-right star drawn at the wrong scale and off-canvas by 8px.
+- v2 (0.047): every size solved from measured band heights and widths (header tracking solved to the reference widths, body 57px, info 47.5px, star_br at 0.9). Header, body and info within 3px.
+- v3: declarations fixed (header DOM box narrowed off the star; star_br declared as a bleed).
+- v4: the looking gate found the subtitle resting ON the slab's bottom border and all three tiers ~28px low. Cause: absolutely-positioned children measure from INSIDE the border, so slab-local offsets were off by exactly the 28px border. Encoded in the builder and in CLAUDE.md sec 10.
+- Residual: three over-filled slab cells (plain type vs the reference's stretched TERRATHON and MINI-FETE). Expected from the no-stretch ruling.

@@ -98,7 +98,23 @@ shuriken, and a blue star-eyed smiley, all in the same cream die-cut halo).
 The kit shows a colour rule: the **character stickers recolour** (smiley and flower are purple with a blue
 ring in the pack, but green-flower / blue-smiley / purple-heart inside `carnival`), while the **sport
 objects are always green** and the shuriken is always blue. Palm blue is `#0090F8`, close to the shuriken
-family. What the carnival is for (an event, an add-on, a side attraction) is not yet stated by the user.
+family. 
+
+## 5b. The MINI-FETE (the carnival; a marketing stunt for Disco Diwali passes)
+
+The carnival pile is the hero of the **TerraThon Mini-Fete**: a stunt at the fest (3rd and 4th October, Turf XL,
+New Alipore, open to all) with mini-games, competitions and stalls, whose job is to sell **Disco Diwali passes**.
+Reference: `training_samples/terrathon/mini_fete_stunt.png`. Built by `scratchpad/tt_minifete.py`, **0.047**, gate clean.
+
+It shares the visual system but NOT the event skeleton, so it is its own layout:
+- no prize block and no TERRATHON pill; the header is a two-line ask, `CHANCE TO BUY / DISCO DIWALI PASSES`
+- hero: `carnival` at 0.535 of native, visible top-left (420, 335), bottom hidden by the slab
+- slab text is **centred** (event slabs are left-aligned) in three tiers: `TERRATHON` / `MINI-FETE` / `MINI-GAMES | COMPETITIONS`
+- one info row (calendar, date, venue; no pin), then a three-line bold body, CTA `OPEN TO ALL`
+- the fourth star sits on the slab's bottom-RIGHT corner at 0.9 scale (5px from the right edge; events: bottom-left)
+- header type is set to the reference's cap heights with tracking solved to its widths; body lines are 57px bold
+
+Reference inconsistencies kept as given but flagged: `MINI-GAMES` (slab) vs `MINIGAMES` (body).
 
 ## 6. Reference defects (do not copy)
 
