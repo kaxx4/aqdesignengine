@@ -48,11 +48,13 @@ Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 10
    header matched NeutralFace at a constant 0.757 ratio on every line, so the face is NeutralFace.
 2. **The hero is tucked, not placed.** The slab overlaps the sticker's bottom edge. The sticker file
    is the full object; the slab decides how much shows.
-3. **NO stretched letters (user ruling 2026-09-29).** The reference stretches one round letter per
-   title line (`WICK[E]T`, `SO[C]CER`, `PICKL[E]`, `J[A]M`, `TE[RR]ATHON`). We do NOT. It is not in the
-   font either: NeutralFace's only alternate glyph is `E.alt1`, a rounded epsilon-shaped E, which is
-   nothing like the reference's stretched E. Without the stretch, type must be sized up to fill the
-   slab: the title runs ~156px and the right of the slab carries air, as the reference's WARS line does.
+3. **The stretched letters are a REAL FONT, not a distortion (found 2026-09-29).** The user ruled "do not stretch the font" (never `scaleX` a
+   glyph), then supplied the actual face: **StretchPro** (`engine/assets/fonts/StretchPro.otf`, Fontself, **licence: "Free For Personal Use"**, flag
+   before public/commercial use). It is a LIGATURE font: a doubled letter (`EE`, `EEE`, `EEEE`, `AA`, `AAA`, `CC`, `OO`, `RR`, ...) becomes ONE natively
+   stretched glyph. Verified against the references by specimen render: `WICKEEET`, `WAARS`, `STOORM`, `PICKLEEJAAM`, `MINI-FEETE`; `SOCCER` (the natural
+   `CC`) and `TERRATHON` (the natural `RR`) stretch on their own. Titles are set in StretchPro, uppercase, spelled with the doubled letter. The
+   subtitle face is **Sigmar One** ("use sparingly", per the user; open licence, file not yet supplied). Everything else stays NeutralFace.
+   The earlier NeutralFace-only titles (scores 0.039 / 0.073 / 0.082 / 0.047) are a stopgap and will be re-rendered with StretchPro.
 4. **Constant furniture.** The four stars never move or rotate between events.
 5. **One die-cut treatment**: cream halo, no ink outline, flat fill, hand-cut rough edge. The rough
    edge is in the supplied PNGs. `shapes.sticker()` cannot reproduce it, so stickers are ASSETS,
