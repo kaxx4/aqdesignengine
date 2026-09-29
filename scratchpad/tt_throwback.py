@@ -1,4 +1,6 @@
-"""TerraThon PICKLEBALL THROWBACK carousel (7 slides, feed 1080x1350). Real photos from the user's zip (dd68314d-pickleball.zip,
+"""TerraThon THROWBACK carousels (pickleball, fifa), 7 slides each. Usage: tt_throwback.py [pickleball|fifa]
+
+PICKLEBALL: TerraThon PICKLEBALL THROWBACK carousel (7 slides, feed 1080x1350). Real photos from the user's zip (dd68314d-pickleball.zip,
 HEIC -> JPEG, downscaled copies in engine/assets/terrathon/throwback/). IMG_6018 was a cricket turf, not pickleball, so it is unused.
 
 Look: TerraThon's (black ground + white flecks, blue shuriken furniture, orchid-bordered frames, cream chips, StretchPro title,
@@ -20,12 +22,39 @@ core, B, W = tt.core, tt.B, tt.W
 lay = tt.load("layout")
 GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL, SLAB = tt.GROUND, tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.CTA_FILL, tt.SLAB
 H = 1350
-PHOTOS = "engine/assets/terrathon/throwback"
+import sys
+SPORT = (sys.argv[1] if len(sys.argv) > 1 else "pickleball")
 TOTAL = 7
+# FIFA (zip a3070057-FIFA.zip): IMG_3842/3843 show winners holding PARABOX certificates (another event's branding + names) and are NOT used;
+# the WA00xx frames are from a sofa lounge, not the Battleground Gaming venue, so no caption names a venue. No year/score/name is claimed.
+SPORTS = {
+    "pickleball": dict(
+        dir="engine/assets/terrathon/throwback", edition="PICKLEBALL EDITION", hero_sticker="pickleball_set.png", back="PICKLEJAM IS BACK",
+        cover=("IMG_6057", "50% 100%"),
+        singles=[(2, "IMG_5997", "50% 72%", "EYES ON THE BALL", "LOW, FAST AND LOCKED IN", 600, False),
+                 (3, "IMG_6026", "50% 78%", "MID-AIR, UNBOTHERED", "THE OVERHEAD, CAUGHT ON CAMERA", 660, True),
+                 (4, "IMG_6085", "50% 72%", "SUN'S OUT, PADDLES OUT", "A WIDE SHOT OF A GOOD DAY", 660, False)],
+        collage=[("fa", "IMG_6046", 50, 110, 470, 620, -3, "50% 80%"), ("fb", "IMG_6048", 560, 170, 470, 620, 3, "50% 80%"), ("fc", "IMG_6059", 250, 830, 560, 400, -1.25, "50% 73%")],
+        collage_chip="TEAMS OF TWO", last=(6, "IMG_6060", "50% 88%", "READY FOR THE RETURN", "EVERY POINT STARTS LIKE THIS", 640, False),
+        rows=[("2ND OCTOBER, 2026", 900, 46), ("11:11 PICK A COURT", 900, 46), ("RS. 750 PER TEAM OF 2  |  POOL RS. 5,000", 400, 30),
+              ("REPORT BY 11:45AM  |  MATCHES 12PM TO 7PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_pickleball"),
+    "fifa": dict(
+        dir="engine/assets/terrathon/throwback_fifa", edition="FIFA EDITION", hero_sticker="controller.png", back="SOCCER STORM IS BACK",
+        cover=("IMG-20241019-WA0023", "50% 12%"),
+        singles=[(2, "IMG_3789", "50% 55%", "ALL EYES ON THE PITCH", "THE BIG SCREEN HAS THE FLOOR", 680, False),
+                 (3, "IMG_5875", "50% 100%", "PITCH SET", "PAD READY. THE SCENE BEFORE KICK-OFF", 400, False),
+                 (4, "IMG_5870", "50% 45%", "FULL TIME", "THE SCOREBOARD DOES NOT LIE", 420, False)],
+        collage=[("fa", "IMG_3796", 50, 110, 470, 620, -3, "50% 50%"), ("fb", "IMG_5864", 560, 170, 470, 620, 3, "50% 60%"), ("fc", "IMG_3791", 250, 830, 560, 400, -1.25, "50% 50%")],
+        collage_chip="THUMBS READY", last=(6, "IMG-20241019-WA0021", "50% 40%", "SOFA SEATS, REAL STAKES", "THREE PLAYERS, ONE PAD EACH", 780, False),
+        rows=[("3RD OCTOBER, 2026", 900, 46), ("BATTLEGROUND GAMING", 900, 46), ("PARTICIPATION FEE RS. 350  |  POOL RS. 2,500", 400, 30),
+              ("REPORT BY 11:15AM  |  MATCHES 11:30AM TO 1:30PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_fifa"),
+}
+CFG = SPORTS[SPORT]
+PHOTOS = CFG["dir"]
 
 
 def photo_src(n):
-    return "data:image/jpeg;base64," + base64.b64encode(open(f"{PHOTOS}/IMG_{n}.jpg", "rb").read()).decode()
+    return "data:image/jpeg;base64," + base64.b64encode(open(f"{PHOTOS}/{n}.jpg", "rb").read()).decode()
 
 
 def rb(x, y, w, h, deg):
@@ -101,53 +130,51 @@ async def build_all():
     # 1. COVER
     s = Slide(1, 7)
     m = await B.measure_text([dict(text="THROWBACK", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
-                              dict(text="PICKLEBALL EDITION", font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
+                              dict(text=CFG["edition"], font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
     tpx = 100 * 780 / m[0]["text_w"]; spx = 50 * min(1.0, 700 / m[1]["text_w"])
     s.text("t1", "TERRATHON", (W - 420) / 2, 58, 420, 44, 400, CREAM_HALO)
     s.parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 800) / 2}px;width:800px;top:112px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
                    f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">THROWBACK</div>'); s.el("t2", (W - 780) / 2, 116, 780, tpx * .82)
     s.parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{112 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
-                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">PICKLEBALL EDITION</div>'); s.el("t3", (W - 700) / 2, 112 + tpx * 1.05 + 2, 700, spx * .82)
+                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">{CFG["edition"]}</div>'); s.el("t3", (W - 700) / 2, 112 + tpx * 1.05 + 2, 700, spx * .82)
     fy = 112 + tpx * 1.05 + spx + 46
-    s.frame("frame", "6057", 110, fy, 860, 1220 - fy - 60, -1.25, "50% 100%")
+    s.frame("frame", CFG["cover"][0], 110, fy, 860, 1220 - fy - 60, -1.25, CFG["cover"][1])
     s.star("star_tl", 22, 70, 108); s.star("star_tr", W - 22 - 108, 84, 108); s.star("star_c", 110 - 50, 1220 - 60 - 90, 120)
     s.chip("chip", "SWIPE FOR THE REWIND", 300, 1220 - 60 - 30, 640, deg=-2.5, size=38)
     s.footer()
     slides.append((s, ("frame", "star_c"), ("frame", "chip")))
     # 2-4. single photos
-    for idx, n, pos, chip, sub, cw, flip in ((2, "5997", "50% 72%", "EYES ON THE BALL", "LOW, FAST AND LOCKED IN", 600, False),
-                                             (3, "6026", "50% 78%", "MID-AIR, UNBOTHERED", "THE OVERHEAD, CAUGHT ON CAMERA", 660, True),
-                                             (4, "6085", "50% 72%", "SUN'S OUT, PADDLES OUT", "A WIDE SHOT OF A GOOD DAY", 660, False)):
+    for idx, n, pos, chip, sub, cw, flip in CFG["singles"]:
         s, _ = photo_slide(idx, n, pos, chip, sub, cw, deg=-1.25 if not flip else 1.25, flip=flip)
         slides.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t")))
     # 5. COLLAGE (three frames)
     s = Slide(5, 105)
-    s.frame("fa", "6046", 50, 110, 470, 620, -3, "50% 80%")
-    s.frame("fb", "6048", 560, 170, 470, 620, 3, "50% 80%")
-    s.frame("fc", "6059", 250, 830, 560, 400, -1.25, "50% 73%")
+    for tg, n, x, y, w, h, dg, ps in CFG["collage"]:
+        s.frame(tg, n, x, y, w, h, dg, ps)
     s.star("star_a", 470, 80, 110); s.star("star_b", 22, 690, 120); s.star("star_c", W - 150, 1020, 110)
-    s.chip("chip", "TEAMS OF TWO", 590, 1150, 420, deg=-3, size=40)
+    s.chip("chip", CFG["collage_chip"], 590, 1150, 420, deg=-3, size=40)
     s.footer()
     slides.append((s, ("fa", "star_a"), ("fa", "star_b"), ("fb", "star_a"), ("fa", "fb"), ("fa", "fc"), ("fb", "fc"), ("fc", "chip"), ("fb", "star_c"), ("fc", "star_c"), ("fc", "star_b"), ("fa", "chip"), ("fb", "chip"), ("star_c", "chip")))
     # 6. one more photo
-    s, _ = photo_slide(6, "6060", "50% 88%", "READY FOR THE RETURN", "EVERY POINT STARTS LIKE THIS", 640, deg=-1.25)
+    i6, n6, p6, c6, sb6, w6, f6 = CFG["last"]
+    s, _ = photo_slide(i6, n6, p6, c6, sb6, w6, deg=-1.25)
     slides.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t")))
     # 7. CTA
     s = Slide(7, 107)
     m = await B.measure_text([dict(text="YOUR TURN", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
-                              dict(text="PICKLEJAM IS BACK", font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
+                              dict(text=CFG["back"], font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
     tpx = 100 * 800 / m[0]["text_w"]; spx = 50 * min(1.0, 700 / m[1]["text_w"])
     s.parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 940) / 2}px;width:940px;top:96px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
                    f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">YOUR TURN</div>'); s.el("t2", (W - 800) / 2, 100, 800, tpx * .82)
     s.parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{96 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
-                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">PICKLEJAM IS BACK</div>'); s.el("t3", (W - 700) / 2, 96 + tpx * 1.05 + 2, 700, spx * .82)
-    im, src = tt.crop_to_alpha("pickleball_set.png"); ph = 440; pw = ph * im.width / im.height
+                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">{CFG["back"]}</div>'); s.el("t3", (W - 700) / 2, 96 + tpx * 1.05 + 2, 700, spx * .82)
+    im, src = tt.crop_to_alpha(CFG["hero_sticker"]); ph = 440; pw = ph * im.width / im.height
     s.parts.append(f'<img src="{src}" class="measure" data-tag="hero" style="position:absolute;left:{(W - pw) / 2}px;top:330px;width:{pw}px;height:{ph}px;z-index:4">'); s.el("hero", (W - pw) / 2, 330, pw, ph)
     s.star("star_tl", 60, 330, 110); s.star("star_tr", W - 60 - 110, 400, 110)
     sx, sy, sw, sh = 84, 800, 912, 430
     s.parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{sx}px;top:{sy}px;width:{sw}px;height:{sh}px;box-sizing:border-box;transform:rotate(-1.25deg);background:{SLAB};border:20px solid {ORCHID};border-radius:52px;z-index:8"></div>')
     s.el("slab", *rb(sx, sy, sw, sh, -1.25))
-    rows = [("2ND OCTOBER, 2026", 900, 46), ("11:11 PICK A COURT", 900, 46), ("RS. 750 PER TEAM OF 2  |  POOL RS. 5,000", 400, 30), ("REPORT BY 11:45AM  |  MATCHES 12PM TO 7PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)]
+    rows = CFG["rows"]
     ty = sy + 52
     for i, (txt, wt, sz) in enumerate(rows):
         s.parts.append(f'<div class="measure" data-tag="row{i}" style="position:absolute;left:{sx + 40}px;width:{sw - 80}px;top:{ty}px;text-align:center;color:{INK};font-family:var(--d);font-weight:{wt};font-size:{sz}px;line-height:1;white-space:nowrap;z-index:9">{txt}</div>')
@@ -159,7 +186,7 @@ async def build_all():
 
 async def main():
     slides = await build_all()
-    outdir = "out/collaterals/throwback_pickleball"; os.makedirs(outdir, exist_ok=True)
+    outdir = "out/collaterals/" + CFG["out"]; os.makedirs(outdir, exist_ok=True)
     text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", WHITE, GROUND, 32, False), ("chip", INK, CTA_FILL, 42, True), ("idx", INK, CTA_FILL, 26, True), ("row", INK, SLAB, 46, True), ("cta", INK, CTA_FILL, 32, True)]
     async with B.session():
         for s, *ign in slides:
