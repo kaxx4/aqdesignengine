@@ -164,7 +164,8 @@ Open questions before building: does the carnival carry a title sponsor, and whi
 
 Real logos supplied by the user, one file each, used as-is (never redrawn): **`cravella.png`** (508x508 circular mark: plum ground, cream ring, a
 bow drawing, script wordmark `crave'lla`, handle `@cravella_kolkata`). Spelling for copy: **Crave'lla** (handle `cravella_kolkata`).
-Still awaited: Artily, CRFTD, and what each partner sells at the mini-fete (not printed until confirmed).
+**`artily.png`** (512x512 black wordmark `ARTILY` with the line `ARTISANAL BEVERAGES`, corner pixel `(0, 0, 0, 0)`): so Artily sells **artisanal beverages**, from its own logo.
+Still awaited: CRFTD (and what Crave'lla sells at the mini-fete; not printed until confirmed).
 
 ## 6. Reference defects (do not copy)
 
