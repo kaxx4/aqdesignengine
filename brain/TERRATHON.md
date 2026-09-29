@@ -205,6 +205,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
 | Schedule post (feed + story) | `tt_schedule.py [story]`, data in `brain/TERRATHON_SCHEDULE.md` | done |
 | Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
+| Rules cover (opener for the three rules posts; swipe order 02 PickleJam, 03 Wicket Wars, 04 Soccer Storm) | `tt_rules_cover.py` | done |
 | Rules posts (cricket, pickleball, FIFA), green boxes on black | `tt_rules_cricket.py cricket\|pickleball\|fifa` (copy condensed from the site's rules pages; clauses omitted are listed in the config comments) | done |
 | Video, welfare-impact numbers | none | not possible / blocked |
 
