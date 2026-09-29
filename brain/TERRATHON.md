@@ -116,6 +116,13 @@ It shares the visual system but NOT the event skeleton, so it is its own layout:
 
 Reference inconsistencies kept as given but flagged: `MINI-GAMES` (slab) vs `MINIGAMES` (body).
 
+## 5c. Content facts supplied by the user (real; never invent alternatives)
+
+- **WhatsApp group (CTA for the carnival carousel and its stories):** https://chat.whatsapp.com/Jke9ZHypTP90HhSnyHl3ai?s=sh&p=a&mlu=4&ilr=4 (given 2026-09-29).
+  Instagram cannot carry a clickable link in a feed image, so the slide CTA reads "link in bio" or "link below" (as the event posters do);
+  the real link goes in the caption or bio. A QR made from THIS link is a real asset (unlike a fabricated one) and is allowed on the WhatsApp graphic.
+- **Calendar (from the user, 2026-09-29):** carnival days are Sat 3 and Sun 4 Oct; sports registrations close Thu 1 Oct.
+
 ## 6. Reference defects (do not copy)
 
 1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.
