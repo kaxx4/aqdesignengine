@@ -48,6 +48,20 @@ SPORTS = {
             ("PADDLES", "Bring your own paddle. Limited paddles may be provided on prior request, subject to availability."),
             ("CONDUCT", "Any misconduct, foul language or physical altercation leads to immediate disqualification."),
         ]),
+    # FIFA (rules page pasted 2026-09-29). Registrations open (site shows Register Now). Venue: user ruled "Battleground Gaming"
+    # (the site says "Battlegrounds, Bhowanipore"). Condensed: 5 cards + conduct/equipment in the strip; property-damage, technical-issue and
+    # organisers'-authority clauses are omitted for space (the strip keeps "organisers' decisions are final").
+    "fifa": dict(
+        title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"),
+        strip=("BRING YOUR OWN CONTROLLER  |  ", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
+        cta="LINK IN THE BIO", out="terrathon_fifa_rules.png", body=23,
+        cards=[
+            ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
+            ("PLATFORM", "PS5, EA SPORTS FC 26. Competitive mode, normal speed, clear weather, injuries and handball off. No custom squads, edited ratings or modified settings."),
+            ("FORMAT", "Single elimination: Round of 16, Quarter Finals, Semi Finals, Grand Final. Halves are 6 minutes, then 8 in the semis and final. Tied? Extra Time, then Penalties."),
+            ("REPORTING", "Be at the venue 10 minutes before your match. More than 5 minutes late is a loss by walkover, with no refund."),
+            ("TEAM DRAW", "On the day, each player draws a chit for their team, and both players must be there. Draws are final unless the organisers say otherwise. The pool: Arsenal, Borussia Dortmund, Bayern Munich, PSG, Real Madrid, FC Barcelona, Al Nassr, Al Hilal, Liverpool, Chelsea, Manchester City, Manchester United, Atl\u00e9tico Madrid.", True),
+        ]),
 }
 CFG = SPORTS[SPORT]
 CARDS = CFG["cards"]
@@ -78,14 +92,21 @@ async def main():
     for lab, x, y in (("star_tl", 24, 46), ("star_tr", W - 24 - 104, 58)):
         im, src = tt.crop_to_alpha("shuriken.png"); hh = 104 * im.height / im.width; el(lab, x, y, 104, hh)
         parts.append(f'<img src="{src}" class="measure" data-tag="{lab}" style="position:absolute;left:{x}px;top:{y}px;width:104px;height:{hh}px;z-index:5">')
-    for i, (head, body) in enumerate(CARDS):
+    row, col = 0, 0
+    for i, card in enumerate(CARDS):
+        head, body = card[0], card[1]; wide = len(card) > 2 and card[2]
+        if wide and col == 1: row, col = row + 1, 0
         acc = GREEN
-        x = CX + (i % 2) * (CW + CG); y = CY0 + (i // 2) * (CH + RG)
-        el(f"card{i}", x, y, CW, CH)
-        parts.append(f'<div class="measure" data-tag="card{i}" style="position:absolute;left:{x}px;top:{y}px;width:{CW}px;height:{CH}px;box-sizing:border-box;border:6px solid {acc};border-radius:30px;background:{CTA_FILL};'
+        x = CX + col * (CW + CG); y = CY0 + row * (CH + RG); w = 2 * CW + CG if wide else CW
+        el(f"card{i}", x, y, w, CH)
+        parts.append(f'<div class="measure" data-tag="card{i}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{CH}px;box-sizing:border-box;border:6px solid {acc};border-radius:30px;background:{CTA_FILL};'
                      f'padding:16px 20px;color:{INK};font-family:var(--d);z-index:6;overflow:hidden">'
                      f'<div style="display:inline-block;background:{acc};color:{INK};font-weight:900;font-size:26px;line-height:1;padding:7px 16px 6px;border-radius:999px">{head}</div>'
                      f'<div style="font-weight:400;font-size:{CFG.get("body", 22)}px;line-height:1.22;margin-top:12px">{body}</div></div>')
+        if wide: row, col = row + 1, 0
+        else:
+            col += 1
+            if col == 2: row, col = row + 1, 0
     sy = CY0 + 3 * CH + 2 * RG + 24
     parts.append(f'<div class="measure" data-tag="strip1" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{sy}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:900;font-size:24px;line-height:1;white-space:nowrap;z-index:6">'
                  f'{CFG["strip"][0]}<span style="color:{ORCHID}">{CFG["strip"][1]}</span></div>')

@@ -203,6 +203,9 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Photo promotion stories, day stories | `tt_promo_photo.py` | template done; drop photos in `engine/assets/terrathon/promo_photos/<sport>/` and `day_photos/` |
 | Copy pack (captions, WhatsApp, reel briefs, Q&A) | `brain/TERRATHON_COPY_PACK.md` | drafted |
 | Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
+| Schedule post (feed + story) | `tt_schedule.py [story]`, data in `brain/TERRATHON_SCHEDULE.md` | done |
+| Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
+| Rules posts (cricket, pickleball, FIFA), green boxes on black | `tt_rules_cricket.py cricket\|pickleball\|fifa` (copy condensed from the site's rules pages; clauses omitted are listed in the config comments) | done |
 | Video, welfare-impact numbers | none | not possible / blocked |
 
 ## 6. Reference defects (do not copy)
