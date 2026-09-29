@@ -325,6 +325,10 @@ async def measure_text(items, W=1080, H=1350, extra_css=""):
     ink_h=443. Flow the NEXT element off `h`; size a collision bbox off `ink_h`.
     Getting this backwards is how a sticker gets cleared onto a numeral.
 
+    `features` — CSS font-feature-settings for the item (e.g. "'liga' 1,'dlig' 1"). REQUIRED for a ligature face
+    the moment `letter_spacing` is non-zero: browsers switch optional ligatures OFF under any tracking, so StretchPro's
+    EE -> one stretched glyph silently degrades to two ordinary E's unless the feature is asked for explicitly.
+
     `extra_css` — @font-face rules for any face that is NOT in core.FONTS. Without it a custom face
     (TerraThon's StretchPro, Sigmar One) silently measures as the FALLBACK font, and StretchPro's
     doubled-letter ligatures (EE -> one stretched glyph) are the worst case: the fallback measures
@@ -352,6 +356,7 @@ async def measure_text(items, W=1080, H=1350, extra_css=""):
             f'font-family:{fam};font-weight:{it.get("weight", 900)};font-style:{sty};'
             f'font-size:{it.get("size", 16)}px;'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'font-feature-settings:{it.get("features", "normal")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
         spans.append(
@@ -360,6 +365,7 @@ async def measure_text(items, W=1080, H=1350, extra_css=""):
             f'font-size:{it.get("size", 16)}px;'
             f'line-height:{it.get("line_height", 1)};'
             f'letter-spacing:{it.get("letter_spacing", "0")};'
+            f'font-feature-settings:{it.get("features", "normal")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
     html = page(W, H, "var(--bg)", (f"<style>{extra_css}</style>" if extra_css else "") + "".join(spans), grain=False)

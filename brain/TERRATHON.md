@@ -55,11 +55,16 @@ Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 10
    `CC`) and `TERRATHON` (the natural `RR`) stretch on their own. Titles are set in StretchPro, uppercase, spelled with the doubled letter. The
    subtitle face is **Sigmar One** ("use sparingly", per the user; open licence, file not yet supplied). Everything else stays NeutralFace.
    **Done:** all four posters re-rendered with StretchPro titles and a Sigmar One subtitle (`scratchpad/tt_events.py`, `tt_minifete.py`); scores
-   0.046 / 0.068 / 0.081 / 0.060, all under the 0.16 accept line (the metric cannot see a font change; the eye check carries it).
+   0.036 / 0.051 / 0.060 / 0.053 (after the stroke and tracking pass), all under the 0.16 accept line (the metric cannot see a font change; the eye check carries it).
    Sizing: the longer title line is fitted to 940 ref px (events), `TERRATHON` to 760 and `MINI-FEETE` to 1000 (mini-fete), measured with
    `build.measure_text(..., extra_css=)` because a face outside `core.FONTS` measures wrong otherwise. Title spellings: `WICKEET` / `WAARS`,
    `PICKLEE` / `JAAM`, `SOCCER` / `STOORM`, `TERRATHON`, `MINI-FEETE`. NOT copied: the references' titles look ~1.3x taller than StretchPro's natural
    proportions (the designer scaled them vertically); we keep natural proportions per the user's no-distortion ruling.
+   **Stroke and tracking (user, 2026-09-29):** in the references StretchPro and Sigmar One have a stroke around the letters and tighter kerning.
+   Measured: reference letter gaps are 1-4px where plain rendering gives 9-15px (StretchPro) and ~8px vs ~9px at a larger cap (Sigmar One); the NeutralFace
+   lines already matched to ~1px. Applied: StretchPro `-webkit-text-stroke 0.04em` + `letter-spacing -0.045em`; Sigmar One stroke `0.03em` + `-0.01em`;
+   NeutralFace unchanged. **TRAP: any non-zero `letter-spacing` switches the stretch ligatures OFF** (`WICKEET` silently renders as two ordinary E's), so StretchPro
+   text MUST also carry `font-feature-settings:'liga' 1,'dlig' 1` (and so must its measurement: `measure_text(features=)`).
    Sigmar One: OFL, `engine/assets/fonts/SigmarOne-Regular.woff2` (fetched from the npm package `@fontsource/sigmar-one`); the user said to use it SPARINGLY
    (subtitle and the sport name on promo stories only).
 4. **Constant furniture.** The four stars never move or rotate between events.

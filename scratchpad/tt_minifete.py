@@ -55,9 +55,9 @@ async def build(c, out):
     m = await B.measure_text([
         dict(text=c["ask"][0], font="d", size=px(F_ASK), weight=400),
         dict(text=c["ask"][1], font="d", size=px(F_ASK), weight=900),
-        dict(text=c["title"], font="StretchPro", size=100, weight=400),
-        dict(text=c["big"], font="StretchPro", size=100, weight=400),
-        dict(text=c["sub"], font="SigmarOne", size=px(F_SUB0), weight=400),
+        dict(text=c["title"], font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
+        dict(text=c["big"], font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
+        dict(text=c["sub"], font="SigmarOne", size=px(F_SUB0), weight=400, letter_spacing=f"{tt.SG_LS}em"),
         dict(text=c["date"], font="d", size=px(F_INFO), weight=400),
         dict(text=c["venue"], font="d", size=px(F_INFO), weight=400),
         dict(text=c["body"][2], font="d", size=px(F_BODY0), weight=900),
@@ -94,10 +94,12 @@ async def build(c, out):
     el("slab", SX - px(6), SY - px(12), SW + px(12), SH + px(24))
     LOC = 1114                                             # slab's unrotated outer top, ref px
     def tier(txt, size_px, cap_top, tag, fam='StretchPro', wt=400):
+        stroke, ls = (tt.SG_STROKE, tt.SG_LS) if fam == 'SigmarOne' else (tt.ST_STROKE, tt.ST_LS)
+        feat = 'normal' if fam == 'SigmarOne' else tt.ST_FEAT
         # absolute children measure from INSIDE the 28px border (the padding box), so subtract it
         top = px(cap_top - LOC - 28) - BOX * size_px
         return (f'<div style="position:absolute;left:0;width:100%;text-align:center;top:{top}px;font-family:{fam};font-weight:{wt};'
-                f'color:{INK};font-size:{size_px}px;line-height:1;white-space:nowrap">{txt}</div>')
+                f'color:{INK};-webkit-text-stroke:{stroke * size_px}px {INK};letter-spacing:{ls}em;font-feature-settings:{feat};font-size:{size_px}px;line-height:1;white-space:nowrap">{txt}</div>')
     slab = (f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;'
             f'transform:rotate(-1.3deg);background:{SLAB};border:{px(28)}px solid {ORCHID};border-radius:{px(70)}px;z-index:8">'
             + tier(c["title"], title_px, 1170, "t") + tier(c["big"], big_px, 1268, "b") + tier(c["sub"], sub_px, 1430, "s", "SigmarOne", 400)

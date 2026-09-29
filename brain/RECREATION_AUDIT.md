@@ -3361,3 +3361,5 @@ StretchPro (ligature stretch font, user-supplied) and Sigmar One (OFL) replace t
 - Iteration lessons: the title block first sat too high against the slab border (dropped ~35px, longer line fitted to 940 not 1010); `MINI-FETE` rendered with a NORMAL E until respelled `MINI-FEETE`.
 - Engine: `build.measure_text(extra_css=)` so a face outside `core.FONTS` measures as itself. Self-test `scratchpad/test_measure_custom_font.py` (3 assertions).
 - The metric barely moved (0.039 -> 0.046) though the posters are visibly far more faithful: a font change is invisible to `compare.py`. The looking gate decided it.
+
+- Stroke and tracking pass: scores 0.036 / 0.051 / 0.060 / 0.053. First attempt (letter-spacing only) DROPPED the stretch ligatures with no warning; found by looking at the render, fixed with `font-feature-settings`.

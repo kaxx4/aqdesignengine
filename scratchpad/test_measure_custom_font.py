@@ -24,7 +24,15 @@ async def main():
     check(f"without extra_css the fallback measures EE as ~2x E (got {r0:.2f})", 1.8 < r0 < 2.2)
     check(f"with extra_css the ligature makes EE ~2.95x E (got {r1:.2f})", 2.7 < r1 < 3.2)
     check("the two measurements genuinely differ", abs(r1 - r0) > 0.5)
+    tight = [dict(text="E", font="StretchPro", size=100, weight=400, letter_spacing="-0.045em"),
+             dict(text="EE", font="StretchPro", size=100, weight=400, letter_spacing="-0.045em")]
+    tight_f = [dict(i, features="'liga' 1,'dlig' 1") for i in tight]
+    async with B.session():
+        a = await B.measure_text(tight, extra_css=face); b = await B.measure_text(tight_f, extra_css=face)
+    ra = a[1]["text_w"] / a[0]["text_w"]; rb = b[1]["text_w"] / b[0]["text_w"]
+    check(f"non-zero letter-spacing DISABLES the ligature (EE measures {ra:.2f}x, not ~2.95x)", ra < 2.3)
+    check(f"features=liga/dlig restores it under tight tracking ({rb:.2f}x)", 2.6 < rb < 3.2)
 asyncio.run(main())
 if fails:
     print("FAILED:", fails); sys.exit(1)
-print("ALL 3 ASSERTIONS PASSED")
+print("ALL 5 ASSERTIONS PASSED")

@@ -44,7 +44,10 @@ FONT_CSS = (
     + base64.b64encode(open("engine/assets/fonts/StretchPro.otf", "rb").read()).decode() + ") format('opentype')}"
     "@font-face{font-family:'SigmarOne';src:url(data:font/woff2;base64,"
     + base64.b64encode(open("engine/assets/fonts/SigmarOne-Regular.woff2", "rb").read()).decode() + ") format('woff2')}")
-TITLE_W, SUBTITLE_PX = 940, 80    # longest title line width (ref px) and Sigmar One subtitle size
+TITLE_W, SUBTITLE_PX = 940, 80
+ST_STROKE, ST_LS = 0.04, -0.045     # StretchPro: text-stroke and tracking (em), measured off the references (gaps 1-4px vs 9-15px)
+SG_STROKE, SG_LS = 0.03, -0.01      # Sigmar One
+ST_FEAT = "'liga' 1,'dlig' 1"          # REQUIRED with tracking: letter-spacing switches the stretch ligatures off otherwise    # longest title line width (ref px) and Sigmar One subtitle size
 
 GROUND, ORCHID, CREAM_HALO, SLAB = "#000000", "#DE68F0", "#F3ECDE", "#F9F9F9"
 INK, WHITE, CTA_FILL = "#0A0A0A", "#F5F5F5", "#F5EEE1"
@@ -144,9 +147,9 @@ async def build(ev, cta_text, out):
         dict(text=ev["date"], font="d", size=FS, weight=400),
         dict(text=ev["venue"], font="d", size=FS, weight=400),
         dict(text="📍", font="'Noto Color Emoji'", size=px(62), weight=400),
-        dict(text=ev["sub"], font="SigmarOne", size=px(SUBTITLE_PX), weight=400),
-        dict(text=ev["title"][0], font="StretchPro", size=100, weight=400),
-        dict(text=ev["title"][1], font="StretchPro", size=100, weight=400)], extra_css=FONT_CSS)
+        dict(text=ev["sub"], font="SigmarOne", size=px(SUBTITLE_PX), weight=400, letter_spacing=f"{SG_LS}em"),
+        dict(text=ev["title"][0], font="StretchPro", size=100, weight=400, letter_spacing=f"{ST_LS}em", features=ST_FEAT),
+        dict(text=ev["title"][1], font="StretchPro", size=100, weight=400, letter_spacing=f"{ST_LS}em", features=ST_FEAT)], extra_css=FONT_CSS)
     cal_w, ic_gap, grp_gap = px(84), px(6), px(80)
     dw, vw, pw = m[0]["text_w"], m[1]["text_w"], m[2]["text_w"]
     # subtitle: full size unless the sport name is long; then it shrinks to SUB_MAX_W (never crowds the slab border)
@@ -161,11 +164,11 @@ async def build(ev, cta_text, out):
     slab = (f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;'
             f'transform:rotate(-1.25deg);background:{SLAB};border:{px(28)}px solid {ORCHID};border-radius:{px(70)}px;z-index:8">'
             f'<div style="position:absolute;left:{px(30)}px;top:{px(70) - 0.14 * title_px}px;font-family:StretchPro;color:{INK};'
-            f'font-size:{title_px}px;line-height:1;white-space:nowrap">{l1}</div>'
+            f'-webkit-text-stroke:{ST_STROKE * title_px}px {INK};letter-spacing:{ST_LS}em;font-feature-settings:{ST_FEAT};font-size:{title_px}px;line-height:1;white-space:nowrap">{l1}</div>'
             f'<div style="position:absolute;left:{px(30)}px;top:{px(70) + cap + px(30) - 0.14 * title_px}px;font-family:StretchPro;color:{INK};'
-            f'font-size:{title_px}px;line-height:1;white-space:nowrap">{l2}</div>'
+            f'-webkit-text-stroke:{ST_STROKE * title_px}px {INK};letter-spacing:{ST_LS}em;font-feature-settings:{ST_FEAT};font-size:{title_px}px;line-height:1;white-space:nowrap">{l2}</div>'
             f'<div style="position:absolute;left:{px(34)}px;top:{px(304)}px;font-family:SigmarOne;font-weight:400;color:{INK};'
-            f'font-size:{sub_px}px;line-height:1;white-space:nowrap">{ev["sub"]}</div></div>')
+            f'-webkit-text-stroke:{SG_STROKE * sub_px}px {INK};letter-spacing:{SG_LS}em;font-size:{sub_px}px;line-height:1;white-space:nowrap">{ev["sub"]}</div></div>')
 
     total = cal_w + ic_gap + dw + grp_gap + pw + ic_gap + vw
     x = (W - total) / 2
