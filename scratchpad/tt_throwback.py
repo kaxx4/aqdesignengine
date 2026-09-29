@@ -40,11 +40,11 @@ SPORTS = {
               ("REPORT BY 11:45AM  |  MATCHES 12PM TO 7PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_pickleball"),
     "fifa": dict(
         dir="engine/assets/terrathon/throwback_fifa", edition="FIFA EDITION", hero_sticker="controller.png", back="SOCCER STORM IS BACK",
-        cover=("IMG-20241019-WA0023", "50% 12%"),
+        cover=("IMG_5864", "50% 62%"),
         singles=[(2, "IMG_3789", "50% 55%", "ALL EYES ON THE PITCH", "THE BIG SCREEN HAS THE FLOOR", 680, False),
                  (3, "IMG_5875", "50% 100%", "PITCH SET", "PAD READY. THE SCENE BEFORE KICK-OFF", 400, False),
                  (4, "IMG_5870", "50% 45%", "FULL TIME", "THE SCOREBOARD DOES NOT LIE", 420, False)],
-        collage=[("fa", "IMG_3796", 50, 110, 470, 620, -3, "50% 50%"), ("fb", "IMG_5864", 560, 170, 470, 620, 3, "50% 60%"), ("fc", "IMG_3791", 250, 830, 560, 400, -1.25, "50% 50%")],
+        collage=[("fa", "IMG_3796", 50, 110, 470, 620, -3, "50% 50%"), ("fb", "IMG_5861", 560, 170, 470, 620, 3, "50% 60%"), ("fc", "IMG_3791", 250, 830, 560, 400, -1.25, "50% 50%")],
         collage_chip="THUMBS READY", last=(6, "IMG-20241019-WA0021", "50% 40%", "SOFA SEATS, REAL STAKES", "THREE PLAYERS, ONE PAD EACH", 780, False),
         rows=[("3RD OCTOBER, 2026", 900, 46), ("BATTLEGROUND GAMING", 900, 46), ("PARTICIPATION FEE RS. 350  |  POOL RS. 2,500", 400, 30),
               ("REPORT BY 11:15AM  |  MATCHES 11:30AM TO 1:30PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_fifa"),
