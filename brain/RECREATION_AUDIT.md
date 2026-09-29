@@ -3327,9 +3327,18 @@ disagreed are in `scratchpad/friction5/fcfec.md`.
 
 ## TerraThon / Wicket Wars (`training_samples/terrathon/wicket_wars_bio.png`) — 4 iterations, score 0.039
 
-Not one of the 74-item queue; a new fest FORMAT (see `brain/TERRATHON.md`). Bespoke script `scratchpad/tt_wicket_wars.py`, output `out/versions/terrathon_wicket_wars/v4.png`.
+Not one of the 74-item queue; a new fest FORMAT (see `brain/TERRATHON.md`). Superseded by the shared builder `scratchpad/tt_events.py` (same 0.039 through it). Output `out/versions/terrathon_wicket_wars/`.
 - v1: layout right (hero, stars, slab, tilt) but every header/info size 1.32x too big, so the header collided with the TERRATHON pill; title used a scaleX-stretched glyph with a mis-computed gap.
 - v2: sizes fixed from measured width ratios (a constant 0.757 across every line: NeutralFace confirmed as the reference face). User ruled NO stretched glyphs; title set plain, sized to fill the slab.
 - v3: swapped the cutouts for the user's REAL sticker files, aligned by alpha box; title moved off the slab border. Score 0.039.
 - v4: gate honesty. `render(margin=)` added (the series' 13-27px edge margins vs the hardcoded 64/36); sprites cropped to their alpha box so the declared box is the drawn box; hero-under-slab and star-over-corner declared as intended overlaps. Preflight CLEAN.
 - Residual: two over-filled cells in the slab (plain type is denser than the reference's stretched letters). Expected from the no-stretch ruling. Adaptations: Noto emoji for Apple; drawn dateless calendar; `core.LOGO` fitted by width.
+
+
+## TerraThon / PickleJam and Soccer Storm — 2 iterations each, scores 0.073 and 0.082
+
+Same skeleton as Wicket Wars, so both were built as DATA in `scratchpad/tt_events.py`. Refs: `picklejam_below.png`, `soccer_storm_below.png` (1620x2025).
+- v1: hero top-left positions measured from the refs' non-black components; info rows measured then centred on x=800; scores 0.070 / 0.082 first try. Wicket Wars reproduced 0.039 through the new builder (no regression).
+- v2: the looking gate caught PickleJam's subtitle running to within 25px of the slab border (the reference face is narrower per letter). Encoded as a max-width clamp (`SUB_MAX_W` 1265). No score change (0.073), which is the point: the metric could not see it.
+- Reference defects not copied: `A FIFA TOURNMENT` typo; Soccer Storm's bio variant omits the TERRATHON pill.
+- Residual: the same two-to-three over-filled slab cells as Wicket Wars, caused by plain type vs the reference's stretched letters (user ruling: no stretch).

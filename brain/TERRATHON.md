@@ -25,7 +25,7 @@ header block and footer. Only the hero, title, numbers and CTA change. That make
 **format module** (like `engine/dispatch.py`), not a Workflow B target. Recreation is how we
 learned the constants. The deliverable is `engine/terrathon.py`: brief in, poster out.
 
-## 2. The skeleton (proven: `scratchpad/tt_ww_v1.py` scores **0.039** against Wicket Wars)
+## 2. The skeleton (proven on all three events by `scratchpad/tt_events.py`: **0.039 / 0.073 / 0.082**)
 
 Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 1080x1350 (scale 0.675).
 
@@ -57,7 +57,15 @@ Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 10
 5. **One die-cut treatment**: cream halo, no ink outline, flat fill, hand-cut rough edge. The rough
    edge is in the supplied PNGs. `shapes.sticker()` cannot reproduce it, so stickers are ASSETS,
    never redrawn.
-6. **Tight margins are a series trait**: logo 27px and CTA 13px from the canvas edge on 1080x1350.
+6. **Subtitle fits, never crowds.** Full size (88px) unless the sport name is long; then it shrinks to a
+   1265px maximum width (`A PICKLEBALL TOURNAMENT` ran to within 25px of the slab border at 88px). Found by
+   the looking gate, not by any metric, and encoded as `SUB_MAX_W` in the builder.
+6b. **Info rows are measured, then centred on x=800.** Icon + date, an 80px gap, pin + venue form one group;
+   the fee block sits below. With ONE fee line the rows shift down (date +16px, fee +10px in 1600 space);
+   with two lines they sit high. Per-event offsets live in `EVENTS`.
+6c. **Sprites sit at native size** (x 1600/1620): every sticker in the kit is 1:1 in the 1620px design, so
+   an event only needs the visible top-left of its hero, not a scale.
+6d. **Tight margins are a series trait**: logo 27px and CTA 13px from the canvas edge on 1080x1350.
    `build.render(margin=12)` now says so (see the engine fixes below).
 7. **Numbers reconcile** (table above). Validate before rendering.
 8. **The calendar is drawn, without a date.** The reference's calendar emoji is fixed artwork that reads
@@ -85,7 +93,14 @@ These are not `core.ACCENTS`, and they do not go through `accent_for(dept)`. To 
 not used by any supplied poster yet) · `aq_live` (a blue/white/black burst reading `AQUATERRA LIVE`, a
 separate live-coverage badge, not on the event posters).
 
-## 6. What is still open
+## 6. Reference defects (do not copy)
+
+1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.
+2. `soccer_storm_bio.png` has **no TERRATHON pill**; the other five event posters do. Treated as an
+   omission in the source design, so the pill is part of the series. Scored against `soccer_storm_below.png`.
+3. The calendar emoji (`JUL 17`) on every event poster.
+
+## 7. What is still open
 
 1. **Logo lockup.** The reference logo has a bigger globe and a narrower, quieter wordmark than
    `core.LOGO`. Fit by width for now (475px). If the user has the TerraThon lockup file, use it.
@@ -94,11 +109,11 @@ separate live-coverage badge, not on the event posters).
 4. **Subtitle face.** Set in NeutralFace Bold per user ruling; the reference's chunky slab face is not used.
 5. **Other events.** Basketball, smiley and flower stickers exist with no poster. Ask before assuming.
 
-## 7. Build plan
+## 8. Build plan
 
-1. Done: Wicket Wars v4, score 0.039, gate clean (`out/versions/terrathon_wicket_wars/v4.png`).
-2. Next: PickleJam and Soccer Storm on the same skeleton, changing only the hero, title and numbers.
-   Their scores test whether the skeleton is really constant.
+1. Done: Wicket Wars 0.039, PickleJam 0.073, Soccer Storm 0.082, all gate-clean, one builder (`scratchpad/tt_events.py`,
+   output `out/versions/terrathon_<event>/v2.png`). The skeleton IS constant: PickleJam and Soccer Storm needed only
+   data, one subtitle rule, and per-event row offsets.
 3. The umbrella poster is a different layout (three heroes fanned, prize total, a red alert line).
    Recreate it after the three events.
 4. Then `engine/terrathon.py`: brief in (event, sport, dates, venue, fee, prize split, CTA), validator,
