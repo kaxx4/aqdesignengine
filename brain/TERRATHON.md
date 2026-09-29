@@ -203,6 +203,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Photo promotion stories, day stories | `tt_promo_photo.py` | template done; drop photos in `engine/assets/terrathon/promo_photos/<sport>/` and `day_photos/` |
 | Copy pack (captions, WhatsApp, reel briefs, Q&A) | `brain/TERRATHON_COPY_PACK.md` | drafted |
 | Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
+| Certificates: Winner and Runners Up (A4 landscape, PNG + PDF, one layout, two colourways; single signatory Kanishk Agarwal, Co-Founder and Trustee) | `tt_certificate.py` | done; modelled on the Paradox certificate set. Fillable: `--name`, `--event`. Wordmark tracking is +0.012em, not the poster's -0.045em (the thick outline fuses E and the stretched R otherwise). Signature line is left blank on purpose. Winner = gradient frame + gold seal; runners up = black frame + silver seal |
 | Video, welfare-impact numbers | none | not possible / blocked |
 
 ## 6. Reference defects (do not copy)
