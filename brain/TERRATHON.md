@@ -123,6 +123,26 @@ Reference inconsistencies kept as given but flagged: `MINI-GAMES` (slab) vs `MIN
   the real link goes in the caption or bio. A QR made from THIS link is a real asset (unlike a fabricated one) and is allowed on the WhatsApp graphic.
 - **Calendar (from the user, 2026-09-29):** carnival days are Sat 3 and Sun 4 Oct; sports registrations close Thu 1 Oct.
 
+## 5d. The party-invite carousel structure (`training_samples/terrathon/summer_sunset_carousel_template.png`)
+
+The user shared an 8-slide "Event Poster" frame from the Summer Sunset (AQ's 5th anniversary party) all-you-need-to-know carousel,
+4:5 portrait. It is NOT the Paradox template (that is still not in the repo). It teaches the info-slide grammar of a party invite:
+
+| # | Slide | Mechanism |
+|---|---|---|
+| 1 | Cover | "Everything you would want to know about" + the event logo-type |
+| 2 | Artist | circular portrait, `MUSIC BY` + name, supporting acts below |
+| 3 | Venue map | a real floor plan on the page, `GATES OPEN AT 5PM` under it |
+| 4 | Schedule + parking | white pill rows (time chip + act), then a red no-parking note |
+| 5 | Food | 3x3 grid of circular partner logos |
+| 6-7 | Rules and guidelines | dark rounded panel of numbered fine print, split over two slides |
+| 8 | See you tomorrow | event logo-type, pin + venue, clock + time |
+
+Visual system there: sand ground, illustrated palms and a beach/wave footer with the logo on every slide. That is Summer Sunset's look,
+not TerraThon's. The STRUCTURE transfers to the Friday "all you need to know" post; the look would be TerraThon's (black ground, slab, stickers).
+Two craft notes: the rules panel's fine print is unreadable at feed size (split it further or raise the size), and slides 5 and 3 depend
+on real assets (partner logos, an actual floor plan) that cannot be invented.
+
 ## 6. Reference defects (do not copy)
 
 1. `SOCCER STORM` subtitle reads **`A FIFA TOURNMENT`** (missing A). Set correctly here.
