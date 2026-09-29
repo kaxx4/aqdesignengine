@@ -3323,3 +3323,13 @@ original script lost, prior queue score measured a different, unrelated render).
 
 Full gate-stack friction, API surprises, the double-Y-offset bug, and where score vs. eye
 disagreed are in `scratchpad/friction5/fcfec.md`.
+
+
+## TerraThon / Wicket Wars (`training_samples/terrathon/wicket_wars_bio.png`) — 4 iterations, score 0.039
+
+Not one of the 74-item queue; a new fest FORMAT (see `brain/TERRATHON.md`). Bespoke script `scratchpad/tt_wicket_wars.py`, output `out/versions/terrathon_wicket_wars/v4.png`.
+- v1: layout right (hero, stars, slab, tilt) but every header/info size 1.32x too big, so the header collided with the TERRATHON pill; title used a scaleX-stretched glyph with a mis-computed gap.
+- v2: sizes fixed from measured width ratios (a constant 0.757 across every line: NeutralFace confirmed as the reference face). User ruled NO stretched glyphs; title set plain, sized to fill the slab.
+- v3: swapped the cutouts for the user's REAL sticker files, aligned by alpha box; title moved off the slab border. Score 0.039.
+- v4: gate honesty. `render(margin=)` added (the series' 13-27px edge margins vs the hardcoded 64/36); sprites cropped to their alpha box so the declared box is the drawn box; hero-under-slab and star-over-corner declared as intended overlaps. Preflight CLEAN.
+- Residual: two over-filled cells in the slab (plain type is denser than the reference's stretched letters). Expected from the no-stretch ruling. Adaptations: Noto emoji for Apple; drawn dateless calendar; `core.LOGO` fitted by width.

@@ -1,93 +1,106 @@
-# TERRATHON: the design system (session started 2026-09-29)
+# TERRATHON: the design system (started 2026-09-29)
 
-TerraThon is AQ's multi-sport and gaming fest, **3rd and 4th October 2026**, with per-event
-posters. Confirmed events so far: **Wicket Wars** (cricket, Turf XL, 3rd and 4th) and **Soccer
-Storm** (FIFA, Battleground Gaming, 3rd). The sticker pack also carries basketball and pickleball
-objects, so those events probably exist. That is inference, not fact, until the user confirms.
+TerraThon is AQ's multi-sport and gaming fest, **2nd to 4th October 2026**. The user supplied
+the full suite: three event posters (each in a `LINK IN THE BIO` and a `LINK BELOW` variant), one
+umbrella "registration open" poster, and the sticker kit. Everything below is measured from those files.
 
-Reference set: `training_samples/terrathon/` (4 posters, 1600x2000 = 4:5, plus `aq_live_sticker.png`).
-Each event has two variants that differ ONLY in the CTA pill: `LINK IN THE BIO` vs `LINK BELOW`.
+| Event | Sport | Dates | Venue | Fee | Pool (winner + runners up) |
+|---|---|---|---|---|---|
+| **Wicket Wars** | cricket | 3rd and 4th | Turf XL | Rs. 2,100 per team of 8 | Rs. 7,500 (4,500 + 3,000) |
+| **Soccer Storm** | FIFA (console) | 3rd | Battleground Gaming | Rs. 350 | Rs. 2,500 (1,500 + 1,000) |
+| **PickleJam** | pickleball | 2nd | 11:11 Pick A Court | Rs. 750 per team of 2 | Rs. 5,000 (3,000 + 2,000) |
+| **TerraThon** (umbrella) | all three | 2nd to 4th | none | none | "Prizes totalling Rs. 15,000" = 7,500 + 2,500 + 5,000 |
 
-## 1. What this is: a FORMAT, not four one-off posters
+The umbrella reads `SPOTS FILLING FAST / REGISTRATION NOW!!` with the `!!` in red. Every number
+in the suite reconciles, so a brief validator can enforce that pool = winner + runners up and
+that the umbrella total = the sum of the events.
 
-Wicket Wars and Soccer Storm share one skeleton to the pixel: the same star positions, the same
-slab position and tilt, the same header block. Only the hero sticker, the title, and the
-numbers and venue change. That makes TerraThon a **format module** in the sense of
-`engine/dispatch.py` (CLAUDE.md §10, session 10g), not a Workflow B recreation target. The right
-end state is `engine/terrathon.py`: validate a brief, solve the layout from measured content,
-and take content as the only hand-input. Recreating the two references is the way we learn the
-constants. It is not the deliverable.
+Files: `training_samples/terrathon/` (references, 1620x2025 RGBA) and
+`engine/assets/terrathon/` (stickers: `shuriken smiley flower basketball controller cricket_set pickleball_set aq_live`).
 
-## 2. The skeleton (fractions of the canvas; measured, `compare.geometry`)
+## 1. This is a FORMAT, not four posters
+
+The three event posters share one skeleton to the pixel: same star positions, slab position and tilt,
+header block and footer. Only the hero, title, numbers and CTA change. That makes TerraThon a
+**format module** (like `engine/dispatch.py`), not a Workflow B target. Recreation is how we
+learned the constants. The deliverable is `engine/terrathon.py`: brief in, poster out.
+
+## 2. The skeleton (proven: `scratchpad/tt_ww_v1.py` scores **0.039** against Wicket Wars)
+
+Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 1080x1350 (scale 0.675).
 
 | Layer (back to front) | What | Position |
 |---|---|---|
-| Ground | pure `#000`, fine white speckle grain | full bleed |
-| Shuriken x4 | blue 4-point star, cream halo, ~7% wide, each rotated differently | top-right (0.89, 0.16), upper-left (0.15, 0.28), right-mid (0.88, 0.44), lower-left (0.06, 0.53) tucked under the slab corner |
-| Hero sticker | one die-cut sport object, green fill, cream halo, 45-55% of canvas height | centred (~0.5, 0.36), **its bottom is hidden behind the slab** |
-| Slab | white rounded rectangle, ~2% orchid border, tilted about -1.5 deg | x 0.05..0.96, y 0.54..0.80 |
-| Title | event name in extended black display, 2 lines, then subtitle `A <SPORT> TOURNAMENT` | inside slab, left-aligned |
-| Header | `PRIZE POOL:` light, `RS. N` heavy with winged-money emoji, two prize lines | top centre-left, y 0.05..0.23 |
-| Fest tag | white pill, orchid border, `TERRATHON` | top-right, y 0.04..0.10 |
-| Info | calendar + date, pin + venue, then fee line | y 0.82..0.93 |
-| Footer | AQ logo bottom-left, CTA pill bottom-right (cream fill, orchid border) | y 0.94..0.99 |
+| Ground | pure `#000`, sparse white flecks | full bleed |
+| Shuriken x4 | one identical blue sprite, **never rotated**, ~150px | (1346,257) (163,484) (1343,813) (28,1010); the last sits ON the slab corner |
+| Hero sticker | the sport's real sticker, ~747px wide, bottom hidden by the slab | visible top-left (432,484) |
+| Slab | white `#F9F9F9`, 28px orchid border, radius ~70, tilt **-1.25 deg** | x 70..1542, y 1095..1601 |
+| Title | event name, 2 lines, NeutralFace Bold ~156px, line-height .9; subtitle `A <SPORT> TOURNAMENT` ~88px | inside the slab, left |
+| Header | `PRIZE POOL:` (regular 113px), `RS. N` (bold 113px, winged-money emoji), two prize lines (50px) | centred at x=800, y 104..445 |
+| Fest tag | white pill, 9px orchid border, `TERRATHON` bold 46px | (1198,78) 377x120 |
+| Info | calendar + date, pin + venue at 49px, then fee lines | y 1650..1855 |
+| Footer | AQ logo bottom-left, CTA pill bottom-right (cream `#F5EEE1`, orchid border) | y 1880..1985 |
 
-Measured: content bbox spans x 0.013..0.987, coverage 0.43 to 0.47, centroid (0.52, 0.57).
-Two posters, same skeleton, so the centroid barely moves (0.577 vs 0.566 vertically).
+## 3. Rules learned
 
-## 3. The rules this teaches
+1. **Weight pairing: label light, value bold**, in ONE family. NeutralFace 400 for labels
+   (`PRIZE POOL:`, `WINNER`, `PARTICIPATION FEE`, `FOR A`), NeutralFace 900 for values. The reference's
+   header matched NeutralFace at a constant 0.757 ratio on every line, so the face is NeutralFace.
+2. **The hero is tucked, not placed.** The slab overlaps the sticker's bottom edge. The sticker file
+   is the full object; the slab decides how much shows.
+3. **NO stretched letters (user ruling 2026-09-29).** The reference stretches one round letter per
+   title line (`WICK[E]T`, `SO[C]CER`, `PICKL[E]`, `J[A]M`, `TE[RR]ATHON`). We do NOT. It is not in the
+   font either: NeutralFace's only alternate glyph is `E.alt1`, a rounded epsilon-shaped E, which is
+   nothing like the reference's stretched E. Without the stretch, type must be sized up to fill the
+   slab: the title runs ~156px and the right of the slab carries air, as the reference's WARS line does.
+4. **Constant furniture.** The four stars never move or rotate between events.
+5. **One die-cut treatment**: cream halo, no ink outline, flat fill, hand-cut rough edge. The rough
+   edge is in the supplied PNGs. `shapes.sticker()` cannot reproduce it, so stickers are ASSETS,
+   never redrawn.
+6. **Tight margins are a series trait**: logo 27px and CTA 13px from the canvas edge on 1080x1350.
+   `build.render(margin=12)` now says so (see the engine fixes below).
+7. **Numbers reconcile** (table above). Validate before rendering.
+8. **The calendar is drawn, without a date.** The reference's calendar emoji is fixed artwork that reads
+   `JUL 17` beside `3RD OCTOBER`. That is wrong on the live posters. Do not copy it.
 
-1. **Weight pairing: label light, value bold.** `PRIZE POOL:` is light and `RS. 7,500` is heavy.
-   `WINNER:` is light and `RS.4,500` is bold. `PARTICIPATION FEE` is light and `RS. 2,100` is bold.
-   `FOR A` is light and `TEAM OF 8` is bold. The value is always the heavier word. This is the
-   whole hierarchy of the info areas, with no colour or size change needed.
-2. **The hero is tucked, not placed.** The slab overlaps the sticker's bottom edge. It reads as
-   an object standing in a tray. Never float the hero clear of the slab.
-3. **One stretched glyph per title line.** A round letter (E, A, C, O) is scaled horizontally
-   3 to 4x into a capsule (`WICK[E]T`, `W[A]RS`, `SO[C]CER`, `ST[O]RM`). It is a signature, and it
-   needs a `type_stretch` primitive. The engine has none.
-4. **Constant furniture, variable hero.** The four shuriken never move between events. They are
-   the series' fingerprint. Only the hero, the title and the numbers change.
-5. **Every sticker gets the same die-cut treatment**: cream halo (`#F3ECDE`), no ink outline, flat fill,
-   rough hand-cut edge (`shapes.sticker` produces a smooth halo, so it needs an edge-roughening step).
-6. **Emoji are used as icons** (winged money, medals, calendar, pin). They are raster glyphs, not
-   engine doodles. See the decision list below.
-7. **Numbers add up, and that is checkable.** 4,500 + 3,000 = 7,500 and 1,500 + 1,000 = 2,500.
-   A brief validator should reject a prize split that does not sum to the pool.
+## 4. Palette: TerraThon's own tokens (user ruling: own colours)
 
-## 4. Palette (sampled from the pixels)
+| Token | Hex | Used for |
+|---|---|---|
+| ground | `#000000` | canvas |
+| orchid | `#DE68F0` | slab border, pill borders |
+| green | `#2FD284` | hero stickers |
+| blue | `#0396FF` family | shuriken, smiley/flower/basketball rings |
+| halo | `#F3ECDE` | sticker die-cut halo |
+| slab | `#F9F9F9` | slab, pill fill |
+| cta | `#F5EEE1` | CTA pill fill |
 
-| Role | Reference | Nearest AQ token | Gap |
-|---|---|---|---|
-| Ground | `#000000` | `core.INK` `#0A0A0A` | negligible |
-| Hero green | `#2FD284` | `--mintbright` `#00E5A0`, `ACCENTS[1]` mint `#1B8A5A` | neither; it sits between them |
-| Slab border, pill borders, CTA border | `#DE68F0` (orchid) | `ACCENTS[0]` pink `#FF4D8C`, `ACCENTS[5]` grape `#7E5BFF` | **no orchid in the palette** |
-| Star blue | about `#0396FF` (sticker pack) | `ACCENTS[4]` sky `#3DA9FC` | close but more saturated |
-| Halo | `#F3ECDE` | `CREAM` `#F4EFE0` | match |
-| Slab fill and text | `#F9F9F9` / `#F5F5F5` | `PAPER` `#FFFFFF` | near-white, not cream |
+These are not `core.ACCENTS`, and they do not go through `accent_for(dept)`. To implement as
+`core.TERRATHON` when the module is written.
 
-Proportions on the black ground: black 61 to 64%, near-white 15 to 16%, green 4 to 7%, orchid 4%.
+## 5. Sticker kit
 
-## 5. Open decisions (need the user)
+`shuriken` (furniture, all posters) · `cricket_set` (bat + ball) · `pickleball_set` (paddle + ball) ·
+`controller` (FIFA) · `basketball`, `smiley`, `flower` (purple/blue: reserved for other events or fillers;
+not used by any supplied poster yet) · `aq_live` (a blue/white/black burst reading `AQUATERRA LIVE`, a
+separate live-coverage badge, not on the event posters).
 
-1. **Palette:** the sticker pack (orchid, bright green, saturated blue) is not the AQ accent
-   set. Does TerraThon carry its own tokens (`core.TERRATHON_*`) as a sub-brand, or should we
-   snap to `ACCENTS`? Snapping loses the orchid, which is the strongest thing on the page.
-2. **The calendar emoji reads `JUL 17`** on posters dated 3rd and 4th October. That is the
-   emoji's fixed artwork, not a date. It is wrong on the live posters. Replace it with a drawn
-   date chip or an emoji that shows no date.
-3. **Subtitle face** (`A CRICKET TOURNAMENT`) is a chunky display slab that is not one of the four
-   AQ fonts. Is it a licensed font we can embed, or should we substitute NeutralFace?
-4. **Real assets:** the sticker pack (smiley, flower, basketball, pickleball, controller, cricket
-   set) must exist as files in the repo. Images pasted into a chat mid-turn were not persisted.
+## 6. What is still open
 
-## 6. Build plan
+1. **Logo lockup.** The reference logo has a bigger globe and a narrower, quieter wordmark than
+   `core.LOGO`. Fit by width for now (475px). If the user has the TerraThon lockup file, use it.
+2. **Emoji.** Noto Color Emoji stands in for the reference's Apple set (💸 🥇 🥈 📍). Acceptable adaptation.
+3. **Paper grain on the slab** (the reference has a fine speckle) is not yet reproduced.
+4. **Subtitle face.** Set in NeutralFace Bold per user ruling; the reference's chunky slab face is not used.
+5. **Other events.** Basketball, smiley and flower stickers exist with no poster. Ask before assuming.
 
-1. Ingest the sticker pack to `assets/terrathon/` and measure each (bbox, halo width, fill).
-2. Workflow B on `wicket_wars_bio` (bespoke script, v1 to converge) to learn the constants.
-3. Encode `type_stretch` and rough-edge halo as primitives (CLAUDE.md §8), with a self-test.
-4. `engine/terrathon.py`: brief in (event, sport hero, numbers, venue, CTA), poster out, with a
-   validator (prize split sums, date range formatted, fee text).
-5. Same module drives the rest of the lifecycle (teaser, results, thank-you), which the
-   messaging skill already defines as a chain.
-6. Companion `/canvas-design` piece per the standing rule (outstanding).
+## 7. Build plan
+
+1. Done: Wicket Wars v4, score 0.039, gate clean (`out/versions/terrathon_wicket_wars/v4.png`).
+2. Next: PickleJam and Soccer Storm on the same skeleton, changing only the hero, title and numbers.
+   Their scores test whether the skeleton is really constant.
+3. The umbrella poster is a different layout (three heroes fanned, prize total, a red alert line).
+   Recreate it after the three events.
+4. Then `engine/terrathon.py`: brief in (event, sport, dates, venue, fee, prize split, CTA), validator,
+   solver, poster out. Same brief drives the messaging chain via the `aq-event-messaging` skill.
+5. Companion `/canvas-design` piece per the standing rule (outstanding).

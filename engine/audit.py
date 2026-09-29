@@ -49,6 +49,7 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
     """
     aW, aH = canvas if canvas else (W, H)
     aM = M if margin is None else margin
+    aB = 36 if margin is None else margin   # bottom safe zone follows an explicit margin; 36 stays the default
     _bleed = set(BLEED) | {str(t) for t in (bleed_tags or ())}
     _mok = set(MARGIN_OK) | {str(t) for t in (bleed_tags or ())}
     _ign = set()
@@ -86,7 +87,7 @@ async def audit(html, name, page=None, canvas=None, ignore_pairs=(), margin=None
               f"element LABELS. Tags present: {sorted(_tags)[:8]}")
     issues=[]
     for k,bx in enumerate(boxes):
-        if bx['tag'] not in _bleed and bx['tag'] not in _mok and (bx['x']<aM-3 or bx['rgt']>aW-aM+3 or bx['b']>aH-36):
+        if bx['tag'] not in _bleed and bx['tag'] not in _mok and (bx['x']<aM-3 or bx['rgt']>aW-aM+3 or bx['b']>aH-aB):
             issues.append(f"MARGIN {bx['tag']} breaches safe area (x{bx['x']} r{bx['rgt']} b{bx['b']})")
     def ov(a,c):
         ix=min(a['rgt'],c['rgt'])-max(a['x'],c['x']); iy=min(a['b'],c['b'])-max(a['y'],c['y'])

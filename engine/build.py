@@ -148,7 +148,7 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
                  expect_hero=False, collision_ignore=frozenset(), containers=(),
                  text_pairs=None, cascade_stacks=None, reading_order=None,
                  contains=None, occlusion=None, bleed_tags=None, crop_tags=(),
-                 auto_nudge=False):
+                 auto_nudge=False, margin=None):
     """Render + gate. Always: playwright screenshot + audit.py (DOM) + css_var_check (auto,
     zero false positives). OPTIONAL: pass `elements` (and optionally color_pairs/page_bg/
     expect_hero) and render also runs the full layout.preflight static gate for free — the
@@ -210,10 +210,11 @@ async def render(html, out_png, W, H, elements=None, color_pairs=None, page_bg=N
     # They now share one page load instead of cold-starting a browser each.
     return await _shoot(html, out_png, W, H, name, elements=elements,
                         collision_ignore=collision_ignore, bleed_tags=bleed_tags,
-                        crop_tags=crop_tags, text_declared=text_pairs is not None)
+                        crop_tags=crop_tags, text_declared=text_pairs is not None,
+                        margin=margin)
 
 async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
-                 bleed_tags=None, crop_tags=(), text_declared=True):
+                 bleed_tags=None, crop_tags=(), text_declared=True, margin=None):
     """Load once → settle → audit that same DOM → screenshot it. Uses the open
     session's page when there is one; otherwise opens a private session for this
     single call so standalone scripts behave exactly as they always did."""
@@ -221,7 +222,7 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
         await pg.set_content(html, wait_until="load")
         await _settle(pg)
         issues = await audit.audit(html, name, page=pg, canvas=(W, H),
-                                   ignore_pairs=collision_ignore, margin=M,
+                                   ignore_pairs=collision_ignore, margin=(M if margin is None else margin),
                                    bleed_tags=(bleed_tags or ()))
         # MEASURED geometry, on the page we already have. This is the only check
         # that can see what the hand-maintained (x,y,w,h) tuples structurally
