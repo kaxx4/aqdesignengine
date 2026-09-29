@@ -141,3 +141,12 @@ Day 2: `*Day 2* of the Mini-Fete is on. If you missed yesterday, that's the FOMO
 ## 7. DD TICKET-SALE STORIES (built): facts only
 Used: passes are sold at the DD ticket stall at the Mini-Fete (3rd & 4th Oct, Turf XL, New Alipore); the fete is open to all and all for charity. NOT used because not supplied: any DD price,
 DD date or venue, edition number, ticket count or scarcity. Add those and the cards can carry them.
+
+## 8. CRICKET THROWBACK carousel caption (Instagram; 9 slides: cover, 7 photos, close)
+```
+THROWBACK TO THE TURF 🏏
+Run-ups, follow-throughs, the front row and the umpire's final word. Swipe for the moments.
+
+Now the real thing is coming: WICKET WARS, 3RD & 4TH OCTOBER, TURF XL, NEW ALIPORE. All for charity ❤️
+```
+Note: the photos' own event, date and venue were not stated, so the slides claim none. Confirm consent to post the players' faces (several are school-age).
