@@ -46,8 +46,23 @@ KNOW = [   # the "all you need to know" deck: ONLY facts the user gave (timings,
     ("dd", "DISCO DIWALI PASSES", "GET YOURS AT THE DD TICKET STALL.", "carnival.png", False),
     ("why", "ALL FOR CHARITY", "SHOW UP. HAVE FUN. DO GOOD.", "flower.png", False),
 ]
+DD = [   # Disco Diwali ticket sales. FACTS ONLY: passes are sold at the DD ticket stall at the Mini-Fete (3rd & 4th Oct, Turf XL). No price, no DD date/venue: not supplied.
+    ("where", "WHERE", "THE DD TICKET STALL, TURF XL, NEW ALIPORE.", "smiley.png", False),
+    ("when", "WHEN", "3RD AND 4TH OCTOBER, 2026.", "flower.png", False),
+    ("between", "GRAB IT BETWEEN THE FUN", "MINI-GAMES, BOBA, BROWNIES. PICK UP YOUR PASS ON THE WAY.", "controller.png", False),
+    ("cause", "A PARTY FOR A CAUSE", "DISCO DIWALI IS ALL FOR CHARITY.", "flower.png", True),
+    ("crew", "OPEN TO ALL", "COME ALONE OR BRING THE WHOLE CREW.", "smiley.png", True),
+    ("last", "DON'T SLEEP ON IT", "THE MINI-FETE ENDS ON THE 4TH.", "basketball.png", False),
+]
+TIMED = [   # single stories, no cover or close
+    ("tomorrow", "DD PASSES ON SALE TOMORROW", "AT THE DD TICKET STALL. TURF XL, 3RD OCT.", "carnival.png", False),
+    ("today", "DD PASSES ON SALE TODAY", "AT THE DD TICKET STALL. TURF XL, NEW ALIPORE.", "carnival.png", False),
+    ("lastday", "LAST DAY FOR DD PASSES", "DD TICKET STALL, TURF XL. TODAY ONLY AT THE FETE.", "carnival.png", False),
+]
 DECKS = {"reasons": dict(items=REASONS, head=("7 REASONS", "TO SHOW UP"), swipe="SWIPE FOR THE 7"),
-         "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN")}
+         "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN"),
+         "dd": dict(items=DD, head=("DISCO DIWALI", "PASSES ON SALE"), swipe="SWIPE FOR THE DEETS", close=("GET YOUR PASS", "AT THE DD TICKET STALL", "TURF XL, NEW ALIPORE")),
+         "ddtimed": dict(items=TIMED, head=("", ""), swipe="", bare=True)}
 DECK = DECKS["reasons"]
 N = len(REASONS)
 
@@ -112,7 +127,7 @@ async def slide(kind, canvas, out, idx=None):
         head = DECK["items"][idx][1]
         items = [dict(text=head, font="d", size=100, weight=900)]
     elif kind == "close":
-        items = [dict(text="WHATSAPP GROUP", font="d", size=96, weight=900)]
+        items = [dict(text=max(DECK.get("close", ("", "WHATSAPP GROUP", ""))[:2], key=len), font="d", size=96, weight=900)]
     elif kind == "cover":
         items = [dict(text="TERRATHON", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=ST_F),
                  dict(text="MINI-FEETE", font="StretchPro", size=100, weight=400, letter_spacing="-0.02em", features=ST_F),
@@ -178,10 +193,11 @@ async def slide(kind, canvas, out, idx=None):
         body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head.replace("&", "&amp;")}</div>'
                 f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:18px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
+        c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
         cf = 96 * min(1.0, 800 / m[0]["text_w"])
-        body = (f'<div style="font-weight:900;font-size:{cf}px;line-height:1">JOIN THE</div>'
-                f'<div style="font-weight:900;font-size:{cf}px;line-height:1">WHATSAPP GROUP</div>'
-                f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:16px">LINK IN BIO</div>')
+        body = (f'<div style="font-weight:900;font-size:{cf}px;line-height:1">{c1}</div>'
+                f'<div style="font-weight:900;font-size:{cf}px;line-height:1">{c2}</div>'
+                f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:16px">{c3}</div>')
     el("slab", SX - 6, slab_top - 12, SW + 12, slab_h + 24)
     parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{slab_top}px;width:{SW}px;height:{slab_h}px;'
                  f'transform:rotate(-1.25deg);background:{SLAB};border:19px solid {ORCHID};border-radius:47px;z-index:8;display:flex;flex-direction:column;'
@@ -222,10 +238,11 @@ async def main(canvases, decks=("reasons",)):
             DECK = DECKS[dk]
             for canvas in canvases:
                 d = f"out/versions/terrathon_carousel/{dk}/{canvas}"; os.makedirs(d, exist_ok=True)
-                await slide("cover", canvas, f"{d}/00_cover.png")
+                bare = DECK.get("bare")
+                if not bare: await slide("cover", canvas, f"{d}/00_cover.png")
                 for i, r in enumerate(DECK["items"]):
                     await slide("point", canvas, f"{d}/{i + 1:02d}_{r[0]}.png", idx=i)
-                await slide("close", canvas, f"{d}/{len(DECK['items']) + 1:02d}_close.png")
+                if not bare: await slide("close", canvas, f"{d}/{len(DECK['items']) + 1:02d}_close.png")
                 print("done", dk, canvas)
 
 if __name__ == "__main__":
