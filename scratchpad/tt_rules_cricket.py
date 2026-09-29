@@ -25,7 +25,7 @@ SPORTS = {
     "cricket": dict(
         title="WICKEET WAARS", info=("SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  ", "REPORT BY 9:45AM"),
         strip=("TEAM REPORTS 20 MIN BEFORE ITS MATCH  |  ", "UMPIRE'S DECISION IS FINAL"), strip2="NO ABUSE. NO VAPES, ALCOHOL OR SIMILAR SUBSTANCES.",
-        cta="LINK IN THE BIO", out="terrathon_cricket_rules.png",
+        cta="SEE YOU 3 + 4 OCT", out="terrathon_cricket_rules.png",
         cards=[
             ("WHO CAN PLAY", "Born on or after 1 January 2005. Every player must qualify, not just the captain. IDs are checked, and no ID on time can mean disqualification."),
             ("FORMAT", "One innings each, straight knockout. 5 overs, and the fielding side has 15 minutes to finish. 8 players a team (7 + 1 sub), one jersey colour. Bring your own bats and gloves."),
@@ -54,7 +54,7 @@ SPORTS = {
     "fifa": dict(
         title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"),
         strip=("BRING YOUR OWN CONTROLLER  |  ", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
-        cta="LINK IN THE BIO", out="terrathon_fifa_rules.png", body=23,
+        cta="SEE YOU SAT 3 OCT", out="terrathon_fifa_rules.png", body=23,
         cards=[
             ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
             ("PLATFORM", "PS5, EA SPORTS FC 26. Competitive mode, normal speed, clear weather, injuries and handball off. No custom squads, edited ratings or modified settings."),
