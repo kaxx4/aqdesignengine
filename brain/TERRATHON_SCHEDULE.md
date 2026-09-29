@@ -1,36 +1,33 @@
-# TERRATHON SCHEDULE: 2nd to 4th October 2026 (drafted 2026-09-29)
+# TERRATHON SCHEDULE: Fri 2 to Sun 4 October 2026, Kolkata (updated 2026-09-29)
 
-Source: `brain/TERRATHON.md` (event table, section 5b, 5c) and `brain/TERRATHON_COPY_PACK.md`. Every row below is a supplied fact except where marked **INFERENCE**. No clock times exist anywhere in the repo, so the time column reads `TBC`. Nothing is invented.
+Source: the live TerraThon site timetable (pasted by the user 2026-09-29) plus `brain/TERRATHON.md`. Mini-Fete rows were added on the user's instruction (3rd and 4th, Turf XL). Mini-Fete opening and closing times have not been supplied and read `TBC`.
 
-**Registrations for all three sports close Thu 1 Oct.**
+**Rule printed on the site: turn up at the REPORTING time, not the match time.** Fixtures are drawn on the day; a squad not present when its name is called forfeits. Exact fixtures land in the WhatsApp group the night before. Sports registrations close Thu 1 Oct.
 
 ---
 
-## DAY 1: FRIDAY 2 OCTOBER
+## DAY 1: FRIDAY 2 OCTOBER (1 sport)
 
-| Time | What | Where | Notes |
+| Report by | Time | What | Where |
 |---|---|---|---|
-| TBC | **PickleJam** (pickleball), full tournament | 11:11 Pick A Court | Rs. 750 per team of 2. Pool Rs. 5,000 (3,000 + 2,000) |
+| 11:45 am | 12pm to 7pm | **Pickleball** (PickleJam) | Venue to be confirmed (site) |
 
-Only PickleJam runs today. The Mini-Fete does not open until Saturday.
+## DAY 2: SATURDAY 3 OCTOBER (2 sports + Mini-Fete)
 
-## DAY 2: SATURDAY 3 OCTOBER
-
-| Time | What | Where | Notes |
+| Report by | Time | What | Where |
 |---|---|---|---|
-| TBC | **Wicket Wars** (cricket), day 1 of 2 | Turf XL | Rs. 2,100 per team of 8. Pool Rs. 7,500 (4,500 + 3,000) |
-| TBC | **Soccer Storm** (FIFA), full tournament | Battleground Gaming | Rs. 350. Pool Rs. 2,500 (1,500 + 1,000). Single day, so it must finish today |
-| TBC | **Mini-Fete**, day 1 | Turf XL, New Alipore | Open to all. All for charity |
+| 9:45 am | 10am to 4pm | **Cricket** (Wicket Wars), day 1 | Turf XL, New Alipore |
+| 11:15 am | 11:30am to 1:30pm | **FIFA** (Soccer Storm) | Battlegrounds, Bhowanipore |
+| n/a | TBC | **Mini-Fete**, day 1 | Turf XL, New Alipore |
 
-Mini-Fete contents, both days: mini-games and competitions, stalls (Artily boba, Crave'lla desserts and brownies, CRFTD pre-orders for DIY T-shirts and custom orders), photobooth, lottery at location, DD ticket stall (Disco Diwali passes).
+## DAY 3: SUNDAY 4 OCTOBER (1 sport + Mini-Fete)
 
-## DAY 3: SUNDAY 4 OCTOBER
-
-| Time | What | Where | Notes |
+| Report by | Time | What | Where |
 |---|---|---|---|
-| TBC | **Wicket Wars**, day 2 of 2 | Turf XL | **INFERENCE:** the final and prize giving fall on the last day, since the event spans the 3rd and 4th |
-| TBC | **Mini-Fete**, day 2 | Turf XL, New Alipore | Same stalls and games. Last chance for DD passes |
-| TBC | Closing: prize giving and wrap | Turf XL | **INFERENCE:** the fest has no stated closing ceremony. Delete this row if none is planned |
+| 9:45 am | 10am to 2pm | **Cricket** (Wicket Wars), day 2 | Turf XL, New Alipore |
+| n/a | TBC | **Mini-Fete**, day 2 | Turf XL, New Alipore |
+
+Mini-Fete, both days: mini-games and competitions, stalls (Artily boba, Crave'lla desserts and brownies, CRFTD pre-orders), photobooth, lottery at location, DD ticket stall (Disco Diwali passes). Open to all, all for charity.
 
 ---
 
@@ -38,25 +35,26 @@ Mini-Fete contents, both days: mini-games and competitions, stalls (Artily boba,
 
 | | Fri 2 | Sat 3 | Sun 4 |
 |---|---|---|---|
-| PickleJam | X | | |
-| Wicket Wars | | X | X |
-| Soccer Storm | | X | |
-| Mini-Fete | | X | X |
-| Turf XL | | Cricket + Fete | Cricket + Fete |
+| Pickleball | 12pm to 7pm | | |
+| Cricket | | 10am to 4pm | 10am to 2pm |
+| FIFA | | 11:30am to 1:30pm | |
+| Mini-Fete | | TBC | TBC |
 
-## RISKS I FOUND
+## CONFLICTS TO FIX (these are errors in your own material)
 
-1. **Saturday splits your crew across two venues.** Soccer Storm (Battleground Gaming) runs at the same time as Wicket Wars and the Mini-Fete (Turf XL). You need a named lead at each site, and the prize giving for Soccer Storm cannot happen at Turf XL unless the winners travel.
-2. **Cricket and the fete share Turf XL for two days.** Pitch, stalls, photobooth and lottery all need a floor plan so the crowd does not walk through a live match. That is the one asset I would build next.
-3. **The Mini-Fete's job is selling Disco Diwali passes.** If the fete opens after the first Wicket Wars matches, the DD ticket stall misses its warmest crowd.
+1. **Pickleball venue.** The site says "to be confirmed". Our posters print **11:11 Pick A Court**. Confirm before any schedule graphic ships.
+2. **FIFA venue name.** The site says **Battlegrounds, Bhowanipore**. Our posters and copy say **Battleground Gaming**. One of them is wrong. The site is newer, so I would follow it, but you decide.
+3. **Cricket day-1 vs day-2 length.** Sat runs 10am to 4pm, Sun 10am to 2pm. Sunday is shorter, which fits a final on Sunday (my inference, not stated).
 
-## NEEDED BEFORE THIS CAN BE PUBLISHED
+## RISKS
 
-1. Start and end time for each PickleJam session on Fri 2.
-2. Wicket Wars: first ball time each day, and whether Sunday holds the final.
-3. Soccer Storm: start time and how long the bracket runs.
-4. Mini-Fete: opening and closing time on both days.
-5. Is there a prize giving or closing moment, and where?
-6. Should this go public? If yes, which format: an Instagram carousel slide in the TerraThon look, a story, or a WhatsApp text.
+1. **Saturday runs two venues at once.** Cricket at Turf XL (New Alipore) and FIFA at Battlegrounds (Bhowanipore) overlap from 11:30am to 1:30pm. Each site needs its own lead.
+2. **Cricket and the fete share Turf XL for both days.** Pitch, stalls, photobooth and lottery need a floor plan so the crowd does not walk into a live match.
+3. **Sunday cricket ends at 2pm.** If the fete keeps running after that, the last hours have no draw except the DD ticket stall. If the fete opens after 10am, its stalls miss the busiest crowd.
 
-Once times are in, the table converts directly into a poster or a WhatsApp message with no further decisions.
+## STILL NEEDED
+
+1. Mini-Fete opening and closing time on Sat 3 and Sun 4.
+2. Pickleball venue, final.
+3. FIFA venue name, final.
+4. Output format if this goes public: TerraThon-look carousel slide, story, or WhatsApp text.
