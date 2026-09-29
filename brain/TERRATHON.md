@@ -54,7 +54,14 @@ Coordinates are reference px on a 1600x2000 canvas; the engine builds on feed 10
    stretched glyph. Verified against the references by specimen render: `WICKEEET`, `WAARS`, `STOORM`, `PICKLEEJAAM`, `MINI-FEETE`; `SOCCER` (the natural
    `CC`) and `TERRATHON` (the natural `RR`) stretch on their own. Titles are set in StretchPro, uppercase, spelled with the doubled letter. The
    subtitle face is **Sigmar One** ("use sparingly", per the user; open licence, file not yet supplied). Everything else stays NeutralFace.
-   The earlier NeutralFace-only titles (scores 0.039 / 0.073 / 0.082 / 0.047) are a stopgap and will be re-rendered with StretchPro.
+   **Done:** all four posters re-rendered with StretchPro titles and a Sigmar One subtitle (`scratchpad/tt_events.py`, `tt_minifete.py`); scores
+   0.046 / 0.068 / 0.081 / 0.060, all under the 0.16 accept line (the metric cannot see a font change; the eye check carries it).
+   Sizing: the longer title line is fitted to 940 ref px (events), `TERRATHON` to 760 and `MINI-FEETE` to 1000 (mini-fete), measured with
+   `build.measure_text(..., extra_css=)` because a face outside `core.FONTS` measures wrong otherwise. Title spellings: `WICKEET` / `WAARS`,
+   `PICKLEE` / `JAAM`, `SOCCER` / `STOORM`, `TERRATHON`, `MINI-FEETE`. NOT copied: the references' titles look ~1.3x taller than StretchPro's natural
+   proportions (the designer scaled them vertically); we keep natural proportions per the user's no-distortion ruling.
+   Sigmar One: OFL, `engine/assets/fonts/SigmarOne-Regular.woff2` (fetched from the npm package `@fontsource/sigmar-one`); the user said to use it SPARINGLY
+   (subtitle and the sport name on promo stories only).
 4. **Constant furniture.** The four stars never move or rotate between events.
 5. **One die-cut treatment**: cream halo, no ink outline, flat fill, hand-cut rough edge. The rough
    edge is in the supplied PNGs. `shapes.sticker()` cannot reproduce it, so stickers are ASSETS,
@@ -171,6 +178,14 @@ bow drawing, script wordmark `crave'lla`, handle `@cravella_kolkata`). Spelling 
 not a floating mark). Neither may be redrawn: real files are required. (A wrong `artily.png` that was a duplicate of the Cravella file was committed and removed the same day.)
 Confirmed by the user (2026-09-29): **Artily = boba**; **Crave'lla = desserts and brownies**; a **photobooth** is on site; **no title-sponsor strip** on the carnival carousel.
 Still awaited: the Artily and CRFTD files, and what the CRFTD orders are.
+
+## 5g. Promotion-story templates (user, 2026-09-29: "sample story templates")
+
+The user's screenshot shows the sports PROMOTION STORY template, 1080x1920: a full-bleed real photo of the sport at its venue (8 variants each
+for PICKLEBALL, FIFA, CRICKET) under a dark scrim, the prize block top-right (`PRIZE POOL:` / `RS. N` / winner / runners up, small white),
+blue shuriken on the left and right edges, and at the bottom a white card with a GREEN outline holding a small `TERRATHON` tag chip, the sport name in
+Sigmar One (`PICKLEBALL`, `FIFA`, `CRICKET`), then the info lines (date and venue, participation fee, team size), and the AQ logo under it.
+Note the card outline is GREEN here, not the orchid of the feed posters. Source photos are required as FILES (only the screenshot exists so far).
 
 ## 6. Reference defects (do not copy)
 

@@ -31,7 +31,7 @@ CARNIVAL_K = 0.535    # carnival sticker scale vs its native pixels (palm 637px 
 
 CONTENT = dict(
     ask=("CHANCE TO BUY", "DISCO DIWALI PASSES"),
-    title="TERRATHON", big="MINI-FETE", sub="MINI-GAMES | COMPETITIONS",
+    title="TERRATHON", big="MINI-FEETE", sub="MINI-GAMES | COMPETITIONS",
     date="3RD & 4TH OCTOBER, 2026", venue="TURF XL, NEW ALIPORE",
     body=["MINIGAMES TO WIN", "STALLS TO ENJOY", "DISCO DIWALI PASSES"],
     cta="OPEN TO ALL")
@@ -51,19 +51,21 @@ async def build(c, out):
                 f'top:{px(y0)}px;width:{w}px;height:{h}px;z-index:{z}">')
 
     # ---- measure every string once (fonts decide the sizes, not guesses) ----
-    F_ASK, F_TITLE, F_BIG, F_SUB0, F_BODY0, F_INFO = 96, 96, 168, 76, 57, 47.5
+    F_ASK, F_TITLE, F_BIG, F_SUB0, F_BODY0, F_INFO = 96, 96, 168, 68, 57, 47.5
     m = await B.measure_text([
         dict(text=c["ask"][0], font="d", size=px(F_ASK), weight=400),
         dict(text=c["ask"][1], font="d", size=px(F_ASK), weight=900),
-        dict(text=c["title"], font="d", size=px(F_TITLE), weight=900),
-        dict(text=c["big"], font="d", size=px(F_BIG), weight=900),
-        dict(text=c["sub"], font="d", size=px(F_SUB0), weight=900),
+        dict(text=c["title"], font="StretchPro", size=100, weight=400),
+        dict(text=c["big"], font="StretchPro", size=100, weight=400),
+        dict(text=c["sub"], font="SigmarOne", size=px(F_SUB0), weight=400),
         dict(text=c["date"], font="d", size=px(F_INFO), weight=400),
         dict(text=c["venue"], font="d", size=px(F_INFO), weight=400),
         dict(text=c["body"][2], font="d", size=px(F_BODY0), weight=900),
-    ])
+    ], extra_css=tt.FONT_CSS)
     tw = [r["text_w"] for r in m]
     sub_px = px(F_SUB0) * min(1.0, px(1290) / tw[4])            # subtitle clamps to the reference's 1290px
+    title_px = 100 * px(760) / tw[2]      # TERRATHON (natural RR ligature) ~760 ref px wide
+    big_px = 100 * px(1000) / tw[3]       # MINI-FEETE (EE ligature) ~1000 ref px wide
     ls1 = (px(850) - tw[0]) / (len(c['ask'][0]) - 1)              # ask lines: tracking solved to the reference widths
     ls2 = (px(1134) - tw[1]) / (len(c['ask'][1]) - 1)
     body_px = px(F_BODY0) * min(1.0, px(660) / tw[7])           # body clamps to the widest line, 660px
@@ -91,14 +93,14 @@ async def build(c, out):
     SX, SY, SW, SH = px(78), px(1114), px(1467), px(452)
     el("slab", SX - px(6), SY - px(12), SW + px(12), SH + px(24))
     LOC = 1114                                             # slab's unrotated outer top, ref px
-    def tier(txt, size_px, cap_top, tag):
+    def tier(txt, size_px, cap_top, tag, fam='StretchPro', wt=400):
         # absolute children measure from INSIDE the 28px border (the padding box), so subtract it
         top = px(cap_top - LOC - 28) - BOX * size_px
-        return (f'<div style="position:absolute;left:0;width:100%;text-align:center;top:{top}px;font-family:var(--d);font-weight:900;'
+        return (f'<div style="position:absolute;left:0;width:100%;text-align:center;top:{top}px;font-family:{fam};font-weight:{wt};'
                 f'color:{INK};font-size:{size_px}px;line-height:1;white-space:nowrap">{txt}</div>')
     slab = (f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;'
             f'transform:rotate(-1.3deg);background:{SLAB};border:{px(28)}px solid {ORCHID};border-radius:{px(70)}px;z-index:8">'
-            + tier(c["title"], px(F_TITLE), 1167, "t") + tier(c["big"], px(F_BIG), 1276, "b") + tier(c["sub"], sub_px, 1440, "s")
+            + tier(c["title"], title_px, 1170, "t") + tier(c["big"], big_px, 1268, "b") + tier(c["sub"], sub_px, 1430, "s", "SigmarOne", 400)
             + '</div>')
 
     # ---- info row (calendar + date, venue) centred ----
@@ -139,7 +141,7 @@ async def build(c, out):
            f'border:{px(9)}px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;'
            f'z-index:9;font-family:var(--d);font-weight:900;font-size:{px(44)}px;color:{INK}">{c["cta"]}</div>')
 
-    html = B.page(W, H, GROUND, ground + hdr + hero + stars + slab + info + body + logo + cta, grain=False)
+    html = B.page(W, H, GROUND, f'<style>{tt.FONT_CSS}</style>' + ground + hdr + hero + stars + slab + info + body + logo + cta, grain=False)
     text_pairs = [("ask", WHITE, GROUND, 96, True), ("body", WHITE, GROUND, 48, True), ("info", WHITE, GROUND, 40, False),
                   ("title", INK, SLAB, 100, True), ("cta", INK, CTA_FILL, 34, True)]
     await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,

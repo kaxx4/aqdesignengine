@@ -3352,3 +3352,12 @@ Marketing stunt for Disco Diwali passes; the carnival sticker is its hero. Own l
 - v3: declarations fixed (header DOM box narrowed off the star; star_br declared as a bleed).
 - v4: the looking gate found the subtitle resting ON the slab's bottom border and all three tiers ~28px low. Cause: absolutely-positioned children measure from INSIDE the border, so slab-local offsets were off by exactly the 28px border. Encoded in the builder and in CLAUDE.md sec 10.
 - Residual: three over-filled slab cells (plain type vs the reference's stretched TERRATHON and MINI-FETE). Expected from the no-stretch ruling.
+
+
+## TerraThon posters re-rendered with the real fonts (2026-09-29)
+
+StretchPro (ligature stretch font, user-supplied) and Sigmar One (OFL) replace the NeutralFace stand-ins. Wicket Wars 0.046, PickleJam 0.068, Soccer Storm 0.081, Mini-Fete 0.060.
+- The stretch is a ligature (a doubled letter is one stretched glyph): `WICKEET`, `WAARS`, `PICKLEE`, `JAAM`, `SOCCER` (natural CC), `STOORM`, `TERRATHON` (natural RR), `MINI-FEETE`.
+- Iteration lessons: the title block first sat too high against the slab border (dropped ~35px, longer line fitted to 940 not 1010); `MINI-FETE` rendered with a NORMAL E until respelled `MINI-FEETE`.
+- Engine: `build.measure_text(extra_css=)` so a face outside `core.FONTS` measures as itself. Self-test `scratchpad/test_measure_custom_font.py` (3 assertions).
+- The metric barely moved (0.039 -> 0.046) though the posters are visibly far more faithful: a font change is invisible to `compare.py`. The looking gate decided it.

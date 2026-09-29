@@ -284,7 +284,7 @@ async def _shoot(html, out_png, W, H, name, elements=None, collision_ignore=(),
     async with session() as sess:
         return await _work(await sess.page(W, H))
 
-async def measure_text(items, W=1080, H=1350):
+async def measure_text(items, W=1080, H=1350, extra_css=""):
     """Measure how big text ACTUALLY renders, before you lay anything out.
 
     THE CLASS OF BUG THIS RETIRES. Every bespoke script sizes shapes from data
@@ -325,6 +325,11 @@ async def measure_text(items, W=1080, H=1350):
     ink_h=443. Flow the NEXT element off `h`; size a collision bbox off `ink_h`.
     Getting this backwards is how a sticker gets cleared onto a numeral.
 
+    `extra_css` — @font-face rules for any face that is NOT in core.FONTS. Without it a custom face
+    (TerraThon's StretchPro, Sigmar One) silently measures as the FALLBACK font, and StretchPro's
+    doubled-letter ligatures (EE -> one stretched glyph) are the worst case: the fallback measures
+    them ~30% narrow, so a title sized off that number overflows its slab.
+
     Costs one page load. Batch every string you need in ONE call, then lay out.
     """
     FAM = {"d": "var(--d)", "e": "var(--e)", "s": "var(--s)", "m": "var(--m)"}
@@ -357,7 +362,7 @@ async def measure_text(items, W=1080, H=1350):
             f'letter-spacing:{it.get("letter_spacing", "0")};'
             f'text-transform:{it.get("transform", "none")};'
             f'visibility:hidden">{it["text"]}</div>')
-    html = page(W, H, "var(--bg)", "".join(spans), grain=False)
+    html = page(W, H, "var(--bg)", (f"<style>{extra_css}</style>" if extra_css else "") + "".join(spans), grain=False)
 
     async def _work(pg):
         await pg.set_content(html, wait_until="load")

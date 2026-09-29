@@ -39,6 +39,13 @@ S = W / 1600.0
 NATIVE = 1600 / 1620          # stickers sit 1:1 in the 1620px design
 ASSET = "engine/assets/terrathon"
 
+FONT_CSS = (
+    "@font-face{font-family:'StretchPro';src:url(data:font/otf;base64,"
+    + base64.b64encode(open("engine/assets/fonts/StretchPro.otf", "rb").read()).decode() + ") format('opentype')}"
+    "@font-face{font-family:'SigmarOne';src:url(data:font/woff2;base64,"
+    + base64.b64encode(open("engine/assets/fonts/SigmarOne-Regular.woff2", "rb").read()).decode() + ") format('woff2')}")
+TITLE_W, SUBTITLE_PX = 940, 80    # longest title line width (ref px) and Sigmar One subtitle size
+
 GROUND, ORCHID, CREAM_HALO, SLAB = "#000000", "#DE68F0", "#F3ECDE", "#F9F9F9"
 INK, WHITE, CTA_FILL = "#0A0A0A", "#F5F5F5", "#F5EEE1"
 
@@ -51,19 +58,19 @@ SUB_PX, SUB_MAX_W = 88, 1265     # subtitle size / max width, ref px (PickleJam'
 
 EVENTS = {
     "wicket_wars": dict(
-        sticker="cricket_set.png", hero_xy=(433, 484), title=("WICKET", "WARS"), sub="A CRICKET TOURNAMENT",
+        sticker="cricket_set.png", hero_xy=(433, 484), title=("WICKEET", "WAARS"), sub="A CRICKET TOURNAMENT",
         pool="RS. 7,500", winner="RS.4,500", runners="RS.3,000",
         date="3RD & 4TH OCTOBER, 2026", venue="TURF XL",
         fee=[("PARTICIPATION FEE ", "RS. 2,100"), ("FOR A ", "TEAM OF 8")],
         date_dy=0, fee_dy=0, ref="wicket_wars_below"),
     "picklejam": dict(
-        sticker="pickleball_set.png", hero_xy=(314, 483), title=("PICKLE", "JAM"), sub="A PICKLEBALL TOURNAMENT",
+        sticker="pickleball_set.png", hero_xy=(314, 483), title=("PICKLEE", "JAAM"), sub="A PICKLEBALL TOURNAMENT",
         pool="RS. 5,000", winner="RS.3,000", runners="RS.2,000",
         date="2ND OCTOBER, 2026", venue="11:11 PICK A COURT",
         fee=[("PARTICIPATION FEE ", "RS. 750"), ("FOR A ", "TEAM OF 2")],
         date_dy=6.5, fee_dy=1.5, ref="picklejam_below"),
     "soccer_storm": dict(
-        sticker="controller.png", hero_xy=(340, 590), title=("SOCCER", "STORM"), sub="A FIFA TOURNAMENT",
+        sticker="controller.png", hero_xy=(340, 590), title=("SOCCER", "STOORM"), sub="A FIFA TOURNAMENT",
         pool="RS. 2,500", winner="RS.1,500", runners="RS.1,000",
         date="3RD OCTOBER, 2026", venue="BATTLEGROUND GAMING",
         fee=[("PARTICIPATION FEE ", "RS. 350")],
@@ -137,11 +144,15 @@ async def build(ev, cta_text, out):
         dict(text=ev["date"], font="d", size=FS, weight=400),
         dict(text=ev["venue"], font="d", size=FS, weight=400),
         dict(text="📍", font="'Noto Color Emoji'", size=px(62), weight=400),
-        dict(text=ev["sub"], font="d", size=px(SUB_PX), weight=900)])
+        dict(text=ev["sub"], font="SigmarOne", size=px(SUBTITLE_PX), weight=400),
+        dict(text=ev["title"][0], font="StretchPro", size=100, weight=400),
+        dict(text=ev["title"][1], font="StretchPro", size=100, weight=400)], extra_css=FONT_CSS)
     cal_w, ic_gap, grp_gap = px(84), px(6), px(80)
     dw, vw, pw = m[0]["text_w"], m[1]["text_w"], m[2]["text_w"]
     # subtitle: full size unless the sport name is long; then it shrinks to SUB_MAX_W (never crowds the slab border)
-    sub_px = px(SUB_PX) * min(1.0, px(SUB_MAX_W) / m[3]["text_w"])
+    sub_px = px(SUBTITLE_PX) * min(1.0, px(SUB_MAX_W) / m[3]["text_w"])
+    title_px = 100 * px(TITLE_W) / max(m[4]["text_w"], m[5]["text_w"])          # StretchPro size that makes the longer line TITLE_W wide
+    cap = 0.699 * title_px
 
     # slab + title
     SX, SY, SW, SH = px(70), px(1095), px(1472), px(506)
@@ -149,9 +160,11 @@ async def build(ev, cta_text, out):
     l1, l2 = ev["title"]
     slab = (f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;'
             f'transform:rotate(-1.25deg);background:{SLAB};border:{px(28)}px solid {ORCHID};border-radius:{px(70)}px;z-index:8">'
-            f'<div style="position:absolute;left:{px(30)}px;top:{px(48)}px;font-family:var(--d);font-weight:900;color:{INK};'
-            f'font-size:{px(156)}px;line-height:.9;white-space:nowrap;letter-spacing:-.01em"><div>{l1}</div><div>{l2}</div></div>'
-            f'<div style="position:absolute;left:{px(34)}px;top:{px(350)}px;font-family:var(--d);font-weight:900;color:{INK};'
+            f'<div style="position:absolute;left:{px(30)}px;top:{px(70) - 0.14 * title_px}px;font-family:StretchPro;color:{INK};'
+            f'font-size:{title_px}px;line-height:1;white-space:nowrap">{l1}</div>'
+            f'<div style="position:absolute;left:{px(30)}px;top:{px(70) + cap + px(30) - 0.14 * title_px}px;font-family:StretchPro;color:{INK};'
+            f'font-size:{title_px}px;line-height:1;white-space:nowrap">{l2}</div>'
+            f'<div style="position:absolute;left:{px(34)}px;top:{px(304)}px;font-family:SigmarOne;font-weight:400;color:{INK};'
             f'font-size:{sub_px}px;line-height:1;white-space:nowrap">{ev["sub"]}</div></div>')
 
     total = cal_w + ic_gap + dw + grp_gap + pw + ic_gap + vw
@@ -193,7 +206,7 @@ async def build(ev, cta_text, out):
            f'border:{px(9)}px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;'
            f'z-index:9;font-family:var(--d);font-weight:900;font-size:{px(44)}px;color:{INK}">{cta_text}</div>')
 
-    html = B.page(W, H, GROUND, ground + hdr + fest + hero + stars + slab + info + logo + cta, grain=False)
+    html = B.page(W, H, GROUND, f'<style>{FONT_CSS}</style>' + ground + hdr + fest + hero + stars + slab + info + logo + cta, grain=False)
     text_pairs = [("prize", WHITE, GROUND, 96, True), ("info", WHITE, GROUND, 40, False),
                   ("title", INK, SLAB, 100, True), ("cta", INK, CTA_FILL, 34, True), ("pill", INK, "#FFFFFF", 36, True)]
     await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
