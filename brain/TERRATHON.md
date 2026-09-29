@@ -91,7 +91,14 @@ These are not `core.ACCENTS`, and they do not go through `accent_for(dept)`. To 
 `shuriken` (furniture, all posters) · `cricket_set` (bat + ball) · `pickleball_set` (paddle + ball) ·
 `controller` (FIFA) · `basketball`, `smiley`, `flower` (purple/blue: reserved for other events or fillers;
 not used by any supplied poster yet) · `aq_live` (a blue/white/black burst reading `AQUATERRA LIVE`, a
-separate live-coverage badge, not on the event posters).
+separate live-coverage badge, not on the event posters) · **`carnival`** (1750x2000, real alpha: a pre-composed
+PILE, not a single object: blue palm tree over a green smiling flower, a purple heart holding a green
+shuriken, and a blue star-eyed smiley, all in the same cream die-cut halo).
+
+The kit shows a colour rule: the **character stickers recolour** (smiley and flower are purple with a blue
+ring in the pack, but green-flower / blue-smiley / purple-heart inside `carnival`), while the **sport
+objects are always green** and the shuriken is always blue. Palm blue is `#0090F8`, close to the shuriken
+family. What the carnival is for (an event, an add-on, a side attraction) is not yet stated by the user.
 
 ## 6. Reference defects (do not copy)
 
