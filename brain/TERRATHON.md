@@ -203,6 +203,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Single-slide WhatsApp graphic + verified QR | `tt_wa_graphic.py` | done |
 | Photo promotion stories, day stories | `tt_promo_photo.py` | template done; drop photos in `engine/assets/terrathon/promo_photos/<sport>/` and `day_photos/` |
 | Copy pack (captions, WhatsApp, reel briefs, Q&A) | `brain/TERRATHON_COPY_PACK.md` | drafted |
+| Disco Diwali QR / scan-to-pay poster (feed) | `tt_dd_qr.py` -> `out/collaterals/dd_qr_scan_to_pay.png` | done, gate clean. QR is the user's REAL static UPI merchant code (payee TERRAROOTS, Kolkata, **no amount embedded**), decoded from their reference screenshot and regenerated crisp at `engine/assets/terrathon/qr_terrathon_upi.png`; the poster copy decodes to the identical payload down to 540px wide. Payload never edited: buyers type 550 themselves. |
 | Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
 | Schedule post (feed + story) | `tt_schedule.py [story]`, data in `brain/TERRATHON_SCHEDULE.md` | done |
 | Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
