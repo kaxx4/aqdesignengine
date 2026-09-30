@@ -37,3 +37,6 @@ desktop.ini
 
 # Obsidian vault workspace state (not part of the note content)
 AQ Design Engine/.obsidian/workspace*.json
+
+# TerraThon carousel photos: real people at events, PUBLIC repo. Regenerate from the source zips with scratchpad/tt_reasons8_prep.py
+engine/assets/terrathon/carousel_photos/

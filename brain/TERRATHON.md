@@ -204,6 +204,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Photo promotion stories, day stories | `tt_promo_photo.py` | template done; drop photos in `engine/assets/terrathon/promo_photos/<sport>/` and `day_photos/` |
 | Copy pack (captions, WhatsApp, reel briefs, Q&A) | `brain/TERRATHON_COPY_PACK.md` | drafted |
 | Companion art plate | `tt_companion_halo_field.py` | done (`brain/companion/`) |
+| "8 reasons why you should attend" carousel (feed + story, cover + 8 + close) | `tt_carousel.py reasons8` (photos cropped by `tt_reasons8_prep.py`) | done 2026-09-30. Order per the user: CRFTD orders, Mini-Fete, DD ticket stall, Period Pain Simulator, Artily stall, Crave'lla stall, photobooth, lottery. Real photos in the circles for six; kit stickers for DD tickets and Period Pain (no photos supplied). Photos live in git-ignored `engine/assets/terrathon/carousel_photos/` (people, public repo). Copy is DRAFT. Mini-Fete photo is 272px wide (WhatsApp) so it is soft |
 | Schedule post (feed + story) | `tt_schedule.py [story]`, data in `brain/TERRATHON_SCHEDULE.md` | done |
 | Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
 | Rules cover (opener for the three rules posts; swipe order 02 PickleJam, 03 Wicket Wars, 04 Soccer Storm) | `tt_rules_cover.py` | done |
