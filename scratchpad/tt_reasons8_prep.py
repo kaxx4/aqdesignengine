@@ -23,6 +23,10 @@ PLAN = {
     "cravella": [("a/cravella/IMG_20260703_202034_301.jpg.jpeg", "55% 60%"), ("a/cravella/20260929_151102.jpg.jpeg", "50% 30%")],
     "photobooth": [("a/photobooth/WhatsApp Image 2026-09-30 at 6.11.34 AM.jpeg", "50% 57%")],
     "lottery": [("b/lottery/48ce29902ce305ec8dfdead153469d9a.jpg", "50% 50%")],
+    "period_pain": [("e/period pain simulator/DSC_0217.JPG", "58% 50%"), ("e/period pain simulator/IMG_0055.JPG", "50% 50%")],
+    "dd_tickets": [("f/Disco Diwali/IMG_0110.JPG", "80% 50%"),       # the DISCO DIWALI balloon arch: the tall cell keeps the lettered cubes
+                   ("f/Disco Diwali/_MG_7359.JPG", "50% 55%"),       # dance floor
+                   ("f/Disco Diwali/_MG_7317.JPG", "50% 50%")],      # crowd
 }
 for arg in sys.argv[2:]:                         # extra reasons whose photos arrive later: key=folder
     key, folder = arg.split("=", 1)

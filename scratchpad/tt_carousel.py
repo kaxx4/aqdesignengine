@@ -56,7 +56,7 @@ REASONS8 = [   # user brief 2026-09-30, in the user's order. DRAFT copy. Facts u
     ("artily", "ARTILY STALL", "SIP BOBA. LOSE MINI-GAMES WITH DIGNITY.", "flower.png", False),
     ("cravella", "CRAVE'LLA STALL", "DESSERTS AND BROWNIES. NO FURTHER QUESTIONS.", "flower.png", True),
     ("photobooth", "PHOTOBOOTH", "POSE NOW. REGRET NEVER.", "smiley.png", False),
-    ("lottery", "LOTTERY", "LUCK HAS A STALL TOO.", "basketball.png", False),
+    ("lottery", "LOTTERY", "CHANCE TO WIN DISCO DIWALI TICKETS.", "basketball.png", False),
 ]
 DD = [   # Disco Diwali ticket sales. FACTS ONLY: passes are sold at the DD ticket stall at the Mini-Fete (3rd & 4th Oct, Turf XL). No price, no DD date/venue: not supplied.
     ("where", "WHERE", "THE DD TICKET STALL, TURF XL, NEW ALIPORE.", "smiley.png", False),
@@ -72,7 +72,7 @@ TIMED = [   # single stories, no cover or close
     ("lastday", "LAST DAY AT THE FETE", "GET YOUR DD PASS AT THE DD TICKET STALL, TURF XL.", "carnival.png", False),
 ]
 DECKS = {"reasons": dict(items=REASONS, head=("7 REASONS", "TO SHOW UP"), swipe="SWIPE FOR THE 7"),
-         "reasons8": dict(items=REASONS8, head=("8 REASONS WHY", "YOU SHOULD ATTEND"), swipe="SWIPE FOR THE 8", num=True, free_sub=True),
+         "reasons8": dict(items=REASONS8, head=("8 REASONS WHY", "YOU SHOULD ATTEND"), swipe="SWIPE FOR THE 8", num=True, free_sub=True, compact=True),
          "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN"),
          "dd": dict(items=DD, head=("DISCO DIWALI", "PASSES ON SALE"), swipe="SWIPE FOR THE DEETS", close=("GET YOUR PASS", "AT THE DD TICKET STALL", "TURF XL, NEW ALIPORE")),
          "ddtimed": dict(items=TIMED, head=("", ""), swipe="", bare=True)}
@@ -84,6 +84,12 @@ LAYOUT = {   # canvas px. story keeps Instagram's UI zones clear (top 250, botto
                   cover_head_y=52, cover_hero_top=290, cover_hero_h=540, cover_slab_top=744, cover_slab_h=340, cover_strip_y=1130, pill_y=53),
     "story": dict(W=1080, H=1920, hero_max=(760, 660), slab_top=980, slab_h=470, strip_y=1490, foot_y=1585,
                   cover_head_y=280, cover_hero_top=540, cover_hero_h=680, cover_slab_top=1128, cover_slab_h=340, cover_strip_y=1492, pill_y=250),
+}
+
+
+COMPACT = {   # user 2026-09-30: "reduce the size of the box". A smaller slab frees room, which goes to a BIGGER photo circle (D) instead of dead space
+    "feed":  dict(hero_max=(760, 640), slab_top=744, slab_h=350, D=680, SX=90, SW=900, strip_y=1122),
+    "story": dict(hero_max=(800, 720), slab_top=1072, slab_h=360, D=700, SX=90, SW=900),
 }
 
 
@@ -142,7 +148,8 @@ def collage_html(photos, gap=8):
 
 
 async def slide(kind, canvas, out, idx=None):
-    L = LAYOUT[canvas]; W, H = L["W"], L["H"]
+    L = dict(LAYOUT[canvas]); W, H = L["W"], L["H"]
+    if DECK.get("compact") and kind != "cover": L.update(COMPACT[canvas])
     els = []
     def el(label, x, y, w, h): els.append((label, x, y, w, h))
 
@@ -158,7 +165,7 @@ async def slide(kind, canvas, out, idx=None):
              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
 
     slab_top, slab_h = (L["cover_slab_top"], L["cover_slab_h"]) if kind == "cover" else (L["slab_top"], L["slab_h"])
-    SX, SW = 47, 986
+    SX, SW = L.get("SX", 47), L.get("SW", 986)
     ST_F = tt.ST_FEAT
 
     # ---- measure every fitted string, in its real face ----
@@ -179,7 +186,7 @@ async def slide(kind, canvas, out, idx=None):
         key, _, _, sfile, rc = DECK["items"][idx]
         ph = photo_list(key)
         if ph:   # a real photo replaces the sticker, inside a circle
-            D = 560; cx, cy = W / 2, slab_top - 0.86 * D + D / 2
+            D = L.get("D", 560); cx, cy = W / 2, slab_top - 0.86 * D + D / 2
             parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{cx - D / 2}px;top:{cy - D / 2}px;width:{D}px;height:{D}px;'
                          f'border-radius:50%;border:14px solid {CREAM_HALO};background:{CREAM_HALO};z-index:3;overflow:hidden">'
                          f'{collage_html(ph)}</div>')
@@ -238,18 +245,19 @@ async def slide(kind, canvas, out, idx=None):
                 f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DATE.replace("&", "&amp;")}</div>')
     elif kind == "point":
         import re
+        HEAD_MAX, TAG_PX = (92, 36) if DECK.get("compact") else (104, 40)      # compact box: smaller type so 2 headline lines + 2 tagline lines still fit
         tag = re.sub(r"(\S+-\S+)", r'<span style="white-space:nowrap">\1</span>', DECK["items"][idx][2])   # a hyphenated word never splits across lines ("MINI-" / "GAMES")
         words = head.split(); two = m[0]["text_w"] * 1.04 > 840 and len(words) > 2   # wider than the slab at full size: two lines
         if two:
             cut = min(range(1, len(words)), key=lambda i: abs(len(" ".join(words[:i])) - len(" ".join(words[i:]))))
             hl = [" ".join(words[:cut]), " ".join(words[cut:])]
             mm = await B.measure_text([dict(text=t, font="d", size=100, weight=900) for t in hl])
-            head_px = min(104, 100 * 840 / max(r["text_w"] for r in mm))
+            head_px = min(HEAD_MAX, 100 * 840 / max(r["text_w"] for r in mm))
             head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
         else:
-            head_px = min(104, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
+            head_px = min(HEAD_MAX, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
         body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
-                f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:18px;max-width:800px;text-wrap:balance">{tag}</div>')
+                f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
         c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
         cf = 96 * min(1.0, 800 / m[0]["text_w"])
