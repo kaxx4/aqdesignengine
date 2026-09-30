@@ -114,6 +114,33 @@ def photo_src(key):
     return None
 
 
+def photo_list(key):
+    """[(data-uri, object-position)] for a reason: every <key>_<n>.jpg in order (a COLLAGE when more than one), else the single <key>.jpg."""
+    import glob, json
+    try: focus = json.load(open(f"{PHOTO_DIR}/focus.json"))
+    except Exception: focus = {}
+    files = sorted(glob.glob(f"{PHOTO_DIR}/{key}_*.jpg"), key=lambda f: int(os.path.basename(f).rsplit("_", 1)[1].split(".")[0]))
+    out = [(f"data:image/jpeg;base64," + base64.b64encode(open(f, "rb").read()).decode(), focus.get(os.path.basename(f), "50% 50%")) for f in files]
+    if not out:
+        one = photo_src(key)
+        if one: out = [(one, "50% 50%")]
+    return out
+
+
+def collage_html(photos, gap=8):
+    """Photos tiled inside the circle (the circle's overflow clips the outer corners): 1 full, 2 side by side, 3 = one tall + two stacked, 4 = 2x2.
+    The cream gap between cells is the circle's own cream ground, so it reads as a scrapbook spread."""
+    n = min(len(photos), 4)
+    cells = []
+    for i, (src, fc) in enumerate(photos[:n]):
+        span = "grid-row:1 / span 2;" if (n == 3 and i == 0) else ""
+        cells.append(f'<div style="{span}overflow:hidden;min-width:0;min-height:0"><img src="{src}" style="width:100%;height:100%;object-fit:cover;'
+                     f'object-position:{fc};display:block"></div>')
+    cols = "1fr" if n == 1 else "1fr 1fr"
+    rows = "1fr" if n <= 2 else "1fr 1fr"
+    return f'<div style="display:grid;grid-template-columns:{cols};grid-template-rows:{rows};gap:{gap}px;width:100%;height:100%">{"".join(cells)}</div>'
+
+
 async def slide(kind, canvas, out, idx=None):
     L = LAYOUT[canvas]; W, H = L["W"], L["H"]
     els = []
@@ -150,12 +177,12 @@ async def slide(kind, canvas, out, idx=None):
     # ---- hero (tucked ~14% behind the slab) ----
     if kind == "point":
         key, _, _, sfile, rc = DECK["items"][idx]
-        ph = photo_src(key)
+        ph = photo_list(key)
         if ph:   # a real photo replaces the sticker, inside a circle
             D = 560; cx, cy = W / 2, slab_top - 0.86 * D + D / 2
             parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{cx - D / 2}px;top:{cy - D / 2}px;width:{D}px;height:{D}px;'
                          f'border-radius:50%;border:14px solid {CREAM_HALO};background:{CREAM_HALO};z-index:3;overflow:hidden">'
-                         f'<img src="{ph}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"></div>')
+                         f'{collage_html(ph)}</div>')
             el("hero", cx - D / 2, cy - D / 2, D, D)
         else:
             im, src = sticker_src(sfile, rc); mw, mh = L["hero_max"]
