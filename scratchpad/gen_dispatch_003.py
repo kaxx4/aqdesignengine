@@ -8,23 +8,24 @@ Outputs into out/dispatch/no03/:
   s01..s05_*.png    one story per item (1080x1920)
   copy.md           the WhatsApp message + the Instagram caption
 
-Sourced from a verbal brief, 2026-09-30. Notes:
+Sourced from a verbal brief, 2026-09-30, revised same day per follow-up
+direction. Notes:
   - the marketing brief had TWO recruitment threads: the design team's
     upcoming recruitment (with a competition) and a currently-open HOD
-    recruitment. 7 topics came in against a 6-item cap (R2), so the design
+    recruitment. 7 topics came in against a 6-item cap (R2). The design
     team's recruitment - explicitly "will soon open", i.e. not live yet -
     is held for no. 04 when it actually opens, and gets a one-line forward
-    mention inside the HOD item instead (same technique as no. 02's disco
-    diwali tease inside terrathon).
-  - even at 6 items the poster's card-fit solver (dispatch._plan_cards)
-    refused: with the masthead's fixed height, 6 cards need every field at
-    the absolute floor (one-line head, one-line body, smallest CARD_SIZES
-    pair) just to reach 822px against an 825px region - 3px of slack,
-    too fragile to ship (any rewrap breaks it, and the floor phrasing reads
-    thin next to the rest of the corpus). HR - an internal ai-upskilling
-    experiment, the least time-sensitive of the six - is held for no. 04
-    instead. This is a genuine judgment call, not the user's explicit
-    choice, so it's flagged here for the record.
+    mention inside the combined item instead (same technique as no. 02's
+    disco diwali tease inside terrathon).
+  - PER FOLLOW-UP: the digital magazine and the HOD recruitment (both
+    dept=content) now share ONE item/page instead of two, and the freed
+    slot goes to hr's ai-upskilling item, which an earlier pass of this
+    issue had held back. Net item count is still 5 - the number already
+    proven to fit the poster's card-fit solver (dispatch._plan_cards)
+    comfortably. A true 6-item brief does NOT fit: even at the absolute
+    text floor it only cleared the fixed card region by ~3px, too fragile
+    to ship - so combining two items onto one page, rather than trying to
+    squeeze 6 separate ones, is the way to cover six topics this issue.
   - "crftd" has no natural home in the 5-department vocabulary
     (events/welfare/labs/ops/content). The user had no preference; filed
     under ops (website launch, logistics/automation, internships read as
@@ -91,36 +92,36 @@ BRIEF = {
         },
         {
             "dept": "content",
-            "chip": "digital magazine",
-            "head": "1st edition is out now",
-            "line": ("the digital magazine's first edition is out now, and the "
-                     "team is already planning the second one."),
+            "chip": "magazine & hod",
+            "head": "1st edition out, hod hiring",
+            "line": ("the digital magazine's first edition is out now, and "
+                     "marketing's hod recruitment is open too, with the design "
+                     "team's own recruitment following soon."),
             "story": ("the digital magazine's first edition is finally out, the "
-                      "payoff for meet after meet of planning, chasing content and "
-                      "getting every detail right. the team isn't resting on it "
-                      "either, they are already turning to the second edition, so "
-                      "if you have something to contribute, now is a good time to "
-                      "reach out."),
-            "wa": ("the digital magazine's first edition is out now, the payoff "
-                   "for meet after meet of work. the team is already planning the "
-                   "second edition."),
+                      "payoff for meet after meet of planning and chasing every "
+                      "detail. right alongside that, marketing's hod recruitment "
+                      "is open now, so if you've been eyeing that role, this is "
+                      "your window. the design team's own recruitment, with a fun "
+                      "competition built in, follows soon after."),
+            "wa": ("the digital magazine's first edition is out now, and "
+                   "marketing's hod recruitment is open too. the design team's "
+                   "own recruitment, with a fun competition, follows soon."),
         },
         {
-            "dept": "content",
-            "chip": "marketing",
-            "head": "hod recruitment is open",
-            "line": ("marketing's hod recruitment is open now. the design team's "
-                     "own recruitment, with a fun competition, follows soon."),
-            "story": ("marketing's hod recruitment is open now, so if you've been "
-                      "eyeing that role, this is the window to apply. right behind "
-                      "it, the design team is gearing up to open its own "
-                      "recruitment too, with a fun competition built into the "
-                      "process rather than a plain application form. more on that "
-                      "once it's live."),
-            "wa": ("marketing's hod recruitment is open now, applications "
-                   "welcome. the design team's own recruitment, with a fun "
-                   "competition built in, opens soon after. more on that when it "
-                   "lands."),
+            "dept": "ops",
+            "chip": "hr",
+            "head": "hr picks up ai skills",
+            "line": ("hr has started experimenting with ai, building small games "
+                     "on claude and testing a personal profile website."),
+            "story": ("hr has started experimenting with ai as part of learning "
+                      "the tools properly, rather than just reading about them. "
+                      "that has meant building small games on claude and even "
+                      "trying to put together a personal profile website with it, "
+                      "mostly to see what is actually possible before using any of "
+                      "it for real work."),
+            "wa": ("hr has started experimenting with ai, building small games on "
+                   "claude and testing out a personal profile website, mostly to "
+                   "learn what the tools can actually do."),
         },
         {
             "dept": "labs",
