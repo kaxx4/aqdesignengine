@@ -60,7 +60,7 @@ SPORTS = {
     # organisers'-authority clauses are omitted for space (the strip keeps "organisers' decisions are final").
     "fifa": dict(
         title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"),
-        strip=("BRING YOUR OWN CONTROLLER  |  ", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
+        strip=("", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
         cta="SEE YOU SAT 3 OCT", out="terrathon_fifa_rules.png", body=23,
         cards=[
             ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
