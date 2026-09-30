@@ -35,7 +35,7 @@ SPORTS = {
             ("WHO CAN PLAY", "Born on or after 1 January 2005, verified by a scannable Aadhaar ID. No ID on time can mean disqualification in a dispute."),
             ("FORMAT", "One innings each, straight knockout. 5 overs, finished by the fielding side in 15 minutes; batting-side delays count. 8 players, one jersey colour."),
             ("REPORTING", "Whole team reports before its match. Not ready for the toss within 5 minutes of schedule: 3&#8209;run penalty per minute. Over 15 minutes: walkover."),
-            ("EQUIPMENT", "Bring your own bats, gloves and kit. Any bat except hollow, scoop or plastic bats. The ball is the Cricket Tennis Ball Heavy Version by Vicky."),
+            ("EQUIPMENT", "Bring your own bats and safety gear (gloves, guards). Any bat except hollow, scoop or plastic. Ball: Cricket Tennis Ball Heavy Version by Vicky."),
             ("BOWLING", "Full-arm only, with a run-up. No underarm, standing, sling-action or chucking. At least 4 bowlers, and one may bowl 2 overs, not back to back."),
             ("POWERPLAY", "One Powerplay over per team, and all runs count double. Not the last over. Call it before the bowler is picked, or the second-last over becomes it."),
             ("SCORING", "Wides and no balls: 3 runs, and they count as a ball. In the final over: 1 run, not legal balls. Overthrows are live: all valid runs count."),
