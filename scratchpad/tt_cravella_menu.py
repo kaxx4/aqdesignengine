@@ -20,12 +20,11 @@ GROUND, ORCHID, GREEN, CREAM_HALO, CARD, INK, WHITE = "#000000", "#DE68F0", "#2F
 LOGO = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/cravella/logo_circle.png", "rb").read()).decode()
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
-SECTIONS = [
-    dict(title="ACAI BOWL", price="RS. 299", cols=1, items=["Granola Greek Yoghurt"]),
-    dict(title="TIRAMISU", price="ALL RS. 299", cols=2, rows=2, items=["Classic Tiramisu", "Brownie Tiramisu", "Mocha Leopard Tiramisu", "Tiramisu Tub"]),
-    dict(title="BROWNIES + CHEESECAKES", price="ALL RS. 150", cols=2, rows=5, items=["Classic Chocolate Chunk", "Biscoff Crunch Brownie", "Cheesecake Brownie", "Cookie Dough Brownie", "Nutella Cheesecake",
-                                                                                 "Biscoff Cheesecake", "Blueberry Cheesecake", "Brownie Cheesecake", "Basque Cheesecake"]),
-    dict(title="COOKIE TINS", price=None, cols=1, items=[("OG Cookie Tin", "RS. 500"), ("Biscoff Crunch Tin", "RS. 500"), ("Midnight Crunch Tin", "RS. 500"), ("Triple Chocolate Cookie Tin", "RS. 700")]),
+SECTIONS = [   # FINAL menu (user, 2026-10-01), items and prices verbatim; a group's shared price is printed once
+    dict(title="ACAI BOWL", price="RS. 299", cols=1, items=["Granola Greek Yoghurt Bowl"]),
+    dict(title="TIRAMISU", price="RS. 299", cols=1, items=["Classic Tiramisu"]),
+    dict(title="BROWNIES + CHEESECAKES", price="ALL RS. 150", cols=2, rows=3, items=["Belgian Chocolate Chunk", "Cookie Dough", "Biscoff", "Blueberry Cheesecake", "Nutella Cheesecake", "Biscoff Cheesecake"]),
+    dict(title="COOKIE TIN", price=None, cols=1, items=[("Midnight Cookie Tin", "RS. 500"), ("Triple Chocolate Cookie Tin", "RS. 700")]),
 ]
 
 
@@ -53,23 +52,27 @@ HTML = f"""<!doctype html><html><head><meta charset="utf-8"><style>
 html,body{{background:{GROUND}}}
 .page{{position:relative;width:210mm;height:297mm;overflow:hidden;background:{GROUND};color:{INK};font-family:'NeutralFace',sans-serif;display:flex;flex-direction:column}}
 .specks{{position:absolute;inset:0;z-index:0}}
-.head{{position:relative;z-index:2;text-align:center;padding:24px 0 0}}
+.head{{position:relative;z-index:2;text-align:center;padding:26px 0 0}}
 .kick{{font-weight:400;font-size:19px;letter-spacing:.16em;color:{CREAM_HALO}}}
-.logo{{width:116px;height:116px;border-radius:50%;border:5px solid {ORCHID};display:block;margin:10px auto 0;position:relative;z-index:3}}
-.title{{font-family:'StretchPro';font-size:64px;line-height:1;color:{WHITE};-webkit-text-stroke:2.5px {WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;margin-top:10px;white-space:nowrap}}
-.sub{{font-family:'SigmarOne';font-size:21px;color:{ORCHID};-webkit-text-stroke:.7px {ORCHID};letter-spacing:-.01em;margin-top:6px;white-space:nowrap}}
+.logo{{width:136px;height:136px;border-radius:50%;border:6px solid {ORCHID};display:block;margin:12px auto 0;position:relative;z-index:3}}
+.title{{font-family:'StretchPro';font-size:72px;line-height:1;color:{WHITE};-webkit-text-stroke:2.8px {WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;margin-top:10px;white-space:nowrap}}
+.sub{{font-family:'SigmarOne';font-size:23px;color:{ORCHID};-webkit-text-stroke:.7px {ORCHID};letter-spacing:-.01em;margin-top:6px;white-space:nowrap}}
 .info{{font-weight:900;font-size:15px;letter-spacing:.1em;color:{WHITE};margin-top:9px}}
 .star{{position:absolute;z-index:1;width:78px}}
-.body{{position:relative;z-index:2;flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between;padding:16px 44px 8px}}
-.card{{background:{CARD};border:5px solid {GREEN};border-radius:26px;padding:13px 22px 12px}}
-.shead{{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:9px}}
-.chip{{background:{ORCHID};color:{INK};font-weight:900;font-size:22px;line-height:1;letter-spacing:.04em;padding:8px 18px 7px;border-radius:999px;white-space:nowrap}}
-.pill{{background:{GREEN};color:{INK};font-weight:900;font-size:21px;line-height:1;letter-spacing:.04em;padding:8px 18px 7px;border-radius:999px;white-space:nowrap}}
-.grid{{display:grid;gap:8px 26px}} .c1{{grid-template-columns:1fr}} .c2{{grid-template-columns:1fr 1fr}}
-.cell{{display:flex;align-items:center;gap:10px;font-weight:400;font-size:18px;line-height:1.15;letter-spacing:.02em;text-transform:uppercase;color:{INK}}}
+.body{{position:relative;z-index:2;flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between;padding:22px 44px 12px}}
+.duo{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}}
+.duo .chip{{font-size:20px;padding:8px 14px 7px}} .duo .pill{{font-size:21px;padding:8px 14px 7px}} .duo .cell{{font-size:19px}} .duo .shead{{gap:8px}}
+.c2 .cell{{font-size:19px;letter-spacing:0}}
+.duo .card{{display:flex;flex-direction:column}}
+.card{{background:{CARD};border:5px solid {GREEN};border-radius:26px;padding:18px 24px 18px}}
+.shead{{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}}
+.chip{{background:{ORCHID};color:{INK};font-weight:900;font-size:24px;line-height:1;letter-spacing:.04em;padding:9px 20px 8px;border-radius:999px;white-space:nowrap}}
+.pill{{background:{GREEN};color:{INK};font-weight:900;font-size:26px;line-height:1;letter-spacing:.04em;padding:9px 20px 8px;border-radius:999px;white-space:nowrap}}
+.grid{{display:grid;gap:14px 24px}} .c1{{grid-template-columns:1fr}} .c2{{grid-template-columns:1fr 1fr}}
+.cell{{display:flex;align-items:center;gap:10px;font-weight:400;font-size:21px;line-height:1.18;letter-spacing:.02em;text-transform:uppercase;color:{INK}}}
 .bul{{flex:none;width:8px;height:8px;border-radius:50%;background:{ORCHID}}}
 .priced .nm{{flex:none}} .dots{{flex:1 1 0;border-bottom:2px dotted rgba(10,10,10,.35);transform:translateY(4px);min-width:10px}}
-.pr{{font-weight:900;font-size:19px;letter-spacing:.04em;white-space:nowrap}}
+.pr{{font-weight:900;font-size:25px;letter-spacing:.04em;white-space:nowrap}}
 .foot{{position:relative;z-index:2;flex:none;display:flex;align-items:center;justify-content:space-between;margin:0 44px;padding:14px 0 46px;border-top:3px solid {ORCHID}}}
 .foot img{{height:34px;display:block}}
 .hd{{font-weight:900;font-size:17px;letter-spacing:.12em;color:{WHITE}}}
@@ -79,7 +82,7 @@ html,body{{background:{GROUND}}}
 <img class="star" src="{STAR}" style="left:40px;top:50px"><img class="star" src="{STAR}" style="right:40px;top:76px">
 <div class="head"><div class="kick">TERRATHON MINI-FETE</div><img class="logo" src="{LOGO}"><div class="title">THE MENU</div>
 <div class="sub">CRAVE&rsquo;LLA, OUR DESSERT PARTNER</div><div class="info">3RD + 4TH OCTOBER 2026  |  TURF XL, NEW ALIPORE</div></div>
-<div class="body">{"".join(section_html(s) for s in SECTIONS)}</div>
+<div class="body"><div class="duo">{section_html(SECTIONS[0])}{section_html(SECTIONS[1])}</div>{section_html(SECTIONS[2])}{section_html(SECTIONS[3])}</div>
 <div class="foot"><img src="{core.LOGO}"><div class="hd">@CRAVELLA_KOLKATA</div><div class="note">ALL PRICES IN RS.</div></div>
 </div></body></html>"""
 
