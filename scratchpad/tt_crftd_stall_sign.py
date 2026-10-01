@@ -1,8 +1,7 @@
 """CRFTD stall signage for the TerraThon Mini-Fete, single page A4 LANDSCAPE (297x210mm), TerraThon branding. PDF + 300dpi PNG.
-Photos: the two the user supplied for CRFTD (an outdoor stall with a heat press, a tie-dye shirt and a "MAKE YOUR OWN T-SHIRT!" sign; copies in
-engine/assets/terrathon/crftd_photos/). Both show an AQUATERRA-bannered stall and real people: flagged to the user. Copy: TERRATHON / CRFTD /
-OUR JERSEY PARTNER (user's earlier wording) + a pill "T-SHIRT ORDERS TAKEN HERE" (user, 2026-10-01: CRFTD is NOT doing DIY; they take orders. The "pre-printed tees if in stock" line was removed at the user's request).
-NOT supplied, so NOT printed: prices, order process, date, venue. No "Mini-Fete" wording. AQ logo bottom-right.
+No photos (user, 2026-10-01): the CRFTD logo (the user's real file, engine/assets/terrathon/partners/crftd.png, used whole) in an orchid-ringed circle, like the partner
+signs. Copy: TERRATHON / CRFTD / OUR JERSEY PARTNER + pill "T-SHIRT ORDERS TAKEN HERE" (user: CRFTD is NOT doing DIY; they take orders; the "pre-printed tees
+if in stock" line was removed at the user's request). NOT supplied, so NOT printed: prices, order process, date, venue. AQ logo bottom-right.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof.
 
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_crftd_stall_sign.py   ->  out/collaterals/crftd_stall_sign_A4_landscape.pdf + .png
@@ -16,8 +15,7 @@ core = tt.core
 from playwright.async_api import async_playwright
 
 GROUND, ORCHID, CREAM_HALO, WHITE, CARD, INK = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5", "#F5EEE1", "#0A0A0A"
-b64 = lambda n: "data:image/jpeg;base64," + base64.b64encode(open(f"engine/assets/terrathon/crftd_photos/{n}.jpg", "rb").read()).decode()
-PA, PB = b64("stall_a"), b64("stall_b")
+CRFTD = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/crftd.png", "rb").read()).decode()
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 W, H = 1123, 794
 rnd = random.Random(13)
@@ -44,13 +42,13 @@ html,body{{background:{GROUND}}}
 .name{{font-family:'StretchPro';color:{WHITE};letter-spacing:.01em;font-feature-settings:'liga' 1,'dlig' 1;line-height:.98;white-space:nowrap}}
 .sub{{font-family:'SigmarOne';color:{ORCHID};letter-spacing:-.01em;line-height:1;white-space:nowrap;margin-top:22px}}
 .pill{{margin-top:26px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:19px;letter-spacing:.03em;padding:11px 20px 9px;white-space:nowrap}}
+.plate{{position:absolute;left:56px;top:{(H - 490) / 2}px;width:490px;height:490px;border:12px solid {ORCHID};border-radius:50%;overflow:hidden;background:#FFF0DC}}
 .fine{{margin-top:16px;font-weight:400;font-size:19px;letter-spacing:.08em;color:{WHITE};white-space:nowrap}}
 .aq{{position:absolute;right:56px;bottom:50px;height:50px;display:block;z-index:4}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
-{frame("fa", PA, 54, 70, 290, 560, -3, "62% 66%", 3, 1.9)}
-{frame("fb", PB, 292, 150, 300, 560, 2.5, "42% 70%", 4, 1.7)}
-<img class="star" src="{STAR}" style="left:34px;top:46px;z-index:5"><img class="star" src="{STAR}" style="right:46px;top:44px;z-index:5"><img class="star" src="{STAR}" style="left:268px;top:104px;z-index:6">
+<div class="plate"><img src="{CRFTD}" style="width:100%;height:100%;display:block;object-fit:cover"></div>
+<img class="star" src="{STAR}" style="left:34px;top:46px;z-index:5"><img class="star" src="{STAR}" style="right:46px;top:44px;z-index:5">
 <div class="col"><div class="t1">TERRATHON</div>
 <div class="name" id="n1" style="margin-top:22px">CRFTD</div>
 <div class="sub" id="sub">OUR JERSEY PARTNER</div><div class="pill">T-SHIRT ORDERS TAKEN HERE</div></div>
