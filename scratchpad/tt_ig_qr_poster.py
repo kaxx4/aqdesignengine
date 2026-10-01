@@ -19,6 +19,9 @@ from playwright.async_api import async_playwright
 
 ACCOUNT = sys.argv[1] if len(sys.argv) > 1 else "ngo.aquaterra"
 URL = f"https://www.instagram.com/{ACCOUNT}/"
+SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM"}
+SUB = SUBS[ACCOUNT]                      # copy per account (user, 2026-10-01: "NGO", not "TEAM"; aquaterra.live asked for separately)
+SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4"}[ACCOUNT]
 GROUND, ORCHID, GREEN, CREAM_HALO, CARD, INK, WHITE = "#000000", "#DE68F0", "#2FD284", "#F3ECDE", "#F5EEE1", "#0A0A0A", "#F5F5F5"
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
@@ -59,7 +62,7 @@ html,body{{background:{GROUND}}}
 <img class="star" src="{STAR}" style="left:40px;top:40px"><img class="star" src="{STAR}" style="right:44px;top:52px">
 <div class="t1">TERRATHON</div>
 <div class="h1" id="h1" style="top:122px">SCAN TO</div><div class="h1" id="h2" style="top:204px">FOL&zwnj;LOW</div>
-<div class="sub" id="sub" style="top:306px">NGO AQUATERRA ON INSTAGRAM</div>
+<div class="sub" id="sub" style="top:306px">{SUB}</div>
 <div class="plate" id="plate"><img src="{QR}"></div>
 <div class="handle" id="handle" style="top:{372 + QR_PX + 2 * PAD + 24 + 34}px">@{ACCOUNT.upper()}</div>
 <div class="aq"><img src="{core.LOGO}"></div>
@@ -88,7 +91,7 @@ CHECK = """() => {
 
 async def main():
     os.makedirs("out/collaterals", exist_ok=True)
-    png = "out/collaterals/aq_instagram_qr_A4.png"; pdf = "out/collaterals/aq_instagram_qr_A4.pdf"
+    png = f"out/collaterals/{SLUG}.png"; pdf = f"out/collaterals/{SLUG}.pdf"
     async with async_playwright() as pw:
         br = await pw.chromium.launch()
         pg = await br.new_page(viewport={"width": 794, "height": 1123}, device_scale_factor=3.125)
