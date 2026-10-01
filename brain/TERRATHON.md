@@ -197,7 +197,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Item | Builder | Status |
 |---|---|---|
 | Event posters, Mini-Fete post | `tt_events.py`, `tt_minifete.py` | done |
-| Disco Diwali ticket sale, Rs. 550, at the carnival (stickers-first: disco ball, diya, ticket; feed only) | `tt_dd_tickets.py` -> `out/collaterals/dd_tickets_550_carnival.png` | done, gate clean. **Price 550 is from the user's second message (first said 55); confirm.** No DD date/venue shown (not supplied). Story cut not built. Companion: `tt_companion_facet_ledger.py` |
+| Disco Diwali ticket sale, Rs. 550, at the carnival (stickers-first: disco ball, diya, ticket; feed only) | `tt_dd_tickets.py` -> `out/collaterals/dd_tickets_550_carnival.png` | done, gate clean. **Price Rs. 550 CONFIRMED by the user (2026-10-01; an earlier message said 55).** No DD date/venue shown (not supplied). Story cut not built. Companion: `tt_companion_facet_ledger.py` |
 | 7-reasons carousel (feed + story), "all you need to know" deck (feed + story) | `tt_carousel.py reasons know` | done, stickers in the circles |
 | 10 sports promo stories (3 cards x 3 sports + umbrella) | `tt_promo.py`, `tt_umbrella.py` | done |
 | Single-slide WhatsApp graphic + verified QR | `tt_wa_graphic.py` | done |
