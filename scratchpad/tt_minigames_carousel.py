@@ -1,7 +1,8 @@
-"""TerraThon MINI-FETE MINI GAMES carousel (5 slides, feed 1080x1350), built from STICKERS because there are no photos (user, 2026-10-01). Nine hand-drawn flat stickers
-(scratchpad/tt_minigame_stickers.py -> engine/assets/terrathon/minigames/*.svg, original artwork in the kit's die-cut style). Slides: cover with all nine, then games 01-03, 04-06, 07-09
-(one cream card per game, sticker + name), then the closer. The nine games are exactly the user's list: guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue
-twisters, push up challenge, plank challenge, aim the cup, coin drop. NO rules, prizes, scoring, entry fees or timings are printed (none were supplied); card sublines only restate the game's own name.
+"""TerraThon MINI-FETE MINI GAMES carousel (11 slides, feed 1080x1350), built from STICKERS because there are no photos (user, 2026-10-01). Nine hand-drawn flat stickers
+(scratchpad/tt_minigame_stickers.py -> engine/assets/terrathon/minigames/*.svg, original artwork in the kit's die-cut style). v2 (user: "a separate slide for all the games and the first slide
+may not include all the stickers"): cover with FOUR of the nine + "swipe to see all 9", then ONE SLIDE PER GAME (big sticker on a cream plate, numbered badge, game name), then the closer.
+The nine games are exactly the user's list: guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue twisters, push up challenge, plank challenge, aim the cup, coin drop.
+NO rules, prizes, scoring, entry fees or timings are printed (none were supplied); the only extra words restate the game's own name ("with headphones", "with dares").
 Event facts (copy pack): Mini-Fete 3rd and 4th Oct 2026, Turf XL, New Alipore, open to all.
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_minigames_carousel.py   ->  out/collaterals/minigames/slide_NN.png
 """
@@ -16,7 +17,7 @@ GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL, SLAB = tt.GROUND, tt.ORCHID, t
 GREEN = "#2FD284"
 import sys
 STORY = "story" in sys.argv[1:]     # 1080x1920 with Instagram UI zones clear (top ~250, bottom ~270)
-H, TOTAL = (1920 if STORY else 1350), 5
+H, TOTAL = (1920 if STORY else 1350), 11
 OY = 200 if STORY else 0          # content drop below the top UI zone
 EXTRA = 130 if STORY else 0       # extra vertical room spent on bigger frames and rows
 FOOT = 270 if STORY else 0        # footer lift off the bottom edge
@@ -130,38 +131,33 @@ def sticker(s, tag, slug, x, y, size, deg=0, z=7):
 async def build():
     slides = []
     BOT = H - FOOT - 150
-    # ---- 1 COVER: all nine in a loose 3x3 ----
+    # ---- 1 COVER: four of the nine, a swipe cue ----
     s = Slide(1, 81)
-    ty = await s.title("MINI GAMES", "3RD + 4TH OCT, TURF XL", big_w=730, sub_w=820, top=104)
+    ty = await s.title("MINI GAMES", "9 OF THEM, 2 DAYS", big_w=730, sub_w=700, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    cell_h = (BOT - ty - 10) / 3; size = min(300, cell_h + 10); rot = [-5, 4, -3, 4, -6, 5, -4, 3, -5]
-    for i, (slug, *_r) in enumerate(GAMES):
-        cx = 40 + (i % 3) * 340 + (340 - size) / 2; cy = ty + 14 + (i // 3) * cell_h + (cell_h - size) / 2
-        sticker(s, f"stk{i}", slug, cx, cy, size, rot[i])
-    s.footer(); slides.append((s,) + tuple((f"stk{i}", f"stk{j}") for i in range(9) for j in range(i + 1, 9)) + (("star_tl", "stk0"), ("star_tr", "stk2"), ("star_tl", "t1"), ("star_tr", "t1")))
-    # ---- 2-4 THREE GAMES PER SLIDE ----
-    for k in range(3):
-        s = Slide(k + 2, 82 + k)
-        ty = await s.title("MINI GAMES", f"GAMES 0{3 * k + 1} TO 0{3 * k + 3}", big_w=730, sub_w=620, top=96)
+    area = BOT - ty - 110; size = min(420, area / 2 + 30)
+    pos = [("darts", 70, ty + 20, -5), ("headphones", W - 70 - size, ty + 50, 5), ("jenga", 90, ty + 40 + size * 0.85, 4), ("cup_flip", W - 90 - size, ty + 20 + size * 0.95, -4)]
+    for i, (slug, x, y, d) in enumerate(pos): sticker(s, f"stk{i}", slug, x, y, size, d)
+    cw = 640; cy = BOT - 20
+    s.chip("swipe", "SWIPE TO SEE ALL 9", (W - cw) / 2, cy - 30, cw, deg=-2, size=40)
+    s.footer(); slides.append((s,) + tuple((f"stk{i}", f"stk{j}") for i in range(4) for j in range(i + 1, 4)) + (("swipe", "stk2"), ("swipe", "stk3")))
+    # ---- 2-10 ONE SLIDE PER GAME ----
+    for n, (slug, name, sub) in enumerate(GAMES):
+        s = Slide(n + 2, 90 + n)
+        ty = await s.title(name, f"GAME 0{n + 1} OF 09", big_w=min(760, 130 * len(name)), sub_w=520, top=96)
         s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
-        gap = 22; ch = (BOT + 20 - ty - 14 - 2 * gap) / 3
-        for r in range(3):
-            n = 3 * k + r; slug, name, sub = GAMES[n]
-            y = ty + 14 + r * (ch + gap); x = 56; cw = 968
-            s.add(f'<div class="measure" data-tag="card{r}" style="position:absolute;left:{x}px;top:{y}px;width:{cw}px;height:{ch}px;box-sizing:border-box;border:6px solid {GREEN};border-radius:34px;background:{CTA_FILL};z-index:6"></div>'); s.el(f"card{r}", x, y, cw, ch)
-            ss = min(ch - 6, 216); sticker(s, f"stk{r}", slug, x + 18, y + (ch - ss) / 2, ss, [-4, 3, -3][r], z=8)
-            bd = 100; bx = x + cw - 30 - bd; by = y + (ch - bd) / 2
-            s.add(f'<div class="measure" data-tag="bdg{r}" style="position:absolute;left:{bx}px;top:{by}px;width:{bd}px;height:{bd}px;box-sizing:border-box;border-radius:50%;background:{ORCHID};border:6px solid {INK};display:flex;align-items:center;justify-content:center;color:{INK};font-family:var(--d);font-weight:900;font-size:46px;line-height:1;z-index:9">0{n + 1}</div>'); s.el(f"bdg{r}", bx, by, bd, bd)
-            tx = x + 18 + ss + 24; tw = bx - 20 - tx
-            nsz = int(min(52, tw / (len(name) * 0.74)))
-            nh = nsz * 1.02; blk = nh + (46 if sub else 0); ny = y + (ch - blk) / 2
-            s.add(f'<div class="measure" data-tag="nm{r}" style="position:absolute;left:{tx}px;top:{ny}px;width:{tw}px;color:{INK};font-family:var(--d);font-weight:900;font-size:{nsz}px;line-height:1.02;white-space:nowrap;z-index:9">{name}</div>')
-            s.el(f"nm{r}", tx, ny, tw, nh)
-            if sub:
-                s.add(f'<div class="measure" data-tag="sb{r}" style="position:absolute;left:{tx}px;top:{ny + nh + 8}px;width:{tw}px;color:{INK};font-family:var(--d);font-weight:400;font-size:34px;line-height:1;white-space:nowrap;z-index:9">{sub}</div>'); s.el(f"sb{r}", tx, ny + nh + 8, tw, 34)
-        s.footer(); slides.append((s,) + tuple((f"card{r}", t) for r in range(3) for t in (f"stk{r}", f"bdg{r}", f"nm{r}", f"sb{r}")))
-    # ---- 5 CLOSER ----
-    s = Slide(5, 86)
+        px, pw = 110, 860; py = 350; ph = BOT - py - 20      # fixed plate on every game slide so the deck stays steady
+        s.add(f'<div class="measure" data-tag="slab" style="position:absolute;left:{px}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(1deg);background:#F3ECDE;border:18px solid {ORCHID};border-radius:60px;z-index:5"></div>')
+        s.el("slab", *rb(px, py, pw, ph, 1))
+        ss = min(ph - 40, 780); sticker(s, "stk", slug, px + (pw - ss) / 2, py + (ph - ss) / 2 - (24 if sub else 0), ss, [-4, 3, -3, 4, -4, 3, -3, 4, -3][n], z=8)
+        bd = 150; bx, by = px - 46, py - 38
+        s.add(f'<div class="measure" data-tag="badge" style="position:absolute;left:{bx}px;top:{by}px;width:{bd}px;height:{bd}px;box-sizing:border-box;border-radius:50%;background:{GREEN};border:8px solid {INK};display:flex;align-items:center;justify-content:center;color:{INK};font-family:var(--d);font-weight:900;font-size:72px;line-height:1;z-index:10">0{n + 1}</div>'); s.el("badge", bx, by, bd, bd)
+        ign = [("slab", "stk"), ("slab", "badge"), ("badge", "stk"), ("star_tl", "badge"), ("star_tl", "t1")]
+        if sub:
+            s.chip("chip", sub, (W - 640) / 2, py + ph - 52, 640, deg=-2, size=40); ign += [("slab", "chip"), ("chip", "stk")]
+        s.footer(); slides.append((s,) + tuple(ign))
+    # ---- 11 CLOSER ----
+    s = Slide(11, 86)
     ty = await s.title("SEE YOU THERE", "AT THE MINI-FETE", big_w=730, sub_w=640, top=96)
     s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
     row1 = ["headphones", "darts", "aim_cup"]; row2 = ["jenga", "pushup", "coin_drop"]
@@ -185,11 +181,11 @@ async def build():
 async def main():
     slides = await build()
     outdir = "out/collaterals/minigames"; os.makedirs(outdir, exist_ok=True)
-    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("card", INK, CTA_FILL, 50, True), ("chip", INK, ORCHID, 46, True), ("idx", INK, CTA_FILL, 26, True), ("cta", INK, CTA_FILL, 30, True)]
+    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("chip", INK, CTA_FILL, 40, True), ("badge", INK, GREEN, 72, True), ("idx", INK, CTA_FILL, 26, True), ("cta", INK, CTA_FILL, 30, True)]
     async with B.session():
         for s, *ign in slides:
             out = f"{outdir}/slide_{s.idx:02d}.png"
-            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, containers=tuple(l for l, *_ in s.els if l.startswith("card") or l == "slab"), page_bg=GROUND,
+            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
                            expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12)
             print("done", out)
 
