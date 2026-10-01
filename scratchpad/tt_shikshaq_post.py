@@ -1,8 +1,8 @@
 """TerraThon x SHIKSHAQ static post (single feed 1080x1350): introduces Shikshaq as OUR EDUCATION PARTNER (user, 2026-10-01). Same TerraThon look as the CRFTD / Crave'lla / Artily posts.
-Real asset: the user's Shikshaq logo tile, CROPPED from the partner strip image the user supplied (engine/assets/terrathon/partners/shikshaq_tile.png, 511x229, so it is shown at ~1.5x
-and is a little soft: a standalone logo file would sharpen it). Facts used: Shikshaq is AquaTerra's own tutor-discovery platform (brain/AQ_FACTS.md section 10: zero-commission, connection-only, free,
+Real asset: the user's own Shikshaq logo (black wordmark + orange sparkle on white, 1080x1080, partners/shikshaq/), masked to a circle with an orchid ring like the Artily / CRFTD / Crave'lla posts.
+(v1 used a tile cropped from the partner strip; replaced when the user sent the real file.) Handle @shikshaq.in is user-supplied (2026-10-01). Facts used: Shikshaq is AquaTerra's own tutor-discovery platform (brain/AQ_FACTS.md section 10: zero-commission, connection-only, free,
 Kolkata; the Shikshaq terms say it is a free platform), TerraThon runs 2nd to 4th Oct 2026 in Kolkata. This is the whole-fest partner, so the kicker is TERRATHON, not Mini-Fete, and no venue or stall
-is named (none was supplied). NOT claimed: what Shikshaq does AT the event, a stall, a launch, user numbers, a link or handle (none supplied).
+is named (none was supplied). NOT claimed: what Shikshaq does AT the event, a stall, a launch, user numbers, a link (none supplied).
 
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_shikshaq_post.py [story]   ->  out/collaterals/shikshaq_education_partner_post.png  (story: out/collaterals/stories/shikshaq_education_partner_story.png)
 """
@@ -28,7 +28,7 @@ def b64(path, mime):
     return f"data:{mime};base64," + base64.b64encode(open(path, "rb").read()).decode()
 
 
-TILE = b64(f"{A}/shikshaq_tile.png", "image/png")
+LOGO = b64(f"{A}/shikshaq/logo_circle.png", "image/png")
 
 
 def rb(x, y, w, h, deg):
@@ -122,26 +122,26 @@ async def build():
     s = Slide(1, 71)
     ty = await s.title("SHIKSHAQ", "OUR EDUCATION PARTNER", big_w=780, sub_w=860, top=108)
     s.star("star_tl", 28, 70 + OY); s.star("star_tr", W - 28 - 104, 86 + OY)
-    tw = 880; th = round((tw - 28) * 229 / 511) + 28; tx = (W - tw) / 2; tyy = ty + 70
-    s.add(f'<div class="measure" data-tag="tile" style="position:absolute;left:{tx}px;top:{tyy}px;width:{tw}px;height:{th}px;box-sizing:border-box;border:14px solid {ORCHID};border-radius:62px;overflow:hidden;background:#4252FE;z-index:6">'
-          f'<img src="{TILE}" style="width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.07)"></div>'); s.el("tile", tx, tyy, tw, th)
-    s.star("star_l", 36, tyy + th - 150, 112, z=10); s.star("star_r", W - 36 - 112, tyy - 60, 112, z=10)
-    cy = tyy + th + 96
+    ls = 520; lx = (W - ls) / 2; lyy = ty + 36
+    s.logo_badge("logo_big", lx, lyy, ls, ring=16)
+    s.star("star_l", 60, lyy + ls - 130, 112); s.star("star_r", W - 60 - 112, lyy + 20, 112)
+    cy = lyy + ls + 44
     s.chip("chip", "FREE TUTOR DISCOVERY FOR KOLKATA", (W - 900) / 2, cy, 900, deg=-2, size=36)
-    s.text("d1", "2ND TO 4TH OCT 2026", 40, cy + 140, W - 80, 52, 900)
-    s.text("d2", "KOLKATA", 40, cy + 210, W - 80, 38, 400)
+    s.text("d1", "2ND TO 4TH OCT 2026", 40, cy + 118, W - 80, 48, 900)
+    s.text("d2", "KOLKATA", 40, cy + 180, W - 80, 36, 400)
+    s.text("hd", "@SHIKSHAQ.IN", 40, cy + 232, W - 80, 36, 900, ORCHID)
     s.footer(cta="SEE YOU AT TERRATHON")
-    return [(s, ("tile", "star_l"), ("tile", "star_r"), ("tile", "chip"))]
+    return [(s, ("logo_big", "star_l"), ("logo_big", "star_r"), ("logo_big", "chip"))]
 
 
 async def main():
     slides = await build()
     os.makedirs("out/collaterals/stories" if STORY else "out/collaterals", exist_ok=True)
-    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("chip", INK, CTA_FILL, 36, True), ("cta", INK, CTA_FILL, 30, True)]
+    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("chip", INK, CTA_FILL, 36, True), ("cta", INK, CTA_FILL, 30, True), ("hd", ORCHID, GROUND, 36, True)]
     async with B.session():
         for s, *ign in slides:
             out = "out/collaterals/stories/shikshaq_education_partner_story.png" if STORY else "out/collaterals/shikshaq_education_partner_post.png"
-            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, page_bg=GROUND, expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12, crop_tags=("tile",))
+            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, page_bg=GROUND, expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12, crop_tags=("logo_big",))
             print("done", out)
 
 asyncio.run(main())
