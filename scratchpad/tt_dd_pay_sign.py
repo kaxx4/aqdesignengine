@@ -6,6 +6,7 @@ final PNG. Nothing in the payload is edited. The code sits dark-on-cream with a 
 Copy: TERRATHON / SCAN TO PAY / DISCO DIWALI TICKET STALL / TERRAROOTS. No price (user), no UPI app claims, no date/venue.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof. TEST-SCAN THE PRINTED SHEET with a real payment app before the event.
 
+CRFTD-stall variant: arg `crftd` (CRFTD logo circle instead of a sub line, same TERRAROOTS QR, files crftd_payment_qr_sign_A4_*).
 Mini-Fete variant: add the arg `minifete` (sub line MINI-FETE, no TICKET STALL line, same TERRAROOTS QR, files minifete_payment_qr_sign_A4_*).
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py [portrait] [minifete]   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png  (or ..._A4_portrait with the arg:
       the same pieces stacked in one centred column, smaller code (414px, ~109mm) so the stack fits)
@@ -25,10 +26,12 @@ SRC = "engine/assets/terrathon/qr_dd_payment_terraroots_source.png"
 GROUND, ORCHID, CREAM_HALO, WHITE, CARD, INK = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5", "#F5EEE1", "#0A0A0A"
 PORTRAIT = "portrait" in sys.argv
 MINIFETE = "minifete" in sys.argv        # same verified payment QR, headline "MINI-FETE" (user, 2026-10-01: "TERRATHON MINI-FETE"; same TERRAROOTS QR)
-SUB, STALL = ("MINI-FETE", None) if MINIFETE else ("DISCO DIWALI", "TICKET STALL")
+CRFTD_ST = "crftd" in sys.argv          # CRFTD stall: the real CRFTD logo (partners/crftd.png) in an orchid-ringed circle replaces the sub line; same TERRAROOTS QR
+SUB, STALL = ("MINI-FETE", None) if MINIFETE else (None, None) if CRFTD_ST else ("DISCO DIWALI", "TICKET STALL")
+CRFTD_LOGO = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/crftd.png", "rb").read()).decode() if CRFTD_ST else ""
 W, H = (794, 1123) if PORTRAIT else (1123, 794)
 PAGE_MM = "210mm 297mm" if PORTRAIT else "297mm 210mm"
-SLUG = ("minifete_payment_qr_sign_A4_" if MINIFETE else "dd_payment_qr_sign_A4_") + ("portrait" if PORTRAIT else "landscape")
+SLUG = ("crftd_payment_qr_sign_A4_" if CRFTD_ST else "minifete_payment_qr_sign_A4_" if MINIFETE else "dd_payment_qr_sign_A4_") + ("portrait" if PORTRAIT else "landscape")
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
 
@@ -64,7 +67,7 @@ html,body{{background:{GROUND}}}
 .page{{position:relative;width:{"210mm" if PORTRAIT else "297mm"};height:{"297mm" if PORTRAIT else "210mm"};overflow:hidden;background:{GROUND};font-family:'NeutralFace',sans-serif;color:{WHITE};text-align:center}}
 .specks{{position:absolute;inset:0}}
 .star{{position:absolute;width:78px;z-index:1}}
-.plate{{{'position:relative;margin-top:36px;flex:none;' if PORTRAIT else f'position:absolute;left:{PX}px;top:{PY}px;'}width:{PLATE}px;height:{PLATE}px;background:{CARD};border:{BORDER}px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;z-index:2}}
+.plate{{{'position:relative;margin-top:' + ('26' if CRFTD_ST else '36') + 'px;flex:none;' if PORTRAIT else f'position:absolute;left:{PX}px;top:{PY}px;'}width:{PLATE}px;height:{PLATE}px;background:{CARD};border:{BORDER}px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;z-index:2}}
 .plate img{{width:{QR_PX}px;height:{QR_PX}px;display:block}}
 .col{{position:absolute;left:{CX}px;width:{CW if not PORTRAIT else W}px;top:0;height:{H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2}}
 .t1{{font-weight:400;font-size:30px;letter-spacing:.22em;color:{CREAM_HALO};white-space:nowrap}}
@@ -72,6 +75,8 @@ html,body{{background:{GROUND}}}
 .sub{{font-family:'SigmarOne';color:{ORCHID};-webkit-text-stroke:.8px {ORCHID};letter-spacing:-.01em;line-height:1;white-space:nowrap;margin-top:{6 if PORTRAIT else 26}px}}
 .stall{{font-weight:900;font-size:27px;letter-spacing:.1em;color:{WHITE};margin-top:12px;white-space:nowrap}}
 .pill{{margin-top:28px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:30px;letter-spacing:.06em;padding:12px 30px 10px;white-space:nowrap}}
+.logo{{width:132px;height:132px;border-radius:50%;border:6px solid {ORCHID};display:block;margin-top:18px;overflow:hidden;background:#FFF0DC}}
+.logo img{{width:100%;height:100%;display:block;object-fit:cover;transform:scale(1.04)}}
 .aq{{height:46px;display:block;margin-top:34px}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
@@ -79,7 +84,7 @@ html,body{{background:{GROUND}}}
 {"" if PORTRAIT else PLATE_HTML}
 <div class="col" id="col"><div class="t1">TERRATHON</div>
 <div style="margin-top:18px"><span class="h" id="h1">SCAN TO</span><span class="h" id="h2">PAY</span></div>
-<div class="sub" id="sub">{SUB}</div>{f'<div class="stall">{STALL}</div>' if STALL else ""}{PLATE_HTML if PORTRAIT else ""}
+{f'<div class="sub" id="sub">{SUB}</div>' if SUB else ""}{f'<div class="logo" id="logo"><img src="{CRFTD_LOGO}"></div>' if CRFTD_ST else ""}{f'<div class="stall">{STALL}</div>' if STALL else ""}{PLATE_HTML if PORTRAIT else ""}
 <div class="pill" id="pill">TERRAROOTS</div><img class="aq" src="{core.LOGO}"></div>
 </div></body></html>"""
 
@@ -87,11 +92,11 @@ FIT = f"""() => {{
   const tw = e => {{ const r = document.createRange(); r.selectNodeContents(e); return r.getBoundingClientRect().width; }};
   const fit = (ids, target, strokeEm, cap = 1e9) => {{ const els = ids.map(i => document.getElementById(i)); els.forEach(e => {{ e.style.fontSize = '100px'; }});
     const px = Math.min(100 * target / Math.max(...els.map(tw)), cap); els.forEach(e => {{ e.style.fontSize = px + 'px'; if (strokeEm) e.style.webkitTextStroke = (strokeEm * px) + 'px currentColor'; }}); return px; }};
-  return [fit(['h1', 'h2'], {CW}, 0.04), fit(['sub'], {CW}, 0.03, 70)]; }}"""
+  return [fit(['h1', 'h2'], {CW}, 0.04), document.getElementById('sub') ? fit(['sub'], {CW}, 0.03, 70) : 0]; }}"""
 
 CHECK = """() => {
   const pr = document.getElementById('page').getBoundingClientRect(), bad = [], boxes = {};
-  ['.plate', '.t1', '#h1', '#h2', '#sub', '.pill', '.aq'].forEach(s => { const r = document.querySelector(s).getBoundingClientRect(); boxes[s] = [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)];
+  ['.plate', '.t1', '#h1', '#h2', '#sub', '#logo', '.pill', '.aq'].forEach(s => { const el = document.querySelector(s); if (!el) return; const r = el.getBoundingClientRect(); boxes[s] = [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)];
     if (r.left < 20 || r.top < 20 || r.right > pr.right - 20 || r.bottom > pr.bottom - 20) bad.push([s, boxes[s]]); });
   const hit = (a, b) => !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]); const k = Object.keys(boxes), ov = [];
   for (let i = 0; i < k.length; i++) for (let j = i + 1; j < k.length; j++) if (hit(boxes[k[i]], boxes[k[j]])) ov.push([k[i], k[j]]);
