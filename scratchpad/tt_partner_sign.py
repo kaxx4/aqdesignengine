@@ -1,12 +1,12 @@
-"""CRAVE'LLA stall signage for the TerraThon Mini-Fete, single page A4 LANDSCAPE (297x210mm), TerraThon branding. Outputs a vector PDF and a 300dpi PNG.
+"""PARTNER stall signage (crave'lla | artily): CRAVE'LLA stall signage for the TerraThon Mini-Fete, single page A4 LANDSCAPE (297x210mm), TerraThon branding. Outputs a vector PDF and a 300dpi PNG.
 Requested contents (user, 2026-10-01): Crave'lla logo and name, "dessert partner", the AQ LIVE logo (kit sticker engine/assets/terrathon/aq_live.png, used as-is),
 and the AQ logo (core.LOGO, the real colored wordmark). Look: black ground + white flecks, blue shuriken, StretchPro name with the doubled-letter guard,
 Sigmar One sub (sparingly), NeutralFace caps, orchid ring on the logo. No dates, venue or "Mini-Fete" on this version (user, 2026-10-01); only the name, the partner line and the logos.
 PRINT CAVEAT: full-bleed black A4; ~12mm safe margin kept, no bleed or crop marks. Ask the printer for a bleed proof or a white-ground variant.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_cravella_sign.py   ->  out/collaterals/cravella_sign_A4_landscape.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_partner_sign.py [cravella|artily]   ->  out/collaterals/cravella_sign_A4_landscape.pdf + .png
 """
-import asyncio, base64, importlib.util, os, random, re
+import asyncio, base64, importlib.util, os, random, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "scratchpad", "tt_events.py"))
@@ -15,7 +15,17 @@ core = tt.core
 from playwright.async_api import async_playwright
 
 GROUND, ORCHID, CREAM_HALO, WHITE = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5"
+PARTNER = sys.argv[1] if len(sys.argv) > 1 else "cravella"      # cravella | artily
 LOGO = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/cravella/logo_circle.png", "rb").read()).decode()
+ARTILY = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/artily.png", "rb").read()).decode()
+CFG = {
+    "cravella": dict(name="CRAVE&rsquo;L&zwnj;LA", sub="OUR DESSERT PARTNER", out="cravella_sign_A4_landscape",
+                     left=f'<img class="logo" src="{LOGO}">'),
+    # Artily (user, 2026-10-01): "our hydration partner". Their real logo (black wordmark on white, cropped to the mark) sits on a cream plate with an
+    # orchid border; mix-blend-mode:multiply turns the logo's white ground into the plate colour, so the artwork itself is untouched.
+    "artily": dict(name="ARTILY", sub="OUR HYDRATION PARTNER", out="artily_sign_A4_landscape", ls="0.02em",
+                   left=f'<div class="plate"><img src="{ARTILY}" style="width:100%;display:block;mix-blend-mode:multiply"></div>'),
+}[PARTNER]
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 _im, AQLIVE = tt.crop_to_alpha("aq_live.png")
 W, H = 1123, 794
@@ -32,6 +42,7 @@ html,body{{background:{GROUND}}}
 .specks{{position:absolute;inset:0}}
 .star{{position:absolute;width:92px}}
 .logo{{position:absolute;left:62px;top:{(H - 470) / 2}px;width:470px;height:470px;border-radius:50%;border:12px solid {ORCHID};display:block}}
+.plate{{position:absolute;left:62px;top:{(H - 330) / 2}px;width:476px;height:330px;background:#F5EEE1;border:12px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px 22px}}
 .col{{position:absolute;left:560px;width:520px;top:0;height:{H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}}
 .t1{{font-weight:400;font-size:46px;letter-spacing:.2em;color:{CREAM_HALO};white-space:nowrap}}
 .name{{font-family:'StretchPro';color:{WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;line-height:1;white-space:nowrap;margin-top:22px}}
@@ -42,9 +53,9 @@ html,body{{background:{GROUND}}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
 <img class="star" src="{STAR}" style="left:40px;top:38px"><img class="star" src="{STAR}" style="right:46px;top:44px">
-<img class="logo" src="{LOGO}">
+{CFG["left"]}
 <div class="col"><div class="t1">TERRATHON</div>
-<div class="name" id="name">CRAVE&rsquo;L&zwnj;LA</div><div class="sub" id="sub">OUR DESSERT PARTNER</div>
+<div class="name" id="name" style="letter-spacing:{CFG.get('ls', '-.045em')}">{CFG["name"]}</div><div class="sub" id="sub">{CFG["sub"]}</div>
 </div>
 <img class="aq" src="{core.LOGO}"><img class="live" src="{AQLIVE}" style="right:44px">
 </div></body></html>"""
@@ -78,11 +89,11 @@ async def main():
         await pg.set_content(HTML); await pg.evaluate("document.fonts.ready"); await pg.wait_for_timeout(400)
         print("FIT", await pg.evaluate(FIT)); await pg.wait_for_timeout(100)
         res = await pg.evaluate(CHECK); print("bad", res["bad"]); print("overlaps", res["overlaps"]); print(res["boxes"])
-        await pg.locator("#page").screenshot(path="out/collaterals/cravella_sign_A4_landscape.png")
-        await pg.pdf(path="out/collaterals/cravella_sign_A4_landscape.pdf", width="297mm", height="210mm", print_background=True, margin=dict(top="0", right="0", bottom="0", left="0"))
+        await pg.locator("#page").screenshot(path=f"out/collaterals/{CFG['out']}.png")
+        await pg.pdf(path=f"out/collaterals/{CFG['out']}.pdf", width="297mm", height="210mm", print_background=True, margin=dict(top="0", right="0", bottom="0", left="0"))
         await br.close()
     from PIL import Image
-    print("png", Image.open("out/collaterals/cravella_sign_A4_landscape.png").size)
-    d = open("out/collaterals/cravella_sign_A4_landscape.pdf", "rb").read(); print("pdf pages:", len(re.findall(rb"/Type\s*/Page[^s]", d)))
+    print("png", Image.open(f"out/collaterals/{CFG['out']}.png").size)
+    d = open(f"out/collaterals/{CFG['out']}.pdf", "rb").read(); print("pdf pages:", len(re.findall(rb"/Type\s*/Page[^s]", d)))
 
 asyncio.run(main())
