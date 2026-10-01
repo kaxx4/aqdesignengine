@@ -10,8 +10,8 @@ GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL, SLAB = tt.GROUND, tt.ORCHID, t
 H = 1350
 STORY = False     # main(story=True) renders 1080x1920 with Instagram's safe zones
 OY = 0
-POINTS = [("MINI-GAMES", "WIN STUFF"), ("PHOTOBOOTH", "POSE NOW"), ("ARTILY", "BOBA"), ("CRAVE'LLA", "DESSERTS + BROWNIES"),
-          ("CRFTD ORDERS", "T-SHIRT ORDERS TAKEN"), ("LOTTERY", "AT LOCATION"), ("DD TICKET STALL", "DISCO DIWALI PASSES")]
+POINTS = [("DISCO DASH", "WIN FREE DD TICKETS"), ("PHOTOBOOTH", "POSE NOW"), ("ARTILY", "BOBA"), ("CRAVE'LLA", "DESSERTS + BROWNIES"),
+          ("CRFTD ORDERS", "T-SHIRT ORDERS TAKEN"), ("LOTTERY", "AT LOCATION"), ("DD TICKET STALL", "RS. 550  |  DISCO DIWALI 10TH NOV")]
 
 async def main(story=False):
     global H, OY
@@ -71,4 +71,5 @@ async def main(story=False):
     async with B.session():
         await B.render(html, ("out/collaterals/stories/whatsapp_all_pointers_story.png" if story else "out/collaterals/whatsapp_all_pointers.png"), W, H, elements=els, text_pairs=text_pairs, page_bg=GROUND, expect_hero=True, margin=12)
     print("done")
-asyncio.run(main(story=True))
+import sys
+asyncio.run(main(story="story" in sys.argv[1:]))

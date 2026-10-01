@@ -147,12 +147,12 @@ async def build():
     # ---- 1 CAN YOU FINISH ALL 9? ----
     s = Slide(1, 501); ty = await s.title("CAN YOU FINISH ALL 8?", "DISCO DASH", big_w=740, sub_w=520, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    pw, px0, py = 900, 90, ty + 10; ph = BOT - py - 190
+    pw, px0, py = 900, 90, ty + 10; ph = BOT - py - 270
     s.add(f'<div class="measure" data-tag="plate" style="position:absolute;left:{px0}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(1deg);background:#F3ECDE;border:16px solid {ORCHID};border-radius:56px;z-index:5"></div>'); s.el("plate", *rb(px0, py, pw, ph, 1))
     cw_, chh = (pw - 40) / 3, (ph - 40) / 3; ss = min(cw_ - 10, chh - 6); ign = list(STAR_IGN)
     for i, (slug, *_r) in enumerate(GAMES):
         cx = px0 + 20 + (i % 3) * cw_ + (cw_ - ss) / 2 + (cw_ / 2 if i >= 6 else 0); cy = py + 20 + (i // 3) * chh + (chh - ss) / 2; sticker(s, f"g{i}", slug, cx, cy, ss, [-4, 3, -3][i % 3], z=8); ign.append(("plate", f"g{i}"))
-    s.chip("c1", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", (W - 960) / 2, py + ph + 40, 960, deg=-1.5, size=30); ign.append(("plate", "c1"))
+    s.chip("c1", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", (W - 960) / 2, py + ph + 40, 960, deg=-1.5, size=30); ign.append(("plate", "c1")); s.text("dd", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, py + ph + 150, W - 40, 36, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("1", s, ign))
     # ---- 2 THE PRIZE ----
     s = Slide(2, 502); ty = await s.title("FREE TICKETS", "FOR THE FIRST 5 TO FINISH", big_w=700, sub_w=760, top=104)
@@ -161,7 +161,7 @@ async def build():
     tk, tkh = ddm.ticket(780, "pt"); svg_sticker(s, "tkt", tk, 40, ty + bh * 0.55, 780, tkh, -8, z=8)
     sy = ty + bh * 0.55 + tkh + 70
     s.chip("c1", "DISCO DIWALI TICKETS", 130, sy, 820, deg=-2, size=44)
-    s.text("w1", "WIN THEM AT DISCO DASH", 40, sy + 130, W - 80, 48, 900, WHITE); s.text("w2", "THE MINI-FETE CIRCUIT, 3RD + 4TH OCT", 40, sy + 196, W - 80, 32, 400, CREAM_HALO)
+    s.text("w1", "WIN THEM AT DISCO DASH", 40, sy + 130, W - 80, 48, 900, WHITE); s.text("w2", "THE MINI-FETE CIRCUIT, 3RD + 4TH OCT, TURF XL", 40, sy + 196, W - 80, 32, 400, CREAM_HALO); s.text("w3", "DISCO DIWALI: 10TH NOVEMBER 2026", 40, sy + 250, W - 80, 36, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("2", s, STAR_IGN + [("ball", "tkt"), ("tkt", "c1"), ("ball", "c1")]))
     # ---- 3 THE NINE STATIONS ----
     s = Slide(3, 503); ty = await s.title("8 STATIONS", "ONE CIRCUIT", big_w=640, sub_w=520, top=104)
@@ -178,7 +178,7 @@ async def build():
     s = Slide(4, 504); ty = await s.title("HOW TO WIN", "DISCO DASH", big_w=700, sub_w=520, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     steps = [("1", "FINISH ALL 8 STATIONS", None), ("2", "WITH MAXIMUM POINTS", None), ("3", "BE ONE OF THE FIRST 5", "WIN FREE DISCO DIWALI TICKETS")]
-    gap = 34; chh = (BOT - ty - 100 - 2 * gap) / 3; ign = list(STAR_IGN)
+    gap = 34; chh = (BOT - ty - 200 - 2 * gap) / 3; ign = list(STAR_IGN)
     for i, (n, a, b) in enumerate(steps):
         y = ty + 24 + i * (chh + gap); x = 70; cw_ = 940
         s.add(f'<div class="measure" data-tag="card{i}" style="position:absolute;left:{x}px;top:{y}px;width:{cw_}px;height:{chh}px;box-sizing:border-box;border:6px solid {GREEN};border-radius:36px;background:#F3ECDE;z-index:6"></div>'); s.el(f"card{i}", x, y, cw_, chh)
@@ -187,16 +187,16 @@ async def build():
         s.add(f'<div class="measure" data-tag="tx{i}" style="position:absolute;left:{tx}px;top:{y + (chh - (110 if b else 56)) / 2}px;width:{tw2}px;color:{INK};font-family:var(--d);font-weight:900;font-size:{int(min(44, tw2 / (len(a) * .74)))}px;line-height:1.05;white-space:nowrap;z-index:9">{a}</div>'); s.el(f"tx{i}", tx, y + (chh - (110 if b else 56)) / 2, tw2, 48)
         if b: s.add(f'<div class="measure" data-tag="tb{i}" style="position:absolute;left:{tx}px;top:{y + (chh - 110) / 2 + 62}px;width:{tw2}px;color:#0E7C86;font-family:var(--d);font-weight:900;font-size:{int(min(34, tw2 / (len(b) * .74)))}px;line-height:1;white-space:nowrap;z-index:9">{b}</div>'); s.el(f"tb{i}", tx, y + (chh - 110) / 2 + 62, tw2, 34)
         ign += [(f"card{i}", t) for t in (f"bd{i}", f"tx{i}", f"tb{i}")]
-    s.chip("c1", "OR PLAY ANY GAME SOLO", 250, ty + 24 + 3 * chh + 2 * gap + 36, 580, deg=-2, size=30)
+    s.chip("c1", "OR PLAY ANY GAME SOLO", 250, ty + 24 + 3 * chh + 2 * gap + 36, 580, deg=-2, size=30); s.text("dd", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, ty + 24 + 3 * chh + 2 * gap + 130, W - 40, 36, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("4", s, ign + [("card2", "c1")]))
     # ---- 5 SEE YOU AT THE DASH ----
     s = Slide(5, 505); ty = await s.title("SEE YOU AT THE DASH", "HYROX-STYLE CIRCUIT", big_w=800, sub_w=720, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    im, src = tt.crop_to_alpha("carnival.png"); chh = BOT - ty - 400; cww = chh * im.width / im.height; cx0 = (W - cww) / 2; cy0 = ty + 10
+    im, src = tt.crop_to_alpha("carnival.png"); chh = BOT - ty - 500; cww = chh * im.width / im.height; cx0 = (W - cww) / 2; cy0 = ty + 10
     s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cww}px;height:{chh}px;transform:rotate(4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cww, chh, 4))
     ly = cy0 + chh + 50
     s.text("d1", "SAT 3 + SUN 4 OCT, 2026", 20, ly, W - 40, 54, 900, WHITE); s.text("d2", "TURF XL, NEW ALIPORE", 20, ly + 70, W - 40, 42, 400, WHITE)
-    s.chip("c1", "FIRST 5 FINISHERS WIN FREE TICKETS", (W - 900) / 2, ly + 150, 900, deg=-1.5, size=32)
+    s.chip("c1", "FIRST 5 FINISHERS WIN FREE TICKETS", (W - 900) / 2, ly + 150, 900, deg=-1.5, size=32); s.text("dd", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, ly + 250, W - 40, 38, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("5", s, STAR_IGN))
     return out
 

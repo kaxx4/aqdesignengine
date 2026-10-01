@@ -139,7 +139,7 @@ async def build(c, out, canvas="feed"):
     price_px = 100 * px(1180) / tw[2]
     tag_px = px(72) * min(1.0, px(1000) / tw[3])
     h1_px = px(96) * min(1.0, 690 / tw[0]); h1_w = tw[0] * h1_px / px(96)
-    h2_px = px(120) * min(1.0, px(1230) / tw[1])
+    h2_px = px(120) * min(1.0, px(1040) / tw[1])
 
     rnd = random.Random(7)
     specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, Hc):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '

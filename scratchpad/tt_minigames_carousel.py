@@ -136,12 +136,13 @@ async def build():
     ty = await s.title("MINI GAMES", "8 OF THEM, 2 DAYS", big_w=730, sub_w=700, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     # the kit's own carnival (Mini-Fete) sticker, the one the earlier collaterals use; no game stickers on the cover (user)
-    im, src = tt.crop_to_alpha("carnival.png"); ch = BOT - ty - 120; cwid = ch * im.width / im.height
+    im, src = tt.crop_to_alpha("carnival.png"); ch = BOT - ty - 215; cwid = ch * im.width / im.height
     cx0 = (W - cwid) / 2; cy0 = ty + 30
     s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cwid}px;height:{ch}px;transform:rotate(-4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cwid, ch, -4))
     cw = 640; cy = BOT - 20
+    s.text("inf", "3RD + 4TH OCT  |  TURF XL, NEW ALIPORE", 20, cy - 100, W - 40, 36, 900, WHITE)
     s.chip("swipe", "SWIPE TO SEE ALL 8", (W - cw) / 2, cy - 30, cw, deg=-2, size=40)
-    s.footer(); slides.append((s, ("swipe", "carnival")))
+    s.footer(); slides.append((s, ("swipe", "carnival"), ("inf", "carnival"), ("inf", "swipe")))
     # ---- 2-10 ONE SLIDE PER GAME ----
     for n, (slug, name, sub) in enumerate(GAMES):
         s = Slide(n + 2, 90 + n)
@@ -162,20 +163,20 @@ async def build():
     ty = await s.title("SEE YOU THERE", "AT THE MINI-FETE", big_w=730, sub_w=640, top=96)
     s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
     row1 = ["headphones", "darts", "aim_cup"]; row2 = ["jenga", "pushup", "coin_drop"]
-    sz = 250; y1 = ty + 6
+    sz = 190; y1 = ty + 6
     for i, slug in enumerate(row1): sticker(s, f"a{i}", slug, 70 + i * 300, y1, sz, [-5, 4, -4][i])
-    sx, sy, sw, sh = 84, y1 + sz + 24, 912, 290
+    sx, sy, sw, sh = 84, y1 + sz + 24, 912, 420
     s.add(f'<div class="measure" data-tag="slab" style="position:absolute;left:{sx}px;top:{sy}px;width:{sw}px;height:{sh}px;box-sizing:border-box;transform:rotate(-1.25deg);background:{SLAB};border:20px solid {ORCHID};border-radius:52px;z-index:8"></div>')
     s.el("slab", *rb(sx, sy, sw, sh, -1.25))
-    rows = [("SAT 3 + SUN 4 OCT, 2026", 52), ("TURF XL, NEW ALIPORE", 52), ("OPEN TO ALL", 44)]
-    tot = sum(z for _, z in rows) + 2 * 20; ty2 = sy + (sh - tot) / 2 - 4
+    rows = [("SAT 3 + SUN 4 OCT, 2026", 50), ("TURF XL, NEW ALIPORE", 50), ("OPEN TO ALL", 40), ("DD TICKETS RS. 550 AT THE DD STALL", 30), ("DISCO DIWALI: 10TH NOVEMBER 2026", 30), ("DISCO DASH: FIRST 5 WIN FREE DD TICKETS", 28)]
+    tot = sum(z for _, z in rows) + (len(rows) - 1) * 18; ty2 = sy + (sh - tot) / 2 - 4
     for i, (txt, z) in enumerate(rows):
         s.add(f'<div class="measure" data-tag="row{i}" style="position:absolute;left:{sx + 40}px;width:{sw - 80}px;top:{ty2}px;text-align:center;color:{INK};font-family:var(--d);font-weight:900;font-size:{z}px;line-height:1;white-space:nowrap;z-index:9">{txt}</div>')
-        s.el(f"row{i}", sx + 40, ty2, sw - 80, z * .85); ty2 += z + 20
+        s.el(f"row{i}", sx + 40, ty2, sw - 80, z * .85); ty2 += z + 18
     y2 = sy + sh + 24
     for i, slug in enumerate(row2): sticker(s, f"b{i}", slug, 70 + i * 300, y2, sz, [4, -5, 5][i])
     s.footer(cta="SEE YOU 3 + 4 OCT")
-    slides.append((s,) + tuple(("slab", f"row{i}") for i in range(3)) + (("slab", "a0"), ("slab", "a1"), ("slab", "a2"), ("slab", "b0"), ("slab", "b1"), ("slab", "b2")))
+    slides.append((s,) + tuple(("slab", f"row{i}") for i in range(6)) + (("slab", "a0"), ("slab", "a1"), ("slab", "a2"), ("slab", "b0"), ("slab", "b1"), ("slab", "b2")))
     return slides
 
 

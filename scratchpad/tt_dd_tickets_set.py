@@ -2,7 +2,7 @@
 `wa`      -> the WhatsApp graphic (feed 4:5 1080x1350), the existing sticker-first DD ticket design (tt_dd_tickets.py: disco ball, diya, ticket) re-copied: GET YOUR TICKETS / DISCO DIWALI / RS. 550 / AT TERRATHON CRICKET / 3RD & 4TH OCT / TURF XL / DD TICKET STALL.
 `stories` -> five 1080x1920 story designs: 1 hero disco ball + price, 2 giant price + ticket, 3 where (real DD photo, venue, dates), 4 the night (two real DD photos + diya), 5 want them free? (the Disco Dash tie-in).
 Facts: price Rs. 550 (user); the DD ticket stall is at the Mini-Fete, 3rd + 4th Oct 2026, Turf XL, New Alipore (earlier user brief); "at TerraThon cricket Turf XL" is read as the tickets being sold at Turf XL on the TerraThon cricket days, which is where that stall is.
-Disco Diwali's OWN date/venue were never supplied and are NOT printed. Photos: the user's three Disco Diwali images (engine/assets/terrathon/dd_photos/), no event date claimed. Story 5 repeats the Disco Dash rule (first 5 finishers win free tickets).
+Disco Diwali's DATE is 10th NOVEMBER (user, 2026-10-01; year assumed 2026); its venue was never supplied and is NOT printed. Photos: the user's three Disco Diwali images (engine/assets/terrathon/dd_photos/), no event date claimed. Story 5 repeats the Disco Dash rule (first 5 finishers win free tickets).
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_tickets_set.py [wa|stories]   (default: both)
 """
 import asyncio, base64, importlib.util, os, random, re, sys
@@ -147,7 +147,7 @@ async def build():
     bw = 700; ball, bh = ddm.disco_ball(bw, "b1"); svg_sticker(s, "ball", ball, (W - bw) / 2, ty + 10, bw, bh)
     sy = ty + 10 + bh + 30; sh = BOT - sy + 20
     slab(s, "slab", 100, sy, 880, sh)
-    ign = rows_in(s, 100, sy, 880, sh, [("RS. 550", 120, INK), ("AT TERRATHON, TURF XL", 38, "#0E7C86")])
+    ign = rows_in(s, 100, sy, 880, sh, [("RS. 550", 110, INK), ("AT TERRATHON, TURF XL, 3RD + 4TH OCT", 30, "#0E7C86"), ("DISCO DIWALI: 10TH NOVEMBER 2026", 32, INK)])
     s.footer(cta="DD TICKET STALL"); out.append(("1", s, ign + [("slab", "ball"), ("star_tl", "t1"), ("star_tr", "t1")]))
     # ---- 2 GIANT PRICE + ticket ----
     s = Slide(2, 402)
@@ -158,7 +158,7 @@ async def build():
     dw = 330; dya, dyh = ddm.diya(dw, "d2"); svg_sticker(s, "diya", dya, 70, dy_, dw, dyh, -6)
     s.text("w1", "AT THE DD TICKET STALL", 430, dy_ + 20, 600, 38, 900, WHITE, align="left")
     s.text("w2", "TURF XL, NEW ALIPORE", 430, dy_ + 80, 600, 34, 400, WHITE, align="left")
-    s.text("w3", "3RD + 4TH OCT", 430, dy_ + 130, 600, 36, 900, ORCHID, align="left")
+    s.text("w3", "3RD + 4TH OCT", 430, dy_ + 130, 600, 36, 900, ORCHID, align="left"); s.text("w4", "DISCO DIWALI: 10TH NOV", 430, dy_ + 186, 600, 36, 900, WHITE, align="left")
     s.footer(cta="DD TICKET STALL"); out.append(("2", s, [("star_tl", "t1"), ("star_tr", "t1"), ("tkt", "t3")]))
     # ---- 3 WHERE: real DD photo + venue ----
     s = Slide(3, 403)
@@ -169,7 +169,7 @@ async def build():
     s.chip("c1", "DD TICKET STALL", 120, py_, 560, deg=-2, size=36)
     s.text("v1", "TURF XL, NEW ALIPORE", 40, py_ + 120, W - 80, 52, 900, WHITE)
     s.text("v2", "3RD + 4TH OCT", 40, py_ + 188, W - 80, 46, 900, ORCHID)
-    s.text("v3", "RS. 550", 40, py_ + 252, W - 80, 54, 900, WHITE)
+    s.text("v3", "RS. 550", 40, py_ + 252, W - 80, 54, 900, WHITE); s.text("v4", "DISCO DIWALI: 10TH NOVEMBER", 40, py_ + 326, W - 80, 40, 900, ORCHID)
     s.footer(cta="DD TICKET STALL"); out.append(("3", s, [("star_tl", "t1"), ("star_tr", "t1"), ("frame", "c1")]))
     # ---- 4 THE NIGHT: two real DD photos ----
     s = Slide(4, 404)
@@ -178,7 +178,7 @@ async def build():
     fh = int((BOT - ty) * 0.62)
     s.frame("f1", PH["dance"], 50, ty + 30, 560, fh, -4, "50% 45%", z=4); s.frame("f2", PH["group"], 470, ty + 30 + fh * 0.30, 560, int(fh * 0.78), 3.5, "50% 40%", z=5)
     dya, dyh = ddm.diya(260, "d4"); svg_sticker(s, "diya", dya, 70, ty + 30 + fh - 40, 260, dyh, -8, z=9)
-    s.chip("c1", "TICKETS RS. 550", 330, ty + 30 + fh + 90, 560, deg=-2, size=40)
+    s.chip("c1", "10TH NOV  |  TICKETS RS. 550", 200, ty + 30 + fh + 90, 760, deg=-2, size=38)
     s.footer(cta="DD TICKET STALL"); out.append(("4", s, [("star_tl", "t1"), ("star_tr", "t1"), ("f1", "f2"), ("f1", "diya"), ("f2", "diya"), ("f2", "c1"), ("f1", "c1"), ("diya", "c1"), ("f2", "star_tr")]))
     # ---- 5 WANT THEM FREE? ----
     s = Slide(5, 405)
@@ -186,9 +186,9 @@ async def build():
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     tk, tkh = ddm.ticket(520, "t5"); svg_sticker(s, "tkt", tk, 40, ty + 30, 520, tkh, -9)
     ball, bh = ddm.disco_ball(440, "b5"); svg_sticker(s, "ball", ball, W - 40 - 440, ty + 20, 440, bh, 6)
-    sy = ty + 30 + max(tkh, bh) + 60; sh = 360
+    sy = ty + 30 + max(tkh, bh) + 60; sh = 420
     slab(s, "slab", 84, sy, 912, sh)
-    ign = rows_in(s, 84, sy, 912, sh, [("FIRST 5 TO FINISH ALL 8", 46, INK), ("MINI-FETE GAMES WIN", 46, INK), ("FREE DISCO DIWALI TICKETS", 36, "#0E7C86")])
+    ign = rows_in(s, 84, sy, 912, sh, [("FIRST 5 TO FINISH ALL 8", 46, INK), ("MINI-FETE GAMES WIN", 46, INK), ("FREE DISCO DIWALI TICKETS", 36, "#0E7C86"), ("DISCO DIWALI IS ON 10TH NOVEMBER", 28, INK)])
     s.chip("c1", "OR BUY AT RS. 550", 220, sy + sh + 60, 640, deg=-2, size=40)
     s.footer(cta="DD TICKET STALL"); out.append(("5", s, ign + [("slab", "tkt"), ("slab", "ball"), ("star_tl", "t1"), ("star_tr", "t1"), ("tkt", "ball")]))
     return out
@@ -207,7 +207,7 @@ async def stories():
 
 
 async def wa():
-    c = dict(head=("GET YOUR TICKETS", "DISCO DIWALI"), price="RS. 550", tag="AT TERRATHON CRICKET", date="3RD & 4TH OCT", venue="TURF XL", cta="DD TICKET STALL")
+    c = dict(head=("DISCO DIWALI  |  10TH NOVEMBER", "GET YOUR TICKETS"), price="RS. 550", tag="AT TERRATHON CRICKET", date="3RD & 4TH OCT", venue="TURF XL", cta="DD TICKET STALL")
     os.makedirs("out/collaterals", exist_ok=True)
     async with ddm.B.session():
         await ddm.build(c, "out/collaterals/dd_tickets_550_whatsapp.png")

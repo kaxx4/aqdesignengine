@@ -59,7 +59,7 @@ SPORTS = {
     # (the site says "Battlegrounds, Bhowanipore"). Condensed: 5 cards + conduct/equipment in the strip; property-damage, technical-issue and
     # organisers'-authority clauses are omitted for space (the strip keeps "organisers' decisions are final").
     "fifa": dict(
-        title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"),
+        title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUNDS, BHOWANIPORE  |  ", "REPORT BY 11:15AM"),
         strip=("", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
         cta="SEE YOU SAT 3 OCT", out="terrathon_fifa_rules.png", body=23,
         cards=[

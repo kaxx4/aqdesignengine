@@ -154,9 +154,9 @@ async def build():
     s.star("star_tl", 24, 70); s.star("star_tr", W - 24 - 104, 86)
     tk, tkh = ddm.ticket(560, "wt"); svg_sticker(s, "tkt", tk, 50, ty + 40, 560, tkh, -8, z=8)
     ball, bh = ddm.disco_ball(470, "wb"); svg_sticker(s, "ball", ball, W - 50 - 470, ty + 10, 470, bh, 6, z=6)
-    sy = ty + 40 + max(tkh + 30, bh * .75) + 20; sh = 330
+    sy = ty + 40 + max(tkh + 30, bh * .75) + 20; sh = 400
     slab(s, "slab", 84, sy, 912, sh)
-    ign = rows_in(s, 84, sy, 912, sh, [("FINISH ALL 8 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86")])
+    ign = rows_in(s, 84, sy, 912, sh, [("FINISH ALL 8 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86"), ("DISCO DIWALI: 10TH NOVEMBER 2026", 30, INK)])
     py = sy + sh + 50
     for i, txt in enumerate(("8 STATIONS", "PLAY ANY GAME SOLO", "3 + 4 OCT, TURF XL")):
         w = (968 - 2 * 20) / 3; s.chip(f"p{i}", txt, 56 + i * (w + 20), py, w, deg=[-2, 1.5, -1.5][i], size=22)
@@ -165,8 +165,8 @@ async def build():
     s = Slide(1, 602); s.idx = 0
     ty = await s.title("DISCO DIWALI", "WIN YOUR TICKETS OR BUY THEM", big_w=700, sub_w=800, top=104)
     s.star("star_tl", 24, 70); s.star("star_tr", W - 24 - 104, 86)
-    ball, bh = ddm.disco_ball(340, "cb"); svg_sticker(s, "ball", ball, (W - 340) / 2, ty + 6, 340, bh, 0, z=6)
-    cy0 = ty + 6 + bh + 14; chh = min(580, BOT + 30 - cy0); cw_ = 470; ign = list(STAR_IGN)
+    s.chip("ddc", "DISCO DIWALI: 10TH NOVEMBER 2026", (W - 880) / 2, ty - 2, 880, deg=-1.5, size=34); ball, bh = ddm.disco_ball(270, "cb"); svg_sticker(s, "ball", ball, (W - 270) / 2, ty + 84, 270, bh, 0, z=6)
+    cy0 = ty + 84 + bh + 10; chh = min(580, BOT + 30 - cy0); cw_ = 470; ign = list(STAR_IGN)
     for i, (xx, chip, big, bpx, l1, l2, deg) in enumerate([(56, "WIN THEM FREE", "DISCO DASH", 40, "FINISH ALL 8 STATIONS WITH MAXIMUM POINTS", "FIRST 5 FINISHERS WIN", -1), (554, "OR BUY THEM", "RS. 550", 72, "AT THE DD TICKET STALL", "TURF XL, 3RD + 4TH OCT", 1)]):
         s.add(f'<div class="measure" data-tag="cd{i}" style="position:absolute;left:{xx}px;top:{cy0}px;width:{cw_}px;height:{chh}px;box-sizing:border-box;transform:rotate({deg}deg);border:6px solid {GREEN};border-radius:36px;background:#F3ECDE;z-index:6"></div>'); s.el(f"cd{i}", *rb(xx, cy0, cw_, chh, deg))
         s.add(f'<div class="measure" data-tag="ch{i}" style="position:absolute;left:{xx + 30}px;top:{cy0 + 34}px;background:{ORCHID};color:{INK};font-family:var(--d);font-weight:900;font-size:28px;line-height:1;padding:10px 20px 9px;border-radius:999px;white-space:nowrap;z-index:9">{chip}</div>'); s.el(f"ch{i}", xx + 30, cy0 + 34, 270, 50)
@@ -175,9 +175,9 @@ async def build():
         s.add(f'<div class="measure" data-tag="m{i}" style="position:absolute;left:{xx + 24}px;top:{cy0 + 304}px;width:{cw_ - 48}px;text-align:center;color:#0E7C86;font-family:var(--d);font-weight:900;font-size:28px;line-height:1.1;z-index:9">{l2}</div>'); s.el(f"m{i}", xx + 24, cy0 + 304, cw_ - 48, 34)
         ign += [(f"cd{i}", t) for t in (f"ch{i}", f"bg{i}", f"l{i}", f"m{i}")]
     for j, slug in enumerate(("darts", "headphones", "jenga")):
-        sticker(s, f"gs{j}", slug, 56 + 24 + j * 138, cy0 + chh - 168, 140, [-5, 4, -4][j], z=9); ign.append(("cd0", f"gs{j}"))
-    tk, tkh = ddm.ticket(360, "ct"); svg_sticker(s, "tkt", tk, 554 + 55, cy0 + chh - 200, 360, tkh, -7, z=9); ign.append(("cd1", "tkt"))
-    ign += [("ball", "cd0"), ("ball", "cd1"), ("cd0", "cd1"), ("gs0", "gs1"), ("gs1", "gs2")]
+        sticker(s, f"gs{j}", slug, 56 + 24 + j * 138, cy0 + chh - 150, 130, [-5, 4, -4][j], z=9); ign.append(("cd0", f"gs{j}"))
+    tk, tkh = ddm.ticket(330, "ct"); svg_sticker(s, "tkt", tk, 554 + 70, cy0 + chh - 170, 330, tkh, -7, z=9); ign.append(("cd1", "tkt"))
+    ign += [("ddc", "ball"), ("ddc", "t3"), ("ball", "cd0"), ("ball", "cd1"), ("cd0", "cd1"), ("gs0", "gs1"), ("gs1", "gs2")]
     s.footer(cta="SEE YOU THERE"); out.append(("win_or_buy", s, ign))
     return out
 

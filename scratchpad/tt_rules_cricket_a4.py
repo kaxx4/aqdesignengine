@@ -23,7 +23,7 @@ W, H = 794, 1123
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 FIFA_ARG = "fifa" in sys.argv
 if FIFA_ARG:   # copy = the feed post's FIFA config (scratchpad/tt_rules_cricket.py): venue ruled "Battleground Gaming" by the user; controller line removed at the user's request
-    TITLE, INFO, STRIP, STRIP2, CTA = "SOCCER STOORM", ("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"), ("", "ORGANISERS' DECISIONS ARE FINAL"), "3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.", "SEE YOU SAT 3 OCT"
+    TITLE, INFO, STRIP, STRIP2, CTA = "SOCCER STOORM", ("SAT 3 OCT  |  BATTLEGROUNDS, BHOWANIPORE  |  ", "REPORT BY 11:15AM"), ("", "ORGANISERS' DECISIONS ARE FINAL"), "3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.", "SEE YOU SAT 3 OCT"
     CARDS = [
         ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
         ("PLATFORM", "PS5, EA SPORTS FC 26. Competitive mode, normal speed, clear weather, injuries and handball off. No custom squads, edited ratings or modified settings."),

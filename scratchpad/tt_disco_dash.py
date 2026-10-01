@@ -152,7 +152,7 @@ async def build():
     s = Slide(1, 301); s.idx = 0
     ty = await s.title("DISCO DASH", "HYROX-STYLE CIRCUIT", big_w=730, sub_w=720, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    pw, px0 = 900, 90; py = ty + 8; ph = int(BOT + 70 - py - 230)
+    pw, px0 = 900, 90; py = ty + 8; ph = int(BOT + 70 - py - 280)
     s.add(f'<div class="measure" data-tag="plate" style="position:absolute;left:{px0}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(-1deg);background:#F3ECDE;border:16px solid {ORCHID};border-radius:56px;z-index:5"></div>'); s.el("plate", *rb(px0, py, pw, ph, -1))
     cell_w = (pw - 40) / 3; cell_h = (ph - 40) / 3; ss = min(cell_w - 10, cell_h - 6)
     ign = [("star_tl", "t1"), ("star_tr", "t1")]
@@ -164,20 +164,20 @@ async def build():
     yy = py + ph + (34 if STORY else 22)
     s.chip("c1", "FINISH ALL 8 WITH MAXIMUM POINTS", (W - 940) / 2, yy, 940, deg=-1.5, size=34); ign += [("plate", "c1")]
     s.text("l1", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", 20, yy + 104, W - 40, 40, 900, WHITE)
-    s.text("l2", "OR PLAY ANY GAME SOLO", 20, yy + 154, W - 40, 30, 400, CREAM_HALO)
+    s.text("l2", "PLAY ANY GAME SOLO  |  TURF XL, NEW ALIPORE", 20, yy + 154, W - 40, 30, 400, CREAM_HALO); s.text("l3", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, yy + 200, W - 40, 36, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("single", s, ign))
     # ================= CAROUSEL =================
     # ---- 1 COVER ----
     s = Slide(1, 311)
     ty = await s.title("DISCO DASH", "HYROX-STYLE CIRCUIT", big_w=730, sub_w=720, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    im, src = tt.crop_to_alpha("carnival.png"); chh = BOT - ty - 290; cww = chh * im.width / im.height; cx0 = (W - cww) / 2; cy0 = ty + 20
+    im, src = tt.crop_to_alpha("carnival.png"); chh = BOT - ty - 430; cww = chh * im.width / im.height; cx0 = (W - cww) / 2; cy0 = ty + 20
     s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cww}px;height:{chh}px;transform:rotate(-4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cww, chh, -4))
     ly = cy0 + chh + 40
     s.text("w1", "8 STATIONS. FINISH ALL.", 20, ly, W - 40, 50, 900, WHITE)
     s.text("w2", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", 20, ly + 64, W - 40, 38, 900, ORCHID)
-    s.chip("swipe", "SWIPE FOR THE 8 STATIONS", (W - 760) / 2, ly + 118, 760, deg=-2, size=34)
-    s.footer(); out.append(("c1", s, [("star_tl", "t1"), ("star_tr", "t1"), ("swipe", "w2")]))
+    s.text("w3", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, ly + 116, W - 40, 34, 900, WHITE); s.text("w4", "3RD + 4TH OCT  |  TURF XL, NEW ALIPORE", 20, ly + 166, W - 40, 30, 400, CREAM_HALO); s.chip("swipe", "SWIPE FOR THE 8 STATIONS", (W - 760) / 2, ly + 214, 760, deg=-2, size=34)
+    s.footer(); out.append(("c1", s, [("star_tl", "t1"), ("star_tr", "t1"), ("swipe", "w2"), ("swipe", "w4")]))
     # ---- 2-4 STATIONS ----
     for k in range(3):
         s = Slide(k + 2, 312 + k)
@@ -219,7 +219,7 @@ async def build():
     s.chip("solo", "OR PLAY ANY GAME SOLO", 340, ry + 78, 400, deg=-2, size=24)
     ly = ry + max(tkh, bh) + 60 + (EXTRA // 4)
     s.text("d1", "SAT 3 + SUN 4 OCT, 2026", 20, ly, W - 40, 54, 900, WHITE)
-    s.text("d2", "TURF XL, NEW ALIPORE", 20, ly + 68, W - 40, 42, 400, WHITE)
+    s.text("d2", "TURF XL, NEW ALIPORE", 20, ly + 68, W - 40, 42, 400, WHITE); s.text("d3", "DISCO DIWALI: 10TH NOVEMBER 2026", 20, ly + 134, W - 40, 40, 900, ORCHID)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("c5", s, ign + [("slab", "tkt"), ("slab", "ball"), ("tkt", "solo"), ("ball", "solo"), ("star_tl", "t1"), ("star_tr", "t1")]))
     return out
 
