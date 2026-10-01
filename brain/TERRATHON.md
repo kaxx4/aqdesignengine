@@ -208,6 +208,7 @@ Note the card outline is GREEN here, not the orchid of the feed posters. Source 
 | Throwback carousels (pickleball, FIFA), 7 slides each | `tt_throwback.py pickleball\|fifa`, photos in `engine/assets/terrathon/throwback*/` | done |
 | Crave'lla stall signage (A4 landscape, PDF + 300dpi PNG): Crave'lla logo + name, "our dessert partner", AQ LIVE sticker, AQ logo, TerraThon look | `tt_partner_sign.py cravella|artily|crftd` | done; full-bleed black, no bleed/crop marks |
 | Disco Diwali ticket stall signage (A4 landscape, PDF + 300dpi PNG): user's three DD photos in tilted frames, DISCO DIWALI / TICKET STALL / LIMITED TICKETS ON SALE | `tt_dd_sign.py`, photos in `engine/assets/terrathon/dd_photos/` | done; NO price printed (Rs. 550 unconfirmed) |
+| Lottery stall signage (A4 landscape, PDF + 300dpi PNG): user's jar photo, LOTTERY / TRY YOUR LUCK | `tt_lottery_sign.py`, photo `engine/assets/terrathon/lottery.jpg` | done; no prize/price/rules printed (not supplied) |
 | Crave'lla A4 menu card (single page, PDF + 300dpi PNG, TerraThon branding: black ground, green cards, orchid chips) | `tt_cravella_menu.py` | done; full-bleed black, no bleed/crop marks |
 | Crave'lla stall carousel (6 slides: our dessert partner intro + full menu), logo and photos from the user | `tt_cravella.py`, assets in `engine/assets/terrathon/partners/cravella/` | done; ACAI spelled as such (user wrote "Asscai") |
 | Rules cover (opener for the three rules posts; swipe order 02 PickleJam, 03 Wicket Wars, 04 Soccer Storm) | `tt_rules_cover.py` | done |
