@@ -6,6 +6,7 @@ final PNG. Nothing in the payload is edited. The code sits dark-on-cream with a 
 Copy: TERRATHON / SCAN TO PAY / DISCO DIWALI TICKET STALL / TERRAROOTS. No price (user), no UPI app claims, no date/venue.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof. TEST-SCAN THE PRINTED SHEET with a real payment app before the event.
 
+Photobooth variant: arg `photobooth` (sub line PHOTO BOOTH, same TERRAROOTS QR, files photobooth_payment_qr_sign_A4_*).
 CRFTD-stall variant: arg `crftd` (CRFTD logo circle instead of a sub line, same TERRAROOTS QR, files crftd_payment_qr_sign_A4_*).
 Mini-Fete variant: add the arg `minifete` (sub line MINI-FETE, no TICKET STALL line, same TERRAROOTS QR, files minifete_payment_qr_sign_A4_*).
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py [portrait] [minifete]   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png  (or ..._A4_portrait with the arg:
@@ -27,11 +28,12 @@ GROUND, ORCHID, CREAM_HALO, WHITE, CARD, INK = "#000000", "#DE68F0", "#F3ECDE", 
 PORTRAIT = "portrait" in sys.argv
 MINIFETE = "minifete" in sys.argv        # same verified payment QR, headline "MINI-FETE" (user, 2026-10-01: "TERRATHON MINI-FETE"; same TERRAROOTS QR)
 CRFTD_ST = "crftd" in sys.argv          # CRFTD stall: the real CRFTD logo (partners/crftd.png) in an orchid-ringed circle replaces the sub line; same TERRAROOTS QR
-SUB, STALL = ("MINI-FETE", None) if MINIFETE else (None, None) if CRFTD_ST else ("DISCO DIWALI", "TICKET STALL")
+PHOTOBOOTH = "photobooth" in sys.argv   # sub line PHOTO BOOTH (the stall sign's own spelling), same TERRAROOTS QR
+SUB, STALL = ("MINI-FETE", None) if MINIFETE else ("PHOTO BOOTH", None) if PHOTOBOOTH else (None, None) if CRFTD_ST else ("DISCO DIWALI", "TICKET STALL")
 CRFTD_LOGO = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/crftd.png", "rb").read()).decode() if CRFTD_ST else ""
 W, H = (794, 1123) if PORTRAIT else (1123, 794)
 PAGE_MM = "210mm 297mm" if PORTRAIT else "297mm 210mm"
-SLUG = ("crftd_payment_qr_sign_A4_" if CRFTD_ST else "minifete_payment_qr_sign_A4_" if MINIFETE else "dd_payment_qr_sign_A4_") + ("portrait" if PORTRAIT else "landscape")
+SLUG = ("photobooth_payment_qr_sign_A4_" if PHOTOBOOTH else "crftd_payment_qr_sign_A4_" if CRFTD_ST else "minifete_payment_qr_sign_A4_" if MINIFETE else "dd_payment_qr_sign_A4_") + ("portrait" if PORTRAIT else "landscape")
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
 
