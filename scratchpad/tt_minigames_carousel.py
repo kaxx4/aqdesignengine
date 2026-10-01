@@ -1,6 +1,6 @@
 """TerraThon MINI-FETE MINI GAMES carousel (11 slides, feed 1080x1350), built from STICKERS because there are no photos (user, 2026-10-01). Nine hand-drawn flat stickers
 (scratchpad/tt_minigame_stickers.py -> engine/assets/terrathon/minigames/*.svg, original artwork in the kit's die-cut style). v2 (user: "a separate slide for all the games and the first slide
-may not include all the stickers"): cover with FOUR of the nine + "swipe to see all 9", then ONE SLIDE PER GAME (big sticker on a cream plate, numbered badge, game name), then the closer.
+may not include all the stickers"): cover with the kit's CARNIVAL (Mini-Fete) sticker only + "swipe to see all 9" (no game stickers, per the user), then ONE SLIDE PER GAME (big sticker on a cream plate, numbered badge, game name), then the closer.
 The nine games are exactly the user's list: guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue twisters, push up challenge, plank challenge, aim the cup, coin drop.
 NO rules, prizes, scoring, entry fees or timings are printed (none were supplied); the only extra words restate the game's own name ("with headphones", "with dares").
 Event facts (copy pack): Mini-Fete 3rd and 4th Oct 2026, Turf XL, New Alipore, open to all.
@@ -135,12 +135,13 @@ async def build():
     s = Slide(1, 81)
     ty = await s.title("MINI GAMES", "9 OF THEM, 2 DAYS", big_w=730, sub_w=700, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    area = BOT - ty - 110; size = min(420, area / 2 + 30)
-    pos = [("darts", 70, ty + 20, -5), ("headphones", W - 70 - size, ty + 50, 5), ("jenga", 90, ty + 40 + size * 0.85, 4), ("cup_flip", W - 90 - size, ty + 20 + size * 0.95, -4)]
-    for i, (slug, x, y, d) in enumerate(pos): sticker(s, f"stk{i}", slug, x, y, size, d)
+    # the kit's own carnival (Mini-Fete) sticker, the one the earlier collaterals use; no game stickers on the cover (user)
+    im, src = tt.crop_to_alpha("carnival.png"); ch = BOT - ty - 120; cwid = ch * im.width / im.height
+    cx0 = (W - cwid) / 2; cy0 = ty + 30
+    s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cwid}px;height:{ch}px;transform:rotate(-4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cwid, ch, -4))
     cw = 640; cy = BOT - 20
     s.chip("swipe", "SWIPE TO SEE ALL 9", (W - cw) / 2, cy - 30, cw, deg=-2, size=40)
-    s.footer(); slides.append((s,) + tuple((f"stk{i}", f"stk{j}") for i in range(4) for j in range(i + 1, 4)) + (("swipe", "stk2"), ("swipe", "stk3")))
+    s.footer(); slides.append((s, ("swipe", "carnival")))
     # ---- 2-10 ONE SLIDE PER GAME ----
     for n, (slug, name, sub) in enumerate(GAMES):
         s = Slide(n + 2, 90 + n)
