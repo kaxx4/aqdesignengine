@@ -4,7 +4,7 @@ and the AQ logo (core.LOGO, the real colored wordmark). Look: black ground + whi
 Sigmar One sub (sparingly), NeutralFace caps, orchid ring on the logo. No dates, venue or "Mini-Fete" on this version (user, 2026-10-01); only the name, the partner line and the logos.
 PRINT CAVEAT: full-bleed black A4; ~12mm safe margin kept, no bleed or crop marks. Ask the printer for a bleed proof or a white-ground variant.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_partner_sign.py [cravella|artily]   ->  out/collaterals/cravella_sign_A4_landscape.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_partner_sign.py [cravella|artily|crftd]   ->  out/collaterals/cravella_sign_A4_landscape.pdf + .png
 """
 import asyncio, base64, importlib.util, os, random, re, sys
 
@@ -17,6 +17,7 @@ from playwright.async_api import async_playwright
 GROUND, ORCHID, CREAM_HALO, WHITE = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5"
 PARTNER = sys.argv[1] if len(sys.argv) > 1 else "cravella"      # cravella | artily
 LOGO = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/cravella/logo_circle.png", "rb").read()).decode()
+CRFTD = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/crftd.png", "rb").read()).decode()
 ARTILY = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/artily.png", "rb").read()).decode()
 CFG = {
     "cravella": dict(name="CRAVE&rsquo;L&zwnj;LA", sub="OUR DESSERT PARTNER", out="cravella_sign_A4_landscape",
@@ -25,6 +26,10 @@ CFG = {
     # orchid ring (round, like the Crave'lla badge; user, 2026-10-01); mix-blend-mode:multiply turns the logo's white ground into the plate colour, so the artwork itself is untouched.
     "artily": dict(name="ARTILY", sub="OUR HYDRATION PARTNER", out="artily_sign_A4_landscape", ls="0.02em",
                    left=f'<div class="plate"><img src="{ARTILY}" style="width:80%;display:block;mix-blend-mode:multiply"></div>'),
+    # CRFTD (user, 2026-10-01): "our Jersey Partner". Their real square logo (red wordmark on cream) is used WHOLE and masked to a circle, so its own cream ground
+    # fills the badge; same orchid ring as the other partner signs.
+    "crftd": dict(name="CRFTD", sub="OUR JERSEY PARTNER", out="crftd_sign_A4_landscape", ls="0.02em",
+                  left=f'<div class="plate" style="overflow:hidden;background:#FFF0DC"><img src="{CRFTD}" style="width:100%;height:100%;display:block;object-fit:cover"></div>'),
 }[PARTNER]
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 _im, AQLIVE = tt.crop_to_alpha("aq_live.png")
