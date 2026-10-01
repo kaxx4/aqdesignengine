@@ -1,7 +1,7 @@
 """TERRATHON BY AQUATERRA, the festival's main signage, single page A4 LANDSCAPE (297x210mm), TerraThon branding. PDF + 300dpi PNG.
 v2 (user, 2026-10-01): the WHOLE line "TERRATHON BY AQUATERRA" set in StretchPro, centred in the middle (two lines, each fitted to the same width: TERRATHON in white,
-BY AQUATERRA in orchid); the real AQ LIVE logo (the aq_live kit sticker) top centre; the real AQ logo (core.LOGO) bottom centre; the other four kit stickers
-(pickleball, cricket, controller, carnival) one per corner. Doubled letters (RR) are GUARDED with a zero-width non-joiner: unguarded, the StretchPro ligature fuses
+BY AQUATERRA in orchid); the real AQ LIVE logo (the aq_live kit sticker) top centre; the real AQ logo (core.LOGO) under the title; the user-supplied partner strip (Education/Hydration/Dessert/Jersey partners, transparent PNG, partners/partner_strip.png)
+across the bottom; the other four kit stickers: pickleball + controller top corners, cricket + carnival flanking the AQ logo. Doubled letters (RR) are GUARDED with a zero-width non-joiner: unguarded, the StretchPro ligature fuses
 them into one stretched glyph and the word reads wrong. No dates, venue or sports names printed.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof.
 
@@ -21,8 +21,10 @@ ST = {n: tt.crop_to_alpha(n)[1] for n in ("pickleball_set.png", "cricket_set.png
 rnd = random.Random(23)
 SPECKS = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.5, .6, .8, 1, 1.3, 1.6]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(430))
 # corner stickers: (file, height px, rotation deg, css position)
-CORNERS = [("pickleball_set.png", 190, -6, "left:52px;top:44px"), ("controller.png", 176, 6, "right:52px;top:56px"),
-           ("cricket_set.png", 200, 5, "left:56px;bottom:44px"), ("carnival.png", 196, -5, "right:56px;bottom:44px")]
+import base64
+STRIP = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrathon/partners/partner_strip.png", "rb").read()).decode()   # user-supplied partner lockup (transparent)
+CORNERS = [("pickleball_set.png", 176, -6, "left:52px;top:36px"), ("controller.png", 160, 6, "right:52px;top:48px"),
+           ("cricket_set.png", 128, 5, "left:70px;top:452px"), ("carnival.png", 126, -5, "right:70px;top:452px")]
 corner_html = "".join(f'<img class="stk" src="{ST[n]}" style="height:{h}px;transform:rotate({r}deg);{pos}">' for n, h, r, pos in CORNERS)
 
 HTML = f"""<!doctype html><html><head><meta charset="utf-8"><style>
@@ -35,15 +37,16 @@ html,body{{background:{GROUND}}}
 .specks{{position:absolute;inset:0}}
 .stk{{position:absolute;display:block;width:auto;z-index:2}}
 .live{{position:absolute;left:50%;top:30px;height:172px;transform:translateX(-50%);display:block;z-index:3}}
-.mid{{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;z-index:2}}
+.mid{{position:absolute;left:0;right:0;top:238px;display:flex;flex-direction:column;align-items:center;gap:20px;z-index:2}}
 .ln{{font-family:'StretchPro';letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;line-height:1;white-space:nowrap;display:block}}
-.aq{{position:absolute;left:50%;bottom:44px;height:62px;transform:translateX(-50%);display:block;z-index:3}}
+.strip{{position:absolute;left:50%;bottom:34px;width:1010px;transform:translateX(-50%);display:block;z-index:3}}
+.aq{{position:absolute;left:50%;top:490px;height:58px;transform:translateX(-50%);display:block;z-index:3}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
 {corner_html}
 <img class="live" id="live" src="{ST['aq_live.png']}">
 <div class="mid"><span class="ln" id="l1" style="color:{WHITE}">TER&zwnj;RATHON</span><span class="ln" id="l2" style="color:{ORCHID}">BY AQUATER&zwnj;RA</span></div>
-<img class="aq" id="aq" src="{core.LOGO}">
+<img class="aq" id="aq" src="{core.LOGO}"><img class="strip" id="strip" src="{STRIP}">
 </div></body></html>"""
 
 FIT = """() => { const out = []; ['l1', 'l2'].forEach(id => { const e = document.getElementById(id);
@@ -54,7 +57,7 @@ FIT = """() => { const out = []; ['l1', 'l2'].forEach(id => { const e = document
 
 CHECK = """() => {
   const pr = document.getElementById('page').getBoundingClientRect(), q = (s) => [...document.querySelectorAll(s)].map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)]; });
-  const named = {live: q('#live')[0], aq: q('#aq')[0], l1: q('#l1')[0], l2: q('#l2')[0]}; q('.stk').forEach((b, i) => named['stk' + i] = b);
+  const named = {live: q('#live')[0], aq: q('#aq')[0], strip: q('#strip')[0], l1: q('#l1')[0], l2: q('#l2')[0]}; q('.stk').forEach((b, i) => named['stk' + i] = b);
   const hit = (a, b) => !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]); const k = Object.keys(named), issues = [];
   k.forEach(n => { const b = named[n]; if (b[0] < 20 || b[1] < 20 || b[2] > pr.right - 20 || b[3] > pr.bottom - 20) issues.push(['near-edge', n, b]); });
   for (let i = 0; i < k.length; i++) for (let j = i + 1; j < k.length; j++) if (hit(named[k[i]], named[k[j]])) issues.push(['overlap', k[i], k[j]]);
