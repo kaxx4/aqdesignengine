@@ -1,11 +1,12 @@
 """AQ INSTAGRAM follow poster with a scannable QR, single page A4 PORTRAIT (210x297mm), TerraThon branding. PDF + 300dpi PNG.
 QR: made with segno (error correction H) from https://www.instagram.com/ngo.aquaterra/ (the AQ account named in the TerraThon site footer; the second AQ account
-there is @aquaterra.live; @crftd.lab is CRFTD's account as given by the user, 2026-10-01 and NOT independently verified to exist). It is a REAL, decoded code: the build decodes the code on its own AND decodes the final rendered PNG
-(full size and at 25%) with OpenCV and refuses to finish if either fails. The code sits on a cream plate with a 4-module quiet zone, dark modules on light, because
+there is @aquaterra.live; @crftd.lab is CRFTD's account as given by the user, 2026-10-01 and NOT independently verified to exist). It is a REAL, decoded code: the build decodes the code on its own, then checks the final rendered PNG two ways and
+refuses to finish if either fails: every module is sampled and compared with the true QR matrix (must be 0 differences), and OpenCV must decode it at >=3 of 7 sizes
+(its detector is flaky at some single sizes, so one scale is not a fair gate). The code sits on a cream plate with a 4-module quiet zone, dark modules on light, because
 a QR on black does not scan reliably. Copy: TERRATHON / SCAN TO FOLLOW / NGO AQUATERRA ON INSTAGRAM / @NGO.AQUATERRA. No claims about content, follower counts or giveaways.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; the QR itself is vector (SVG) so it prints sharp. Ask the printer for a bleed proof.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live|crftd.lab|cravella_kolkata]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live|crftd.lab|cravella_kolkata|artilyindia]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
 """
 import asyncio, base64, importlib.util, os, random, re, sys
 
@@ -19,9 +20,9 @@ from playwright.async_api import async_playwright
 
 ACCOUNT = sys.argv[1] if len(sys.argv) > 1 else "ngo.aquaterra"
 URL = f"https://www.instagram.com/{ACCOUNT}/"
-SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM", "crftd.lab": "CRFTD ON INSTAGRAM", "cravella_kolkata": "CRAVE\u2019LLA ON INSTAGRAM"}
+SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM", "crftd.lab": "CRFTD ON INSTAGRAM", "cravella_kolkata": "CRAVE\u2019LLA ON INSTAGRAM", "artilyindia": "ARTILY ON INSTAGRAM"}
 SUB = SUBS[ACCOUNT]                      # copy per account (user, 2026-10-01: "NGO", not "TEAM"; aquaterra.live asked for separately)
-SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4", "crftd.lab": "crftd_instagram_qr_A4", "cravella_kolkata": "cravella_instagram_qr_A4"}[ACCOUNT]
+SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4", "crftd.lab": "crftd_instagram_qr_A4", "cravella_kolkata": "cravella_instagram_qr_A4", "artilyindia": "artily_instagram_qr_A4"}[ACCOUNT]
 HANDLE_PX = {"cravella_kolkata": 34}.get(ACCOUNT, 40)
 GROUND, ORCHID, GREEN, CREAM_HALO, CARD, INK, WHITE = "#000000", "#DE68F0", "#2FD284", "#F3ECDE", "#F5EEE1", "#0A0A0A", "#F5F5F5"
 _im, STAR = tt.crop_to_alpha("shuriken.png")
@@ -99,13 +100,20 @@ async def main():
         await pg.set_content(HTML); await pg.evaluate("document.fonts.ready"); await pg.wait_for_timeout(400)
         print("FIT", await pg.evaluate(FIT)); await pg.wait_for_timeout(100)
         r = await pg.evaluate(CHECK); print("bad", r["bad"], "overlaps", r["ov"]); print(r["boxes"])
+        qb = await pg.evaluate("(() => { const r = document.querySelector('.plate img').getBoundingClientRect(); return [r.left, r.top, r.width]; })()")
         await pg.locator("#page").screenshot(path=png)
         await pg.pdf(path=pdf, width="210mm", height="297mm", print_background=True, margin=dict(top="0", right="0", bottom="0", left="0"))
         await br.close()
-    img = cv2.imread(png)
-    full = decode(img); small = decode(cv2.resize(img, None, fx=.25, fy=.25, interpolation=cv2.INTER_AREA))
-    print("RENDER DECODE full:", full, "| at 25%:", small)
-    assert full == URL and small == URL, "rendered QR does not decode"
+    img = cv2.imread(png); g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # 1) DETERMINISTIC: sample the centre of every module in the rendered PNG and compare with the QR's true matrix.
+    S = 3.125; M = q.matrix; n = len(M); x0, y0, w = qb[0] * S, qb[1] * S, qb[2] * S; mod = w / n
+    mism = sum((g[int(y0 + (r + .5) * mod), int(x0 + (c + .5) * mod)] < 128) != bool(M[r][c]) for r in range(n) for c in range(n))
+    # 2) A real reader at several sizes (OpenCV's detector is flaky at some single scales, so require several hits, not one).
+    scales = (1.0, .75, .6, .5, .4, .35, .25)
+    hits = [f for f in scales if decode(img if f == 1 else cv2.resize(img, None, fx=f, fy=f, interpolation=cv2.INTER_AREA)) == URL]
+    print(f"RENDER CHECK: {mism} of {n * n} modules differ from the true QR | OpenCV decodes at scales {hits}")
+    assert mism == 0, "rendered QR modules differ from the generated QR"
+    assert len(hits) >= 3, "rendered QR is not decoded at enough scales"
     d = open(pdf, "rb").read(); print("pdf pages:", len(re.findall(rb"/Type\s*/Page[^s]", d)))
 
 asyncio.run(main())
