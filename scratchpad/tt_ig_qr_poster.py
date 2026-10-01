@@ -2,7 +2,7 @@
 QR: made with segno (error correction H) from https://www.instagram.com/ngo.aquaterra/ (the AQ account named in the TerraThon site footer; the second AQ account
 there is @aquaterra.live, see ACCOUNT below to switch). It is a REAL, decoded code: the build decodes the code on its own AND decodes the final rendered PNG
 (full size and at 25%) with OpenCV and refuses to finish if either fails. The code sits on a cream plate with a 4-module quiet zone, dark modules on light, because
-a QR on black does not scan reliably. Copy: TERRATHON / SCAN TO FOLLOW / @NGO.AQUATERRA. No claims about content, follower counts or giveaways.
+a QR on black does not scan reliably. Copy: TERRATHON / SCAN TO FOLLOW / NGO AQUATERRA ON INSTAGRAM / @NGO.AQUATERRA. No claims about content, follower counts or giveaways.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; the QR itself is vector (SVG) so it prints sharp. Ask the printer for a bleed proof.
 
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
@@ -59,7 +59,7 @@ html,body{{background:{GROUND}}}
 <img class="star" src="{STAR}" style="left:40px;top:40px"><img class="star" src="{STAR}" style="right:44px;top:52px">
 <div class="t1">TERRATHON</div>
 <div class="h1" id="h1" style="top:122px">SCAN TO</div><div class="h1" id="h2" style="top:204px">FOL&zwnj;LOW</div>
-<div class="sub" id="sub" style="top:306px">TEAM AQUATERRA ON INSTAGRAM</div>
+<div class="sub" id="sub" style="top:306px">NGO AQUATERRA ON INSTAGRAM</div>
 <div class="plate" id="plate"><img src="{QR}"></div>
 <div class="handle" id="handle" style="top:{372 + QR_PX + 2 * PAD + 24 + 34}px">@{ACCOUNT.upper()}</div>
 <div class="aq"><img src="{core.LOGO}"></div>
