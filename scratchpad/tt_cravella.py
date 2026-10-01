@@ -2,7 +2,7 @@
 Real assets only (user, 2026-10-01): logo + two photos, copied to engine/assets/terrathon/partners/cravella/ (logo masked to a circle).
 Facts: stall at the TerraThon Mini-Fete, 3rd and 4th Oct 2026, Turf XL, New Alipore (brain/TERRATHON.md 5b); Crave'lla = desserts and brownies, a
 photobooth etc. are other stalls (user-confirmed 5f); handle @cravella_kolkata (partner file + the logo labels in the photo). Menu and prices verbatim
-from the user's list; where every item in a group shares a price it is printed ONCE ("ALL RS. 299"). Not claimed: a founding year, ingredients,
+from the user's FINAL menu (2026-10-01; replaces the first, longer list); where every item in a group shares a price it is printed ONCE ("ALL RS. 299"). Not claimed: a founding year, ingredients,
 ordering links, or that stall sales go to charity (only the fete is "all for charity" in the copy pack, and this deck does not say it).
 Spelling flag: the user wrote "Asscai Bowl"; printed here as ACAI BOWL (flagged back to the user).
 
@@ -151,20 +151,20 @@ async def build():
     # 3 MENU 1
     s = Slide(3, 23)
     ty = await s.title("THE MENU", "ACAI + TIRAMISU", big_w=620, sub_w=560, top=96)
-    RH, sz = 100 + (16 if STORY else 0), 40
-    hA = 26 + 56 + 32 + RH * 1 + 22; hB = 26 + 56 + 32 + RH * 4 + 22
+    RH, sz = 150 + (30 if STORY else 0), 44
+    hA = 26 + 56 + 32 + RH * 1 + 22; hB = 26 + 56 + 32 + RH * 1 + 22
     top = ty + 20 + (1160 + OY + EXTRA - ty - 20 - (hA + hB + 26)) / 2
-    s.box("boxA", 56, top, 968, hA, head_row("ACAI BOWL", "RS. 299") + f'<div style="margin-top:14px">{rows_html(["GRANOLA GREEK YOGHURT"], RH, sz)}</div>', pad="26px 26px 22px")
-    s.box("boxB", 56, top + hA + 26, 968, hB, head_row("TIRAMISU", "ALL RS. 299") + f'<div style="margin-top:14px">{rows_html(["CLASSIC TIRAMISU", "BROWNIE TIRAMISU", "MOCHA LEOPARD TIRAMISU", "TIRAMISU TUB"], RH, sz)}</div>', pad="26px 26px 22px")
+    s.box("boxA", 56, top, 968, hA, head_row("ACAI BOWL", "RS. 299") + f'<div style="margin-top:14px">{rows_html(["GRANOLA GREEK YOGHURT BOWL"], RH, sz)}</div>', pad="26px 26px 22px")
+    s.box("boxB", 56, top + hA + 26, 968, hB, head_row("TIRAMISU", "RS. 299") + f'<div style="margin-top:14px">{rows_html(["CLASSIC TIRAMISU"], RH, sz)}</div>', pad="26px 26px 22px")
     s.star("star_tl", 30, 60 + OY); s.star("star_tr", W - 30 - 104, 74 + OY)
     s.text("note", "CRAVE'LLA STALL, TURF XL  |  3RD + 4TH OCT", 40, 1196 + OY + EXTRA, W - 80, 24, 400)
     s.footer(); slides.append((s,))
     # 4 MENU 2
     s = Slide(4, 24)
     ty = await s.title("THE MENU", "BROWNIES + CHEESECAKES", big_w=620, sub_w=800, top=96)
-    left = ["CLASSIC CHOCOLATE CHUNK", "BISCOFF CRUNCH BROWNIE", "CHEESECAKE BROWNIE", "COOKIE DOUGH BROWNIE", "NUTELLA CHEESECAKE"]
-    right = ["BISCOFF CHEESECAKE", "BLUEBERRY CHEESECAKE", "BROWNIE CHEESECAKE", "BASQUE CHEESECAKE"]
-    RH, sz = 118 + (16 if STORY else 0), 34; hC = 26 + 56 + 32 + RH * 5 + 22
+    left = ["BELGIAN CHOCOLATE CHUNK", "COOKIE DOUGH", "BISCOFF"]
+    right = ["BLUEBERRY CHEESECAKE", "NUTELLA CHEESECAKE", "BISCOFF CHEESECAKE"]
+    RH, sz = 190 + (30 if STORY else 0), 38; hC = 26 + 56 + 32 + RH * 3 + 22
     col = lambda rws: f'<div style="flex:1 1 0;min-width:0">{rows_html(rws, RH, sz)}</div>'
     top = ty + 20 + (1160 + OY + EXTRA - ty - 20 - hC) / 2
     s.box("boxC", 56, top, 968, hC, head_row("BROWNIES + CHEESECAKES", "ALL RS. 150", 44) + f'<div style="display:flex;gap:34px;margin-top:14px">{col(left)}{col(right)}</div>', pad="26px 26px 22px")
@@ -173,16 +173,16 @@ async def build():
     s.footer(); slides.append((s,))
     # 5 MENU 3 (cookie tins + photo)
     s = Slide(5, 25)
-    ty = await s.title("THE MENU", "COOKIE TINS", big_w=620, sub_w=520, top=96)
+    ty = await s.title("THE MENU", "COOKIE TIN", big_w=620, sub_w=480, top=96)
     fy, fh = ty + 24, 840 + EXTRA
     s.frame("frame", PH_TINS, 56, fy, 470, fh, -2, "50% 62%")
     s.star("star_c", 30, fy + fh - 80, 110)
-    tins = [("OG COOKIE TIN", "RS. 500"), ("BISCOFF CRUNCH TIN", "RS. 500"), ("MIDNIGHT CRUNCH TIN", "RS. 500"), ("TRIPLE CHOCOLATE COOKIE TIN", "RS. 700")]
-    rh = (fh - 26 - 56 - 32 - 22 - 12) // 4
-    inner = head_row("COOKIE TINS") + '<div style="margin-top:14px">'
+    tins = [("MIDNIGHT COOKIE TIN", "RS. 500"), ("TRIPLE CHOCOLATE COOKIE TIN", "RS. 700")]
+    rh = (fh - 26 - 56 - 32 - 22 - 12) // 2
+    inner = head_row("COOKIE TIN") + '<div style="margin-top:14px">'
     for i, (nm, pr) in enumerate(tins):
         sep = "border-top:3px solid rgba(10,10,10,.22);" if i else ""
-        inner += f'<div style="height:{rh}px;{sep}display:flex;flex-direction:column;justify-content:center;gap:8px"><div style="font-size:27px;line-height:1.08">{nm}</div><div style="font-weight:900;font-size:44px;line-height:1;color:{INK}">{pr}</div></div>'
+        inner += f'<div style="height:{rh}px;{sep}display:flex;flex-direction:column;justify-content:center;gap:8px"><div style="font-size:31px;line-height:1.1">{nm}</div><div style="font-weight:900;font-size:58px;line-height:1;color:{INK}">{pr}</div></div>'
     inner += "</div>"
     s.box("boxD", 560, fy + 6, 464, fh - 12, inner, pad="26px 24px 22px")
     s.star("star_tr", W - 30 - 104, 70 + OY, 104)
