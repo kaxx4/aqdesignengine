@@ -5,7 +5,7 @@ there is @aquaterra.live; @crftd.lab is CRFTD's account as given by the user, 20
 a QR on black does not scan reliably. Copy: TERRATHON / SCAN TO FOLLOW / NGO AQUATERRA ON INSTAGRAM / @NGO.AQUATERRA. No claims about content, follower counts or giveaways.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; the QR itself is vector (SVG) so it prints sharp. Ask the printer for a bleed proof.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live|crftd.lab]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live|crftd.lab|cravella_kolkata]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
 """
 import asyncio, base64, importlib.util, os, random, re, sys
 
@@ -19,9 +19,10 @@ from playwright.async_api import async_playwright
 
 ACCOUNT = sys.argv[1] if len(sys.argv) > 1 else "ngo.aquaterra"
 URL = f"https://www.instagram.com/{ACCOUNT}/"
-SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM", "crftd.lab": "CRFTD ON INSTAGRAM"}
+SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM", "crftd.lab": "CRFTD ON INSTAGRAM", "cravella_kolkata": "CRAVE\u2019LLA ON INSTAGRAM"}
 SUB = SUBS[ACCOUNT]                      # copy per account (user, 2026-10-01: "NGO", not "TEAM"; aquaterra.live asked for separately)
-SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4", "crftd.lab": "crftd_instagram_qr_A4"}[ACCOUNT]
+SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4", "crftd.lab": "crftd_instagram_qr_A4", "cravella_kolkata": "cravella_instagram_qr_A4"}[ACCOUNT]
+HANDLE_PX = {"cravella_kolkata": 34}.get(ACCOUNT, 40)
 GROUND, ORCHID, GREEN, CREAM_HALO, CARD, INK, WHITE = "#000000", "#DE68F0", "#2FD284", "#F3ECDE", "#F5EEE1", "#0A0A0A", "#F5F5F5"
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
@@ -54,7 +55,7 @@ html,body{{background:{GROUND}}}
 .h1{{position:absolute;left:0;right:0;font-family:'StretchPro';color:{WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;line-height:1;white-space:nowrap;z-index:2}}
 .plate{{position:absolute;left:{(794 - (QR_PX + 2 * PAD + 24)) / 2}px;top:372px;width:{QR_PX + 2 * PAD + 24}px;height:{QR_PX + 2 * PAD + 24}px;background:{CARD};border:12px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;z-index:2}}
 .plate img{{width:{QR_PX}px;height:{QR_PX}px;display:block}}
-.handle{{position:absolute;left:{(794 - 560) / 2}px;width:560px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:40px;letter-spacing:.04em;padding:14px 0 12px;z-index:2}}
+.handle{{position:absolute;left:{(794 - 560) / 2}px;width:560px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:{HANDLE_PX}px;letter-spacing:.04em;padding:14px 0 12px;z-index:2;white-space:nowrap}}
 .sub{{position:absolute;left:0;right:0;font-family:'SigmarOne';color:{ORCHID};-webkit-text-stroke:.8px {ORCHID};letter-spacing:-.01em;font-size:28px;white-space:nowrap;z-index:2}}
 .aq{{position:absolute;left:0;right:0;bottom:50px;display:flex;justify-content:center;z-index:2}} .aq img{{height:52px}}
 </style></head><body><div class="page" id="page">
