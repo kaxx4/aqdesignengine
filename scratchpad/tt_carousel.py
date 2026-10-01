@@ -46,6 +46,18 @@ KNOW = [   # the "all you need to know" deck: ONLY facts the user gave (timings,
     ("dd", "DISCO DIWALI PASSES", "GET YOURS AT THE DD TICKET STALL.", "carnival.png", False),
     ("why", "ALL FOR CHARITY", "SHOW UP. HAVE FUN. DO GOOD.", "flower.png", False),
 ]
+REASONS8 = [   # user brief 2026-09-30, in the user's order. DRAFT copy. Facts used: the stalls, Mini-Fete 3rd & 4th Oct at Turf XL (confirmed earlier).
+    # Photos (engine/assets/terrathon/carousel_photos/<key>.jpg, from scratchpad/tt_reasons8_prep.py) replace the sticker in the circle. No photo was supplied for
+    # dd_tickets or period_pain, so those two keep a kit sticker.
+    ("crftd", "CRFTD ORDERS", "PRE-ORDER DIY T-SHIRTS AND CUSTOM ORDERS.", "smiley.png", True),
+    ("mini_fete", "MINI-FETE", "GAMES, COMPETITIONS AND STALLS. OPEN TO ALL.", "controller.png", False),
+    ("dd_tickets", "DD TICKET STALL", "YOUR PASS TO THE PARTY IS ONE STALL AWAY.", "carnival.png", False),
+    ("period_pain", "PERIOD PAIN SIMULATOR", "BRAVE ENOUGH TO FEEL IT?", "flower.png", True),
+    ("artily", "ARTILY STALL", "SIP BOBA. LOSE MINI-GAMES WITH DIGNITY.", "flower.png", False),
+    ("cravella", "CRAVE'LLA STALL", "DESSERTS AND BROWNIES. NO FURTHER QUESTIONS.", "flower.png", True),
+    ("photobooth", "PHOTOBOOTH", "POSE NOW. REGRET NEVER.", "smiley.png", False),
+    ("lottery", "LOTTERY", "CHANCE TO WIN DISCO DIWALI TICKETS.", "basketball.png", False),
+]
 DD = [   # Disco Diwali ticket sales. FACTS ONLY: passes are sold at the DD ticket stall at the Mini-Fete (3rd & 4th Oct, Turf XL). No price, no DD date/venue: not supplied.
     ("where", "WHERE", "THE DD TICKET STALL, TURF XL, NEW ALIPORE.", "smiley.png", False),
     ("when", "WHEN", "3RD AND 4TH OCTOBER, 2026.", "flower.png", False),
@@ -60,6 +72,7 @@ TIMED = [   # single stories, no cover or close
     ("lastday", "LAST DAY AT THE FETE", "GET YOUR DD PASS AT THE DD TICKET STALL, TURF XL.", "carnival.png", False),
 ]
 DECKS = {"reasons": dict(items=REASONS, head=("7 REASONS", "TO SHOW UP"), swipe="SWIPE FOR THE 7"),
+         "reasons8": dict(items=REASONS8, head=("8 REASONS WHY", "YOU SHOULD ATTEND"), swipe="SWIPE FOR THE 8", num=True, free_sub=True, compact=True),
          "know": dict(items=KNOW, head=("ALL YOU NEED", "TO KNOW"), swipe="SWIPE FOR THE LOWDOWN"),
          "dd": dict(items=DD, head=("DISCO DIWALI", "PASSES ON SALE"), swipe="SWIPE FOR THE DEETS", close=("GET YOUR PASS", "AT THE DD TICKET STALL", "TURF XL, NEW ALIPORE")),
          "ddtimed": dict(items=TIMED, head=("", ""), swipe="", bare=True)}
@@ -71,6 +84,12 @@ LAYOUT = {   # canvas px. story keeps Instagram's UI zones clear (top 250, botto
                   cover_head_y=52, cover_hero_top=290, cover_hero_h=540, cover_slab_top=744, cover_slab_h=340, cover_strip_y=1130, pill_y=53),
     "story": dict(W=1080, H=1920, hero_max=(760, 660), slab_top=980, slab_h=470, strip_y=1490, foot_y=1585,
                   cover_head_y=280, cover_hero_top=540, cover_hero_h=680, cover_slab_top=1128, cover_slab_h=340, cover_strip_y=1492, pill_y=250),
+}
+
+
+COMPACT = {   # user 2026-09-30: "reduce the size of the box". A smaller slab frees room, which goes to a BIGGER photo circle (D) instead of dead space
+    "feed":  dict(hero_max=(760, 640), slab_top=744, slab_h=350, D=680, SX=90, SW=900, strip_y=1122),
+    "story": dict(hero_max=(800, 720), slab_top=1072, slab_h=360, D=700, SX=90, SW=900),
 }
 
 
@@ -101,8 +120,36 @@ def photo_src(key):
     return None
 
 
+def photo_list(key):
+    """[(data-uri, object-position)] for a reason: every <key>_<n>.jpg in order (a COLLAGE when more than one), else the single <key>.jpg."""
+    import glob, json
+    try: focus = json.load(open(f"{PHOTO_DIR}/focus.json"))
+    except Exception: focus = {}
+    files = sorted(glob.glob(f"{PHOTO_DIR}/{key}_*.jpg"), key=lambda f: int(os.path.basename(f).rsplit("_", 1)[1].split(".")[0]))
+    out = [(f"data:image/jpeg;base64," + base64.b64encode(open(f, "rb").read()).decode(), focus.get(os.path.basename(f), "50% 50%")) for f in files]
+    if not out:
+        one = photo_src(key)
+        if one: out = [(one, "50% 50%")]
+    return out
+
+
+def collage_html(photos, gap=8):
+    """Photos tiled inside the circle (the circle's overflow clips the outer corners): 1 full, 2 side by side, 3 = one tall + two stacked, 4 = 2x2.
+    The cream gap between cells is the circle's own cream ground, so it reads as a scrapbook spread."""
+    n = min(len(photos), 4)
+    cells = []
+    for i, (src, fc) in enumerate(photos[:n]):
+        span = "grid-row:1 / span 2;" if (n == 3 and i == 0) else ""
+        cells.append(f'<div style="{span}overflow:hidden;min-width:0;min-height:0"><img src="{src}" style="width:100%;height:100%;object-fit:cover;'
+                     f'object-position:{fc};display:block"></div>')
+    cols = "1fr" if n == 1 else "1fr 1fr"
+    rows = "1fr" if n <= 2 else "1fr 1fr"
+    return f'<div style="display:grid;grid-template-columns:{cols};grid-template-rows:{rows};gap:{gap}px;width:100%;height:100%">{"".join(cells)}</div>'
+
+
 async def slide(kind, canvas, out, idx=None):
-    L = LAYOUT[canvas]; W, H = L["W"], L["H"]
+    L = dict(LAYOUT[canvas]); W, H = L["W"], L["H"]
+    if DECK.get("compact") and kind != "cover": L.update(COMPACT[canvas])
     els = []
     def el(label, x, y, w, h): els.append((label, x, y, w, h))
 
@@ -118,7 +165,7 @@ async def slide(kind, canvas, out, idx=None):
              f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
 
     slab_top, slab_h = (L["cover_slab_top"], L["cover_slab_h"]) if kind == "cover" else (L["slab_top"], L["slab_h"])
-    SX, SW = 47, 986
+    SX, SW = L.get("SX", 47), L.get("SW", 986)
     ST_F = tt.ST_FEAT
 
     # ---- measure every fitted string, in its real face ----
@@ -137,12 +184,12 @@ async def slide(kind, canvas, out, idx=None):
     # ---- hero (tucked ~14% behind the slab) ----
     if kind == "point":
         key, _, _, sfile, rc = DECK["items"][idx]
-        ph = photo_src(key)
+        ph = photo_list(key)
         if ph:   # a real photo replaces the sticker, inside a circle
-            D = 560; cx, cy = W / 2, slab_top - 0.86 * D + D / 2
+            D = L.get("D", 560); cx, cy = W / 2, slab_top - 0.86 * D + D / 2
             parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{cx - D / 2}px;top:{cy - D / 2}px;width:{D}px;height:{D}px;'
                          f'border-radius:50%;border:14px solid {CREAM_HALO};background:{CREAM_HALO};z-index:3;overflow:hidden">'
-                         f'<img src="{ph}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"></div>')
+                         f'{collage_html(ph)}</div>')
             el("hero", cx - D / 2, cy - D / 2, D, D)
         else:
             im, src = sticker_src(sfile, rc); mw, mh = L["hero_max"]
@@ -155,6 +202,14 @@ async def slide(kind, canvas, out, idx=None):
         im, src = sticker_src("smiley.png"); mw, mh = L["hero_max"]
         k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
         parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
+
+    # ---- reason number badge (decks with num=True): white disc, orchid ring, "n/N" ----
+    if kind == "point" and DECK.get("num"):
+        nb, nx, ny = 112, 200, (150 if canvas == "feed" else 470)
+        el("num_badge", nx, ny, nb, nb)
+        parts.append(f'<div class="measure" data-tag="num_badge" style="position:absolute;left:{nx}px;top:{ny}px;width:{nb}px;height:{nb}px;border-radius:50%;'
+                     f'background:#fff;border:8px solid {ORCHID};display:flex;align-items:center;justify-content:center;z-index:10;font-family:var(--d);'
+                     f'font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg)">{idx + 1}/{len(DECK["items"])}</div>')
 
     # ---- stars (constant furniture) + fest pill ----
     def star(label, x, y, z):
@@ -173,7 +228,8 @@ async def slide(kind, canvas, out, idx=None):
     # ---- cover header ----
     if kind == "cover":
         hy = L["cover_head_y"]; w1, w2 = m[2]["text_w"], m[3]["text_w"]
-        kf = min(1.0, 700 / w1); f1, f2 = 124 * kf, 80 * kf; w1, w2 = w1 * kf, w2 * kf      # a long header shrinks so it clears the corner star
+        kf = min(1.0, 700 / w1); k2 = min(1.0 if DECK.get("free_sub") else kf, (780 if DECK.get("free_sub") else 940) / w2)
+        f1, f2 = 124 * kf, 80 * k2; w1, w2 = w1 * kf, w2 * k2      # a long header shrinks so it clears the corner star; free_sub: the 2nd line shrinks on its own
         parts.append(f'<div class="measure" data-tag="c_head1" style="position:absolute;left:{(W - w1) / 2}px;top:{hy}px;font-family:var(--d);font-weight:900;'
                      f'font-size:{f1}px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">{DECK["head"][0]}</div>'
                      f'<div class="measure" data-tag="c_head2" style="position:absolute;left:{(W - w2) / 2}px;top:{hy + 118 * kf}px;font-family:var(--d);font-weight:400;'
@@ -188,18 +244,20 @@ async def slide(kind, canvas, out, idx=None):
         body = (f'<div style="{stx(t_px)}">TERRATHON</div><div style="{stx(b_px, 0.03, -0.02)};margin-top:6px">MINI-FEETE</div>'
                 f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DATE.replace("&", "&amp;")}</div>')
     elif kind == "point":
-        tag = DECK["items"][idx][2]
+        import re
+        HEAD_MAX, TAG_PX = (92, 36) if DECK.get("compact") else (104, 40)      # compact box: smaller type so 2 headline lines + 2 tagline lines still fit
+        tag = re.sub(r"(\S+-\S+)", r'<span style="white-space:nowrap">\1</span>', DECK["items"][idx][2])   # a hyphenated word never splits across lines ("MINI-" / "GAMES")
         words = head.split(); two = m[0]["text_w"] * 1.04 > 840 and len(words) > 2   # wider than the slab at full size: two lines
         if two:
             cut = min(range(1, len(words)), key=lambda i: abs(len(" ".join(words[:i])) - len(" ".join(words[i:]))))
             hl = [" ".join(words[:cut]), " ".join(words[cut:])]
             mm = await B.measure_text([dict(text=t, font="d", size=100, weight=900) for t in hl])
-            head_px = min(104, 100 * 840 / max(r["text_w"] for r in mm))
+            head_px = min(HEAD_MAX, 100 * 840 / max(r["text_w"] for r in mm))
             head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
         else:
-            head_px = min(104, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
+            head_px = min(HEAD_MAX, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
         body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
-                f'<div style="font-weight:400;font-size:40px;line-height:1.15;margin-top:18px;max-width:800px;text-wrap:balance">{tag}</div>')
+                f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
         c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
         cf = 96 * min(1.0, 800 / m[0]["text_w"])
@@ -236,7 +294,7 @@ async def slide(kind, canvas, out, idx=None):
     text_pairs = [("head", WHITE, GROUND, 96, True), ("strip", WHITE, GROUND, 34, False), ("slab", INK, SLAB, 40, False),
                   ("cta", INK, CTA_FILL, 26, True), ("pill", INK, "#FFFFFF", 31, True)]
     await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True,
-                   collision_ignore={("hero", "slab"), ("star_ml", "slab"), ("star_br", "slab"), ("star_tr", "hero"), ("star_tl", "hero")}, margin=12)
+                   collision_ignore={("hero", "slab"), ("star_ml", "slab"), ("star_br", "slab"), ("star_tr", "hero"), ("star_tl", "hero"), ("num_badge", "hero")}, margin=12)
 
 
 async def main(canvases, decks=("reasons",)):
