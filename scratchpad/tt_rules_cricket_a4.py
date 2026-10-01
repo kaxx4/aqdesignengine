@@ -6,9 +6,10 @@ Known gaps carried over from the source (flagged to the user earlier): the "repo
 printed (the info line's "REPORT BY 9:45AM" is the one time that was confirmed); the prize pool (rule 17) is not on this poster. Body type is 15.5px css ~ 11.5pt on A4.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_rules_cricket_a4.py   ->  out/collaterals/terrathon_cricket_rules_A4_portrait.pdf + .png
+FIFA: arg `fifa` (SOCCER STOORM, the feed post's 5 condensed cards, last one full width; bigger type because there is more room).
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_rules_cricket_a4.py [fifa]   ->  out/collaterals/terrathon_cricket_rules_A4_portrait.pdf + .png (terrathon_fifa_rules_A4_portrait with fifa)
 """
-import asyncio, importlib.util, os, random, re
+import asyncio, importlib.util, os, random, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "scratchpad", "tt_events.py"))
@@ -20,20 +21,34 @@ GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL = tt.GROUND, tt.ORCHID, tt.CREA
 GREEN = "#2FD284"
 W, H = 794, 1123
 _im, STAR = tt.crop_to_alpha("shuriken.png")
-TITLE, INFO, STRIP, STRIP2, CTA = "WICKEET WAARS", ("SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  ", "REPORT BY 9:45AM"), ("NON-SPORTING APPEALS ARE PENALISED  |  ", "UMPIRE'S DECISION IS FINAL"), "ABUSE MEANS DISQUALIFICATION OR HEAVY PENALTIES. NO VAPES OR ALCOHOL.", "SEE YOU 3 + 4 OCT"
-CARDS = [
-    ("WHO CAN PLAY", "Born on or after 1 January 2005, verified by a scannable Aadhaar ID. No ID on time can mean disqualification in a dispute."),
-    ("FORMAT", "One innings each, straight knockout. 5 overs, finished by the fielding side in 15 minutes; batting-side delays count. 8 players, one jersey colour."),
-    ("REPORTING", "Whole team reports before its match. Not ready for the toss within 5 minutes of schedule: 3&#8209;run penalty per minute. Over 15 minutes: walkover."),
-    ("EQUIPMENT", "Bring your own bats and safety gear (gloves, guards). Any bat except hollow, scoop or plastic. Ball: Cricket Tennis Ball Heavy Version by Vicky."),
-    ("BOWLING", "Full-arm only, with a run-up. No underarm, standing, sling-action or chucking. At least 4 bowlers, and one may bowl 2 overs, not back to back."),
-    ("POWERPLAY", "One Powerplay over per team, and all runs count double. Not the last over. Call it before the bowler is picked, or the second-last over becomes it."),
-    ("SCORING", "Wides and no balls: 3 runs, and they count as a ball. In the final over: 1 run, not legal balls. Overthrows are live: all valid runs count."),
-    ("CEILING NET", "Ball hits the ceiling net and is caught straight after: out. If it touches a side-wall net first, then it is caught: not out."),
-]
+FIFA_ARG = "fifa" in sys.argv
+if FIFA_ARG:   # copy = the feed post's FIFA config (scratchpad/tt_rules_cricket.py): venue ruled "Battleground Gaming" by the user; controller line removed at the user's request
+    TITLE, INFO, STRIP, STRIP2, CTA = "SOCCER STOORM", ("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"), ("", "ORGANISERS' DECISIONS ARE FINAL"), "3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.", "SEE YOU SAT 3 OCT"
+    CARDS = [
+        ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
+        ("PLATFORM", "PS5, EA SPORTS FC 26. Competitive mode, normal speed, clear weather, injuries and handball off. No custom squads, edited ratings or modified settings."),
+        ("FORMAT", "Single elimination: Round of 16, Quarter Finals, Semi Finals, Grand Final. Halves are 6 minutes, then 8 in the semis and final. Tied? Extra Time, then Penalties."),
+        ("REPORTING", "Be at the venue 10 minutes before your match. More than 5 minutes late is a loss by walkover, with no refund."),
+        ("TEAM DRAW", "On the day, each player draws a chit for their team, and both players must be there. Draws are final unless the organisers say otherwise. The pool: Arsenal, Borussia Dortmund, Bayern Munich, PSG, Real Madrid, FC Barcelona, Al Nassr, Al Hilal, Liverpool, Chelsea, Manchester City, Manchester United, Atl\u00e9tico Madrid.", True),
+    ]
+    BODY_PX, CHIP_PX, ROWS_N, OUT = 19, 22, 3, "terrathon_fifa_rules_A4_portrait"
+else:
+    TITLE, INFO, STRIP, STRIP2, CTA = "WICKEET WAARS", ("SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  ", "REPORT BY 9:45AM"), ("NON-SPORTING APPEALS ARE PENALISED  |  ", "UMPIRE'S DECISION IS FINAL"), "ABUSE MEANS DISQUALIFICATION OR HEAVY PENALTIES. NO VAPES OR ALCOHOL.", "SEE YOU 3 + 4 OCT"
+    BODY_PX, CHIP_PX, ROWS_N, OUT = 15.5, 19, 4, "terrathon_cricket_rules_A4_portrait"
+    CARDS = [
+        ("WHO CAN PLAY", "Born on or after 1 January 2005, verified by a scannable Aadhaar ID. No ID on time can mean disqualification in a dispute."),
+        ("FORMAT", "One innings each, straight knockout. 5 overs, finished by the fielding side in 15 minutes; batting-side delays count. 8 players, one jersey colour."),
+        ("REPORTING", "Whole team reports before its match. Not ready for the toss within 5 minutes of schedule: 3&#8209;run penalty per minute. Over 15 minutes: walkover."),
+        ("EQUIPMENT", "Bring your own bats and safety gear (gloves, guards). Any bat except hollow, scoop or plastic. Ball: Cricket Tennis Ball Heavy Version by Vicky."),
+        ("BOWLING", "Full-arm only, with a run-up. No underarm, standing, sling-action or chucking. At least 4 bowlers, and one may bowl 2 overs, not back to back."),
+        ("POWERPLAY", "One Powerplay over per team, and all runs count double. Not the last over. Call it before the bowler is picked, or the second-last over becomes it."),
+        ("SCORING", "Wides and no balls: 3 runs, and they count as a ball. In the final over: 1 run, not legal balls. Overthrows are live: all valid runs count."),
+        ("CEILING NET", "Ball hits the ceiling net and is caught straight after: out. If it touches a side-wall net first, then it is caught: not out."),
+    ]
 rnd = random.Random(7)
 SPECKS = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.5, .6, .8, 1, 1.3, 1.6]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(380))
-cards_html = "".join(f'<section class="card"><div class="chip">{h}</div><div class="bd">{b}</div></section>' for h, b in CARDS)
+WIDE = ' style="grid-column:1/-1"'
+cards_html = "".join(f'<section class="card"{WIDE if len(c) > 2 else ""}><div class="chip">{c[0]}</div><div class="bd">{c[1]}</div></section>' for c in CARDS)
 
 HTML = f"""<!doctype html><html><head><meta charset="utf-8"><style>
 {core.FONTS}
@@ -49,10 +64,10 @@ html,body{{background:{GROUND}}}
 .ti{{font-family:'StretchPro';color:{WHITE};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};line-height:1;white-space:nowrap;display:block;margin-top:8px}}
 .tr{{font-family:'SigmarOne';color:{ORCHID};letter-spacing:{tt.SG_LS}em;line-height:1;white-space:nowrap;display:block;margin-top:6px}}
 .info{{font-weight:900;color:{WHITE};line-height:1;white-space:nowrap;display:block;margin-top:14px}} .info b{{color:{ORCHID};font-weight:900}}
-.grid{{position:absolute;left:36px;right:36px;top:224px;height:700px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:12px 16px;z-index:3}}
+.grid{{position:absolute;left:36px;right:36px;top:224px;height:700px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat({ROWS_N},1fr);gap:12px 16px;z-index:3}}
 .card{{border:5px solid {GREEN};border-radius:24px;background:{CTA_FILL};color:{INK};padding:10px 16px 8px;overflow:hidden}}
-.chip{{display:inline-block;background:{GREEN};color:{INK};font-weight:900;font-size:19px;line-height:1;letter-spacing:.03em;padding:6px 13px 5px;border-radius:999px}}
-.bd{{font-weight:400;font-size:15.5px;line-height:1.17;margin-top:6px}}
+.chip{{display:inline-block;background:{GREEN};color:{INK};font-weight:900;font-size:{CHIP_PX}px;line-height:1;letter-spacing:.03em;padding:6px 13px 5px;border-radius:999px}}
+.bd{{font-weight:400;font-size:{BODY_PX}px;line-height:1.17;margin-top:{8 if FIFA_ARG else 6}px}}
 .strip{{position:absolute;left:0;right:0;text-align:center;z-index:3;white-space:nowrap}}
 .s1{{top:944px;font-weight:900;font-size:17px;color:{WHITE}}} .s1 b{{color:{ORCHID};font-weight:900}}
 .s2{{top:976px;font-weight:400;font-size:15.5px;color:{WHITE}}}
@@ -88,7 +103,7 @@ CHECK = """() => {
 
 async def main():
     os.makedirs("out/collaterals", exist_ok=True)
-    out = "out/collaterals/terrathon_cricket_rules_A4_portrait"
+    out = "out/collaterals/" + OUT
     async with async_playwright() as pw:
         br = await pw.chromium.launch()
         pg = await br.new_page(viewport={"width": W, "height": H}, device_scale_factor=3.125)
