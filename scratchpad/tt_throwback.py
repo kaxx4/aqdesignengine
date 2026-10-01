@@ -1,101 +1,199 @@
-"""TerraThon CRICKET THROWBACK carousel (feed 1080x1350): cover + 7 photo slides + close. Real event photos only (engine/assets/terrathon/throwback_cricket/).
-Look: TerraThon black, tucked photo card + tilted slab (like the poster hero), shuriken furniture, StretchPro/Sigmar for the cover only, NeutralFace elsewhere.
-FACTS: captions describe only what is visible in each frame. The event/venue/date of the photos were not stated by the user, so none is claimed; the close ties to the
-UPCOMING Wicket Wars (3rd + 4th Oct, Turf XL, New Alipore, registrations closed per the site). Run: python scratchpad/tt_throwback.py"""
+"""TerraThon THROWBACK carousels (pickleball, fifa), 7 slides each. Usage: tt_throwback.py [pickleball|fifa]
+
+PICKLEBALL: TerraThon PICKLEBALL THROWBACK carousel (7 slides, feed 1080x1350). Real photos from the user's zip (dd68314d-pickleball.zip,
+HEIC -> JPEG, downscaled copies in engine/assets/terrathon/throwback/). IMG_6018 was a cricket turf, not pickleball, so it is unused.
+
+Look: TerraThon's (black ground + white flecks, blue shuriken furniture, orchid-bordered frames, cream chips, StretchPro title,
+Sigmar One sub sparingly, NeutralFace body). Photos sit in tilted orchid-bordered frames, the slab language, with a shuriken tucked on a
+frame corner. Every caption describes THAT photo. No year, score, name or count is invented; the only facts are PickleJam's own
+(2nd Oct, 11:11 Pick A Court, Rs. 750 per team of 2, pool Rs. 5,000, report 11:45am, matches 12pm to 7pm, registrations close 1 Oct).
+The index tag ("02 / 07") is the truthful carousel position. CTA reads LINK IN THE BIO (registrations are open until 1 Oct).
+
+Adaptation: the source photos are 9:16, cropped to the frame with a per-photo object-position (measured by looking).
+
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_throwback.py
+"""
 import asyncio, base64, importlib.util, io, os, random
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "scratchpad", "tt_events.py"))
 tt = importlib.util.module_from_spec(spec); spec.loader.exec_module(tt)
 core, B, W = tt.core, tt.B, tt.W
-from PIL import Image
+lay = tt.load("layout")
+GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL, SLAB = tt.GROUND, tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.CTA_FILL, tt.SLAB
 H = 1350
-GROUND, ORCHID, CREAM, INK, WHITE, SLAB = "#000000", tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.SLAB
-PH = "engine/assets/terrathon/throwback_cricket"
-# (file, headline, caption, object-position)   focus chosen by looking at each frame
-SLIDES = [
-    ("09", "BOWLERS BRINGING IT", "RUN-UP, RELEASE, REPEAT.", "50% 58%"),
-    ("15", "FULL SPEED AHEAD", "NO TIME TO WATCH THE SCOREBOARD.", "62% 50%"),
-    ("05", "THE WAITING ROOM", "FRONT ROW FOR THE NEXT BIG MOMENT.", "38% 40%"),
-    ("02", "BAT UP", "ORANGE STUMPS. GREEN TURF.", "50% 62%"),
-    ("08", "BEHIND THE STUMPS", "CROUCH. WATCH. CATCH.", "45% 60%"),
-    ("14", "THE UMPIRE'S CALL", "AND THE UMPIRE'S DECISION IS FINAL.", "40% 55%"),
-    ("18", "STUMPS. SORTED.", "SOME OVERS JUST GO TO PLAN.", "50% 66%"),
-]
-N = len(SLIDES)
+import sys
+SPORT = (sys.argv[1] if len(sys.argv) > 1 else "pickleball")
+TOTAL = 7
+# FIFA (zip a3070057-FIFA.zip): IMG_3842/3843 show winners holding PARABOX certificates (another event's branding + names) and are NOT used;
+# the WA00xx frames are from a sofa lounge, not the Battleground Gaming venue, so no caption names a venue. No year/score/name is claimed.
+SPORTS = {
+    "pickleball": dict(
+        dir="engine/assets/terrathon/throwback", edition="PICKLEBALL EDITION", hero_sticker="pickleball_set.png", back="PICKLEJAM IS BACK",
+        cover=("IMG_6057", "50% 100%"),
+        singles=[(2, "IMG_5997", "50% 72%", "EYES ON THE BALL", "LOW, FAST AND LOCKED IN", 600, False),
+                 (3, "IMG_6026", "50% 78%", "MID-AIR, UNBOTHERED", "THE OVERHEAD, CAUGHT ON CAMERA", 660, True),
+                 (4, "IMG_6085", "50% 72%", "SUN'S OUT, PADDLES OUT", "A WIDE SHOT OF A GOOD DAY", 660, False)],
+        collage=[("fa", "IMG_6046", 50, 110, 470, 620, -3, "50% 80%"), ("fb", "IMG_6048", 560, 170, 470, 620, 3, "50% 80%"), ("fc", "IMG_6059", 250, 830, 560, 400, -1.25, "50% 73%")],
+        collage_chip="TEAMS OF TWO", last=(6, "IMG_6060", "50% 88%", "READY FOR THE RETURN", "EVERY POINT STARTS LIKE THIS", 640, False),
+        rows=[("2ND OCTOBER, 2026", 900, 46), ("11:11 PICK A COURT", 900, 46), ("RS. 750 PER TEAM OF 2  |  POOL RS. 5,000", 400, 30),
+              ("REPORT BY 11:45AM  |  MATCHES 12PM TO 7PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_pickleball"),
+    "fifa": dict(
+        dir="engine/assets/terrathon/throwback_fifa", edition="FIFA EDITION", hero_sticker="controller.png", back="SOCCER STORM IS BACK",
+        cover=("IMG_5864", "50% 62%"),
+        singles=[(2, "IMG_3789", "50% 55%", "ALL EYES ON THE PITCH", "THE BIG SCREEN HAS THE FLOOR", 680, False),
+                 (3, "IMG_5875", "50% 100%", "PITCH SET", "PAD READY. THE SCENE BEFORE KICK-OFF", 400, False),
+                 (4, "IMG_5870", "50% 45%", "FULL TIME", "THE SCOREBOARD DOES NOT LIE", 420, False)],
+        collage=[("fa", "IMG_3796", 50, 110, 470, 620, -3, "50% 50%"), ("fb", "IMG_5861", 560, 170, 470, 620, 3, "50% 60%"), ("fc", "IMG_3791", 250, 830, 560, 400, -1.25, "50% 50%")],
+        collage_chip="THUMBS READY", last=(6, "IMG-20241019-WA0021", "50% 40%", "SOFA SEATS, REAL STAKES", "THREE PLAYERS, ONE PAD EACH", 780, False),
+        rows=[("3RD OCTOBER, 2026", 900, 46), ("BATTLEGROUND GAMING", 900, 46), ("PARTICIPATION FEE RS. 350  |  POOL RS. 2,500", 400, 30),
+              ("REPORT BY 11:15AM  |  MATCHES 11:30AM TO 1:30PM", 400, 30), ("REGISTRATIONS CLOSE 1ST OCTOBER", 900, 30)], out="throwback_fifa"),
+}
+CFG = SPORTS[SPORT]
+PHOTOS = CFG["dir"]
 
-def photo_uri(n):
-    im = Image.open(f"{PH}/{n}.jpg").convert("RGB")
-    if im.width > 1500: im = im.resize((1500, int(im.height * 1500 / im.width)))
-    buf = io.BytesIO(); im.save(buf, "JPEG", quality=90); return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
-async def slide(kind, out, idx=None):
-    els = []
-    def el(l, x, y, w, h): els.append((l, x, y, w, h))
-    def sticker(name, label, x, y, w, z=5):
-        im, src = tt.crop_to_alpha(name); h = w * im.height / im.width; el(label, x, y, w, h)
-        return f'<img src="{src}" class="measure" data-tag="{label}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:{z}">'
-    rnd = random.Random(7)
-    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
-    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>', f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
+def photo_src(n):
+    return "data:image/jpeg;base64," + base64.b64encode(open(f"{PHOTOS}/{n}.jpg", "rb").read()).decode()
 
-    CX, CY, CW, CH = 60, 122, 960, 800          # photo card
-    SX, SY, SW, SH = 47, 880, 986, 250          # slab (overlaps the card's lower edge: the photo is tucked, as on the posters)
-    if kind == "close":
-        CH = 0
-    # chip + counter
-    parts.append(f'<div class="measure" data-tag="chip" style="position:absolute;left:40px;top:44px;padding:9px 22px;border:5px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};color:{INK};font-family:var(--d);font-weight:900;font-size:26px;line-height:1;z-index:10">THROWBACK</div>'); el("chip", 40, 44, 220, 56)
-    if kind == "photo":
-        parts.append(f'<div class="measure" data-tag="count" style="position:absolute;right:40px;top:54px;font-family:var(--d);font-weight:900;font-size:26px;color:{WHITE};line-height:1;z-index:10">{idx + 1:02d} / {N:02d}</div>'); el("count", 880, 56, 160, 26)
 
-    if kind == "photo":
-        f, head, cap, pos = SLIDES[idx]
-        el("card", CX, CY, CW, CH)
-        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
-                     f'<img src="{photo_uri(f)}" style="width:100%;height:100%;object-fit:cover;object-position:{pos};display:block"></div>')
-        m = await B.measure_text([dict(text=head, font="d", size=100, weight=900)])
-        hp = min(70, 100 * 880 / m[0]["text_w"])
-        body = (f'<div style="font-weight:900;font-size:{hp}px;line-height:1">{head.replace("&", "&amp;")}</div>'
-                f'<div style="font-family:Eina,var(--e),sans-serif;font-weight:400;font-size:28px;line-height:1.2;margin-top:14px;max-width:860px;text-transform:uppercase;letter-spacing:.02em">{cap}</div>')
-    elif kind == "cover":
-        f = "10"; CH = 760
-        el("card", CX, CY + 60, CW, CH)
-        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY + 60}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
-                     f'<img src="{photo_uri(f)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 52%;display:block"></div>')
-        m = await B.measure_text([dict(text="CRICKEET", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
-                                  dict(text="THROWBACK", font="SigmarOne", size=100, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
-        t1 = 100 * 640 / m[0]["text_w"]; t2 = 100 * min(0.8, 700 / m[1]["text_w"])
-        body = (f'<div style="font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.05">CRICKEET</div>'
-                f'<div style="font-family:SigmarOne;-webkit-text-stroke:{tt.SG_STROKE * t2}px {INK};letter-spacing:{tt.SG_LS}em;font-size:{t2}px;line-height:1;margin-top:14px;color:{ORCHID}">THROWBACK</div>')
-    else:  # close
-        parts.append(sticker("cricket_set.png", "hero", 250, 150, 640, 3))
-        SY = 820; SH = 300
-        m = await B.measure_text([dict(text="WICKEET WAARS", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], extra_css=tt.FONT_CSS)
-        t1 = 100 * 800 / m[0]["text_w"]
-        st = f'font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.02'
-        body = (f'<div style="{st}">WICKEET WAARS</div>'
-                f'<div style="font-weight:400;font-size:30px;line-height:1.2;margin-top:16px">3RD + 4TH OCTOBER  |  TURF XL, NEW ALIPORE</div>')
-        cf = None
-    el("slab", SX - 6, SY - 12, SW + 12, SH + 24)
-    parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;transform:rotate(-1.25deg);background:{SLAB};border:19px solid {ORCHID};border-radius:47px;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:var(--d);color:{INK};white-space:nowrap;padding:0 18px">{body}</div>')
-    # stars on the card corners (constant furniture)
-    parts.append(sticker("shuriken.png", "star_a", 20, 300 if kind != "close" else 250, 92, 9))
-    parts.append(sticker("shuriken.png", "star_b", 968, 980 if kind != "close" else 780, 92, 9))
-    # footer
-    fy = 1250
-    parts.append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{fy}px;height:56px;z-index:9">'); el("logo", 27, fy, 320, 56)
-    ft = "SEE YOU AT THE TURF" if kind == "close" else ("WICKET WARS: 3RD + 4TH OCT" if kind == "cover" else "ALL FOR CHARITY")
-    fm = await B.measure_text([dict(text=ft, font="d", size=100, weight=900)]); ff = min(26, 100 * 560 / fm[0]["text_w"]); fw = fm[0]["text_w"] * ff / 100 + 64
-    parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{W - 27 - fw}px;top:{fy - 4}px;width:{fw}px;height:64px;border:6px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:{ff}px;white-space:nowrap;color:{INK}">{ft}</div>'); el("cta", W - 27 - fw, fy - 4, fw, 64)
-    html = B.page(W, H, GROUND, "".join(parts), grain=False)
-    ign = {("card", "slab"), ("star_a", "card"), ("star_b", "card"), ("star_b", "slab"), ("star_a", "slab"), ("hero", "slab"), ("chip", "card"), ("count", "card"), ("chip", "hero")}
-    tp = [("head", INK, SLAB, 60, True), ("cta", INK, tt.CTA_FILL, 24, True), ("chip", INK, tt.CTA_FILL, 26, True), ("count", WHITE, GROUND, 26, True)]
-    await B.render(html, out, W, H, elements=els, text_pairs=tp, containers=("slab",), page_bg=GROUND, expect_hero=True, margin=12, collision_ignore=ign, crop_tags=("card",))
+def rb(x, y, w, h, deg):
+    b = lay.rotated_bbox(x, y, w, h, deg)
+    return tuple(b) if not isinstance(b, dict) else (b["x"], b["y"], b["w"], b["h"])
+
+
+class Slide:
+    def __init__(self, idx, seed):
+        self.idx, self.els, self.parts = idx, [], []
+        rnd = random.Random(seed)
+        specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
+        self.parts += [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>',
+                       f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
+
+    def el(self, l, x, y, w, h): self.els.append((l, x, y, w, h))
+
+    def frame(self, tag, n, x, y, w, h, deg, pos="50% 50%", z=4):
+        self.parts.append(f'<div class="measure" data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;box-sizing:border-box;transform:rotate({deg}deg);'
+                          f'border:12px solid {ORCHID};border-radius:44px;overflow:hidden;background:#111;z-index:{z}">'
+                          f'<img src="{photo_src(n)}" style="width:100%;height:100%;object-fit:cover;object-position:{pos};display:block"></div>')
+        self.el(tag, *rb(x, y, w, h, deg))
+
+    def star(self, tag, x, y, size=120, z=8):
+        im, src = tt.crop_to_alpha("shuriken.png"); hh = size * im.height / im.width
+        self.parts.append(f'<img src="{src}" class="measure" data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;width:{size}px;height:{hh}px;z-index:{z}">')
+        self.el(tag, x, y, size, hh)
+
+    def chip(self, tag, txt, x, y, w, deg=-3, size=46, z=9):
+        h = size + 44
+        self.parts.append(f'<div class="measure" data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;box-sizing:border-box;transform:rotate({deg}deg);'
+                          f'border:6px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;white-space:nowrap;'
+                          f'font-family:var(--d);font-weight:900;font-size:{size}px;line-height:1;color:{INK};z-index:{z}">{txt}</div>')
+        self.el(tag, *rb(x, y, w, h, deg))
+
+    def text(self, tag, txt, x, y, w, size, weight=400, color=WHITE, align="center", z=6, lh=1.05):
+        self.parts.append(f'<div class="measure" data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;text-align:{align};color:{color};font-family:var(--d);'
+                          f'font-weight:{weight};font-size:{size}px;line-height:{lh};white-space:nowrap;z-index:{z}">{txt}</div>')
+        self.el(tag, x, y, w, size * 0.85)
+
+    def footer(self, cta=None):
+        ly = H - 27 - 56
+        self.parts.append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{ly}px;height:56px;z-index:9">'); self.el("logo", 27, ly, 320, 56)
+        if cta:
+            cw, chh = 400, 70; cx, cy = W - 27 - cw, H - 13 - chh
+            self.parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{cx}px;top:{cy}px;width:{cw}px;height:{chh}px;box-sizing:border-box;border:6px solid {ORCHID};border-radius:999px;background:{CTA_FILL};'
+                              f'display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:32px;color:{INK}">{cta}</div>')
+            self.el("cta", cx, cy, cw, chh)
+        else:
+            tw, th = 150, 50; tx, ty = W - 27 - tw, H - 27 - th
+            self.parts.append(f'<div class="measure" data-tag="idx" style="position:absolute;left:{tx}px;top:{ty}px;width:{tw}px;height:{th}px;box-sizing:border-box;border:5px solid {ORCHID};border-radius:999px;background:{CTA_FILL};'
+                              f'display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:26px;color:{INK}">{self.idx:02d} / {TOTAL:02d}</div>')
+            self.el("idx", tx, ty, tw, th)
+
+    def html(self):
+        return B.page(W, H, GROUND, "".join(self.parts), grain=False)
+
+
+def photo_slide(idx, n, pos, chip_txt, sub, chip_w, deg=-1.25, flip=False):
+    s = Slide(idx, 100 + idx)
+    fx, fy, fw, fh = 84, 96, 912, 1010
+    s.frame("frame", n, fx, fy, fw, fh, deg, pos)
+    s.star("star_c", fx - 44 if not flip else fx + fw - 90, fy + fh - 96, 128)
+    s.star("star_t", W - 27 - 120 if not flip else 27, 40, 100, z=8)
+    s.chip("chip", chip_txt, 215 if not flip else W - 215 - chip_w, fy + fh - 92, chip_w, deg=-3 if not flip else 3)
+    s.text("sub", sub, 60, fy + fh + 66, W - 120, 32, 400)
+    s.footer()
+    return s, ("frame_star", "star_c")
+
+
+async def build_all():
+    slides = []
+    # 1. COVER
+    s = Slide(1, 7)
+    m = await B.measure_text([dict(text="THROWBACK", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
+                              dict(text=CFG["edition"], font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
+    tpx = 100 * 780 / m[0]["text_w"]; spx = 50 * min(1.0, 700 / m[1]["text_w"])
+    s.text("t1", "TERRATHON", (W - 420) / 2, 58, 420, 44, 400, CREAM_HALO)
+    s.parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 800) / 2}px;width:800px;top:112px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
+                   f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">THROWBACK</div>'); s.el("t2", (W - 780) / 2, 116, 780, tpx * .82)
+    s.parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{112 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
+                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">{CFG["edition"]}</div>'); s.el("t3", (W - 700) / 2, 112 + tpx * 1.05 + 2, 700, spx * .82)
+    fy = 112 + tpx * 1.05 + spx + 46
+    s.frame("frame", CFG["cover"][0], 110, fy, 860, 1220 - fy - 60, -1.25, CFG["cover"][1])
+    s.star("star_tl", 22, 70, 108); s.star("star_tr", W - 22 - 108, 84, 108); s.star("star_c", 110 - 50, 1220 - 60 - 90, 120)
+    s.chip("chip", "SWIPE FOR THE REWIND", 300, 1220 - 60 - 30, 640, deg=-2.5, size=38)
+    s.footer()
+    slides.append((s, ("frame", "star_c"), ("frame", "chip")))
+    # 2-4. single photos
+    for idx, n, pos, chip, sub, cw, flip in CFG["singles"]:
+        s, _ = photo_slide(idx, n, pos, chip, sub, cw, deg=-1.25 if not flip else 1.25, flip=flip)
+        slides.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t")))
+    # 5. COLLAGE (three frames)
+    s = Slide(5, 105)
+    for tg, n, x, y, w, h, dg, ps in CFG["collage"]:
+        s.frame(tg, n, x, y, w, h, dg, ps)
+    s.star("star_a", 470, 80, 110); s.star("star_b", 22, 690, 120); s.star("star_c", W - 150, 1020, 110)
+    s.chip("chip", CFG["collage_chip"], 590, 1150, 420, deg=-3, size=40)
+    s.footer()
+    slides.append((s, ("fa", "star_a"), ("fa", "star_b"), ("fb", "star_a"), ("fa", "fb"), ("fa", "fc"), ("fb", "fc"), ("fc", "chip"), ("fb", "star_c"), ("fc", "star_c"), ("fc", "star_b"), ("fa", "chip"), ("fb", "chip"), ("star_c", "chip")))
+    # 6. one more photo
+    i6, n6, p6, c6, sb6, w6, f6 = CFG["last"]
+    s, _ = photo_slide(i6, n6, p6, c6, sb6, w6, deg=-1.25)
+    slides.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t")))
+    # 7. CTA
+    s = Slide(7, 107)
+    m = await B.measure_text([dict(text="YOUR TURN", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
+                              dict(text=CFG["back"], font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
+    tpx = 100 * 800 / m[0]["text_w"]; spx = 50 * min(1.0, 700 / m[1]["text_w"])
+    s.parts.append(f'<div class="measure" data-tag="t2" style="position:absolute;left:{(W - 940) / 2}px;width:940px;top:96px;text-align:center;color:{WHITE};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * tpx}px {WHITE};'
+                   f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">YOUR TURN</div>'); s.el("t2", (W - 800) / 2, 100, 800, tpx * .82)
+    s.parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{96 + tpx * 1.05}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
+                   f'-webkit-text-stroke:{tt.SG_STROKE * spx}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{spx}px;line-height:1;white-space:nowrap;z-index:6">{CFG["back"]}</div>'); s.el("t3", (W - 700) / 2, 96 + tpx * 1.05 + 2, 700, spx * .82)
+    im, src = tt.crop_to_alpha(CFG["hero_sticker"]); ph = 440; pw = ph * im.width / im.height
+    s.parts.append(f'<img src="{src}" class="measure" data-tag="hero" style="position:absolute;left:{(W - pw) / 2}px;top:330px;width:{pw}px;height:{ph}px;z-index:4">'); s.el("hero", (W - pw) / 2, 330, pw, ph)
+    s.star("star_tl", 60, 330, 110); s.star("star_tr", W - 60 - 110, 400, 110)
+    sx, sy, sw, sh = 84, 800, 912, 430
+    s.parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{sx}px;top:{sy}px;width:{sw}px;height:{sh}px;box-sizing:border-box;transform:rotate(-1.25deg);background:{SLAB};border:20px solid {ORCHID};border-radius:52px;z-index:8"></div>')
+    s.el("slab", *rb(sx, sy, sw, sh, -1.25))
+    rows = CFG["rows"]
+    ty = sy + 52
+    for i, (txt, wt, sz) in enumerate(rows):
+        s.parts.append(f'<div class="measure" data-tag="row{i}" style="position:absolute;left:{sx + 40}px;width:{sw - 80}px;top:{ty}px;text-align:center;color:{INK};font-family:var(--d);font-weight:{wt};font-size:{sz}px;line-height:1;white-space:nowrap;z-index:9">{txt}</div>')
+        s.el(f"row{i}", sx + 40, ty, sw - 80, sz * .85); ty += sz + (26 if i == 1 else 18)
+    s.footer(cta="LINK IN THE BIO")
+    slides.append((s, ("hero", "star_tl"), ("hero", "star_tr")) + tuple(("slab", f"row{i}") for i in range(5)) + (("hero", "slab"),))
+    return slides
+
 
 async def main():
-    d = "out/collaterals/throwback_cricket"; os.makedirs(d, exist_ok=True)
+    slides = await build_all()
+    outdir = "out/collaterals/" + CFG["out"]; os.makedirs(outdir, exist_ok=True)
+    text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", WHITE, GROUND, 32, False), ("chip", INK, CTA_FILL, 42, True), ("idx", INK, CTA_FILL, 26, True), ("row", INK, SLAB, 46, True), ("cta", INK, CTA_FILL, 32, True)]
     async with B.session():
-        await slide("cover", f"{d}/00_cover.png")
-        for i, s in enumerate(SLIDES): await slide("photo", f"{d}/{i + 1:02d}_{s[0]}.png", idx=i)
-        await slide("close", f"{d}/{N + 1:02d}_close.png")
-    print("done")
+        for s, *ign in slides:
+            out = f"{outdir}/slide_{s.idx:02d}.png"
+            containers = ("slab",) if s.idx == 7 else ()
+            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, containers=containers, page_bg=GROUND,
+                           expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12, crop_tags=("frame", "fa", "fb", "fc"))
+            print("done", out)
+
 asyncio.run(main())
