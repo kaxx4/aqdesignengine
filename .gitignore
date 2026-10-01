@@ -44,3 +44,6 @@ engine/assets/terrathon/promo_photos/*/*.jpg
 engine/assets/terrathon/day_photos/*.jpg
 scratchpad/cricket_web/
 scratchpad/cricket_zip/
+
+# TerraThon carousel photos: real people at events, PUBLIC repo. Regenerate from the source zips with scratchpad/tt_reasons8_prep.py
+engine/assets/terrathon/carousel_photos/
