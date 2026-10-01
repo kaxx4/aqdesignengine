@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule | TerraThon 2026</title>
+<meta name="description" content="TerraThon 2026 schedule: pickleball on Fri 2 Oct, cricket on Sat 3 and Sun 4 Oct, FIFA on Sat 3 Oct. Report times, match windows, venues and fees.">
+<meta name="theme-color" content="#000000">
+<style>
+@font-face{font-family:'Eina';src:url('fonts/Eina-Regular.woff2') format('woff2'),url('fonts/Eina-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Eina';src:url('fonts/Eina-SemiBold.woff2') format('woff2'),url('fonts/Eina-SemiBold.ttf') format('truetype');font-weight:600 900;font-display:swap}
+@font-face{font-family:'NeutralFace';src:url('fonts/NeutralFace.woff2') format('woff2'),url('fonts/NeutralFace.otf') format('opentype');font-weight:400;font-display:swap}
+@font-face{font-family:'NeutralFace';src:url('fonts/NeutralFace-Bold.woff2') format('woff2'),url('fonts/NeutralFace-Bold.otf') format('opentype');font-weight:700 900;font-display:swap}
+
+:root{
+  --ground:#000;
+  --panel:#0d0d10;
+  --line:#26262c;
+  --text:#f5f5f5;
+  --muted:#b9b9c2;          /* 10.5:1 on --ground */
+  --cream:#f3ecde;
+  --ink:#0a0a0a;
+  --orchid:#de68f0;         /* pickleball */
+  --green:#2fd284;          /* cricket */
+  --blue:#0396ff;           /* FIFA */
+  --hour:76px;              /* timeline scale: px per hour */
+  --body:'Eina',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --display:'NeutralFace',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--ground);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.55;min-height:100vh;
+  background-image:radial-gradient(1px 1px at 12% 18%,#fff8 50%,transparent 51%),radial-gradient(1px 1px at 78% 8%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 44% 62%,#fff5 50%,transparent 51%),radial-gradient(1px 1px at 91% 74%,#fff7 50%,transparent 51%),radial-gradient(1px 1px at 23% 88%,#fff6 50%,transparent 51%);
+  background-attachment:fixed}
+a{color:inherit}
+h1,h2,h3,h4,h5,.brand,.btn,.eyebrow,.tag,.tl .hd,.blk strong,dl.meta dd,.today-tag,.kick,.facts b,.skip,.nav a.link,.axis span,.rep i,.legend,.tl small{font-family:var(--display)}
+.blk span,dl.meta dt,dl.meta dd small,.status,.lede,.sub,.panel p,.panel li,footer{font-family:var(--body)}
+.status b,.panel b{font-weight:600}
+:focus-visible{outline:3px solid var(--cream);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1180px,100% - 32px);margin-inline:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:16px;top:-60px;background:var(--cream);color:var(--ink);padding:10px 16px;border-radius:999px;font-weight:900;z-index:50}
+.skip:focus{top:12px}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:0;z-index:20;background:#000c;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:22px;min-height:64px;flex-wrap:wrap;padding-block:8px}
+.brand{font-weight:900;font-size:19px;letter-spacing:.02em;text-decoration:none;margin-right:auto}
+.brand span{color:var(--orchid)}
+.nav a.link{text-decoration:none;color:var(--muted);font-size:15px;padding:6px 2px;border-bottom:2px solid transparent}
+.nav a.link:hover{color:var(--text)}
+.nav a.link[aria-current="page"]{color:var(--text);border-bottom-color:var(--orchid)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 22px;border-radius:999px;border:3px solid var(--orchid);background:var(--cream);color:var(--ink);font-family:inherit;font-weight:900;font-size:15px;letter-spacing:.01em;text-decoration:none;cursor:pointer;transition:transform .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-2px);background:#fff}
+.btn.ghost{background:transparent;color:var(--text);border-color:#3a3a44}
+.btn.ghost:hover{background:#15151a;border-color:var(--cream)}
+.btn[aria-disabled="true"]{background:#1a1a1f;color:var(--muted);border-color:#33333b;cursor:not-allowed;transform:none}
+
+/* ---------- hero ---------- */
+.hero{padding:56px 0 30px;position:relative}
+.eyebrow{display:inline-block;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--cream);border:3px solid var(--orchid);padding:6px 16px;border-radius:999px;font-weight:900}
+h1{font-weight:900;font-size:clamp(56px,11vw,132px);line-height:.92;letter-spacing:-.02em;margin:22px 0 14px;text-transform:uppercase}
+h1 em{font-style:normal;color:var(--orchid)}
+.lede{max-width:34ch;font-size:clamp(19px,2.4vw,24px);color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px;padding:0;list-style:none}
+.facts li{padding:10px 18px;border:2px solid var(--line);border-radius:999px;font-size:16px;background:var(--panel)}
+.facts b{font-weight:900;color:var(--text)}
+.star{position:absolute;width:74px;right:4%;top:44px;transform:rotate(12deg);opacity:.95}
+.star.b{width:52px;right:14%;top:210px;transform:rotate(-14deg)}
+
+/* ---------- overview timeline (desktop only, decorative: the cards below carry the same data) ---------- */
+h2{font-weight:900;font-size:clamp(30px,4.4vw,48px);line-height:1;text-transform:uppercase;letter-spacing:-.01em}
+.section{padding:38px 0}
+.section > .wrap > p.sub{color:var(--muted);margin:10px 0 26px;max-width:60ch}
+.tl{display:none}
+@media (min-width:900px){
+  .tl{display:grid;grid-template-columns:64px repeat(3,1fr);gap:0 18px;padding:22px;border:2px solid var(--line);border-radius:28px;background:var(--panel)}
+  .tl .hd{font-weight:900;font-size:21px;text-transform:uppercase;padding:0 0 14px;line-height:1.1}
+  .tl .hd small{display:block;font-weight:400;font-size:14px;color:var(--muted);letter-spacing:.06em}
+  .axis,.track{position:relative;height:calc(var(--hour) * 10)}
+  .axis span{position:absolute;right:0;transform:translateY(-50%);font-size:13px;color:var(--muted);top:calc((var(--h) - 9) * var(--hour))}
+  .track{border-left:2px dashed var(--line)}
+  .track::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(var(--hour) - 1px),#1c1c22 calc(var(--hour) - 1px),#1c1c22 var(--hour))}
+  .blk{position:absolute;top:calc((var(--s) - 9) * var(--hour) + 2px);height:calc((var(--e) - var(--s)) * var(--hour) - 4px);left:8px;right:8px;border-radius:20px;padding:12px 14px;color:var(--ink);border:3px solid var(--cream);overflow:hidden;text-decoration:none;display:flex;flex-direction:column;gap:2px}
+  .blk.half-a{right:calc(50% + 4px)} .blk.half-b{left:calc(50% + 4px)}
+  .blk strong{font-weight:900;font-size:19px;line-height:1.05;text-transform:uppercase}
+  .blk span{font-size:14px;line-height:1.25}
+  .blk.p{background:var(--orchid)} .blk.c{background:var(--green)} .blk.f{background:var(--blue)}
+  .rep{position:absolute;left:8px;right:8px;top:calc((var(--t) - 9) * var(--hour));height:0;border-top:2px dotted var(--cream);z-index:2}
+  .rep.half-a{right:calc(50% + 4px)} .rep.half-b{left:calc(50% + 4px)}
+  .rep i{position:absolute;left:0;bottom:3px;font-style:normal;font-size:12px;color:var(--cream);background:var(--panel);padding:0 6px 0 0;letter-spacing:.04em}
+  .tl .col.is-today .hd{color:var(--cream)}
+  .tl .col.is-today .track{border-left-color:var(--cream)}
+}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:14px;list-style:none;padding:0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.legend .r{display:inline-block;width:22px;border-top:2px dotted var(--cream);margin-right:8px;vertical-align:4px}
+
+/* ---------- day-by-day cards (the semantic schedule) ---------- */
+.day{margin-top:44px}
+.day > header{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--line)}
+.day h3{font-weight:900;font-size:clamp(28px,4vw,42px);text-transform:uppercase;line-height:1}
+.day h3 b{color:var(--cream)}
+.today-tag{display:none;font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:var(--cream);color:var(--ink);border:3px solid var(--orchid);border-radius:999px;padding:3px 12px}
+.day.is-today .today-tag{display:inline-block}
+.cards{display:grid;gap:18px;grid-template-columns:1fr}
+@media (min-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+.card{position:relative;border:3px solid var(--sport);border-radius:28px;background:var(--panel);padding:26px 24px 22px;display:flex;flex-direction:column;gap:14px}
+.card.p{--sport:var(--orchid)} .card.c{--sport:var(--green)} .card.f{--sport:var(--blue)}
+.card .tag{position:absolute;top:-16px;left:22px;background:var(--sport);color:var(--ink);font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:5px 14px;border:3px solid var(--cream)}
+.card h4{font-weight:900;font-size:clamp(30px,4.6vw,40px);text-transform:uppercase;line-height:1;margin-top:6px}
+.card .fmt{color:var(--muted);font-size:16px;margin-top:-6px}
+dl.meta{display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:2px 0 0;font-size:16px}
+dl.meta dt{color:var(--muted)}
+dl.meta dd{margin:0;font-weight:900}
+dl.meta dd small{font-family:var(--body);font-weight:400;color:var(--muted);font-size:14px;display:block}
+.card .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:6px}
+.status{font-size:14px;color:var(--muted)}
+.status b{color:var(--text);font-weight:900}
+
+/* ---------- info strips ---------- */
+.panel{border:2px solid var(--line);border-radius:28px;background:var(--panel);padding:26px 24px}
+.grid2{display:grid;gap:18px;grid-template-columns:1fr}
+@media (min-width:860px){.grid2{grid-template-columns:1.2fr 1fr}}
+.panel h2{font-size:clamp(26px,3.4vw,34px);margin-bottom:14px}
+.panel ul{padding-left:20px;display:grid;gap:10px}
+.panel li::marker{color:var(--orchid)}
+.panel p{color:var(--muted)}
+.panel p + p{margin-top:10px}
+.mini{border-color:var(--cream);background:linear-gradient(135deg,#15111a,#0d0d10)}
+.mini .kick{color:var(--orchid);font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+.mini h2{margin:6px 0 10px}
+
+/* ---------- footer ---------- */
+footer{margin-top:60px;border-top:1px solid var(--line);padding:38px 0 46px;color:var(--muted);font-size:15px}
+footer .cols{display:grid;gap:26px;grid-template-columns:1fr}
+@media (min-width:760px){footer .cols{grid-template-columns:1.4fr 1fr 1fr}}
+footer h5{color:var(--text);font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+footer a{text-decoration:none;display:block;padding:3px 0}
+footer a:hover{color:var(--text);text-decoration:underline}
+footer .fine{margin-top:26px;font-size:13px;color:#8d8d97}
+
+@media (max-width:600px){
+  .nav .wrap{gap:12px 16px}
+  .brand{width:100%}
+  .star{display:none}
+  .card{padding:24px 18px 20px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to schedule</a>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="https://www.ngoaquaterra.com/terrathon">TERRATHON<span>26</span></a>
+    <a class="link" href="https://www.ngoaquaterra.com/terrathon/schedule" aria-current="page">Schedule</a>
+    <a class="link" href="https://www.ngoaquaterra.com/terrathon/rules">Rules</a>
+    <a class="link" href="https://www.ngoaquaterra.com/terrathon/contact">Contact</a>
+    <a class="btn" href="https://www.ngoaquaterra.com/terrathon/register">Register Now</a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">TerraThon 2026</span>
+      <h1>The <em>schedule</em></h1>
+      <p class="lede">Three sports over three days. Report early, play late, and carry your ID.</p>
+      <ul class="facts">
+        <li><b>2 to 4 Oct</b> 2026</li>
+        <li><b>3</b> sports</li>
+        <li><b>₹15,000</b> in prizes</li>
+        <li>A <b>fundraiser</b> for AquaTerra</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Overview: decorative timeline (the day-by-day cards below carry every fact) -->
+  <section class="section" aria-labelledby="ov">
+    <div class="wrap">
+      <h2 id="ov">At a glance</h2>
+      <p class="sub">Dotted lines mark the report-by time. Solid blocks are the match windows.</p>
+      <div class="tl" aria-hidden="true">
+        <div class="axis" style="grid-row:2"><span style="--h:9">9am</span><span style="--h:11">11am</span><span style="--h:13">1pm</span><span style="--h:15">3pm</span><span style="--h:17">5pm</span><span style="--h:19">7pm</span></div>
+
+        <div class="col" data-date="2026-10-02" style="display:contents">
+          <div class="hd" style="grid-row:1;grid-column:2">Fri 2 Oct<small>Pickleball</small></div>
+          <div class="track" style="grid-row:2;grid-column:2">
+            <div class="rep" style="--t:11.75"><i>Report 11:45</i></div>
+            <div class="blk p" style="--s:12;--e:19"><strong>Pickleball</strong><span>Matches 12pm to 7pm</span><span>11:11 Pick A Court</span></div>
+          </div>
+        </div>
+
+        <div class="col" data-date="2026-10-03" style="display:contents">
+          <div class="hd" style="grid-row:1;grid-column:3">Sat 3 Oct<small>Cricket and FIFA</small></div>
+          <div class="track" style="grid-row:2;grid-column:3">
+            <div class="rep half-a" style="--t:9.75"><i>Report 9:45</i></div>
+            <div class="blk c half-a" style="--s:10;--e:16"><strong>Cricket</strong><span>Day 1, 10am to 4pm</span><span>Turf XL, New Alipore</span></div>
+            <div class="rep half-b" style="--t:11.25"><i>Report 11:15</i></div>
+            <div class="blk f half-b" style="--s:11.5;--e:13.5"><strong>FIFA</strong><span>11:30am to 1:30pm</span><span>Battlegrounds</span></div>
+          </div>
+        </div>
+
+        <div class="col" data-date="2026-10-04" style="display:contents">
+          <div class="hd" style="grid-row:1;grid-column:4">Sun 4 Oct<small>Cricket</small></div>
+          <div class="track" style="grid-row:2;grid-column:4">
+            <div class="rep" style="--t:9.75"><i>Report 9:45</i></div>
+            <div class="blk c" style="--s:10;--e:14"><strong>Cricket</strong><span>Day 2, 10am to 2pm</span><span>Turf XL, New Alipore</span></div>
+          </div>
+        </div>
+      </div>
+      <ul class="legend" aria-hidden="true">
+        <li><i style="background:var(--orchid)"></i>Pickleball</li>
+        <li><i style="background:var(--green)"></i>Cricket</li>
+        <li><i style="background:var(--blue)"></i>FIFA</li>
+        <li><span class="r"></span>Report by</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Day by day -->
+  <section class="section" aria-labelledby="dbd">
+    <div class="wrap">
+      <h2 id="dbd">Day by day</h2>
+
+      <article class="day" id="fri" data-date="2026-10-02">
+        <header><h3><b>Fri 2</b> Oct</h3><span class="today-tag">Today</span></header>
+        <div class="cards">
+          <section class="card p" aria-labelledby="c-pb">
+            <span class="tag">Sport 1 of 3</span>
+            <h4 id="c-pb">Pickleball</h4>
+            <p class="fmt">Doubles, league into knockouts</p>
+            <dl class="meta">
+              <dt>Report by</dt><dd>11:45 am</dd>
+              <dt>Matches</dt><dd>12pm to 7pm</dd>
+              <dt>Venue</dt><dd>11:11 Pick A Court</dd>
+              <dt>Team</dt><dd>2 players<small>₹750 per team</small></dd>
+              <dt>Prize pool</dt><dd>₹5,000<small>₹3,000 winner · ₹2,000 runner-up</small></dd>
+            </dl>
+            <p class="status">Bring your own paddle. Limited paddles on prior request. <b>Registrations close 1 Oct.</b></p>
+            <div class="row">
+              <a class="btn" href="https://www.ngoaquaterra.com/terrathon/register/pickleball">Register</a>
+              <a class="btn ghost" href="https://www.ngoaquaterra.com/terrathon/pickleball">Sport details</a>
+              <button class="btn ghost cal" type="button" data-title="TerraThon Pickleball" data-loc="11:11 Pick A Court" data-date="20261002" data-start="1145" data-end="1900">Add to calendar</button>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <article class="day" id="sat" data-date="2026-10-03">
+        <header><h3><b>Sat 3</b> Oct</h3><span class="today-tag">Today</span></header>
+        <div class="cards">
+          <section class="card c" aria-labelledby="c-cr1">
+            <span class="tag">Sport 2 of 3 · Day 1</span>
+            <h4 id="c-cr1">Cricket</h4>
+            <p class="fmt">One innings, straight knockout</p>
+            <dl class="meta">
+              <dt>Report by</dt><dd>9:45 am</dd>
+              <dt>Matches</dt><dd>10am to 4pm</dd>
+              <dt>Venue</dt><dd>Turf XL, New Alipore</dd>
+              <dt>Team</dt><dd>7 + 1 substitute<small>₹2,100 per team</small></dd>
+              <dt>Prize pool</dt><dd>₹7,500<small>₹4,500 winner · ₹3,000 runner-up</small></dd>
+            </dl>
+            <p class="status"><b>Registrations closed.</b> Played across Saturday and Sunday.</p>
+            <div class="row">
+              <a class="btn ghost" href="https://www.ngoaquaterra.com/terrathon/cricket">Sport details</a>
+              <button class="btn ghost cal" type="button" data-title="TerraThon Cricket, Day 1" data-loc="Turf XL, New Alipore" data-date="20261003" data-start="0945" data-end="1600">Add to calendar</button>
+            </div>
+          </section>
+
+          <section class="card f" aria-labelledby="c-fifa">
+            <span class="tag">Sport 3 of 3</span>
+            <h4 id="c-fifa">FIFA</h4>
+            <p class="fmt">Solo league, one controller</p>
+            <dl class="meta">
+              <dt>Report by</dt><dd>11:15 am</dd>
+              <dt>Matches</dt><dd>11:30am to 1:30pm</dd>
+              <dt>Venue</dt><dd>Battlegrounds, Bhowanipore</dd>
+              <dt>Team</dt><dd>Solo<small>₹350 per player</small></dd>
+              <dt>Prize pool</dt><dd>₹2,500<small>₹1,500 winner · ₹1,000 runner-up</small></dd>
+            </dl>
+            <p class="status">PS5, EA FC 27, 1v1 knockouts. No kit to bring. <b>Registrations close 1 Oct.</b></p>
+            <div class="row">
+              <a class="btn" href="https://www.ngoaquaterra.com/terrathon/register/fifa">Register</a>
+              <a class="btn ghost" href="https://www.ngoaquaterra.com/terrathon/fifa">Sport details</a>
+              <button class="btn ghost cal" type="button" data-title="TerraThon FIFA" data-loc="Battlegrounds, Bhowanipore" data-date="20261003" data-start="1115" data-end="1330">Add to calendar</button>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      <article class="day" id="sun" data-date="2026-10-04">
+        <header><h3><b>Sun 4</b> Oct</h3><span class="today-tag">Today</span></header>
+        <div class="cards">
+          <section class="card c" aria-labelledby="c-cr2">
+            <span class="tag">Sport 2 of 3 · Day 2</span>
+            <h4 id="c-cr2">Cricket</h4>
+            <p class="fmt">One innings, straight knockout</p>
+            <dl class="meta">
+              <dt>Report by</dt><dd>9:45 am</dd>
+              <dt>Matches</dt><dd>10am to 2pm</dd>
+              <dt>Venue</dt><dd>Turf XL, New Alipore</dd>
+              <dt>Team</dt><dd>7 + 1 substitute<small>₹2,100 per team</small></dd>
+              <dt>Prize pool</dt><dd>₹7,500<small>₹4,500 winner · ₹3,000 runner-up</small></dd>
+            </dl>
+            <p class="status">The draw is settled across the weekend, so every match is effectively a final.</p>
+            <div class="row">
+              <a class="btn ghost" href="https://www.ngoaquaterra.com/terrathon/cricket">Sport details</a>
+              <button class="btn ghost cal" type="button" data-title="TerraThon Cricket, Day 2" data-loc="Turf XL, New Alipore" data-date="20261004" data-start="0945" data-end="1400">Add to calendar</button>
+            </div>
+          </section>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="gtk">
+    <div class="wrap grid2">
+      <div class="panel">
+        <h2 id="gtk">Before you come</h2>
+        <ul>
+          <li><b>Age:</b> born on or after 1 January 2005. Every player in a team has to meet this.</li>
+          <li><b>ID:</b> carry your school or college ID to every match.</li>
+          <li><b>Timing:</b> report by the time on your card. The match window starts after it.</li>
+          <li><b>Rules:</b> the umpire's and referee's decisions are final. No appeals. Full rules are on the <a href="https://www.ngoaquaterra.com/terrathon/rules">rules page</a>.</li>
+        </ul>
+      </div>
+      <div class="panel mini">
+        <span class="kick">Same weekend</span>
+        <h2>TerraThon Mini-Fete</h2>
+        <p><b>3rd and 4th October, Turf XL, New Alipore.</b> Mini-games, stalls, a photobooth and a lottery. Open to all, and all for charity.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ask">
+    <div class="wrap">
+      <div class="panel">
+        <h2 id="ask">Questions about a slot?</h2>
+        <p>Message Pratyaksh on WhatsApp and pick the sport, so we can answer faster.</p>
+        <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:16px">
+          <a class="btn" href="https://wa.me/919830554654?text=Hi%2C%20a%20question%20about%20the%20TerraThon%20schedule%3A%20">WhatsApp Pratyaksh · 98305 54654</a>
+          <a class="btn ghost" href="https://www.ngoaquaterra.com/terrathon/register">Register</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <h5>TerraThon 2026</h5>
+        <p>A three-sport fundraiser run by Team AquaTerra, a student-led volunteer organisation in Kolkata.</p>
+        <p style="margin-top:8px">Registered NGO · 12A and 80G certified</p>
+      </div>
+      <div>
+        <h5>TerraThon</h5>
+        <a href="https://www.ngoaquaterra.com/terrathon/register">Register Now</a>
+        <a href="https://www.ngoaquaterra.com/terrathon/schedule">Schedule</a>
+        <a href="https://www.ngoaquaterra.com/terrathon/contact">Contact</a>
+      </div>
+      <div>
+        <h5>AquaTerra</h5>
+        <a href="https://www.ngoaquaterra.com/">ngoaquaterra.com</a>
+        <a href="https://instagram.com/aquaterra.live">@aquaterra.live</a>
+        <a href="https://instagram.com/ngo.aquaterra">@ngo.aquaterra</a>
+        <a href="mailto:ngo.aquaterra@gmail.com">ngo.aquaterra@gmail.com</a>
+      </div>
+    </div>
+    <p class="fine">© 2026 Team AquaTerra. Entry fees are collected by UPI into AquaTerra's collection account.</p>
+  </div>
+</footer>
+
+<script>
+/* Progressive enhancements only. The page is complete without JavaScript. */
+(function () {
+  try {
+    // 1. Mark today's day (Asia/Kolkata), so people land on what matters.
+    var parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date()); // YYYY-MM-DD
+    document.querySelectorAll('[data-date]').forEach(function (el) {
+      if (el.getAttribute('data-date') === parts && !el.classList.contains('cal')) el.classList.add('is-today');
+    });
+    var t = document.querySelector('.day.is-today');
+    if (t && !location.hash) t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  } catch (e) {}
+
+  // 2. Add to calendar: one .ics per button, floating in Asia/Kolkata.
+  document.querySelectorAll('button.cal').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var d = b.dataset, stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+      var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//AquaTerra//TerraThon 2026//EN', 'BEGIN:VEVENT',
+        'UID:' + d.date + d.start + '-' + d.title.replace(/\W+/g, '') + '@ngoaquaterra.com', 'DTSTAMP:' + stamp,
+        'DTSTART;TZID=Asia/Kolkata:' + d.date + 'T' + d.start + '00', 'DTEND;TZID=Asia/Kolkata:' + d.date + 'T' + d.end + '00',
+        'SUMMARY:' + d.title, 'LOCATION:' + d.loc, 'DESCRIPTION:Report by ' + d.start.slice(0, 2) + ':' + d.start.slice(2) + '. Carry your school or college ID.',
+        'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+      a.download = d.title.toLowerCase().replace(/\W+/g, '-') + '.ics';
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+  });
+})();
+</script>
+</body>
+</html>

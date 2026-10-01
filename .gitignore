@@ -37,3 +37,13 @@ desktop.ini
 
 # Obsidian vault workspace state (not part of the note content)
 AQ Design Engine/.obsidian/workspace*.json
+
+# Real event photos supplied by the user: kept out of the repo (personal images, incl. minors). Regenerable from the zip.
+engine/assets/terrathon/throwback_cricket/
+engine/assets/terrathon/promo_photos/*/*.jpg
+engine/assets/terrathon/day_photos/*.jpg
+scratchpad/cricket_web/
+scratchpad/cricket_zip/
+
+# TerraThon carousel photos: real people at events, PUBLIC repo. Regenerate from the source zips with scratchpad/tt_reasons8_prep.py
+engine/assets/terrathon/carousel_photos/
