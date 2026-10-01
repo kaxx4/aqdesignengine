@@ -22,17 +22,24 @@ GREEN = "#2FD284"     # TerraThon hero-sticker green (brain/TERRATHON.md sec 4)
 import sys
 SPORT = sys.argv[1] if len(sys.argv) > 1 else "cricket"
 SPORTS = {
+    # CRICKET: rewritten 2026-09-30 from the organisers' 19-rule text. Changes vs the first version: scannable Aadhaar ID (settles the old
+    # DigiLocker / school-ID conflict), late-arrival penalties, bat and ball rules, squad is "8 players" (no 7 + 1). The "20 minutes before"
+    # reporting number is NOT printed: the new text's rule 6 is cut off mid-sentence ("must report at least."), so the number is unconfirmed.
+    # Prize pool (Rs 7,500: 4,500 + 3,000) is rule 17 and is not on this poster; bat/ball are rules 18-19.
     "cricket": dict(
         title="WICKEET WAARS", info=("SAT 3 + SUN 4 OCT  |  TURF XL, NEW ALIPORE  |  ", "REPORT BY 9:45AM"),
-        strip=("TEAM REPORTS 20 MIN BEFORE ITS MATCH  |  ", "UMPIRE'S DECISION IS FINAL"), strip2="NO ABUSE. NO VAPES, ALCOHOL OR SIMILAR SUBSTANCES.",
+        strip=("NON-SPORTING APPEALS ARE PENALISED  |  ", "UMPIRE'S DECISION IS FINAL"), strip2="ABUSE MEANS DISQUALIFICATION OR HEAVY PENALTIES. NO VAPES OR ALCOHOL.",
         cta="SEE YOU 3 + 4 OCT", out="terrathon_cricket_rules.png",
+        body=21, lh=1.18, gap=8, pad=12, chip_px=24, chip_pad=6, rows=4, geo=(290, 204, 12),
         cards=[
-            ("WHO CAN PLAY", "Born on or after 1 January 2005. Every player must qualify, not just the captain. IDs are checked, and no ID on time can mean disqualification."),
-            ("FORMAT", "One innings each, straight knockout. 5 overs, and the fielding side has 15 minutes to finish. 8 players a team (7 + 1 sub), one jersey colour. Bring your own bats and gloves."),
-            ("BOWLING", "Full-arm only, with a run-up. No underarm, standing, sling-action or chucking. At least 4 bowlers a match. One bowler may bowl 2 overs, not back to back."),
-            ("POWERPLAY", "One Powerplay over per team, and all runs in it count double. It cannot be the last over. Call it before the bowler is picked, or the second-last over becomes it."),
-            ("SCORING", "Wides and no balls give 3 runs and count as a ball. In the final over they are not legal balls and give 1 run. Overthrows are live: every valid run counts."),
-            ("CEILING NET", "Ball hits the ceiling net and is caught straight after: the batter is out. If it touches a side-wall net first, then it is caught: not out."),
+            ("WHO CAN PLAY", "Born on or after 1 January 2005, verified by a scannable Aadhaar ID. No ID on time can mean disqualification in a dispute."),
+            ("FORMAT", "One innings each, straight knockout. 5 overs, finished by the fielding side in 15 minutes; batting-side delays count. 8 players, one jersey colour."),
+            ("REPORTING", "Whole team reports before its match. Not ready for the toss within 5 minutes of schedule: 3&#8209;run penalty per minute. Over 15 minutes: walkover."),
+            ("EQUIPMENT", "Bring your own bats and safety gear (gloves, guards). Any bat except hollow, scoop or plastic. Ball: Cricket Tennis Ball Heavy Version by Vicky."),
+            ("BOWLING", "Full-arm only, with a run-up. No underarm, standing, sling-action or chucking. At least 4 bowlers, and one may bowl 2 overs, not back to back."),
+            ("POWERPLAY", "One Powerplay over per team, and all runs count double. Not the last over. Call it before the bowler is picked, or the second-last over becomes it."),
+            ("SCORING", "Wides and no balls: 3 runs, and they count as a ball. In the final over: 1 run, not legal balls. Overthrows are live: all valid runs count."),
+            ("CEILING NET", "Ball hits the ceiling net and is caught straight after: out. If it touches a side-wall net first, then it is caught: not out."),
         ]),
     # PICKLEBALL (rules page pasted 2026-09-29). Registrations are CLOSED on the site, so the pill is not a register CTA.
     # Venue: the site says "Confirming"; the user ruled 11:11 Pick A Court earlier (flagged again to the user).
@@ -53,7 +60,7 @@ SPORTS = {
     # organisers'-authority clauses are omitted for space (the strip keeps "organisers' decisions are final").
     "fifa": dict(
         title="SOCCER STOORM", info=("SAT 3 OCT  |  BATTLEGROUND GAMING  |  ", "REPORT BY 11:15AM"),
-        strip=("BRING YOUR OWN CONTROLLER  |  ", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
+        strip=("", "ORGANISERS' DECISIONS ARE FINAL"), strip2="3 PAUSES A MATCH. NO CHEATING, ABUSE OR MATCH-FIXING.",
         cta="SEE YOU SAT 3 OCT", out="terrathon_fifa_rules.png", body=23,
         cards=[
             ("WHO CAN PLAY", "Born on or after 1 January 2005, checked by ID. Registration is solo, and every match is 1v1."),
@@ -66,7 +73,8 @@ SPORTS = {
 CFG = SPORTS[SPORT]
 CARDS = CFG["cards"]
 CX, CW, CG = 56, 472, 24
-CY0, CH, RG = 296, 270, 14
+CY0, CH, RG = CFG.get("geo", (296, 270, 14))
+ROWS = CFG.get("rows", 3)
 
 
 async def main():
@@ -100,14 +108,14 @@ async def main():
         x = CX + col * (CW + CG); y = CY0 + row * (CH + RG); w = 2 * CW + CG if wide else CW
         el(f"card{i}", x, y, w, CH)
         parts.append(f'<div class="measure" data-tag="card{i}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{CH}px;box-sizing:border-box;border:6px solid {acc};border-radius:30px;background:{CTA_FILL};'
-                     f'padding:16px 20px;color:{INK};font-family:var(--d);z-index:6;overflow:hidden">'
-                     f'<div style="display:inline-block;background:{acc};color:{INK};font-weight:900;font-size:26px;line-height:1;padding:7px 16px 6px;border-radius:999px">{head}</div>'
-                     f'<div style="font-weight:400;font-size:{CFG.get("body", 22)}px;line-height:1.22;margin-top:12px">{body}</div></div>')
+                     f'padding:{CFG.get("pad", 16)}px 20px;color:{INK};font-family:var(--d);z-index:6;overflow:hidden">'
+                     f'<div style="display:inline-block;background:{acc};color:{INK};font-weight:900;font-size:{CFG.get("chip_px", 26)}px;line-height:1;padding:{CFG.get("chip_pad", 7)}px 16px {CFG.get("chip_pad", 7) - 1}px;border-radius:999px">{head}</div>'
+                     f'<div style="font-weight:400;font-size:{CFG.get("body", 22)}px;line-height:{CFG.get("lh", 1.22)};margin-top:{CFG.get("gap", 12)}px">{body}</div></div>')
         if wide: row, col = row + 1, 0
         else:
             col += 1
             if col == 2: row, col = row + 1, 0
-    sy = CY0 + 3 * CH + 2 * RG + 24
+    sy = CY0 + ROWS * CH + (ROWS - 1) * RG + 22
     parts.append(f'<div class="measure" data-tag="strip1" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{sy}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:900;font-size:24px;line-height:1;white-space:nowrap;z-index:6">'
                  f'{CFG["strip"][0]}<span style="color:{ORCHID}">{CFG["strip"][1]}</span></div>')
     parts.append(f'<div class="measure" data-tag="strip2" style="position:absolute;left:{(W - 1000) / 2}px;width:1000px;top:{sy + 38}px;text-align:center;color:{WHITE};font-family:var(--d);font-weight:400;font-size:22px;line-height:1;white-space:nowrap;z-index:6">'
