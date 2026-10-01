@@ -11,7 +11,7 @@ H = 1350
 STORY = False     # main(story=True) renders 1080x1920 with Instagram's safe zones
 OY = 0
 POINTS = [("MINI-GAMES", "WIN STUFF"), ("PHOTOBOOTH", "POSE NOW"), ("ARTILY", "BOBA"), ("CRAVE'LLA", "DESSERTS + BROWNIES"),
-          ("CRFTD ORDERS", "DIY T-SHIRTS + CUSTOM"), ("LOTTERY", "AT LOCATION"), ("DD TICKET STALL", "DISCO DIWALI PASSES")]
+          ("CRFTD ORDERS", "T-SHIRT ORDERS TAKEN"), ("LOTTERY", "AT LOCATION"), ("DD TICKET STALL", "DISCO DIWALI PASSES")]
 
 async def main(story=False):
     global H, OY

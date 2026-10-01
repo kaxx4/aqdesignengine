@@ -32,7 +32,7 @@ REASONS = [   # key, headline, tagline, sticker file, recolour-orchid-to-green? 
     ("photobooth", "PHOTOBOOTH", "POSE NOW. REGRET NEVER.", "smiley.png", False),
     ("artily", "ARTILY", "SIP BOBA. LOSE MINI-GAMES WITH DIGNITY.", "flower.png", False),
     ("cravella", "CRAVE'LLA", "DESSERTS AND BROWNIES. NO FURTHER QUESTIONS.", "flower.png", True),
-    ("crftd", "CRFTD ORDERS", "PRE-ORDER DIY T-SHIRTS AND CUSTOM ORDERS.", "smiley.png", True),
+    ("crftd", "CRFTD ORDERS", "TAKING T-SHIRT ORDERS. PRE-PRINTED TEES IF IN STOCK.", "smiley.png", True),
     ("lottery", "LOTTERY AT LOCATION", "LUCK HAS A STALL TOO.", "basketball.png", False),
     ("dd_tickets", "DD TICKET STALL", "YOUR PASS TO THE PARTY IS ONE STALL AWAY.", "carnival.png", False),
 ]

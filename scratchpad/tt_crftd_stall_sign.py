@@ -1,7 +1,7 @@
 """CRFTD stall signage for the TerraThon Mini-Fete, single page A4 LANDSCAPE (297x210mm), TerraThon branding. PDF + 300dpi PNG.
 Photos: the two the user supplied for CRFTD (an outdoor stall with a heat press, a tie-dye shirt and a "MAKE YOUR OWN T-SHIRT!" sign; copies in
 engine/assets/terrathon/crftd_photos/). Both show an AQUATERRA-bannered stall and real people: flagged to the user. Copy: TERRATHON / CRFTD /
-OUR JERSEY PARTNER (user's earlier wording) + a pill "DIY T-SHIRTS + CUSTOM ORDERS" (the Mini-Fete copy pack's description of the CRFTD stall).
+OUR JERSEY PARTNER (user's earlier wording) + a pill "T-SHIRT ORDERS TAKEN HERE" and a small line "PRE-PRINTED TEES SOLD IF IN STOCK" (user, 2026-10-01: CRFTD is NOT doing DIY; they take orders and sell pre-printed tees only if they have them).
 NOT supplied, so NOT printed: prices, order process, date, venue. No "Mini-Fete" wording. AQ logo bottom-right.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof.
 
@@ -44,6 +44,7 @@ html,body{{background:{GROUND}}}
 .name{{font-family:'StretchPro';color:{WHITE};letter-spacing:.01em;font-feature-settings:'liga' 1,'dlig' 1;line-height:.98;white-space:nowrap}}
 .sub{{font-family:'SigmarOne';color:{ORCHID};letter-spacing:-.01em;line-height:1;white-space:nowrap;margin-top:22px}}
 .pill{{margin-top:26px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:19px;letter-spacing:.03em;padding:11px 20px 9px;white-space:nowrap}}
+.fine{{margin-top:16px;font-weight:400;font-size:19px;letter-spacing:.08em;color:{WHITE};white-space:nowrap}}
 .aq{{position:absolute;right:56px;bottom:50px;height:50px;display:block;z-index:4}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
@@ -52,7 +53,7 @@ html,body{{background:{GROUND}}}
 <img class="star" src="{STAR}" style="left:34px;top:46px;z-index:5"><img class="star" src="{STAR}" style="right:46px;top:44px;z-index:5"><img class="star" src="{STAR}" style="left:268px;top:104px;z-index:6">
 <div class="col"><div class="t1">TERRATHON</div>
 <div class="name" id="n1" style="margin-top:22px">CRFTD</div>
-<div class="sub" id="sub">OUR JERSEY PARTNER</div><div class="pill">DIY T-SHIRTS + CUSTOM ORDERS</div></div>
+<div class="sub" id="sub">OUR JERSEY PARTNER</div><div class="pill">T-SHIRT ORDERS TAKEN HERE</div><div class="fine">PRE-PRINTED TEES SOLD IF IN STOCK</div></div>
 <img class="aq" src="{core.LOGO}">
 </div></body></html>"""
 

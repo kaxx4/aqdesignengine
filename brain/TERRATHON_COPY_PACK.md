@@ -5,7 +5,7 @@ Voice: AQ's (`anthropic-skills:aq-event-messaging`): short, swagger kept, one id
 
 Known facts: TerraThon 2nd to 4th Oct 2026. WICKET WARS (cricket): 3rd & 4th, Turf XL, Rs.2,100 per team of 8, prize Rs.7,500. SOCCER STORM (FIFA): 3rd, Battleground Gaming, Rs.350, prize Rs.2,500.
 PICKLEJAM (pickleball): 2nd, 11:11 Pick A Court, Rs.750 per team of 2, prize Rs.5,000. Prizes total Rs.15,000. Sports registrations close 1 Oct.
-MINI-FETE (the carnival): 3rd & 4th Oct, Turf XL, New Alipore, open to all. Mini-games and competitions, stalls (Artily boba, Crave'lla desserts and brownies, CRFTD pre-orders for DIY T-shirts and custom orders),
+MINI-FETE (the carnival): 3rd & 4th Oct, Turf XL, New Alipore, open to all. Mini-games and competitions, stalls (Artily boba, Crave'lla desserts and brownies, CRFTD takes T-shirt orders and sells pre-printed tees if in stock (not DIY; user, 2026-10-01)),
 photobooth, lottery at location, DD ticket stall (Disco Diwali passes). All for charity. Group: https://chat.whatsapp.com/Jke9ZHypTP90HhSnyHl3ai
 
 ---
@@ -132,7 +132,7 @@ Timings and gates, directions to Turf XL, food and drinks details beyond the thr
 
 1. `*TERRATHON MINI-FETE* is landing at *Turf XL, New Alipore* 🌴` / `Mini-games to win, stalls to raid, and a photobooth for the evidence.` / `*3rd & 4th October.* Open to all 🚀`
 2. `🗓️: 3rd & 4th October, 2026` / `📍: Turf XL, New Alipore` / `Open to all, and *all for charity* 🤍🌎`  (add `🕚: [time] onwards` once the opening time is known)
-3. `The stalls are stacked. *Artily* for boba, *Crave'lla* for desserts and brownies, *CRFTD* for pre-orders on DIY T-shirts and custom orders.` / `Plus a *lottery* at the location, because luck deserves a stall too 😉`
+3. `The stalls are stacked. *Artily* for boba, *Crave'lla* for desserts and brownies, *CRFTD* for T-shirt orders, plus pre-printed tees if they have stock.` / `Plus a *lottery* at the location, because luck deserves a stall too 😉`
 4. `Your *Disco Diwali passes* are one stall away 🎟️` / `Find the *DD ticket stall* at the fete and grab yours 🚀`
 5. `Every Mini-Fete update lands here 👇` / `*Get your friends here!*` / group link
 Day 1: `*TODAY* is the day 🎉 The Mini-Fete is on at *Turf XL, New Alipore*. Bring your people, win something, eat something.`
