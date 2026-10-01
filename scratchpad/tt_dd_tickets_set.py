@@ -188,7 +188,7 @@ async def build():
     ball, bh = ddm.disco_ball(440, "b5"); svg_sticker(s, "ball", ball, W - 40 - 440, ty + 20, 440, bh, 6)
     sy = ty + 30 + max(tkh, bh) + 60; sh = 360
     slab(s, "slab", 84, sy, 912, sh)
-    ign = rows_in(s, 84, sy, 912, sh, [("FIRST 5 TO FINISH ALL 9", 46, INK), ("MINI-FETE GAMES WIN", 46, INK), ("FREE DISCO DIWALI TICKETS", 36, "#0E7C86")])
+    ign = rows_in(s, 84, sy, 912, sh, [("FIRST 5 TO FINISH ALL 8", 46, INK), ("MINI-FETE GAMES WIN", 46, INK), ("FREE DISCO DIWALI TICKETS", 36, "#0E7C86")])
     s.chip("c1", "OR BUY AT RS. 550", 220, sy + sh + 60, 640, deg=-2, size=40)
     s.footer(cta="DD TICKET STALL"); out.append(("5", s, ign + [("slab", "tkt"), ("slab", "ball"), ("star_tl", "t1"), ("star_tr", "t1"), ("tkt", "ball")]))
     return out

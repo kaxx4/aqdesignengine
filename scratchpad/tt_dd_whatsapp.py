@@ -119,7 +119,7 @@ def rows_html(rows, rh, size, price_col=False):
 _s2 = importlib.util.spec_from_file_location("tt_dd_tickets", os.path.join(ROOT, "scratchpad", "tt_dd_tickets.py")); ddm = importlib.util.module_from_spec(_s2); _s2.loader.exec_module(ddm)
 GAMES = [("headphones", "GUESS THE SENTENCE", "WITH HEADPHONES"), ("cup_flip", "FLIP THE CUP", None), ("jenga", "JENGA", "WITH DARES"),
          ("darts", "DARTS", None), ("tongue", "TONGUE TWISTERS", None), ("pushup", "PUSH UP CHALLENGE", None),
-         ("plank", "PLANK CHALLENGE", None), ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
+         ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
 DK = "#0A0A0A"
 
 
@@ -156,9 +156,9 @@ async def build():
     ball, bh = ddm.disco_ball(470, "wb"); svg_sticker(s, "ball", ball, W - 50 - 470, ty + 10, 470, bh, 6, z=6)
     sy = ty + 40 + max(tkh + 30, bh * .75) + 20; sh = 330
     slab(s, "slab", 84, sy, 912, sh)
-    ign = rows_in(s, 84, sy, 912, sh, [("FINISH ALL 9 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86")])
+    ign = rows_in(s, 84, sy, 912, sh, [("FINISH ALL 8 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86")])
     py = sy + sh + 50
-    for i, txt in enumerate(("9 STATIONS", "PLAY ANY GAME SOLO", "3 + 4 OCT, TURF XL")):
+    for i, txt in enumerate(("8 STATIONS", "PLAY ANY GAME SOLO", "3 + 4 OCT, TURF XL")):
         w = (968 - 2 * 20) / 3; s.chip(f"p{i}", txt, 56 + i * (w + 20), py, w, deg=[-2, 1.5, -1.5][i], size=22)
     s.footer(cta="SEE YOU THERE"); out.append(("dash", s, ign + [("slab", "tkt"), ("slab", "ball"), ("tkt", "ball")] + STAR_IGN))
     # ================= WIN IT OR BUY IT =================
@@ -167,7 +167,7 @@ async def build():
     s.star("star_tl", 24, 70); s.star("star_tr", W - 24 - 104, 86)
     ball, bh = ddm.disco_ball(340, "cb"); svg_sticker(s, "ball", ball, (W - 340) / 2, ty + 6, 340, bh, 0, z=6)
     cy0 = ty + 6 + bh + 14; chh = min(580, BOT + 30 - cy0); cw_ = 470; ign = list(STAR_IGN)
-    for i, (xx, chip, big, bpx, l1, l2, deg) in enumerate([(56, "WIN THEM FREE", "DISCO DASH", 40, "FINISH ALL 9 STATIONS WITH MAXIMUM POINTS", "FIRST 5 FINISHERS WIN", -1), (554, "OR BUY THEM", "RS. 550", 72, "AT THE DD TICKET STALL", "TURF XL, 3RD + 4TH OCT", 1)]):
+    for i, (xx, chip, big, bpx, l1, l2, deg) in enumerate([(56, "WIN THEM FREE", "DISCO DASH", 40, "FINISH ALL 8 STATIONS WITH MAXIMUM POINTS", "FIRST 5 FINISHERS WIN", -1), (554, "OR BUY THEM", "RS. 550", 72, "AT THE DD TICKET STALL", "TURF XL, 3RD + 4TH OCT", 1)]):
         s.add(f'<div class="measure" data-tag="cd{i}" style="position:absolute;left:{xx}px;top:{cy0}px;width:{cw_}px;height:{chh}px;box-sizing:border-box;transform:rotate({deg}deg);border:6px solid {GREEN};border-radius:36px;background:#F3ECDE;z-index:6"></div>'); s.el(f"cd{i}", *rb(xx, cy0, cw_, chh, deg))
         s.add(f'<div class="measure" data-tag="ch{i}" style="position:absolute;left:{xx + 30}px;top:{cy0 + 34}px;background:{ORCHID};color:{INK};font-family:var(--d);font-weight:900;font-size:28px;line-height:1;padding:10px 20px 9px;border-radius:999px;white-space:nowrap;z-index:9">{chip}</div>'); s.el(f"ch{i}", xx + 30, cy0 + 34, 270, 50)
         s.add(f'<div class="measure" data-tag="bg{i}" style="position:absolute;left:{xx + 20}px;top:{cy0 + 112 + (84 - bpx) / 2}px;width:{cw_ - 40}px;text-align:center;color:{INK};font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * bpx}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{bpx}px;line-height:1;white-space:nowrap;z-index:9">{big}</div>'); s.el(f"bg{i}", xx + 20, cy0 + 114 + (84 - bpx) / 2, cw_ - 40, bpx * .82)

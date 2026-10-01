@@ -1,9 +1,9 @@
-"""TerraThon x DISCO DASH: a HYROX-STYLE CIRCUIT of the nine Mini-Fete games, played to WIN FREE DISCO DIWALI TICKETS (user, 2026-10-01). Formats: a single static post, a 5-slide
-carousel (cover with the kit's carnival sticker, stations 01-03 / 04-06 / 07-09 as cards with the improved game stickers, how-to-win closer), each in FEED 1080x1350 and STORY 1080x1920.
-Rules as the user gave them: finish all nine with MAXIMUM POINTS; the FIRST 5 to finish win free Disco Diwali tickets (in total, not per day); each game can also be played on its own.
+"""TerraThon x DISCO DASH: a HYROX-STYLE CIRCUIT of the EIGHT Mini-Fete games (plank challenge removed, 2026-10-01), played to WIN FREE DISCO DIWALI TICKETS (user, 2026-10-01). Formats: a single static post, a 5-slide
+carousel (cover with the kit's carnival sticker, stations 01-03 / 04-06 / 07-08 as cards with the improved game stickers, how-to-win closer), each in FEED 1080x1350 and STORY 1080x1920.
+Rules as the user gave them: finish all eight with MAXIMUM POINTS; the FIRST 5 to finish win free Disco Diwali tickets (in total, not per day); each game can also be played on its own.
 The user did not give a numeric points target ("maximum points") or per-game scoring, so none is printed. The Disco Diwali event's own date/venue were never supplied, so only the Mini-Fete's
 (3rd + 4th Oct 2026, Turf XL, New Alipore, open to all) is printed. "Hyrox" is a third-party brand; used only as "HYROX-STYLE" at the user's request (confirm before posting).
-Sticker art: scratchpad/tt_minigame_stickers.py (nine redrawn game icons); ticket and disco ball come from scratchpad/tt_dd_tickets.py (the die-cut SVG kit already used for the Rs. 550 graphic).
+Sticker art: scratchpad/tt_minigame_stickers.py (redrawn game icons); ticket and disco ball come from scratchpad/tt_dd_tickets.py (the die-cut SVG kit already used for the Rs. 550 graphic).
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_disco_dash.py [story]
 """
 import asyncio, base64, importlib.util, os, random, re, sys
@@ -121,7 +121,7 @@ def rows_html(rows, rh, size, price_col=False):
 _s2 = importlib.util.spec_from_file_location("tt_dd_tickets", os.path.join(ROOT, "scratchpad", "tt_dd_tickets.py")); ddm = importlib.util.module_from_spec(_s2); _s2.loader.exec_module(ddm)
 GAMES = [("headphones", "GUESS THE SENTENCE", "WITH HEADPHONES"), ("cup_flip", "FLIP THE CUP", None), ("jenga", "JENGA", "WITH DARES"),
          ("darts", "DARTS", None), ("tongue", "TONGUE TWISTERS", None), ("pushup", "PUSH UP CHALLENGE", None),
-         ("plank", "PLANK CHALLENGE", None), ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
+         ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
 DK = "#0A0A0A"
 
 
@@ -135,8 +135,8 @@ def svg_sticker(s, tag, svg, x, y, w, h, deg=0, z=7):
 
 
 def tracker(s, y, active, tag="tracker"):
-    d, g = 46, 12; tot = 9 * d + 8 * g; x0 = (W - tot) / 2; h = ""
-    for i in range(9):
+    d, g = 46, 12; tot = 8 * d + 7 * g; x0 = (W - tot) / 2; h = ""
+    for i in range(8):
         on = i in active
         h += (f'<div style="position:absolute;left:{x0 + i * (d + g) - x0}px;top:0;width:{d}px;height:{d}px;box-sizing:border-box;border-radius:50%;'
               f'background:{ORCHID if on else "transparent"};border:4px solid {ORCHID if on else CREAM_HALO};color:{INK if on else CREAM_HALO};font-family:var(--d);font-weight:900;'
@@ -157,12 +157,12 @@ async def build():
     cell_w = (pw - 40) / 3; cell_h = (ph - 40) / 3; ss = min(cell_w - 10, cell_h - 6)
     ign = [("star_tl", "t1"), ("star_tr", "t1")]
     for i, (slug, *_r) in enumerate(GAMES):
-        cx = px0 + 20 + (i % 3) * cell_w + (cell_w - ss) / 2; cy = py + 20 + (i // 3) * cell_h + (cell_h - ss) / 2
+        cx = px0 + 20 + (i % 3) * cell_w + (cell_w - ss) / 2 + (cell_w / 2 if i >= 6 else 0); cy = py + 20 + (i // 3) * cell_h + (cell_h - ss) / 2
         sticker(s, f"g{i}", slug, cx, cy, ss, [-4, 3, -3][i % 3], z=8)
         bd = 44; s.add(f'<div class="measure" data-tag="n{i}" style="position:absolute;left:{cx + 6}px;top:{cy + 6}px;width:{bd}px;height:{bd}px;box-sizing:border-box;border-radius:50%;background:{GREEN};border:4px solid {DK};display:flex;align-items:center;justify-content:center;color:{DK};font-family:var(--d);font-weight:900;font-size:22px;line-height:1;z-index:9">{i + 1}</div>'); s.el(f"n{i}", cx + 6, cy + 6, bd, bd)
         ign += [("plate", f"g{i}"), ("plate", f"n{i}"), (f"g{i}", f"n{i}")]
     yy = py + ph + (34 if STORY else 22)
-    s.chip("c1", "FINISH ALL 9 WITH MAXIMUM POINTS", (W - 940) / 2, yy, 940, deg=-1.5, size=34); ign += [("plate", "c1")]
+    s.chip("c1", "FINISH ALL 8 WITH MAXIMUM POINTS", (W - 940) / 2, yy, 940, deg=-1.5, size=34); ign += [("plate", "c1")]
     s.text("l1", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", 20, yy + 104, W - 40, 40, 900, WHITE)
     s.text("l2", "OR PLAY ANY GAME SOLO", 20, yy + 154, W - 40, 30, 400, CREAM_HALO)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("single", s, ign))
@@ -174,18 +174,18 @@ async def build():
     im, src = tt.crop_to_alpha("carnival.png"); chh = BOT - ty - 290; cww = chh * im.width / im.height; cx0 = (W - cww) / 2; cy0 = ty + 20
     s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cww}px;height:{chh}px;transform:rotate(-4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cww, chh, -4))
     ly = cy0 + chh + 40
-    s.text("w1", "9 STATIONS. FINISH ALL.", 20, ly, W - 40, 50, 900, WHITE)
+    s.text("w1", "8 STATIONS. FINISH ALL.", 20, ly, W - 40, 50, 900, WHITE)
     s.text("w2", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", 20, ly + 64, W - 40, 38, 900, ORCHID)
-    s.chip("swipe", "SWIPE FOR THE 9 STATIONS", (W - 760) / 2, ly + 118, 760, deg=-2, size=34)
+    s.chip("swipe", "SWIPE FOR THE 8 STATIONS", (W - 760) / 2, ly + 118, 760, deg=-2, size=34)
     s.footer(); out.append(("c1", s, [("star_tl", "t1"), ("star_tr", "t1"), ("swipe", "w2")]))
     # ---- 2-4 STATIONS ----
     for k in range(3):
         s = Slide(k + 2, 312 + k)
-        ty = await s.title("DISCO DASH", f"STATIONS 0{3 * k + 1} TO 0{3 * k + 3}", big_w=730, sub_w=640, top=96)
+        ty = await s.title("DISCO DASH", f"STATIONS 0{3 * k + 1} TO 0{min(3 * k + 3, 8)}", big_w=730, sub_w=640, top=96)
         s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
-        yb = tracker(s, ty + 4, {3 * k, 3 * k + 1, 3 * k + 2})
-        gap = 38; y0 = yb + 34; ch = (BOT + 20 - y0 - 2 * gap) / 3; ign = [("star_tl", "t1"), ("star_tr", "t1")]
-        for r in range(3):
+        nr = 3 if k < 2 else 2; yb = tracker(s, ty + 4, set(range(3 * k, 3 * k + nr)))
+        gap = 38; y0 = yb + 34; ch = (BOT + 20 - y0 - (nr - 1) * gap) / nr; ign = [("star_tl", "t1"), ("star_tr", "t1")]
+        for r in range(nr):
             n = 3 * k + r; slug, name, sub = GAMES[n]
             y = y0 + r * (ch + gap); x = 56; cw = 968
             s.add(f'<div class="measure" data-tag="card{r}" style="position:absolute;left:{x}px;top:{y}px;width:{cw}px;height:{ch}px;box-sizing:border-box;border:6px solid {GREEN};border-radius:34px;background:#F3ECDE;z-index:6"></div>'); s.el(f"card{r}", x, y, cw, ch)
@@ -197,10 +197,10 @@ async def build():
             s.add(f'<div class="measure" data-tag="nm{r}" style="position:absolute;left:{tx}px;top:{ny}px;width:{tw_}px;color:{INK};font-family:var(--d);font-weight:900;font-size:{nsz}px;line-height:1.02;white-space:nowrap;z-index:9">{name}</div>'); s.el(f"nm{r}", tx, ny, tw_, nh)
             if sub: s.add(f'<div class="measure" data-tag="sb{r}" style="position:absolute;left:{tx}px;top:{ny + nh + 8}px;width:{tw_}px;color:{INK};font-family:var(--d);font-weight:400;font-size:34px;line-height:1;white-space:nowrap;z-index:9">{sub}</div>'); s.el(f"sb{r}", tx, ny + nh + 8, tw_, 34)
             ign += [(f"card{r}", t) for t in (f"stk{r}", f"bdg{r}", f"nm{r}", f"sb{r}")]
-            if r < 2:   # a dotted link to the next station
+            if r < nr - 1:   # a dotted link to the next station
                 for d in range(3): s.add(f'<div style="position:absolute;left:{bx + bd / 2 - 5}px;top:{y + ch + 6 + d * 10}px;width:10px;height:10px;border-radius:50%;background:{ORCHID};z-index:7"></div>')
         if k == 0: s.chip("start", "START", 330, y0 - 34, 190, deg=-4, size=28); ign += [("card0", "start")]
-        if k == 2: s.chip("fin", "FINISH", 790, y0 + 2 * (ch + gap) - 30, 220, deg=4, size=28); ign += [("card2", "fin"), ("fin", "bdg2")]
+        if k == 2: s.chip("fin", "FINISH", 790, y0 + (nr - 1) * (ch + gap) - 30, 220, deg=4, size=28); ign += [(f"card{nr - 1}", "fin"), ("fin", f"bdg{nr - 1}")]
         s.footer(); out.append((f"c{k + 2}", s, ign))
     # ---- 5 HOW TO WIN ----
     s = Slide(5, 316)
@@ -208,7 +208,7 @@ async def build():
     s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
     sx, sy, sw, sh = 84, ty + 14, 912, 380 + (EXTRA // 4)
     s.add(f'<div class="measure" data-tag="slab" style="position:absolute;left:{sx}px;top:{sy}px;width:{sw}px;height:{sh}px;box-sizing:border-box;transform:rotate(-1.25deg);background:{SLAB};border:20px solid {ORCHID};border-radius:52px;z-index:8"></div>'); s.el("slab", *rb(sx, sy, sw, sh, -1.25))
-    rows = [("FINISH ALL 9 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86")]
+    rows = [("FINISH ALL 8 STATIONS", 50, INK), ("WITH MAXIMUM POINTS", 50, INK), ("FIRST 5 WIN FREE DISCO DIWALI TICKETS", 34, "#0E7C86")]
     tot = sum(z for _, z, _c in rows) + 2 * 22; ty2 = sy + (sh - tot) / 2 - 4
     for i, (txt, z, col) in enumerate(rows):
         s.add(f'<div class="measure" data-tag="row{i}" style="position:absolute;left:{sx + 36}px;width:{sw - 72}px;top:{ty2}px;text-align:center;color:{col};font-family:var(--d);font-weight:900;font-size:{z}px;line-height:1;white-space:nowrap;z-index:9">{txt}</div>'); s.el(f"row{i}", sx + 36, ty2, sw - 72, z * .85); ty2 += z + 22

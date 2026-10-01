@@ -1,7 +1,7 @@
-"""TerraThon MINI-FETE MINI GAMES carousel (11 slides, feed 1080x1350), built from STICKERS because there are no photos (user, 2026-10-01). Nine hand-drawn flat stickers
+"""TerraThon MINI-FETE MINI GAMES carousel (10 slides, feed 1080x1350), built from STICKERS because there are no photos (user, 2026-10-01). Eight of the nine hand-drawn flat stickers
 (scratchpad/tt_minigame_stickers.py -> engine/assets/terrathon/minigames/*.svg, original artwork in the kit's die-cut style). v2 (user: "a separate slide for all the games and the first slide
 may not include all the stickers"): cover with the kit's CARNIVAL (Mini-Fete) sticker only + "swipe to see all 9" (no game stickers, per the user), then ONE SLIDE PER GAME (big sticker on a cream plate, numbered badge, game name), then the closer.
-The nine games are exactly the user's list: guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue twisters, push up challenge, plank challenge, aim the cup, coin drop.
+The EIGHT games (plank challenge removed at the user's request, 2026-10-01): guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue twisters, push up challenge, aim the cup, coin drop.
 NO rules, prizes, scoring, entry fees or timings are printed (none were supplied); the only extra words restate the game's own name ("with headphones", "with dares").
 Event facts (copy pack): Mini-Fete 3rd and 4th Oct 2026, Turf XL, New Alipore, open to all.
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_minigames_carousel.py [story]   ->  out/collaterals/minigames/slide_NN.png  (story: out/collaterals/stories/minigames_story_NN.png, 1080x1920)
@@ -17,7 +17,7 @@ GROUND, ORCHID, CREAM_HALO, INK, WHITE, CTA_FILL, SLAB = tt.GROUND, tt.ORCHID, t
 GREEN = "#2FD284"
 import sys
 STORY = "story" in sys.argv[1:]     # 1080x1920 with Instagram UI zones clear (top ~250, bottom ~270)
-H, TOTAL = (1920 if STORY else 1350), 11
+H, TOTAL = (1920 if STORY else 1350), 10
 OY = 200 if STORY else 0          # content drop below the top UI zone
 EXTRA = 130 if STORY else 0       # extra vertical room spent on bigger frames and rows
 FOOT = 270 if STORY else 0        # footer lift off the bottom edge
@@ -120,7 +120,7 @@ def rows_html(rows, rh, size, price_col=False):
 
 GAMES = [("headphones", "GUESS THE SENTENCE", "WITH HEADPHONES"), ("cup_flip", "FLIP THE CUP", None), ("jenga", "JENGA", "WITH DARES"),
          ("darts", "DARTS", None), ("tongue", "TONGUE TWISTERS", None), ("pushup", "PUSH UP CHALLENGE", None),
-         ("plank", "PLANK CHALLENGE", None), ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
+         ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
 
 
 def sticker(s, tag, slug, x, y, size, deg=0, z=7):
@@ -133,19 +133,19 @@ async def build():
     BOT = H - FOOT - 150
     # ---- 1 COVER: four of the nine, a swipe cue ----
     s = Slide(1, 81)
-    ty = await s.title("MINI GAMES", "9 OF THEM, 2 DAYS", big_w=730, sub_w=700, top=104)
+    ty = await s.title("MINI GAMES", "8 OF THEM, 2 DAYS", big_w=730, sub_w=700, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     # the kit's own carnival (Mini-Fete) sticker, the one the earlier collaterals use; no game stickers on the cover (user)
     im, src = tt.crop_to_alpha("carnival.png"); ch = BOT - ty - 120; cwid = ch * im.width / im.height
     cx0 = (W - cwid) / 2; cy0 = ty + 30
     s.add(f'<img class="measure" data-tag="carnival" src="{src}" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{cwid}px;height:{ch}px;transform:rotate(-4deg);z-index:7">'); s.el("carnival", *rb(cx0, cy0, cwid, ch, -4))
     cw = 640; cy = BOT - 20
-    s.chip("swipe", "SWIPE TO SEE ALL 9", (W - cw) / 2, cy - 30, cw, deg=-2, size=40)
+    s.chip("swipe", "SWIPE TO SEE ALL 8", (W - cw) / 2, cy - 30, cw, deg=-2, size=40)
     s.footer(); slides.append((s, ("swipe", "carnival")))
     # ---- 2-10 ONE SLIDE PER GAME ----
     for n, (slug, name, sub) in enumerate(GAMES):
         s = Slide(n + 2, 90 + n)
-        ty = await s.title(name, f"GAME 0{n + 1} OF 09", big_w=min(760, 130 * len(name)), sub_w=520, top=96)
+        ty = await s.title(name, f"GAME 0{n + 1} OF 08", big_w=min(760, 130 * len(name)), sub_w=520, top=96)
         s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
         px, pw = 110, 860; py = 350 + OY; ph = BOT - py - 20      # fixed plate on every game slide so the deck stays steady
         s.add(f'<div class="measure" data-tag="slab" style="position:absolute;left:{px}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(1deg);background:#F3ECDE;border:18px solid {ORCHID};border-radius:60px;z-index:5"></div>')
@@ -158,7 +158,7 @@ async def build():
             s.chip("chip", sub, (W - 640) / 2, py + ph - 52, 640, deg=-2, size=40); ign += [("slab", "chip"), ("chip", "stk")]
         s.footer(); slides.append((s,) + tuple(ign))
     # ---- 11 CLOSER ----
-    s = Slide(11, 86)
+    s = Slide(10, 86)
     ty = await s.title("SEE YOU THERE", "AT THE MINI-FETE", big_w=730, sub_w=640, top=96)
     s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
     row1 = ["headphones", "darts", "aim_cup"]; row2 = ["jenga", "pushup", "coin_drop"]

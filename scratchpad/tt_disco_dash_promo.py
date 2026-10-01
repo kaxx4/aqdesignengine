@@ -1,6 +1,6 @@
 """DISCO DASH PROMO STORIES (user, 2026-10-01: "disco diwali and disco dash promotions in all enticing forms for stories and whatsapp"). Five 1080x1920 story designs, each a different
-hook for the same circuit: 1 can-you-finish-all-9 (sticker plate), 2 the prize (giant ticket + disco ball), 3 the nine stations (named tiles), 4 how to win (three steps), 5 see you at the dash.
-Rules are only what the user gave: finish all 9 with MAXIMUM points, FIRST 5 finishers (in total) win free Disco Diwali tickets, any game can also be played solo. No numeric points target, no
+hook for the same circuit: 1 can-you-finish-all-8 (sticker plate), 2 the prize (giant ticket + disco ball), 3 the eight stations (named tiles), 4 how to win (three steps), 5 see you at the dash.
+Rules are only what the user gave: finish all 8 with MAXIMUM points, FIRST 5 finishers (in total) win free Disco Diwali tickets, any game can also be played solo. No numeric points target, no
 per-game scoring, no Disco Diwali date/venue printed (none supplied). Mini-Fete facts: 3rd + 4th Oct 2026, Turf XL, New Alipore. "HYROX" appears only as HYROX-STYLE.
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_disco_dash_promo.py
 """
@@ -119,7 +119,7 @@ def rows_html(rows, rh, size, price_col=False):
 _s2 = importlib.util.spec_from_file_location("tt_dd_tickets", os.path.join(ROOT, "scratchpad", "tt_dd_tickets.py")); ddm = importlib.util.module_from_spec(_s2); _s2.loader.exec_module(ddm)
 GAMES = [("headphones", "GUESS THE SENTENCE", "WITH HEADPHONES"), ("cup_flip", "FLIP THE CUP", None), ("jenga", "JENGA", "WITH DARES"),
          ("darts", "DARTS", None), ("tongue", "TONGUE TWISTERS", None), ("pushup", "PUSH UP CHALLENGE", None),
-         ("plank", "PLANK CHALLENGE", None), ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
+         ("aim_cup", "AIM THE CUP", None), ("coin_drop", "COIN DROP", None)]
 DK = "#0A0A0A"
 
 
@@ -145,13 +145,13 @@ def rows_in(s, sx, sy, sw, sh, rows, tag="row"):
 async def build():
     out = []; BOT = H - FOOT - 150; STAR_IGN = [("star_tl", "t1"), ("star_tr", "t1")]
     # ---- 1 CAN YOU FINISH ALL 9? ----
-    s = Slide(1, 501); ty = await s.title("CAN YOU FINISH ALL 9?", "DISCO DASH", big_w=740, sub_w=520, top=104)
+    s = Slide(1, 501); ty = await s.title("CAN YOU FINISH ALL 8?", "DISCO DASH", big_w=740, sub_w=520, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     pw, px0, py = 900, 90, ty + 10; ph = BOT - py - 190
     s.add(f'<div class="measure" data-tag="plate" style="position:absolute;left:{px0}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(1deg);background:#F3ECDE;border:16px solid {ORCHID};border-radius:56px;z-index:5"></div>'); s.el("plate", *rb(px0, py, pw, ph, 1))
     cw_, chh = (pw - 40) / 3, (ph - 40) / 3; ss = min(cw_ - 10, chh - 6); ign = list(STAR_IGN)
     for i, (slug, *_r) in enumerate(GAMES):
-        cx = px0 + 20 + (i % 3) * cw_ + (cw_ - ss) / 2; cy = py + 20 + (i // 3) * chh + (chh - ss) / 2; sticker(s, f"g{i}", slug, cx, cy, ss, [-4, 3, -3][i % 3], z=8); ign.append(("plate", f"g{i}"))
+        cx = px0 + 20 + (i % 3) * cw_ + (cw_ - ss) / 2 + (cw_ / 2 if i >= 6 else 0); cy = py + 20 + (i // 3) * chh + (chh - ss) / 2; sticker(s, f"g{i}", slug, cx, cy, ss, [-4, 3, -3][i % 3], z=8); ign.append(("plate", f"g{i}"))
     s.chip("c1", "FIRST 5 WIN FREE DISCO DIWALI TICKETS", (W - 960) / 2, py + ph + 40, 960, deg=-1.5, size=30); ign.append(("plate", "c1"))
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("1", s, ign))
     # ---- 2 THE PRIZE ----
@@ -164,11 +164,11 @@ async def build():
     s.text("w1", "WIN THEM AT DISCO DASH", 40, sy + 130, W - 80, 48, 900, WHITE); s.text("w2", "THE MINI-FETE CIRCUIT, 3RD + 4TH OCT", 40, sy + 196, W - 80, 32, 400, CREAM_HALO)
     s.footer(cta="SEE YOU 3 + 4 OCT"); out.append(("2", s, STAR_IGN + [("ball", "tkt"), ("tkt", "c1"), ("ball", "c1")]))
     # ---- 3 THE NINE STATIONS ----
-    s = Slide(3, 503); ty = await s.title("9 STATIONS", "ONE CIRCUIT", big_w=640, sub_w=520, top=104)
+    s = Slide(3, 503); ty = await s.title("8 STATIONS", "ONE CIRCUIT", big_w=640, sub_w=520, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
     gap = 22; tw_, th_ = (968 - 2 * gap) / 3, (BOT + 20 - ty - 14 - 2 * gap) / 3; ign = list(STAR_IGN)
     for i, (slug, name, sub) in enumerate(GAMES):
-        x = 56 + (i % 3) * (tw_ + gap); y = ty + 14 + (i // 3) * (th_ + gap)
+        x = 56 + (i % 3) * (tw_ + gap) + ((tw_ + gap) / 2 if i >= 6 else 0); y = ty + 14 + (i // 3) * (th_ + gap)
         s.add(f'<div class="measure" data-tag="tile{i}" style="position:absolute;left:{x}px;top:{y}px;width:{tw_}px;height:{th_}px;box-sizing:border-box;border:6px solid {GREEN};border-radius:30px;background:#F3ECDE;z-index:6"></div>'); s.el(f"tile{i}", x, y, tw_, th_)
         ss = min(tw_ - 40, th_ - 120); sticker(s, f"k{i}", slug, x + (tw_ - ss) / 2, y + 10, ss, [-4, 3, -3][i % 3], z=8)
         s.add(f'<div class="measure" data-tag="tn{i}" style="position:absolute;left:{x + 8}px;top:{y + th_ - 98}px;width:{tw_ - 16}px;height:84px;display:flex;align-items:center;justify-content:center;text-align:center;color:{INK};font-family:var(--d);font-weight:900;font-size:26px;line-height:1.05;z-index:9"><span>{i + 1}. {name}</span></div>'); s.el(f"tn{i}", x + 8, y + th_ - 98, tw_ - 16, 60)
@@ -177,7 +177,7 @@ async def build():
     # ---- 4 HOW TO WIN ----
     s = Slide(4, 504); ty = await s.title("HOW TO WIN", "DISCO DASH", big_w=700, sub_w=520, top=104)
     s.star("star_tl", 24, 70 + OY); s.star("star_tr", W - 24 - 104, 86 + OY)
-    steps = [("1", "FINISH ALL 9 STATIONS", None), ("2", "WITH MAXIMUM POINTS", None), ("3", "BE ONE OF THE FIRST 5", "WIN FREE DISCO DIWALI TICKETS")]
+    steps = [("1", "FINISH ALL 8 STATIONS", None), ("2", "WITH MAXIMUM POINTS", None), ("3", "BE ONE OF THE FIRST 5", "WIN FREE DISCO DIWALI TICKETS")]
     gap = 34; chh = (BOT - ty - 100 - 2 * gap) / 3; ign = list(STAR_IGN)
     for i, (n, a, b) in enumerate(steps):
         y = ty + 24 + i * (chh + gap); x = 70; cw_ = 940
