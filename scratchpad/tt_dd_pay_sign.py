@@ -6,7 +6,8 @@ final PNG. Nothing in the payload is edited. The code sits dark-on-cream with a 
 Copy: TERRATHON / SCAN TO PAY / DISCO DIWALI TICKET STALL / TERRAROOTS. No price (user), no UPI app claims, no date/venue.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof. TEST-SCAN THE PRINTED SHEET with a real payment app before the event.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py [portrait]   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png  (or ..._A4_portrait with the arg:
+Mini-Fete variant: add the arg `minifete` (sub line MINI-FETE, no TICKET STALL line, same TERRAROOTS QR, files minifete_payment_qr_sign_A4_*).
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py [portrait] [minifete]   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png  (or ..._A4_portrait with the arg:
       the same pieces stacked in one centred column, smaller code (414px, ~109mm) so the stack fits)
 """
 import asyncio, base64, importlib.util, io, os, random, re, sys
@@ -23,9 +24,11 @@ PAYLOAD = "000201010211021644038482021656080415522024082021656061661000308202165
 SRC = "engine/assets/terrathon/qr_dd_payment_terraroots_source.png"
 GROUND, ORCHID, CREAM_HALO, WHITE, CARD, INK = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5", "#F5EEE1", "#0A0A0A"
 PORTRAIT = "portrait" in sys.argv
+MINIFETE = "minifete" in sys.argv        # same verified payment QR, headline "MINI-FETE" (user, 2026-10-01: "TERRATHON MINI-FETE"; same TERRAROOTS QR)
+SUB, STALL = ("MINI-FETE", None) if MINIFETE else ("DISCO DIWALI", "TICKET STALL")
 W, H = (794, 1123) if PORTRAIT else (1123, 794)
 PAGE_MM = "210mm 297mm" if PORTRAIT else "297mm 210mm"
-SLUG = "dd_payment_qr_sign_A4_" + ("portrait" if PORTRAIT else "landscape")
+SLUG = ("minifete_payment_qr_sign_A4_" if MINIFETE else "dd_payment_qr_sign_A4_") + ("portrait" if PORTRAIT else "landscape")
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
 
@@ -76,19 +79,19 @@ html,body{{background:{GROUND}}}
 {"" if PORTRAIT else PLATE_HTML}
 <div class="col" id="col"><div class="t1">TERRATHON</div>
 <div style="margin-top:18px"><span class="h" id="h1">SCAN TO</span><span class="h" id="h2">PAY</span></div>
-<div class="sub" id="sub">DISCO DIWALI</div><div class="stall">TICKET STALL</div>{PLATE_HTML if PORTRAIT else ""}
+<div class="sub" id="sub">{SUB}</div>{f'<div class="stall">{STALL}</div>' if STALL else ""}{PLATE_HTML if PORTRAIT else ""}
 <div class="pill" id="pill">TERRAROOTS</div><img class="aq" src="{core.LOGO}"></div>
 </div></body></html>"""
 
 FIT = f"""() => {{
   const tw = e => {{ const r = document.createRange(); r.selectNodeContents(e); return r.getBoundingClientRect().width; }};
-  const fit = (ids, target, strokeEm) => {{ const els = ids.map(i => document.getElementById(i)); els.forEach(e => {{ e.style.fontSize = '100px'; }});
-    const px = 100 * target / Math.max(...els.map(tw)); els.forEach(e => {{ e.style.fontSize = px + 'px'; if (strokeEm) e.style.webkitTextStroke = (strokeEm * px) + 'px currentColor'; }}); return px; }};
-  return [fit(['h1', 'h2'], {CW}, 0.04), fit(['sub'], {CW}, 0.03)]; }}"""
+  const fit = (ids, target, strokeEm, cap = 1e9) => {{ const els = ids.map(i => document.getElementById(i)); els.forEach(e => {{ e.style.fontSize = '100px'; }});
+    const px = Math.min(100 * target / Math.max(...els.map(tw)), cap); els.forEach(e => {{ e.style.fontSize = px + 'px'; if (strokeEm) e.style.webkitTextStroke = (strokeEm * px) + 'px currentColor'; }}); return px; }};
+  return [fit(['h1', 'h2'], {CW}, 0.04), fit(['sub'], {CW}, 0.03, 70)]; }}"""
 
 CHECK = """() => {
   const pr = document.getElementById('page').getBoundingClientRect(), bad = [], boxes = {};
-  ['.plate', '.t1', '#h1', '#h2', '#sub', '.stall', '.pill', '.aq'].forEach(s => { const r = document.querySelector(s).getBoundingClientRect(); boxes[s] = [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)];
+  ['.plate', '.t1', '#h1', '#h2', '#sub', '.pill', '.aq'].forEach(s => { const r = document.querySelector(s).getBoundingClientRect(); boxes[s] = [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)];
     if (r.left < 20 || r.top < 20 || r.right > pr.right - 20 || r.bottom > pr.bottom - 20) bad.push([s, boxes[s]]); });
   const hit = (a, b) => !(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1]); const k = Object.keys(boxes), ov = [];
   for (let i = 0; i < k.length; i++) for (let j = i + 1; j < k.length; j++) if (hit(boxes[k[i]], boxes[k[j]])) ov.push([k[i], k[j]]);
