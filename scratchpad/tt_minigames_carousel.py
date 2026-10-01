@@ -4,7 +4,7 @@ may not include all the stickers"): cover with the kit's CARNIVAL (Mini-Fete) st
 The nine games are exactly the user's list: guess the sentence with headphones, flip the cup, Jenga with dares, darts, tongue twisters, push up challenge, plank challenge, aim the cup, coin drop.
 NO rules, prizes, scoring, entry fees or timings are printed (none were supplied); the only extra words restate the game's own name ("with headphones", "with dares").
 Event facts (copy pack): Mini-Fete 3rd and 4th Oct 2026, Turf XL, New Alipore, open to all.
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_minigames_carousel.py   ->  out/collaterals/minigames/slide_NN.png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_minigames_carousel.py [story]   ->  out/collaterals/minigames/slide_NN.png  (story: out/collaterals/stories/minigames_story_NN.png, 1080x1920)
 """
 import asyncio, base64, importlib.util, os, random, re
 
@@ -147,7 +147,7 @@ async def build():
         s = Slide(n + 2, 90 + n)
         ty = await s.title(name, f"GAME 0{n + 1} OF 09", big_w=min(760, 130 * len(name)), sub_w=520, top=96)
         s.star("star_tl", 24, 60 + OY); s.star("star_tr", W - 24 - 104, 74 + OY)
-        px, pw = 110, 860; py = 350; ph = BOT - py - 20      # fixed plate on every game slide so the deck stays steady
+        px, pw = 110, 860; py = 350 + OY; ph = BOT - py - 20      # fixed plate on every game slide so the deck stays steady
         s.add(f'<div class="measure" data-tag="slab" style="position:absolute;left:{px}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;transform:rotate(1deg);background:#F3ECDE;border:18px solid {ORCHID};border-radius:60px;z-index:5"></div>')
         s.el("slab", *rb(px, py, pw, ph, 1))
         ss = min(ph - 40, 780); sticker(s, "stk", slug, px + (pw - ss) / 2, py + (ph - ss) / 2 - (24 if sub else 0), ss, [-4, 3, -3, 4, -4, 3, -3, 4, -3][n], z=8)
@@ -181,11 +181,11 @@ async def build():
 
 async def main():
     slides = await build()
-    outdir = "out/collaterals/minigames"; os.makedirs(outdir, exist_ok=True)
+    outdir = "out/collaterals/stories" if STORY else "out/collaterals/minigames"; os.makedirs(outdir, exist_ok=True)
     text_pairs = [("head", WHITE, GROUND, 96, True), ("sub", ORCHID, GROUND, 50, True), ("chip", INK, CTA_FILL, 40, True), ("badge", INK, GREEN, 72, True), ("idx", INK, CTA_FILL, 26, True), ("cta", INK, CTA_FILL, 30, True)]
     async with B.session():
         for s, *ign in slides:
-            out = f"{outdir}/slide_{s.idx:02d}.png"
+            out = f"{outdir}/minigames_story_{s.idx:02d}.png" if STORY else f"{outdir}/slide_{s.idx:02d}.png"
             await B.render(s.html(), out, W, H, elements=s.els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND,
                            expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12)
             print("done", out)
