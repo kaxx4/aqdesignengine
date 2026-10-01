@@ -1,11 +1,11 @@
 """AQ INSTAGRAM follow poster with a scannable QR, single page A4 PORTRAIT (210x297mm), TerraThon branding. PDF + 300dpi PNG.
 QR: made with segno (error correction H) from https://www.instagram.com/ngo.aquaterra/ (the AQ account named in the TerraThon site footer; the second AQ account
-there is @aquaterra.live, see ACCOUNT below to switch). It is a REAL, decoded code: the build decodes the code on its own AND decodes the final rendered PNG
+there is @aquaterra.live; @crftd.lab is CRFTD's account as given by the user, 2026-10-01 and NOT independently verified to exist). It is a REAL, decoded code: the build decodes the code on its own AND decodes the final rendered PNG
 (full size and at 25%) with OpenCV and refuses to finish if either fails. The code sits on a cream plate with a 4-module quiet zone, dark modules on light, because
 a QR on black does not scan reliably. Copy: TERRATHON / SCAN TO FOLLOW / NGO AQUATERRA ON INSTAGRAM / @NGO.AQUATERRA. No claims about content, follower counts or giveaways.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; the QR itself is vector (SVG) so it prints sharp. Ask the printer for a bleed proof.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_ig_qr_poster.py [ngo.aquaterra|aquaterra.live|crftd.lab]   ->  out/collaterals/aq_instagram_qr_A4.pdf + .png
 """
 import asyncio, base64, importlib.util, os, random, re, sys
 
@@ -19,9 +19,9 @@ from playwright.async_api import async_playwright
 
 ACCOUNT = sys.argv[1] if len(sys.argv) > 1 else "ngo.aquaterra"
 URL = f"https://www.instagram.com/{ACCOUNT}/"
-SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM"}
+SUBS = {"ngo.aquaterra": "NGO AQUATERRA ON INSTAGRAM", "aquaterra.live": "AQUATERRA LIVE ON INSTAGRAM", "crftd.lab": "CRFTD ON INSTAGRAM"}
 SUB = SUBS[ACCOUNT]                      # copy per account (user, 2026-10-01: "NGO", not "TEAM"; aquaterra.live asked for separately)
-SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4"}[ACCOUNT]
+SLUG = {"ngo.aquaterra": "aq_instagram_qr_A4", "aquaterra.live": "aq_live_instagram_qr_A4", "crftd.lab": "crftd_instagram_qr_A4"}[ACCOUNT]
 GROUND, ORCHID, GREEN, CREAM_HALO, CARD, INK, WHITE = "#000000", "#DE68F0", "#2FD284", "#F3ECDE", "#F5EEE1", "#0A0A0A", "#F5F5F5"
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
