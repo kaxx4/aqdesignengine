@@ -6,9 +6,10 @@ final PNG. Nothing in the payload is edited. The code sits dark-on-cream with a 
 Copy: TERRATHON / SCAN TO PAY / DISCO DIWALI TICKET STALL / TERRAROOTS. No price (user), no UPI app claims, no date/venue.
 PRINT CAVEAT: full-bleed black A4, ~12mm safe margin, no bleed/crop marks; ask the printer for a bleed proof. TEST-SCAN THE PRINTED SHEET with a real payment app before the event.
 
-Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png
+Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_pay_sign.py [portrait]   ->  out/collaterals/dd_payment_qr_sign_A4_landscape.pdf + .png  (or ..._A4_portrait with the arg:
+      the same pieces stacked in one centred column, smaller code (414px, ~109mm) so the stack fits)
 """
-import asyncio, base64, importlib.util, io, os, random, re
+import asyncio, base64, importlib.util, io, os, random, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "scratchpad", "tt_events.py"))
@@ -21,7 +22,10 @@ from playwright.async_api import async_playwright
 PAYLOAD = "000201010211021644038482021656080415522024082021656061661000308202165650825HDFC00000015020011163278526460010A0000005240128Vyapar.174068471103@hdfcbank27420010A0000005240124STQD295260117541249217725204829953033565802IN5910TERRAROOTS6007KOLKATA610670001562400524STQD2952601175412492177207088202165663045267"
 SRC = "engine/assets/terrathon/qr_dd_payment_terraroots_source.png"
 GROUND, ORCHID, CREAM_HALO, WHITE, CARD, INK = "#000000", "#DE68F0", "#F3ECDE", "#F5F5F5", "#F5EEE1", "#0A0A0A"
-W, H = 1123, 794
+PORTRAIT = "portrait" in sys.argv
+W, H = (794, 1123) if PORTRAIT else (1123, 794)
+PAGE_MM = "210mm 297mm" if PORTRAIT else "297mm 210mm"
+SLUG = "dd_payment_qr_sign_A4_" + ("portrait" if PORTRAIT else "landscape")
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 
 
@@ -37,40 +41,42 @@ QR = "data:image/svg+xml;base64," + base64.b64encode(buf.getvalue()).decode()
 tmp = io.BytesIO(); q.save(tmp, kind="png", scale=12, border=4)
 assert decode(cv2.cvtColor(np.array(Image.open(io.BytesIO(tmp.getvalue())).convert("RGB")), cv2.COLOR_RGB2BGR)) == PAYLOAD, "regenerated QR does not decode to PAYLOAD"
 MODS = q.symbol_size(border=0)[0]
-QR_PX = round(480 / MODS) * MODS            # whole pixels per module
+QR_PX = round((414 if PORTRAIT else 480) / MODS) * MODS            # whole pixels per module
 PAD = round(4 * QR_PX / MODS)               # 4-module quiet zone
 BORDER = 12; PLATE = QR_PX + 2 * PAD + 2 * BORDER
-PX, PY = 62, (H - PLATE) // 2
+PX, PY = (W - PLATE) // 2, 0 if PORTRAIT else (H - PLATE) // 2 if False else 0
+if not PORTRAIT: PX, PY = 62, (H - PLATE) // 2
 
 rnd = random.Random(31)
 SPECKS = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.5, .6, .8, 1, 1.3, 1.6]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(420))
-CX, CW = PX + PLATE + 40, W - (PX + PLATE + 40) - 52      # right column
+CX, CW = (0, 590) if PORTRAIT else (PX + PLATE + 40, W - (PX + PLATE + 40) - 52)      # text column (portrait: full-width centred stack)
 
+PLATE_HTML = f'<div class="plate" id="plate"><img id="qr" src="{QR}"></div>'
 HTML = f"""<!doctype html><html><head><meta charset="utf-8"><style>
 {core.FONTS}
 {tt.FONT_CSS}
-@page {{ size:297mm 210mm; margin:0 }}
+@page {{ size:{PAGE_MM}; margin:0 }}
 *{{box-sizing:border-box;margin:0;padding:0}}
 html,body{{background:{GROUND}}}
-.page{{position:relative;width:297mm;height:210mm;overflow:hidden;background:{GROUND};font-family:'NeutralFace',sans-serif;color:{WHITE};text-align:center}}
+.page{{position:relative;width:{"210mm" if PORTRAIT else "297mm"};height:{"297mm" if PORTRAIT else "210mm"};overflow:hidden;background:{GROUND};font-family:'NeutralFace',sans-serif;color:{WHITE};text-align:center}}
 .specks{{position:absolute;inset:0}}
 .star{{position:absolute;width:78px;z-index:1}}
-.plate{{position:absolute;left:{PX}px;top:{PY}px;width:{PLATE}px;height:{PLATE}px;background:{CARD};border:{BORDER}px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;z-index:2}}
+.plate{{{'position:relative;margin-top:36px;flex:none;' if PORTRAIT else f'position:absolute;left:{PX}px;top:{PY}px;'}width:{PLATE}px;height:{PLATE}px;background:{CARD};border:{BORDER}px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;z-index:2}}
 .plate img{{width:{QR_PX}px;height:{QR_PX}px;display:block}}
-.col{{position:absolute;left:{CX}px;width:{CW}px;top:0;height:{H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2}}
+.col{{position:absolute;left:{CX}px;width:{CW if not PORTRAIT else W}px;top:0;height:{H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2}}
 .t1{{font-weight:400;font-size:30px;letter-spacing:.22em;color:{CREAM_HALO};white-space:nowrap}}
 .h{{font-family:'StretchPro';color:{WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;line-height:1.02;white-space:nowrap;display:block}}
-.sub{{font-family:'SigmarOne';color:{ORCHID};-webkit-text-stroke:.8px {ORCHID};letter-spacing:-.01em;line-height:1;white-space:nowrap;margin-top:26px}}
+.sub{{font-family:'SigmarOne';color:{ORCHID};-webkit-text-stroke:.8px {ORCHID};letter-spacing:-.01em;line-height:1;white-space:nowrap;margin-top:{6 if PORTRAIT else 26}px}}
 .stall{{font-weight:900;font-size:27px;letter-spacing:.1em;color:{WHITE};margin-top:12px;white-space:nowrap}}
 .pill{{margin-top:28px;background:{CARD};color:{INK};border:7px solid {ORCHID};border-radius:999px;font-weight:900;font-size:30px;letter-spacing:.06em;padding:12px 30px 10px;white-space:nowrap}}
 .aq{{height:46px;display:block;margin-top:34px}}
 </style></head><body><div class="page" id="page">
 <svg class="specks" viewBox="0 0 {W} {H}" preserveAspectRatio="none" width="100%" height="100%">{SPECKS}</svg>
-<img class="star" src="{STAR}" style="right:40px;top:34px"><img class="star" src="{STAR}" style="left:{PX + PLATE - 40}px;top:{PY + PLATE + 4}px;width:60px;display:none">
-<div class="plate" id="plate"><img id="qr" src="{QR}"></div>
+<img class="star" src="{STAR}" style="right:{24 if PORTRAIT else 40}px;top:{22 if PORTRAIT else 34}px;{"width:56px" if PORTRAIT else ""}"><img class="star" src="{STAR}" style="left:24px;top:22px;width:56px;display:{"block" if PORTRAIT else "none"}">
+{"" if PORTRAIT else PLATE_HTML}
 <div class="col" id="col"><div class="t1">TERRATHON</div>
 <div style="margin-top:18px"><span class="h" id="h1">SCAN TO</span><span class="h" id="h2">PAY</span></div>
-<div class="sub" id="sub">DISCO DIWALI</div><div class="stall">TICKET STALL</div>
+<div class="sub" id="sub">DISCO DIWALI</div><div class="stall">TICKET STALL</div>{PLATE_HTML if PORTRAIT else ""}
 <div class="pill" id="pill">TERRAROOTS</div><img class="aq" src="{core.LOGO}"></div>
 </div></body></html>"""
 
@@ -94,7 +100,7 @@ CHECK = """() => {
 
 async def main():
     os.makedirs("out/collaterals", exist_ok=True)
-    png = "out/collaterals/dd_payment_qr_sign_A4_landscape.png"; pdf = "out/collaterals/dd_payment_qr_sign_A4_landscape.pdf"
+    png = f"out/collaterals/{SLUG}.png"; pdf = f"out/collaterals/{SLUG}.pdf"
     async with async_playwright() as pw:
         br = await pw.chromium.launch()
         pg = await br.new_page(viewport={"width": W, "height": H}, device_scale_factor=3.125)
@@ -103,7 +109,7 @@ async def main():
         r = await pg.evaluate(CHECK); print("bad", r["bad"], "overlaps", r["ov"]); print(r["boxes"], r["stars"])
         qb = await pg.evaluate("(() => { const r = document.getElementById('qr').getBoundingClientRect(); return [r.left, r.top, r.width]; })()")
         await pg.locator("#page").screenshot(path=png)
-        await pg.pdf(path=pdf, width="297mm", height="210mm", print_background=True, margin=dict(top="0", right="0", bottom="0", left="0"))
+        await pg.pdf(path=pdf, width=PAGE_MM.split()[0], height=PAGE_MM.split()[1], print_background=True, margin=dict(top="0", right="0", bottom="0", left="0"))
         await br.close()
     img = cv2.imread(png); g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     S = 3.125; M = q.matrix; n = len(M); x0, y0, w = qb[0] * S, qb[1] * S, qb[2] * S; mod = w / n
