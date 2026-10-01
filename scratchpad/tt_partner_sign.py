@@ -21,10 +21,10 @@ ARTILY = "data:image/png;base64," + base64.b64encode(open("engine/assets/terrath
 CFG = {
     "cravella": dict(name="CRAVE&rsquo;L&zwnj;LA", sub="OUR DESSERT PARTNER", out="cravella_sign_A4_landscape",
                      left=f'<img class="logo" src="{LOGO}">'),
-    # Artily (user, 2026-10-01): "our hydration partner". Their real logo (black wordmark on white, cropped to the mark) sits on a cream plate with an
-    # orchid border; mix-blend-mode:multiply turns the logo's white ground into the plate colour, so the artwork itself is untouched.
+    # Artily (user, 2026-10-01): "our hydration partner". Their real logo (black wordmark on white, cropped to the mark) sits in a cream CIRCLE with an
+    # orchid ring (round, like the Crave'lla badge; user, 2026-10-01); mix-blend-mode:multiply turns the logo's white ground into the plate colour, so the artwork itself is untouched.
     "artily": dict(name="ARTILY", sub="OUR HYDRATION PARTNER", out="artily_sign_A4_landscape", ls="0.02em",
-                   left=f'<div class="plate"><img src="{ARTILY}" style="width:100%;display:block;mix-blend-mode:multiply"></div>'),
+                   left=f'<div class="plate"><img src="{ARTILY}" style="width:80%;display:block;mix-blend-mode:multiply"></div>'),
 }[PARTNER]
 _im, STAR = tt.crop_to_alpha("shuriken.png")
 _im, AQLIVE = tt.crop_to_alpha("aq_live.png")
@@ -42,7 +42,7 @@ html,body{{background:{GROUND}}}
 .specks{{position:absolute;inset:0}}
 .star{{position:absolute;width:92px}}
 .logo{{position:absolute;left:62px;top:{(H - 470) / 2}px;width:470px;height:470px;border-radius:50%;border:12px solid {ORCHID};display:block}}
-.plate{{position:absolute;left:62px;top:{(H - 330) / 2}px;width:476px;height:330px;background:#F5EEE1;border:12px solid {ORCHID};border-radius:44px;display:flex;align-items:center;justify-content:center;padding:20px 22px}}
+.plate{{position:absolute;left:56px;top:{(H - 490) / 2}px;width:490px;height:490px;background:#F5EEE1;border:12px solid {ORCHID};border-radius:50%;display:flex;align-items:center;justify-content:center}}
 .col{{position:absolute;left:560px;width:520px;top:0;height:{H}px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}}
 .t1{{font-weight:400;font-size:46px;letter-spacing:.2em;color:{CREAM_HALO};white-space:nowrap}}
 .name{{font-family:'StretchPro';color:{WHITE};letter-spacing:-.045em;font-feature-settings:'liga' 1,'dlig' 1;line-height:1;white-space:nowrap;margin-top:22px}}
