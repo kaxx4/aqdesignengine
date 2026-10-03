@@ -1,4 +1,7 @@
-"""TerraThon CERTIFICATES: winner, runner_up (full black ground) and participant (white paper).
+"""TerraThon CERTIFICATES: winner and runner_up (WHITE ground with a coloured keyline) and participant (white paper in a black flecked frame).
+REVISION 3 (user, 2026-10-03): "make the background of the winner certificate and the runner-up certificate white" -> both are now on a white ground (PAPER #F9F9F9, the same
+white as the participant paper) inside their coloured keyline; the black ground and flecks are gone. On white the cream wordmark/outline logic flips: ink outlines, ink text, the
+rank (1ST / 2ND) sits on a gold / silver chip with ink type (gold type on white would be 1.6:1), the wordmark takes an ink stroke. Revision-2 text follows.
 
 Model: the user's Paradox certificate set (wordmark, spaced "CERTIFICATE OF ..." line, fill-in lines,
 signatory footer, faint globe watermark). One layout, three colour schemes:
@@ -37,14 +40,14 @@ CX = W / 2
 
 VARIANTS = {
     "winner": dict(
-        dark=True, cert="CERTIFICATE OF MERIT", verb="HAS PLACED", rank="1ST", rank_col=GOLD,
+        dark=True, light=True, cert="CERTIFICATE OF MERIT", verb="HAS PLACED", rank="1ST", rank_col=GOLD,
         keyline=ORCHID,
-        title_fill=ORCHID, title_stroke=CREAM, title_shadow=GREEN, rule=ORCHID,
+        title_fill=ORCHID, title_stroke=INK, title_shadow=GREEN, rule=ORCHID,
         seal=GOLD, seal_rim="#B98A00", ribbon=ORCHID, seal_shadow=ORCHID, seal_words=("WINNER", None)),
     "runner_up": dict(
-        dark=True, cert="CERTIFICATE OF MERIT", verb="HAS PLACED", rank="2ND", rank_col=SILVER,
+        dark=True, light=True, cert="CERTIFICATE OF MERIT", verb="HAS PLACED", rank="2ND", rank_col=SILVER,
         keyline=BLUE,
-        title_fill=CREAM, title_stroke=BLUE, title_shadow="#0B4F8A", rule=BLUE,
+        title_fill=BLUE, title_stroke=INK, title_shadow="#0B4F8A", rule=BLUE,
         seal=SILVER, seal_rim="#8C93A0", ribbon=BLUE, seal_shadow=BLUE, seal_words=("RUNNER", "UP")),
     "participant": dict(
         dark=False, cert="CERTIFICATE OF PARTICIPATION", verb="HAS PARTICIPATED", rank=None, rank_col=INK,
@@ -74,7 +77,8 @@ def seal_svg(v, size, oc):
 
 async def build(name, out, fill_name="", fill_event=""):
     v = VARIANTS[name]
-    dark = v["dark"]
+    light = v.get("light", False)          # white ground + coloured keyline (winner / runner up, revision 3)
+    dark = v["dark"] and not light         # black ground (no variant uses it any more)
     TXT = WHITE if dark else INK
     SURF = "#000000" if dark else PAPER
     OC = CREAM if dark else INK           # outline colour: ink cannot read on black
@@ -91,7 +95,9 @@ async def build(name, out, fill_name="", fill_event=""):
 
     # ---- ground ---------------------------------------------------------------------------
     rnd = random.Random(11)
-    if dark:
+    if light:
+        pts = []                           # white flecks would be invisible on white
+    elif dark:
         pts = [(rnd.uniform(0, W), rnd.uniform(0, H)) for _ in range(26)]
     else:
         pts = [(rnd.uniform(0, W), rnd.uniform(0, H)) for _ in range(900)]
@@ -99,8 +105,8 @@ async def build(name, out, fill_name="", fill_event=""):
     specks = (f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">'
               + "".join(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{rnd.choice([.7, 1, 1.4, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for x, y in pts)
               + '</svg>')
-    ground = ('' if dark else '<div style="position:absolute;inset:0;background:#000"></div>') + specks   # dark: the page itself is black
-    if dark:
+    ground = ('' if (dark or light) else '<div style="position:absolute;inset:0;background:#000"></div>') + specks   # dark / light: the page itself is the ground
+    if dark or light:
         K, KW = 20, 4          # keyline: ONE solid-border div (user: no gradient border)
         ground += (f'<div style="position:absolute;left:{K}px;top:{K}px;width:{W - 2 * K}px;height:{H - 2 * K}px;border:{KW}px solid {v["keyline"]};z-index:2"></div>')
     else:
@@ -149,7 +155,8 @@ async def build(name, out, fill_name="", fill_event=""):
                                     f'display:flex;align-items:flex-end;gap:14px;z-index:6">{inner}</div>')
     rows = row("row1", r1y, 36, f'<span style="{LBL};padding-bottom:6px">THIS IS TO CERTIFY THAT</span><span style="{FLD};flex:1">{fill_name}</span>')
     RANK = (f"border-bottom:2px solid {TXT};height:58px;width:150px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;"
-            f"font-family:var(--d);font-weight:900;font-size:46px;letter-spacing:.03em;color:{v['rank_col']};line-height:1")
+            f"font-family:var(--d);font-weight:900;font-size:46px;letter-spacing:.03em;color:{v['rank_col']};line-height:1"
+            + (f";background:{v['rank_col']};color:{INK};border-bottom:none;border-radius:12px" if light else ""))
     if v["rank"]:
         rows += row("row2", r2y - 22, 58, f'<span style="{LBL};padding-bottom:6px">{v["verb"]}</span><span style="{RANK}">{v["rank"]}</span>'
                                           f'<span style="{LBL};padding-bottom:6px">IN</span><span style="{FLD};flex:1">{fill_event}</span>'
@@ -199,7 +206,7 @@ async def build(name, out, fill_name="", fill_event=""):
 
     html = B.page(W, H, SURF, f'<style>{FONT_CSS}</style>' + ground + wm + title + sub + rules + rows + live + seal + sig + stk, grain=False)
     text_pairs = [("body", TXT, SURF, 22, False), ("sub", TXT, SURF, 17, True), ("sig", TXT, SURF, 13.5, False),
-                  ("rank", v["rank_col"], SURF, 46, True)]
+                  ("rank", INK if light else v["rank_col"], v["rank_col"] if light else SURF, 46, True)]
     await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, page_bg=SURF,
                    collision_ignore={("seal", "row3")}, margin=F,
                    bleed_tags=tuple(l for l, *_ in els if l.startswith("stk_") or l == "aq_live"))
