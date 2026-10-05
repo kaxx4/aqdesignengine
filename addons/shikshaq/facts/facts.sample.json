@@ -1,0 +1,23 @@
+{
+  "mode": "sample",
+  "asOf": "2026-09-29",
+  "note": "DRY RUN ONLY. Figures come from CLAUDE.md as recorded on 2026-09-29, not from a live query. The planner refuses this file outside --dry.",
+  "counts": {
+    "teachers": { "value": 147, "label": "teachers", "source": "CLAUDE.md: admin reaches 147 teachers (applications, so an upper bound for live)", "verified": false },
+    "papers": { "value": 1487, "label": "papers", "source": "CLAUDE.md: 1,063 verified + 424 live needs_review", "verified": false },
+    "schools": { "value": null, "label": "schools", "source": "not recorded; never claimed", "verified": false }
+  },
+  "subjects": [
+    { "name": "Maths", "papers": null }, { "name": "Science", "papers": null }, { "name": "English", "papers": null },
+    { "name": "Commerce", "papers": null }, { "name": "Computer", "papers": null }, { "name": "Hindi", "papers": null },
+    { "name": "History", "papers": null }, { "name": "Geography", "papers": null }
+  ],
+  "newPapers": [
+    { "id": "sample-1", "subject": "Maths", "cls": "X", "board": "ICSE", "year": "2025", "exam": "Pre-Board", "school": null, "questions": null }
+  ],
+  "constants": {
+    "freeQuestions": 2, "freeWord": "two", "commission": 0,
+    "classes": "IV to XII", "boards": ["ICSE", "ISC", "CBSE"], "city": "Kolkata", "site": "shikshaq.in",
+    "source": "src/lib/free-preview.ts and VISUAL_LANGUAGE.md section 8"
+  }
+}

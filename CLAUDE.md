@@ -816,6 +816,11 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
 
 ---
 
+**Addon: Shikshaq (2026-10-05).** `addons/shikshaq/` is a vendored Node format module for the Shikshaq
+brand (not AQ): weekly three-post planner, bento templates, copy and layout gates. It is NOT a Workflow A or
+B path and shares no code with `engine/`. Read `addons/shikshaq/README_ADDON.md` and its `brain/BRAIN.md`
+before touching it. Its source of truth lives outside this repo.
+
 ## 12. CURRENT STATE / WHAT'S PENDING (honest — full detail in `brain/ENGINE_STATE.md`)
 - Workflow A: 3 archetypes fully self-correcting (`number_hero`, `radial_orbit`, `giant_type`);
   `stacked_zones` registered. Pending: 5 more (`diagonal_cascade`, `off_frame_bleed`,

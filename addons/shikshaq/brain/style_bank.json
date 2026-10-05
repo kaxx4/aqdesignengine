@@ -1,0 +1,41 @@
+{
+  "note": "Styles are choices INSIDE the Shikshaq brand, in the AQ engine's sense: a judged recipe, drawn educated-random. A style never overrides a hard rule (accent is semantic per pillar, contrast is measured, bone ground family only, radii from the site scale, real assets only). `kit` is a preset name resolved in src/style.mjs.",
+  "kits": {
+    "classic": { "shapes": ["squircle", "flower", "burst", "cloud"], "moods": ["calm", "happy", "wink", "cheer"], "rot": [0, 6, -8, 6] },
+    "quiet":   { "shapes": ["squircle", "cloud", "squircle", "cloud"], "moods": ["calm", "calm", "happy", "calm"], "rot": [0, 0, 0, 0] },
+    "lively":  { "shapes": ["flower", "burst", "burst", "flower"], "moods": ["cheer", "wink", "cheer", "wink"], "rot": [-8, 10, -10, 8] },
+    "mixed":   { "shapes": "random", "moods": "random", "rot": "random" }
+  },
+  "styles": [
+    { "id": "calm-bone", "weight": 3, "energy": "calm", "templates": "any", "ground": "bone", "cta": "panel", "radius": 32, "kit": "classic", "flip": false, "shuffle": false, "stickerSign": 1,
+      "mechanism": "Warm bone page, saturated slabs punctuate it, one dark CTA bar anchors the bottom.",
+      "recipe": "The house default. Ground bone, slab radius 32, CTA as a near-black bar with an accent arrow, classic mascot kit." },
+    { "id": "tinted-room", "weight": 1.5, "energy": "bold", "templates": "any", "ground": "accent-tint", "cta": "panel", "radius": 32, "kit": "classic", "flip": false, "shuffle": false, "stickerSign": 1,
+      "mechanism": "The whole page is tinted with the pillar's accent, so a feed grid reads as colour-coded rooms.",
+      "recipe": "Ground is the accent's tint (peach for teachers, lavender for papers, mint for tips). Bone cards keep their ring so they still separate." },
+    { "id": "muted-paper", "weight": 1.5, "energy": "calm", "templates": "any", "ground": "muted", "cta": "ring", "radius": 30, "kit": "quiet", "flip": false, "shuffle": false, "stickerSign": 1,
+      "mechanism": "A quieter, more editorial page: darker warm ground, ring CTA instead of a black bar.",
+      "recipe": "Ground muted warm, CTA a bone bar with a hairline ring, slab radius 30, quiet mascot kit (calm faces, no burst)." },
+    { "id": "accent-bar", "weight": 2, "energy": "bold", "templates": "any", "ground": "bone", "cta": "accent", "radius": 32, "kit": "classic", "flip": false, "shuffle": false, "stickerSign": -1,
+      "mechanism": "The CTA itself becomes the second saturated object, so the action is the loudest thing after the hero.",
+      "recipe": "CTA bar filled with the accent, ink or white type chosen by measured contrast, black arrow dot. Sticker tilts the other way." },
+    { "id": "soft-corners", "weight": 1.5, "energy": "calm", "templates": "any", "ground": "bone", "cta": "panel", "radius": 28, "kit": "quiet", "flip": false, "shuffle": false, "stickerSign": 1,
+      "mechanism": "Slightly tighter corners and quiet faces: friendlier to a parent audience than the bold kit.",
+      "recipe": "Slab radius 28 (site scale), quiet kit, otherwise the default." },
+    { "id": "lively-kit", "weight": 1.5, "energy": "playful", "templates": "any", "ground": "bone", "cta": "panel", "radius": 32, "kit": "lively", "flip": false, "shuffle": false, "stickerSign": -1,
+      "mechanism": "Cheering and winking characters tilted harder, for student-facing posts.",
+      "recipe": "Lively kit (flower and burst bodies, cheer and wink faces, bigger tilts), sticker tilts left." },
+    { "id": "mirror-bento", "weight": 2, "energy": "playful", "templates": ["bento-board"], "ground": "bone", "cta": "panel", "radius": 32, "kit": "mixed", "flip": true, "shuffle": false, "stickerSign": 1,
+      "mechanism": "The tall headline column moves to the left, so the eye reads headline first and the bento second.",
+      "recipe": "Mirror the three columns, random mascot kit." },
+    { "id": "shuffle-mosaic", "weight": 2, "energy": "playful", "templates": ["subject-mosaic"], "ground": "bone", "cta": "panel", "radius": 32, "kit": "mixed", "flip": false, "shuffle": true, "stickerSign": 1,
+      "mechanism": "Subjects are shuffled so the same eight tiles do not sit in the same order every week.",
+      "recipe": "Seeded shuffle of the eight subject tiles, mixed mascot kit." },
+    { "id": "ring-room", "weight": 1, "energy": "calm", "templates": "any", "ground": "bone", "cta": "ring", "radius": 30, "kit": "mixed", "flip": false, "shuffle": false, "stickerSign": 1,
+      "mechanism": "No black bar at all: the page stays light, saturation comes only from the slab and the characters.",
+      "recipe": "CTA as a bone ring bar, slab radius 30, random kit." },
+    { "id": "punch", "weight": 1, "energy": "bold", "templates": "any", "ground": "accent-tint", "cta": "accent", "radius": 32, "kit": "lively", "flip": false, "shuffle": false, "stickerSign": -1,
+      "mechanism": "Maximum energy inside the brand: tinted room, accent CTA, lively characters.",
+      "recipe": "Use sparingly, at most one week in six. Accent tint ground, accent CTA bar, lively kit." }
+  ]
+}
