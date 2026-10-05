@@ -1,0 +1,19 @@
+{
+  "note": "Approximate Kolkata school-year seasons. INFERENCE, not sourced: verify board date sheets and Puja dates before leaning on a specific day. Seasons only tilt the planner; they never create a claim.",
+  "months": {
+    "1": "prelims", "2": "boards", "3": "boards", "4": "new-session", "5": "summer",
+    "6": "settling", "7": "settling", "8": "half-yearly-prep", "9": "half-yearly",
+    "10": "puja-break", "11": "annual-prep", "12": "annual-prep"
+  },
+  "seasons": {
+    "boards": { "pillar_boost": { "papers": 1.8, "tips": 1.6 }, "tip_themes": ["last-30-days", "exam-hall", "sleep-and-revision"] },
+    "prelims": { "pillar_boost": { "papers": 1.6, "tips": 1.4 }, "tip_themes": ["mock-routine", "weak-chapters"] },
+    "new-session": { "pillar_boost": { "teachers": 1.9, "trust": 1.3 }, "tip_themes": ["choosing-a-teacher"] },
+    "summer": { "pillar_boost": { "teachers": 1.3, "tips": 1.2 }, "tip_themes": ["head-start"] },
+    "settling": { "pillar_boost": { "teachers": 1.5, "trust": 1.2 }, "tip_themes": ["choosing-a-teacher", "weak-chapters"] },
+    "half-yearly-prep": { "pillar_boost": { "papers": 1.5, "tips": 1.4 }, "tip_themes": ["mock-routine", "weak-chapters"] },
+    "half-yearly": { "pillar_boost": { "papers": 1.7, "tips": 1.5 }, "tip_themes": ["exam-hall", "mock-routine"] },
+    "puja-break": { "pillar_boost": { "tips": 1.8, "papers": 1.4 }, "tip_themes": ["puja-revision", "weak-chapters"] },
+    "annual-prep": { "pillar_boost": { "papers": 1.6, "teachers": 1.3, "tips": 1.4 }, "tip_themes": ["mock-routine", "last-30-days"] }
+  }
+}

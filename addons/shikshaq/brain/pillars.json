@@ -1,0 +1,389 @@
+{
+  "goal": "A Kolkata parent reaches the right teacher, and a student reads the right paper, with the fewest taps. Every post serves one of those two actions.",
+  "audiences": {
+    "student": "ICSE, ISC, CBSE, Classes IV to XII. Wants the paper, not a lecture.",
+    "parent": "Wants a teacher nearby, honest about cost, reachable on WhatsApp."
+  },
+  "slots": [
+    {
+      "day": "Mon",
+      "pillar": "papers",
+      "template": [
+        "paper-spotlight",
+        "subject-mosaic"
+      ],
+      "time": "19:30",
+      "cta": "Read two questions free"
+    },
+    {
+      "day": "Wed",
+      "pillar": "tips",
+      "template": [
+        "steps"
+      ],
+      "time": "19:30",
+      "cta": "Save this for revision"
+    },
+    {
+      "day": "Fri",
+      "pillar": "teachers",
+      "template": [
+        "find-teacher",
+        "number-bento",
+        "bento-board"
+      ],
+      "time": "19:30",
+      "cta": "Find a teacher near you"
+    }
+  ],
+  "pillar_weights": {
+    "papers": 1.0,
+    "tips": 1.0,
+    "trust": 1.0,
+    "teachers": 1.0
+  },
+  "accent_cycle": [
+    "orange",
+    "indigo",
+    "mint"
+  ],
+  "hook_formulas": {
+    "question": "{q}",
+    "plain": "{line}",
+    "contrarian": "{line}"
+  },
+  "hashtags": {
+    "core": [
+      "#shikshaq",
+      "#kolkata",
+      "#kolkatastudents"
+    ],
+    "papers": [
+      "#pastpapers",
+      "#icse",
+      "#cbse",
+      "#isc",
+      "#boardexams"
+    ],
+    "tips": [
+      "#studytips",
+      "#examprep",
+      "#revision",
+      "#studentlife"
+    ],
+    "trust": [
+      "#tuition",
+      "#kolkataparents",
+      "#education"
+    ],
+    "teachers": [
+      "#hometuition",
+      "#privatetutor",
+      "#kolkataparents",
+      "#tuitionteacher"
+    ]
+  },
+  "copy": {
+    "number-bento": [
+      {
+        "id": "nb-papers",
+        "plain": "Real papers.",
+        "bold": "Real schools.",
+        "sub": "Past papers from the exams Kolkata students actually sit.",
+        "big": "counts.papers",
+        "bigLabel": "papers to read",
+        "needs": [
+          "counts.papers"
+        ],
+        "caption": "Past papers from the exams Kolkata students actually sit, all in one place.\n\nOpen one, solve it timed, check yourself after."
+      },
+      {
+        "id": "nb-commission",
+        "plain": "Zero",
+        "bold": "middlemen.",
+        "sub": "You message the teacher directly. We never take a cut.",
+        "big": "constants.commission",
+        "bigPrefix": "₹",
+        "bigLabel": "commission, ever",
+        "needs": [
+          "constants.commission"
+        ],
+        "caption": "No agent, no booking fee, no commission. You talk to the teacher on WhatsApp and agree things between yourselves."
+      },
+      {
+        "id": "nb-teachers",
+        "plain": "Teachers you can",
+        "bold": "actually reach.",
+        "sub": "Profiles, subjects and areas, with a WhatsApp button that works.",
+        "big": "counts.teachers",
+        "bigLabel": "teachers listed",
+        "needs": [
+          "counts.teachers"
+        ],
+        "caption": "Every profile shows subject, board and area. When you are ready, one tap opens WhatsApp."
+      },
+      {
+        "id": "nb-free",
+        "plain": "Try before",
+        "bold": "you sign in.",
+        "sub": "Every paper opens with free questions, no login wall in your face.",
+        "big": "constants.freeQuestions",
+        "bigLabel": "questions free on every paper",
+        "needs": [
+          "constants.freeQuestions"
+        ],
+        "caption": "Open any paper and read the first questions free. Sign in only when you want to keep going."
+      }
+    ],
+    "paper-spotlight": [
+      {
+        "id": "ps-fresh",
+        "eyebrow": "New on the shelf",
+        "plain": "A fresh",
+        "bold": "paper just landed.",
+        "line": "Solve it timed first. Check the answers after.",
+        "needs": [
+          "newPapers.0"
+        ],
+        "caption": "A new paper is up. Set a timer, solve it cold, then check. The gaps it shows are your revision list."
+      },
+      {
+        "id": "ps-timed",
+        "eyebrow": "Paper of the week",
+        "plain": "Do it like",
+        "bold": "exam day.",
+        "line": "Phone away, timer on, one sitting.",
+        "needs": [
+          "newPapers.0"
+        ],
+        "caption": "One paper, one sitting, timer on. Practise the exam, not just the syllabus."
+      },
+      {
+        "id": "ps-free",
+        "eyebrow": "Start free",
+        "plain": "Read the first",
+        "bold": "{freeWord} questions free.",
+        "line": "No login needed to see if it is the right paper.",
+        "needs": [
+          "newPapers.0",
+          "constants.freeWord"
+        ],
+        "caption": "Not sure it is the right paper? The first {freeWord} questions are free to read."
+      }
+    ],
+    "subject-mosaic": [
+      {
+        "id": "sm-pick",
+        "plain": "Pick your",
+        "bold": "subject.",
+        "sub": "Eight subjects, one shelf. Past papers for every one.",
+        "needs": [],
+        "caption": "Maths, Science, English, Commerce, Computer, Hindi, History and Geography. Pick the one that worries you most and start there."
+      },
+      {
+        "id": "sm-weak",
+        "plain": "Start with the",
+        "bold": "one you avoid.",
+        "sub": "That is where the marks are hiding.",
+        "needs": [],
+        "caption": "Most of us have a subject we keep pushing to tomorrow. Open a paper in it today."
+      },
+      {
+        "id": "sm-class",
+        "plain": "Classes {classes}.",
+        "bold": "ICSE, ISC, CBSE.",
+        "sub": "Filter by board and class, then open a paper.",
+        "needs": [
+          "constants.classes"
+        ],
+        "caption": "Classes {classes}, across ICSE, ISC and CBSE. Filter, pick, solve."
+      }
+    ],
+    "steps": [
+      {
+        "id": "st-puja",
+        "theme": "puja-revision",
+        "plain": "Puja break,",
+        "bold": "sorted.",
+        "sub": "A revision plan that still leaves time for pandal hopping.",
+        "steps": [
+          {
+            "t": "Pick one weak chapter",
+            "b": "Only one. Not the whole book."
+          },
+          {
+            "t": "Solve a paper on it",
+            "b": "Timed, no phone."
+          },
+          {
+            "t": "Fix what you missed",
+            "b": "Write the right answer next to the wrong one."
+          }
+        ],
+        "caption": "Pujo is coming. Three small steps keep revision alive without ruining the fun. Save this and send it to someone who needs it.",
+        "needs": []
+      },
+      {
+        "id": "st-mock",
+        "theme": "mock-routine",
+        "plain": "The three step",
+        "bold": "mock routine.",
+        "sub": "How to use a past paper properly.",
+        "steps": [
+          {
+            "t": "Sit it like the exam",
+            "b": "Same time limit, same silence."
+          },
+          {
+            "t": "Mark it harshly",
+            "b": "No half marks for almost."
+          },
+          {
+            "t": "Redo the misses",
+            "b": "Within two days, while it stings."
+          }
+        ],
+        "caption": "A past paper is only useful if you treat it like the real thing. Here is the routine in three steps.",
+        "needs": []
+      },
+      {
+        "id": "st-weak",
+        "theme": "weak-chapters",
+        "plain": "Find your",
+        "bold": "weak chapters.",
+        "sub": "Let a paper tell you what to study.",
+        "steps": [
+          {
+            "t": "Solve a paper cold",
+            "b": "Before you revise anything."
+          },
+          {
+            "t": "Tag every lost mark",
+            "b": "Careless, did not know, ran out of time."
+          },
+          {
+            "t": "Study the biggest tag",
+            "b": "Fix one pile at a time."
+          }
+        ],
+        "caption": "Do not guess what to revise. Let one paper show you, then fix the biggest pile of lost marks first.",
+        "needs": []
+      },
+      {
+        "id": "st-teacher",
+        "theme": "choosing-a-teacher",
+        "plain": "Choosing a",
+        "bold": "teacher.",
+        "sub": "Three questions before you commit.",
+        "steps": [
+          {
+            "t": "Is the subject exact?",
+            "b": "Maths is not Applications. Ask."
+          },
+          {
+            "t": "Is the area close?",
+            "b": "Travel time eats study time."
+          },
+          {
+            "t": "Can you try one class?",
+            "b": "Fit matters more than fame."
+          }
+        ],
+        "caption": "Before you pick a teacher, ask these three things. It saves a month of the wrong fit.",
+        "needs": []
+      },
+      {
+        "id": "st-hall",
+        "theme": "exam-hall",
+        "plain": "Exam hall",
+        "bold": "habits.",
+        "sub": "Small things that save marks.",
+        "steps": [
+          {
+            "t": "Read the whole paper",
+            "b": "Before writing a single answer."
+          },
+          {
+            "t": "Start with your strongest",
+            "b": "Confidence is worth marks."
+          },
+          {
+            "t": "Leave time to check",
+            "b": "Careless slips are free marks back."
+          }
+        ],
+        "caption": "Three habits that save marks in the hall. None of them need extra study.",
+        "needs": []
+      }
+    ],
+    "find-teacher": [
+      {
+        "id": "ft-near",
+        "plain": "Find a teacher",
+        "bold": "near you.",
+        "sub": "Search by subject, class and area. Message on WhatsApp.",
+        "ask": "Where are you looking?",
+        "needs": [],
+        "caption": "Search by subject, class and area, then message the teacher directly on WhatsApp."
+      },
+      {
+        "id": "ft-direct",
+        "plain": "Message the",
+        "bold": "teacher directly.",
+        "sub": "No agent in between. Agree timing and fees yourselves.",
+        "ask": "What does your child need help with?",
+        "needs": [],
+        "caption": "Talk to the teacher yourself. Timing, fees and the first trial class are between you two."
+      },
+      {
+        "id": "ft-count",
+        "plain": "{teachers} teachers.",
+        "bold": "One search.",
+        "sub": "Filter by subject, board and area, then reach out.",
+        "ask": "Which subject?",
+        "needs": [
+          "counts.teachers"
+        ],
+        "caption": "Filter by subject, board and area, then reach out. {teachers} teachers are listed right now."
+      }
+    ],
+    "bento-board": [
+      {
+        "id": "bb-find",
+        "plain": "Find your",
+        "bold": "teacher.",
+        "sub": "Search by subject, class and area. Message on WhatsApp.",
+        "needs": [],
+        "caption": "Papers for students, teachers for parents, all in one place.\n\nSearch by subject, class and area, then message the teacher directly."
+      },
+      {
+        "id": "bb-both",
+        "plain": "Papers and",
+        "bold": "teachers.",
+        "sub": "Read a past paper free. Message a teacher directly.",
+        "needs": [],
+        "caption": "One place for the two things a Kolkata family keeps looking for: a good past paper and the right teacher nearby."
+      }
+    ]
+  },
+  "search_examples": {
+    "subjects": [
+      "Maths",
+      "Science",
+      "English",
+      "Commerce"
+    ],
+    "classes": [
+      "Class 8",
+      "Class 10",
+      "Class 12"
+    ],
+    "areas": [
+      "Salt Lake",
+      "Behala",
+      "Tollygunge",
+      "Dum Dum"
+    ],
+    "note": "Prompts for the search mock only. Never presented as a count or a claim."
+  }
+}

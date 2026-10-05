@@ -1,0 +1,4 @@
+node_modules/
+facts/facts.live.json
+out/*
+!out/*-dry/

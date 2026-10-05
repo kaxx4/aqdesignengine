@@ -1,0 +1,14 @@
+{
+  "name": "shikshaq-weekly-marketing",
+  "private": true,
+  "type": "module",
+  "description": "Weekly Instagram engine for Shikshaq. Lives apart from the app so it never enters the Vercel install path.",
+  "scripts": {
+    "week": "node run-week.mjs",
+    "dry": "node run-week.mjs --dry",
+    "test": "node src/selftest.mjs",
+    "test:render": "node src/selftest-render.mjs",
+    "vary": "node vary.mjs"
+  },
+  "dependencies": { "playwright-core": "^1.49.0" }
+}
