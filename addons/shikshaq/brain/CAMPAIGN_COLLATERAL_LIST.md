@@ -34,8 +34,8 @@ Three audiences, one chain. **The student is the messenger.** A student sees the
 | Tutors apply through a form. AquaTerra's team runs background checks and selects who is listed | owner, 2026-10-06 |
 | Tutors have students who actively learn from them | owner, 2026-10-06 (confirm whether this holds for every listed tutor, see section 7) |
 
-**"Verified" now has a definition.** The owner confirmed it: tutors apply through a form, the team does background checks, and the team selects who is listed. So the public line is **"Every tutor is checked and selected by our team."** The word "verified" may appear only next to that line. "Not everyone who applies is listed" is true and is used on purpose, because it is the answer to a parent's biggest worry.
-**Held back until you confirm:** any count, any area list, any review, and any statement about how many students a tutor has.
+**Wording locked by the owner (2026-10-06): "checked and selected".** Poster lines say "Every tutor is checked and selected by our team." The FAQ and tutor-listing stories may say "background check" in full. **"Verified" now has a definition.** The owner confirmed it: tutors apply through a form, the team does background checks, and the team selects who is listed. So the public line is **"Every tutor is checked and selected by our team."** The word "verified" may appear only next to that line. "Not everyone who applies is listed" is true and is used on purpose, because it is the answer to a parent's biggest worry.
+**Confirmed by the owner:** students actively learn from every listed tutor, so "every listed tutor teaches students right now" may be used. **Held back until the owner pastes the export:** any count, any area list, any review.
 **Scope note:** the site also serves college students and competitive exams. This campaign speaks to school students only, so it never mentions them.
 **The correction beat** ("Not a charity. Not a class.") is allowed only where this list places it, and never as the first thing a viewer sees.
 
@@ -56,7 +56,7 @@ Every look uses the bone ground (never white), saturated slabs at radius 32, the
 | **V9 Character bento** | Blob mascots, peeking eyes on an orange slab, a scalloped search slab, tilted chips | the character stories, the bento board | your mascot bento reference |
 | **V10 Button slab** | A hard-shadow pill button, a scalloped edge, a burst badge, a waving mascot | every call to action | bitesized |
 
-**Characters.** The five site blobs (rough, meh, fine, good, great) are the base. I extend the family with new flat shapes, a burst (sun) shape and a four-lobe X shape, built the same way: arch or lobed body, two dots, one mouth, no gradients, mood carries the meaning. The new characters get named in the first character story so they stay consistent across four weeks.
+**Characters.** The five site blobs (rough, meh, fine, good, great) are the base. I extend the family with new flat shapes, a burst (sun) shape and a four-lobe X shape, built the same way: arch or lobed body, two dots, one mouth, no gradients, mood carries the meaning. The new characters are shapes, not named mascots, and keep one fixed colour each so they stay consistent across four weeks.
 
 **Adaptations I am recording now:** (1) V2 puts several tilted stickers on one poster, where the site's own guidance allows one per card. That guidance is for cards in a grid, and a sticker pile is a different object, so I follow the reference and keep each sticker clear of the headline. (2) Your references use hand-drawn scribbles. You chose blobs only, so annotations in V1 and V4 become typed tags and highlighter blocks. (3) The references use white and cool greys. Everything here sits on warm bone.
 
@@ -271,10 +271,30 @@ Posting time follows the brain's default of 19:30 IST for feed. Status is posted
 
 If the data dump arrives late, the gated feed posts (RV1, RV7, MT4) swap with SJ5 to SJ7 from reserve.
 
-## 7. What I still need
-1. **Reviews and counts.** I cannot reach `shikshaq.in`: the environment's network policy denied the host (`www.shikshaq.in`) and I am not working around that. Either add `shikshaq.in` and `www.shikshaq.in` to Allowed domains under the environment's Network access settings, or paste the reviews and counts you approve. Until then every review slot (RV1 to RV10), the areas in FQ2 and T5 hold a placeholder.
-2. **The exact public wording on checks.** I use "Every tutor is checked and selected by our team." Say if you want it stronger or softer. I do not use the word "background" on posters aimed at children unless you say so. It appears on FQ7 and TQ5, which are parent and tutor facing.
-3. **Active students.** You said verified tutors have students who actively learn from them. Is that true of every listed tutor? If yes, I can say "every listed tutor teaches students right now" and use it on MT posts. If not, it stays out.
-4. **Tutor approvals.** I need each tutor's WhatsApp approval of their own post (name, photo, quote) before it goes out. Send me the tutors, or the quotes you already have from them.
-5. **Interview wording.** Paste what people actually said Shikshaq was, for the first poll story IN1.
-6. **Build prerequisites.** The Shikshaq renderer only does 1080x1350. I add the 1080x1920 story canvas with a safe zone, the FAQ and chat-pill templates, and the new blob shapes before Wave 1. I run `npm run test:render` on each.
+## 7. Open items (all answered 2026-10-06 unless marked)
+1. **Check wording:** locked, see section 2.
+2. **Active students:** true of every listed tutor. Allowed.
+3. **Data route:** I cannot read Shikshaq's Supabase project (permission error) or the live site (network policy). The owner exports and pastes reviews, counts and area names. **PENDING.** Blocks RV1 to RV10, the areas in FQ2, and T5.
+4. **Meet a tutor:** the owner sends up to three tutors with subject, a short quote and a photo if they agree. Each approves the final post by WhatsApp. **PENDING.** Blocks MT1 to MT6.
+5. **Poll IN1 options:** "Where you find a tutor", "A charity", "A coaching centre", "Not sure".
+6. **Start:** update the list, build the story canvas and FAQ templates, generate the nine parent FAQ stories, show every PNG.
+7. **Build prerequisites:** the renderer only does 1080x1350, so the 1080x1920 story canvas with a safe zone and the FAQ template come first, each proved by a self-test and `npm run test:render`.
+
+## 8. Built (2026-10-06): the campaign is generated, waiting only on data
+
+The list above was generated in full by `addons/shikshaq/campaign/` (see its `README.md`). Final counts, from the catalog:
+
+| Canvas | Files |
+|---|---|
+| Story (S) | 62 |
+| Highlight covers (C, 1080x1920) | 5 |
+| Feed (F) | 72 |
+| Square (Q) | 11 (the four "say it to your parents" cards, the final forwardable, and six WhatsApp squares) |
+| **Total images** | **150** (21 are gated on real reviews and tutor approval, so 129 are complete) |
+| Instagram feed or square posts | 42 (28 scheduled, 14 in reserve) |
+| WhatsApp pushes | 16, each with its framing message, image and expected replies |
+| Text deliverables | schedule, captions and alt text for every post, WhatsApp pushes, volunteer answer sheet, two reel scripts |
+| Previews | story phone frames with the story chrome drawn on, and each WhatsApp push shown as a chat |
+
+Differences from the list above: the six WhatsApp squares (WQ1 to WQ6) were added so each broadcast has its own forward-ready image, and the paper-spotlight
+tiles were removed from the bento board because this campaign is tutors only. The bento is rebuilt for the campaign (`BB1`).

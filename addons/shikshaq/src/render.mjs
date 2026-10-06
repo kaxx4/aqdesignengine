@@ -11,10 +11,10 @@ const TEMPLATES = {
   'find-teacher': () => import('./templates/find-teacher.mjs'),
   'bento-board': () => import('./templates/bento-board.mjs'),
 };
-const CHROME = process.env.CHROME_PATH || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p));
+export const CHROME = process.env.CHROME_PATH || ['/opt/pw-browsers/chromium-1194/chrome-linux/chrome'].find(p => fs.existsSync(p));
 
 // Runs in the page. Returns problems found in the real layout.
-function gate(W, H) {
+export function gate(W, H, safe, tol = 0) {
   const out = [];
   const rgb = s => { const m = s.match(/[\d.]+/g).map(Number); return { r: m[0], g: m[1], b: m[2], a: m[3] === undefined ? 1 : m[3] }; };
   const hex = c => '#' + [c.r, c.g, c.b].map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
@@ -30,13 +30,15 @@ function gate(W, H) {
     const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
     leaves.push({ el, r, cs, txt: el.textContent.trim().slice(0, 30) });
     if (el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0 && cs.display !== 'inline') out.push(`CLIPPED-X ${name(el)} "${el.textContent.trim().slice(0, 24)}"`);
-    if (el.scrollHeight > el.clientHeight + 2 && el.clientHeight > 0 && cs.display !== 'inline') out.push(`CLIPPED-Y ${name(el)} "${el.textContent.trim().slice(0, 24)}"`);
+    if (el.scrollHeight > el.clientHeight + 2 + tol * parseFloat(cs.fontSize) && el.clientHeight > 0 && cs.display !== 'inline') out.push(`CLIPPED-Y ${name(el)} "${el.textContent.trim().slice(0, 24)}"`);
+    if (safe && (r.top < safe.top || r.bottom > H - safe.bottom) && !el.closest('[data-bleed]')) out.push(`SAFE-ZONE ${name(el)} "${el.textContent.trim().slice(0, 24)}" [${Math.round(r.top)},${Math.round(r.bottom)}] story chrome covers y<${safe.top} and y>${H - safe.bottom}`);
     if (r.left < 24 || r.top < 24 || r.right > W - 24 || r.bottom > H - 24) out.push(`MARGIN ${name(el)} "${el.textContent.trim().slice(0, 24)}" [${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}]`);
     const fg = rgb(cs.color), bg = el.dataset.bg ? (h => ({ r: parseInt(h.slice(1, 3), 16), g: parseInt(h.slice(3, 5), 16), b: parseInt(h.slice(5, 7), 16), a: 1 }))(el.dataset.bg) : bgOf(el), size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight) >= 700;
     const eff = fg.a < 1 ? { r: fg.r * fg.a + bg.r * (1 - fg.a), g: fg.g * fg.a + bg.g * (1 - fg.a), b: fg.b * fg.a + bg.b * (1 - fg.a) } : fg;
     const need = (size >= 24 && bold) || size >= 32 ? 3 : 4.5, got = ratio(eff, bg);
     if (cs.color !== 'rgba(0, 0, 0, 0)' && parseFloat(cs.opacity) > 0 && got < need && size > 1) out.push(`CONTRAST ${got.toFixed(2)}:1 < ${need} on "${el.textContent.trim().slice(0, 24)}" (${hex(eff)} on ${hex(bg)})`);
   });
+  if (safe) document.querySelectorAll('img[data-tag="logo"]').forEach(el => { const r = el.getBoundingClientRect(); if (r.top < safe.top || r.bottom > H - safe.bottom) out.push(`SAFE-ZONE logo [${Math.round(r.top)},${Math.round(r.bottom)}]`); });
   document.querySelectorAll('[data-tag]').forEach(el => {
     const cs = getComputedStyle(el), own = rgb(cs.backgroundColor);
     if (own.a < .95 || el.tagName === 'svg' || el.tagName === 'IMG') return;

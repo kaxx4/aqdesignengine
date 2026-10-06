@@ -8,7 +8,14 @@
     "dry": "node run-week.mjs --dry",
     "test": "node src/selftest.mjs",
     "test:render": "node src/selftest-render.mjs",
-    "vary": "node vary.mjs"
+    "vary": "node vary.mjs",
+    "campaign": "node campaign/build.mjs",
+    "campaign:test": "node campaign/selftest-campaign.mjs",
+    "campaign:wire": "node campaign/wire-data.mjs",
+    "campaign:final": "node campaign/build.mjs --final",
+    "lookbook": "node campaign/lookbook.mjs"
   },
-  "dependencies": { "playwright-core": "^1.49.0" }
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  }
 }
