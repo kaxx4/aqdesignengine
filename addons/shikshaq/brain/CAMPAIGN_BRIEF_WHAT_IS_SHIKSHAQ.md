@@ -16,6 +16,10 @@ Status: BRIEF. No collateral is generated yet. Items marked **[CONFIRM]** are as
 7. **Papers (G) wait.** They come in later, as a separate series.
 8. **Real data is coming.** The owner will supply a data dump from Shikshaq. Until it lands, no count, area list or tutor detail appears in any asset.
 9. **Edits stay inside the AQ design engine repo.** Nothing in the Shikshaq codebase changes.
+10. **Audiences are students, parents and tutors.** The student is the messenger: stories are built so a student understands, then tells a parent.
+11. **Origin:** "Made by AquaTerra, an NGO whose team are students." Name AquaTerra. Shikshaq exists for actual school-going students, not underprivileged students.
+12. **Four weeks, English only.** Characters extend the site's blob family. Visual variety comes from ten looks defined in the collateral list.
+13. **FAQ:** eight parent and student questions, plus a separate set for tutors, with answers taken from the site's own FAQ wording.
 
 The exact asset list is in `CAMPAIGN_COLLATERAL_LIST.md`. Where this brief and that list differ, the list wins.
 
