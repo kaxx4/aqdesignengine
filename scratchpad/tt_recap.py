@@ -8,7 +8,9 @@ spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "s
 tt = importlib.util.module_from_spec(spec); spec.loader.exec_module(tt)
 core, B, W = tt.core, tt.B, tt.W
 from PIL import Image
-H = 1350
+import sys
+STORY = "story" in sys.argv
+H = 1920 if STORY else 1350
 GROUND, ORCHID, CREAM, INK, WHITE, SLAB = "#000000", tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.SLAB
 PH = "engine/assets/terrathon/recap_photos"
 SLIDES = [
@@ -36,14 +38,14 @@ async def slide(kind, out, idx=None):
     specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
     parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>', f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
 
-    CX, CY, CW, CH = 60, 122, 960, 800          # photo card
-    SX, SY, SW, SH = 47, 880, 986, 250          # slab (overlaps the card's lower edge: the photo is tucked, as on the posters)
+    CX, CY, CW, CH = (60, 270, 960, 1052) if STORY else (60, 122, 960, 800)          # photo card
+    SX, SY, SW, SH = 47, (1280 if STORY else 880), 986, 250          # slab (overlaps the card's lower edge: the photo is tucked, as on the posters)
     if kind == "close":
         CH = 0
     # chip + counter
-    parts.append(f'<div class="measure" data-tag="chip" style="position:absolute;left:40px;top:44px;padding:9px 22px;border:5px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};color:{INK};font-family:var(--d);font-weight:900;font-size:26px;line-height:1;z-index:10">RECAP</div>'); el("chip", 40, 44, 220, 56)
+    parts.append(f'<div class="measure" data-tag="chip" style="position:absolute;left:40px;top:{150 if STORY else 44}px;padding:9px 22px;border:5px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};color:{INK};font-family:var(--d);font-weight:900;font-size:26px;line-height:1;z-index:10">RECAP</div>'); el("chip", 40, 150 if STORY else 44, 220, 56)
     if kind == "photo":
-        parts.append(f'<div class="measure" data-tag="count" style="position:absolute;right:40px;top:54px;font-family:var(--d);font-weight:900;font-size:26px;color:{WHITE};line-height:1;z-index:10">{idx + 1:02d} / {N:02d}</div>'); el("count", 880, 56, 160, 26)
+        parts.append(f'<div class="measure" data-tag="count" style="position:absolute;right:40px;top:{160 if STORY else 54}px;font-family:var(--d);font-weight:900;font-size:26px;color:{WHITE};line-height:1;z-index:10">{idx + 1:02d} / {N:02d}</div>'); el("count", 880, 162 if STORY else 56, 160, 26)
 
     if kind == "photo":
         f, head, cap, pos = SLIDES[idx]
@@ -55,9 +57,9 @@ async def slide(kind, out, idx=None):
         body = (f'<div style="font-weight:900;font-size:{hp}px;line-height:1">{head.replace("&", "&amp;")}</div>'
                 f'<div style="font-family:Eina,var(--e),sans-serif;font-weight:400;font-size:28px;line-height:1.2;margin-top:14px;max-width:860px;text-transform:uppercase;letter-spacing:.02em">{cap}</div>')
     elif kind == "cover":
-        f = "01"; CH = 760
-        el("card", CX, CY + 60, CW, CH)
-        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY + 60}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
+        f = "01"; CH = 992 if STORY else 760
+        el("card", CX, CY + (60 if not STORY else 60), CW, CH)
+        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY + (60 if not STORY else 60)}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
                      f'<img src="{photo_uri(f)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block"></div>')
         m = await B.measure_text([dict(text="TERRATHON", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
                                   dict(text="THE CANDID CUT", font="SigmarOne", size=100, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
@@ -65,8 +67,8 @@ async def slide(kind, out, idx=None):
         body = (f'<div style="font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.05">TERRATHON</div>'
                 f'<div style="font-family:SigmarOne;-webkit-text-stroke:{tt.SG_STROKE * t2}px {INK};letter-spacing:{tt.SG_LS}em;font-size:{t2}px;line-height:1;margin-top:14px;color:{ORCHID}">RECAP</div>')
     else:  # close
-        parts.append(sticker("aq_live.png", "hero", 170, 140, 740, 3))
-        SY = 880; SH = 280
+        parts.append(sticker("aq_live.png", "hero", 170, 340 if STORY else 140, 740, 3))
+        SY = 1280 if STORY else 880; SH = 280
         m = await B.measure_text([dict(text="THANK YOU", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], extra_css=tt.FONT_CSS)
         t1 = 100 * 700 / m[0]["text_w"]
         st = f'font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.02'
@@ -76,10 +78,10 @@ async def slide(kind, out, idx=None):
     el("slab", SX - 6, SY - 12, SW + 12, SH + 24)
     parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;transform:rotate(-1.25deg);background:{SLAB};border:19px solid {ORCHID};border-radius:47px;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:var(--d);color:{INK};white-space:nowrap;padding:0 18px">{body}</div>')
     # stars on the card corners (constant furniture)
-    parts.append(sticker("shuriken.png", "star_a", 20, 300 if kind != "close" else 250, 92, 9))
-    parts.append(sticker("shuriken.png", "star_b", 968, 980 if kind != "close" else 780, 92, 9))
+    parts.append(sticker("shuriken.png", "star_a", 20, (450 if STORY else 300) if kind != "close" else (500 if STORY else 250), 92, 9))
+    parts.append(sticker("shuriken.png", "star_b", 968, (1380 if STORY else 980) if kind != "close" else (1180 if STORY else 780), 92, 9))
     # footer
-    fy = 1250
+    fy = 1630 if STORY else 1250
     parts.append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{fy}px;height:56px;z-index:9">'); el("logo", 27, fy, 320, 56)
     ft = "DISCO DIWALI: 10TH NOV" if kind == "close" else ("SWIPE FOR THE CHAOS" if kind == "cover" else "TERRATHON 2026")
     fm = await B.measure_text([dict(text=ft, font="d", size=100, weight=900)]); ff = min(26, 100 * 560 / fm[0]["text_w"]); fw = fm[0]["text_w"] * ff / 100 + 64
@@ -90,7 +92,7 @@ async def slide(kind, out, idx=None):
     await B.render(html, out, W, H, elements=els, text_pairs=tp, containers=("slab",), page_bg=GROUND, expect_hero=True, margin=12, collision_ignore=ign, crop_tags=("card",))
 
 async def main():
-    d = "out/collaterals/terrathon_recap"; os.makedirs(d, exist_ok=True)
+    d = "out/collaterals/terrathon_recap" + ("_story" if STORY else ""); os.makedirs(d, exist_ok=True)
     async with B.session():
         await slide("cover", f"{d}/00_cover.png")
         for i, s in enumerate(SLIDES): await slide("photo", f"{d}/{i + 1:02d}_{s[0]}.png", idx=i)
