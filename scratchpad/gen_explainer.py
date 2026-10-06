@@ -12,31 +12,24 @@ def win(inner, url="claude.ai"):
 def btn(t, c="var(--ink)", fg="#fff", ring=False):
     return f'<div class="btn{" ring" if ring else ""}" style="background:{c};color:{fg}">{t}</div>'
 
+def hl(x): return f'<span class="hl">{x}</span>'
 STEPS = [
- ("Open Claude and choose Google", A[4],
-  "Go to claude.ai. Click 'Continue with Google'.",
-  win(f'<h3>Welcome back</h3>{btn("Continue with Google","#fff","var(--ink)",True)}{btn("Continue with email","#fff","var(--ink3)")}')),
- ("Pick the tech AI account", A[1],
-  "Choose aquaterra.techai@gmail.com. Not a personal account.",
-  win('<h3>Choose an account</h3><div class="row ring"><b>AQ</b><div>AquaTerra Tech AI<br><small>aquaterra.techai@gmail.com</small></div></div><div class="row"><b>+</b><div>Use another account</div></div>', "accounts.google.com")),
- ("Kanishk approves the login", A[2],
-  "Google asks for a second check. Kanishk gets a prompt on his phone and taps the number shown on screen. No tap, no login.",
-  win('<h3>Check your phone</h3><p>Google sent a prompt to Kanishk\'s device. Tap the matching number.</p><div class="num">42</div><p class="s">Wait on this screen until it moves on.</p>', "accounts.google.com")),
- ("Press Code", A[5],
-  "You land in Claude. Press 'Code' in the left sidebar.",
-  win('<div class="side"><div>Chats</div><div>Projects</div><div class="on ring">Code</div></div><div class="main"><h3>What do you want to build?</h3></div>')),
- ("Switch to the AQ Design Engine folder", A[0],
-  "Open the folder or repo picker. Change whatever is selected to aqdesignengine.",
-  win('<h3>Repository</h3><div class="row"><b>·</b><div>some-other-folder</div></div><div class="row ring"><b>✓</b><div>aqdesignengine</div></div>')),
- ("Set Sonnet 5.5, effort Low, then prompt", A[3],
-  "Pick model Sonnet 5.5 and effort Low. Type your brief and send.",
-  win('<div class="chips"><span>Sonnet 5.5</span><span>Effort: Low</span></div><div class="prompt">Make an AQ poster: 126 return visits to one partner in Kolkata</div>' + btn("Send","var(--ink)"))),
- ("Add the necessary pictures", A[6],
-  "Attach any photos the poster needs. The engine only uses real AQ photos, never invented ones.",
-  win('<h3>Attach files</h3><div class="thumbs"><div style="background:var(--pink)">photo 1</div><div style="background:var(--lemon)">photo 2</div><div style="background:var(--sky)">photo 3</div></div>')),
- ("Save your changes: 'merge to main'", A[1],
-  "Your edits show as a pending number. Type 'merge to main'. When the merge finishes, the number disappears.",
-  win('<div class="chips"><span class="badge">3 changes</span></div><div class="prompt">merge to main</div><div class="chips"><span class="badge off">0 changes</span><span>✓ merged</span></div>')),
+ ("Open Claude and choose Google", A[4], "Go to claude.ai. Click 'Continue with Google'.",
+  win('<div class="center"><div class="spark">✻</div><h3 class="sm">Your ideas, amplified</h3><div class="inp">Enter your email</div><div class="btn2 hlr">G&nbsp; Continue with Google</div><div class="btn2">Continue with email</div><p class="s">By continuing you agree to the Terms.</p></div>')),
+ ("Pick the tech AI account", A[1], "Choose aquaterra.techai@gmail.com. Not a personal account.",
+  win('<div class="center"><h3 class="sm">Choose an account</h3><p class="s">to continue to Claude</p><div class="acc hlr"><b class="av">A</b><div><div class="nm">AquaTerra Tech AI</div><small>aquaterra.techai@gmail.com</small></div></div><div class="acc"><b class="av g">K</b><div><div class="nm">Kanishk</div><small>personal account</small></div></div><div class="acc"><b class="av g">+</b><div class="nm">Use another account</div></div></div>', "accounts.google.com")),
+ ("Kanishk approves the login", A[2], "Google asks for a second check. Kanishk gets a prompt on his phone and taps the number shown here. No tap, no login.",
+  win('<div class="split"><div class="center"><h3 class="sm">2-Step Verification</h3><p>Open the Google prompt on your phone and tap the number below.</p><div class="num">42</div><p class="s">Waiting for approval…</p></div><div class="phone"><div class="pn">Sign-in attempt?</div><p>aquaterra.techai@gmail.com<br>claude.ai · Kolkata</p><div class="pb">Yes, it\'s me</div><div class="pb off">No</div><div class="pick"><i>17</i><i class="hlr">42</i><i>68</i></div></div></div>', "accounts.google.com")),
+ ("Press Code", A[5], "You land in Claude. Press 'Code' in the left sidebar.",
+  win('<div class="app"><div class="side"><div class="logo">Claude</div><div>＋ New chat</div><div>Chats</div><div>Projects</div><div class="on hlr">&lt;/&gt; Code</div><div class="foot">techai · Pro</div></div><div class="main"><h3 class="sm">Good evening</h3><div class="inp big">How can I help you today?</div></div></div>', "claude.ai/new")),
+ ("Switch to the AQ Design Engine folder", A[0], "Open the repo picker. Change whatever is selected to aqdesignengine.",
+  win('<div class="app"><div class="side"><div class="logo">Claude</div><div>Chats</div><div class="on">&lt;/&gt; Code</div></div><div class="main"><div class="pill">▾ some-other-folder</div><div class="menu"><div class="mi">some-other-folder</div><div class="mi">old-website</div><div class="mi hlr">✓ aqdesignengine</div></div></div></div>', "claude.ai/code")),
+ ("Set Sonnet 5.5, effort Low, then prompt", A[3], "Pick model Sonnet 5.5 and effort Low. Type your brief and press send.",
+  win('<div class="app"><div class="side"><div class="logo">Claude</div><div>Chats</div><div class="on">&lt;/&gt; Code</div></div><div class="main"><div class="pill">aqdesignengine</div><div class="box"><div class="txt">Make an AQ poster: 126 return visits to one partner in Kolkata</div><div class="tools"><span>＋</span><span class="hlr">Sonnet 5.5</span><span class="hlr">Effort: Low</span><span class="send">↑</span></div></div></div></div>', "claude.ai/code")),
+ ("Add the necessary pictures", A[6], "Press + and attach the photos the poster needs. The engine only uses real AQ photos.",
+  win('<div class="app"><div class="side"><div class="logo">Claude</div><div>Chats</div><div class="on">&lt;/&gt; Code</div></div><div class="main"><div class="box"><div class="thumbs"><div style="background:var(--pink)">food.jpg ✕</div><div style="background:var(--lemon)">edu.jpg ✕</div><div style="background:var(--sky)">event.jpg ✕</div></div><div class="txt">Use these three photos on the poster</div><div class="tools"><span class="hlr">＋ Add files</span><span>Sonnet 5.5</span><span>Low</span><span class="send">↑</span></div></div></div></div>', "claude.ai/code")),
+ ("Save your changes: 'merge to main'", A[1], "Your edits show as a pending number. Type 'merge to main'. When the merge finishes, the number disappears.",
+  win('<div class="app"><div class="side"><div class="logo">Claude</div><div>Chats</div><div class="on">&lt;/&gt; Code <b class="cnt">3</b></div></div><div class="main"><div class="msg">Poster saved. 3 files changed on your branch.</div><div class="box"><div class="txt">merge to main</div><div class="tools"><span>Sonnet 5.5</span><span>Low</span><span class="send">↑</span></div></div><div class="msg ok">✓ Merged to main. Pending count cleared: no number beside Code now.</div></div></div>', "claude.ai/code")),
 ]
 
 CSS = f"""{core.FONTS}{core.ROOT}
@@ -57,13 +50,34 @@ h3{{font:900 52px var(--d);text-transform:uppercase}}p{{font-size:26px;line-heig
 .row b{{width:56px;height:56px;border-radius:50%;background:var(--hl);display:flex;align-items:center;justify-content:center;font:900 24px var(--d)}}
 small{{font:500 20px var(--m);color:var(--ink3)}}
 .num{{font:900 190px/1 var(--d);background:var(--hl);border:5px solid var(--ink);padding:10px 60px;border-radius:26px}}
-.side{{position:absolute;left:0;top:0;bottom:0;width:240px;background:var(--bg2);border-right:4px solid var(--ink);padding:40px 24px;display:flex;flex-direction:column;gap:24px;font:700 26px var(--m)}}
+.side{{padding:36px 22px;display:flex;flex-direction:column;gap:20px;font:700 24px var(--m)}}
 .side div{{padding:12px 18px;border-radius:14px}}.side .on{{background:var(--hl);border:4px solid var(--ink)}}
-.main{{margin-left:260px}}
+
 .chips{{display:flex;gap:16px}}.chips span{{border:4px solid var(--ink);border-radius:999px;padding:12px 26px;font:700 24px var(--m);background:var(--hl)}}
 .badge{{background:var(--tomato)!important;color:#fff}}.badge.off{{background:var(--bg2)!important;color:var(--ink3);text-decoration:line-through}}
 .prompt{{border:4px solid var(--ink);border-radius:18px;padding:28px;font-size:30px;width:800px;background:var(--bg)}}
 .thumbs{{display:flex;gap:24px}}.thumbs div{{width:230px;height:230px;border:4px solid var(--ink);border-radius:18px;display:flex;align-items:center;justify-content:center;font:700 22px var(--m);box-shadow:8px 8px 0 var(--ink)}}
+.center{{width:100%;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}}
+h3.sm{{font-size:42px}}.spark{{font:900 80px var(--d);color:var(--tomato)}}
+.inp{{width:620px;border:3px solid var(--ink3);border-radius:14px;padding:18px 22px;font-size:24px;color:var(--ink3);text-align:left}}.inp.big{{width:100%;padding:36px;margin-top:60px;font-size:28px}}
+.btn2{{width:620px;border:3px solid var(--ink);border-radius:14px;padding:18px;font:700 24px var(--e);background:#fff}}
+.hlr{{outline:7px solid var(--hl);outline-offset:5px;border-radius:14px}}
+.acc{{display:flex;gap:20px;align-items:center;width:620px;border:3px solid var(--ink3);border-radius:14px;padding:18px 24px;text-align:left}}
+.av{{width:60px;height:60px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font:900 28px var(--d)}}.av.g{{background:var(--ink3)}}.nm{{font:600 26px var(--e)}}
+.split{{display:flex;gap:30px;width:100%;align-items:center}}.split .center{{flex:1}}
+.phone{{width:290px;height:560px;border:6px solid var(--ink);border-radius:40px;padding:40px 22px;background:var(--bg);display:flex;flex-direction:column;gap:16px;font-size:20px;box-shadow:8px 8px 0 var(--ink)}}
+.pn{{font:900 30px var(--d)}}.phone p{{font-size:17px;word-break:break-all}}.pb{{background:var(--ink);color:#fff;border-radius:999px;padding:14px;text-align:center;font:700 20px var(--e)}}.pb.off{{background:#fff;color:var(--ink);border:3px solid var(--ink)}}
+.pick{{display:flex;gap:10px;justify-content:center;margin-top:10px}}.pick i{{font:900 34px var(--d);padding:10px 14px;border:3px solid var(--ink);border-radius:12px;background:#fff;font-style:normal}}
+.app{{position:absolute;inset:0;display:flex}}
+.side{{position:relative!important;width:250px!important;flex:none;background:var(--bg2);border-right:4px solid var(--ink)}}
+.side .logo{{font:900 34px var(--s);font-style:italic;margin-bottom:16px;padding:0}}.side .foot{{margin-top:auto;font:500 18px var(--m);color:var(--ink3)}}
+.main{{flex:1;margin:0!important;padding:50px 40px;display:flex;flex-direction:column;gap:20px}}
+.pill{{align-self:flex-start;border:3px solid var(--ink);border-radius:999px;padding:10px 22px;font:700 22px var(--m);background:#fff}}
+.menu{{border:4px solid var(--ink);border-radius:16px;background:#fff;width:420px;box-shadow:8px 8px 0 var(--ink)}}.mi{{padding:18px 24px;font:600 24px var(--e);border-bottom:2px solid var(--bg2)}}
+.box{{border:4px solid var(--ink);border-radius:20px;padding:26px;background:#fff;display:flex;flex-direction:column;gap:22px;margin-top:20px}}
+.txt{{font-size:28px;line-height:1.3}}.tools{{display:flex;gap:14px;align-items:center}}.tools span{{border:3px solid var(--ink);border-radius:999px;padding:8px 20px;font:700 20px var(--m)}}.tools .send{{margin-left:auto;background:var(--ink);color:#fff;width:52px;height:52px;display:flex;align-items:center;justify-content:center;padding:0}}
+.side .on{{display:flex;align-items:center;white-space:nowrap}}.cnt{{background:var(--tomato);color:#fff;border-radius:999px;padding:2px 12px;font:700 20px var(--m);margin-left:8px}}
+.msg{{background:var(--bg2);border-radius:16px;padding:22px 26px;font-size:26px}}.msg.ok{{background:var(--mintbright)}}
 .note{{position:absolute;left:80px;bottom:40px;font:500 16px var(--m);color:var(--ink3)}}
 .dots{{position:absolute;right:80px;bottom:44px;display:flex;gap:10px}}.dots i{{width:16px;height:16px;border-radius:50%;border:3px solid var(--ink)}}
 """
