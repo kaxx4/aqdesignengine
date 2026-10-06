@@ -1,117 +1,99 @@
-"""TerraThon 2026 POST-EVENT RECAP carousel, 9 slides, feed 1080x1350 (jokey, candid-photo led).
+"""TerraThon RECAP (candid cut) carousel (feed 1080x1350): cover + 7 photo slides + close. Real event photos only (engine/assets/terrathon/throwback_cricket/).
+Look: TerraThon black, tucked photo card + tilted slab (like the poster hero), shuriken furniture, StretchPro/Sigmar for the cover only, NeutralFace elsewhere.
+FACTS: captions describe only what is visible in each frame. The event/venue/date of the photos were not stated by the user, so none is claimed; the close ties to the
+UPCOMING Wicket Wars (3rd + 4th Oct, Turf XL, New Alipore, registrations closed per the site). Run: python scratchpad/tt_throwback_cricket.py"""
+import asyncio, base64, importlib.util, io, os, random
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+spec = importlib.util.spec_from_file_location("tt_events", os.path.join(ROOT, "scratchpad", "tt_events.py"))
+tt = importlib.util.module_from_spec(spec); spec.loader.exec_module(tt)
+core, B, W = tt.core, tt.B, tt.W
+from PIL import Image
+H = 1350
+GROUND, ORCHID, CREAM, INK, WHITE, SLAB = "#000000", tt.ORCHID, tt.CREAM_HALO, tt.INK, tt.WHITE, tt.SLAB
+PH = "engine/assets/terrathon/recap_photos"
+SLIDES = [
+    ("05", "WE LOVE AQ", "HOMEMADE FRAME. ZERO RESTRAINT.", "50% 58%"),
+    ("03", "MAIN CHARACTER ENERGY", "MARIGOLDS, PEACE SIGNS, ONE SELF-AWARE MIRROR.", "50% 72%"),
+    ("02", "SQUAD GOALS", "EIGHT PEOPLE. ARMS CROSSED. ALL IN WHITE.", "50% 45%"),
+    ("06", "SHOULDER TO SHOULDER", "DIFFERENT JERSEYS. SAME GRIN.", "50% 62%"),
+    ("07", "POSE PLAN: IGNORED", "EIGHT FOLLOWED IT. ONE FREESTYLED.", "50% 55%"),
+    ("04", "DISCO DIWALI HQ", "MARIGOLDS, BUNTING AND ONE VERY PINK PHONE.", "50% 70%"),
+]
+N = len(SLIDES)
 
-PLACEHOLDER PHOTOS: the real event photos are not supplied yet. Every photo below is a 2024 throwback frame (engine/assets/terrathon/throwback*),
-and each photo slide carries a "PLACEHOLDER PHOTO" tag. To go live: change PH (slide -> file) to files in engine/assets/terrathon/day_photos/,
-set PLACEHOLDER=False, re-measure each object-position by looking, and rewrite the captions to describe the real frame.
-Facts used (user, 2026-10-05): 150+ participants, 3 days, 3 sports. Nothing else numeric is claimed.
-Reuses the Slide kit from tt_throwback.py (same look: black ground, orchid frames, shuriken, cream chips, StretchPro + Sigmar One).
-Run: PYTHONIOENCODING=utf-8 python scratchpad/tt_recap.py
-"""
-import asyncio, base64, os, sys
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
-PLACEHOLDER = True
-src = open("scratchpad/tt_throwback.py", encoding="utf-8").read().replace("asyncio.run(main())", "")
-sys.argv = ["x", "pickleball"]
-g = {"__file__": os.path.join(ROOT, "scratchpad", "tt_throwback.py"), "__name__": "ttt"}
-exec(compile(src, "tt_throwback.py", "exec"), g)
-tt, B, W, H, Slide, rb, photo_slide = g["tt"], g["B"], g["W"], g["H"], g["Slide"], g["rb"], g["photo_slide"]
-ORCHID, INK, WHITE, SLAB, GROUND, CTA_FILL, HALO = g["ORCHID"], g["INK"], g["WHITE"], g["SLAB"], g["GROUND"], g["CTA_FILL"], g["CREAM_HALO"]
-TOTAL = 9; g["TOTAL"] = 9
-DIRS = {"pb": "throwback", "ff": "throwback_fifa"}
-def photo_src(n):
-    d, f = n.split(":")
-    return "data:image/jpeg;base64," + base64.b64encode(open(f"engine/assets/terrathon/{DIRS[d]}/{f}.jpg", "rb").read()).decode()
-g["photo_src"] = photo_src
+def photo_uri(n):
+    im = Image.open(f"{PH}/{n}.jpg").convert("RGB")
+    if im.width > 1500: im = im.resize((1500, int(im.height * 1500 / im.width)))
+    buf = io.BytesIO(); im.save(buf, "JPEG", quality=90); return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
-def tag(s):
-    if PLACEHOLDER:
-        s.parts.append(f'<div class="measure" data-tag="ph" style="position:absolute;left:400px;top:1285px;padding:6px 14px;border-radius:999px;background:#FF4D2E;color:#000;'
-                       f'font-family:var(--m);font-weight:700;font-size:16px;z-index:30;white-space:nowrap">PLACEHOLDER PHOTO</div>'); s.el("ph", 400, 1285, 230, 36)
+async def slide(kind, out, idx=None):
+    els = []
+    def el(l, x, y, w, h): els.append((l, x, y, w, h))
+    def sticker(name, label, x, y, w, z=5):
+        im, src = tt.crop_to_alpha(name); h = w * im.height / im.width; el(label, x, y, w, h)
+        return f'<img src="{src}" class="measure" data-tag="{label}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:{z}">'
+    rnd = random.Random(7)
+    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
+    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>', f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
 
-def tpx_of(m, w, size=100): return size * w / m["text_w"]
-def stretch(s, tg, txt, tpx, cx, top, color=WHITE, w=940):
-    s.parts.append(f'<div class="measure" data-tag="{tg}" style="position:absolute;left:{cx - w / 2}px;width:{w}px;top:{top}px;text-align:center;color:{color};font-family:StretchPro;'
-                   f'-webkit-text-stroke:{tt.ST_STROKE * tpx}px {color};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{tpx}px;line-height:1;white-space:nowrap;z-index:6">{txt}</div>')
-    s.el(tg, cx - w / 2 + 60, top, w - 120, tpx * .82)
+    CX, CY, CW, CH = 60, 122, 960, 800          # photo card
+    SX, SY, SW, SH = 47, 880, 986, 250          # slab (overlaps the card's lower edge: the photo is tucked, as on the posters)
+    if kind == "close":
+        CH = 0
+    # chip + counter
+    parts.append(f'<div class="measure" data-tag="chip" style="position:absolute;left:40px;top:44px;padding:9px 22px;border:5px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};color:{INK};font-family:var(--d);font-weight:900;font-size:26px;line-height:1;z-index:10">RECAP</div>'); el("chip", 40, 44, 220, 56)
+    if kind == "photo":
+        parts.append(f'<div class="measure" data-tag="count" style="position:absolute;right:40px;top:54px;font-family:var(--d);font-weight:900;font-size:26px;color:{WHITE};line-height:1;z-index:10">{idx + 1:02d} / {N:02d}</div>'); el("count", 880, 56, 160, 26)
 
-async def build_all():
-    S = []
-    # 1 COVER
-    s = Slide(1, 7)
-    m = await B.measure_text([dict(text="THE AFTERMATH", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
-                              dict(text="TERRATHON 2026", font="SigmarOne", size=50, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
-    tp = tpx_of(m[0], 900); sp = 50 * min(1.0, 700 / m[1]["text_w"])
-    s.text("t1", "ALLEGEDLY, WE HAD FUN", (W - 700) / 2, 34, 700, 36, 400, HALO)
-    stretch(s, "t2", "THE AFTERMATH", tp, W / 2, 100)
-    s.parts.append(f'<div class="measure" data-tag="t3" style="position:absolute;left:{(W - 760) / 2}px;width:760px;top:{100 + tp * 1.08}px;text-align:center;color:{ORCHID};font-family:SigmarOne;'
-                   f'-webkit-text-stroke:{tt.SG_STROKE * sp}px {ORCHID};letter-spacing:{tt.SG_LS}em;font-size:{sp}px;line-height:1;white-space:nowrap;z-index:6">TERRATHON 2026</div>'); s.el("t3", (W - 700) / 2, 100 + tp * 1.08, 700, sp * .82)
-    fy = 100 + tp * 1.08 + sp + 50
-    s.frame("frame", "pb:IMG_6057", 110, fy, 860, 1220 - 60 - fy + 40, -1.25, "50% 100%")
-    s.star("star_c", 60, 1010, 128); s.star("star_t", W - 27 - 130, 330, 110)
-    s.chip("chip", "SWIPE FOR THE EVIDENCE", 250, 1090, 640, deg=-2.5, size=38)
-    s.footer(); tag(s)
-    S.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t"), ("t3", "frame"), ("frame", "ph"), ("star_t", "t3"), ("star_t", "t2"), ("star_c", "chip")))
-    # 2 NUMBERS
-    s = Slide(2, 102)
-    m = await B.measure_text([dict(text="150+", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], extra_css=tt.FONT_CSS)
-    s.text("k", "THE RECEIPTS", (W - 500) / 2, 70, 500, 46, 400, HALO)
-    np_ = tpx_of(m[0], 860, 100); stretch(s, "big", "150+", np_, W / 2, 150)
-    s.text("kk", "PARTICIPANTS WHO SHOWED UP AND SHOWED OFF", 40, 150 + np_ + 20, W - 80, 34, 900, ORCHID)
-    ty = 150 + np_ + 90
-    for i, (txt, sub, x, dg) in enumerate([("3 DAYS", "OF CONTROLLED CHAOS", 70, -2), ("3 SPORTS", "ZERO REGRETS (SOME)", 560, 2)]):
-        w_, h_ = 450, 300
-        s.parts.append(f'<div class="measure" data-tag="tile{i}" style="position:absolute;left:{x}px;top:{ty + i * 40}px;width:{w_}px;height:{h_}px;box-sizing:border-box;transform:rotate({dg}deg);background:{SLAB};'
-                       f'border:18px solid {ORCHID};border-radius:52px;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:{INK};font-family:var(--d)">'
-                       f'<div style="font-weight:900;font-size:72px;line-height:1;white-space:nowrap">{txt}</div><div style="font-weight:400;font-size:26px;line-height:1;white-space:nowrap">{sub}</div></div>')
-        s.el(f"tile{i}", *rb(x, ty + i * 40, w_, h_, dg))
-    s.frame("frame", "ff:IMG-20241019-WA0021", 150, 900, 780, 300, -1.5, "50% 45%")
-    s.star("star_a", 90, 1100, 120); s.star("star_b", W - 150, 130, 110); tag(s)
-    s.footer()
-    S.append((s, ("star_b", "big"), ("star_b", "kk"), ("frame", "star_a"), ("frame", "ph"), ("tile1", "frame"), ("tile0", "frame"), ("kk", "tile0"), ("kk", "tile1")))
-    # 3-4,6,8 single photo slides ; 5,7 collages
-    singles = {3: ("pb:IMG_5997", "50% 72%", "EYES ON THE BALL", "ALSO EYES ON THE SNACKS, LET'S BE HONEST", 600, False),
-               4: ("ff:IMG_3789", "50% 55%", "'ONE QUICK MATCH'", "FAMOUS LAST WORDS", 600, False),
-               6: ("ff:IMG_5870", "50% 45%", "SCOREBOARD HAS FEELINGS", "NO, WE WILL NOT BE TAKING QUESTIONS", 760, True),
-               8: ("pb:IMG_6026", "50% 78%", "MAIN CHARACTER ENERGY", "THE OVERHEAD, THE CONFIDENCE, THE GLORY", 700, False)}
-    for idx, (n, pos, chip, sub, cw, flip) in singles.items():
-        s, _ = photo_slide(idx, n, pos, chip, sub, cw, deg=1.25 if flip else -1.25, flip=flip); tag(s)
-        S.append((s, ("frame", "star_c"), ("frame", "chip"), ("frame", "star_t"), ("frame", "ph")))
-    def collage(idx, frames, chip):
-        s = Slide(idx, 100 + idx)
-        for t_, n, x, y, w, h, dg, ps in frames: s.frame(t_, n, x, y, w, h, dg, ps)
-        s.star("star_a", 470, 80, 110); s.star("star_b", 22, 690, 120); s.star("star_c", W - 150, 1020, 110)
-        s.chip("chip", chip, 400, 1150, 620, deg=-3, size=40); s.footer(); tag(s)
-        return (s, ("fa", "star_a"), ("fa", "star_b"), ("fb", "star_a"), ("fa", "fb"), ("fa", "fc"), ("fb", "fc"), ("fc", "chip"), ("fb", "star_c"), ("fc", "star_c"),
-                ("fc", "star_b"), ("fa", "chip"), ("fb", "chip"), ("star_c", "chip"), ("fa", "ph"))
-    c5 = collage(5, [("fa", "pb:IMG_6046", 50, 110, 470, 620, -3, "50% 80%"), ("fb", "pb:IMG_6048", 560, 170, 470, 620, 3, "50% 80%"), ("fc", "pb:IMG_6059", 250, 830, 560, 400, -1.25, "50% 73%")], "ZERO CHILL, FULL CARDIO")
-    c7 = collage(7, [("fa", "ff:IMG_3796", 50, 110, 470, 620, -3, "50% 50%"), ("fb", "ff:IMG_5861", 560, 170, 470, 620, 3, "50% 60%"), ("fc", "ff:IMG_3791", 250, 830, 560, 400, -1.25, "50% 50%")], "THUMBS SORE, EGOS SORER")
-    order = {x[0].idx: x for x in S}; order[5], order[7] = c5, c7
-    S = [order[i] for i in range(1, 9) if i in order]
-    # 9 CLOSER
-    s = Slide(9, 109)
-    m = await B.measure_text([dict(text="BACK NEXT YEAR", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], extra_css=tt.FONT_CSS)
-    tp = tpx_of(m[0], 900); stretch(s, "t2", "BACK NEXT YEAR", tp, W / 2, 96)
-    im, srcimg = tt.crop_to_alpha("carnival.png"); ph = 470; pw = ph * im.width / im.height
-    s.parts.append(f'<img src="{srcimg}" class="measure" data-tag="hero" style="position:absolute;left:{(W - pw) / 2}px;top:300px;width:{pw}px;height:{ph}px;z-index:4">'); s.el("hero", (W - pw) / 2, 300, pw, ph)
-    s.star("star_tl", 60, 330, 110); s.star("star_tr", W - 170, 400, 110)
-    sx, sy, sw, sh = 84, 810, 912, 400
-    s.parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{sx}px;top:{sy}px;width:{sw}px;height:{sh}px;box-sizing:border-box;transform:rotate(-1.25deg);background:{SLAB};border:20px solid {ORCHID};border-radius:52px;z-index:8"></div>')
-    s.el("slab", *rb(sx, sy, sw, sh, -1.25))
-    ty = sy + 60
-    for i, (txt, wt, sz) in enumerate([("THANK YOU, 150+ OF YOU", 900, 52), ("3 DAYS. 3 SPORTS. ALL FOR CHARITY.", 400, 36), ("TAG YOURSELF IN THE COMMENTS", 400, 36), ("(WE KNOW YOU WILL ANYWAY)", 400, 30)]):
-        s.parts.append(f'<div class="measure" data-tag="row{i}" style="position:absolute;left:{sx + 40}px;width:{sw - 80}px;top:{ty}px;text-align:center;color:{INK};font-family:var(--d);font-weight:{wt};font-size:{sz}px;line-height:1;white-space:nowrap;z-index:9">{txt}</div>')
-        s.el(f"row{i}", sx + 40, ty, sw - 80, sz * .85); ty += sz + 34
-    s.footer(cta="@NGO.AQUATERRA")
-    S.append((s, ("hero", "star_tl"), ("hero", "star_tr"), ("hero", "slab")) + tuple(("slab", f"row{i}") for i in range(4)))
-    return S
+    if kind == "photo":
+        f, head, cap, pos = SLIDES[idx]
+        el("card", CX, CY, CW, CH)
+        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
+                     f'<img src="{photo_uri(f)}" style="width:100%;height:100%;object-fit:cover;object-position:{pos};display:block"></div>')
+        m = await B.measure_text([dict(text=head, font="d", size=100, weight=900)])
+        hp = min(70, 100 * 880 / m[0]["text_w"])
+        body = (f'<div style="font-weight:900;font-size:{hp}px;line-height:1">{head.replace("&", "&amp;")}</div>'
+                f'<div style="font-family:Eina,var(--e),sans-serif;font-weight:400;font-size:28px;line-height:1.2;margin-top:14px;max-width:860px;text-transform:uppercase;letter-spacing:.02em">{cap}</div>')
+    elif kind == "cover":
+        f = "01"; CH = 760
+        el("card", CX, CY + 60, CW, CH)
+        parts.append(f'<div class="measure" data-tag="card" style="position:absolute;left:{CX}px;top:{CY + 60}px;width:{CW}px;height:{CH}px;transform:rotate(.8deg);border:14px solid {CREAM};border-radius:44px;overflow:hidden;background:#111;z-index:3">'
+                     f'<img src="{photo_uri(f)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 40%;display:block"></div>')
+        m = await B.measure_text([dict(text="TERRATHON", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
+                                  dict(text="THE CANDID CUT", font="SigmarOne", size=100, weight=400, letter_spacing=f"{tt.SG_LS}em")], extra_css=tt.FONT_CSS)
+        t1 = 100 * 760 / m[0]["text_w"]; t2 = 100 * min(0.8, 760 / m[1]["text_w"])
+        body = (f'<div style="font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.05">TERRATHON</div>'
+                f'<div style="font-family:SigmarOne;-webkit-text-stroke:{tt.SG_STROKE * t2}px {INK};letter-spacing:{tt.SG_LS}em;font-size:{t2}px;line-height:1;margin-top:14px;color:{ORCHID}">RECAP</div>')
+    else:  # close
+        parts.append(sticker("aq_live.png", "hero", 170, 140, 740, 3))
+        SY = 880; SH = 280
+        m = await B.measure_text([dict(text="THANK YOU", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], extra_css=tt.FONT_CSS)
+        t1 = 100 * 700 / m[0]["text_w"]
+        st = f'font-family:StretchPro;-webkit-text-stroke:{tt.ST_STROKE * t1}px {INK};letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{t1}px;line-height:1.02'
+        body = (f'<div style="{st}">THANK YOU</div>'
+                f'<div style="font-weight:400;font-size:30px;line-height:1.2;margin-top:16px">THANKS FOR SHOWING UP  |  NEXT: DISCO DIWALI</div>')
+        cf = None
+    el("slab", SX - 6, SY - 12, SW + 12, SH + 24)
+    parts.append(f'<div class="measure" data-tag="slab" style="position:absolute;left:{SX}px;top:{SY}px;width:{SW}px;height:{SH}px;transform:rotate(-1.25deg);background:{SLAB};border:19px solid {ORCHID};border-radius:47px;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:var(--d);color:{INK};white-space:nowrap;padding:0 18px">{body}</div>')
+    # stars on the card corners (constant furniture)
+    parts.append(sticker("shuriken.png", "star_a", 20, 300 if kind != "close" else 250, 92, 9))
+    parts.append(sticker("shuriken.png", "star_b", 968, 980 if kind != "close" else 780, 92, 9))
+    # footer
+    fy = 1250
+    parts.append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{fy}px;height:56px;z-index:9">'); el("logo", 27, fy, 320, 56)
+    ft = "DISCO DIWALI: 10TH NOV" if kind == "close" else ("SWIPE FOR THE CHAOS" if kind == "cover" else "TERRATHON 2026")
+    fm = await B.measure_text([dict(text=ft, font="d", size=100, weight=900)]); ff = min(26, 100 * 560 / fm[0]["text_w"]); fw = fm[0]["text_w"] * ff / 100 + 64
+    parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{W - 27 - fw}px;top:{fy - 4}px;width:{fw}px;height:64px;border:6px solid {ORCHID};border-radius:999px;background:{tt.CTA_FILL};display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:{ff}px;white-space:nowrap;color:{INK}">{ft}</div>'); el("cta", W - 27 - fw, fy - 4, fw, 64)
+    html = B.page(W, H, GROUND, "".join(parts), grain=False)
+    ign = {("card", "slab"), ("star_a", "card"), ("star_b", "card"), ("star_b", "slab"), ("star_a", "slab"), ("hero", "slab"), ("chip", "card"), ("count", "card"), ("chip", "hero")}
+    tp = [("head", INK, SLAB, 60, True), ("cta", INK, tt.CTA_FILL, 24, True), ("chip", INK, tt.CTA_FILL, 26, True), ("count", WHITE, GROUND, 26, True)]
+    await B.render(html, out, W, H, elements=els, text_pairs=tp, containers=("slab",), page_bg=GROUND, expect_hero=True, margin=12, collision_ignore=ign, crop_tags=("card",))
 
 async def main():
-    slides = await build_all(); outdir = "out/collaterals/terrathon_recap"; os.makedirs(outdir, exist_ok=True)
-    tp_ = [("head", WHITE, GROUND, 96, True), ("chip", INK, CTA_FILL, 42, True), ("idx", INK, CTA_FILL, 26, True), ("row", INK, SLAB, 36, True), ("cta", INK, CTA_FILL, 28, True)]
+    d = "out/collaterals/terrathon_recap"; os.makedirs(d, exist_ok=True)
     async with B.session():
-        for s, *ign in slides:
-            out = f"{outdir}/slide_{s.idx:02d}.png"
-            await B.render(s.html(), out, W, H, elements=s.els, text_pairs=tp_, containers=("slab",) if s.idx == 9 else (), page_bg=GROUND,
-                           expect_hero=False, collision_ignore=set(map(tuple, ign)), margin=12, crop_tags=("frame", "fa", "fb", "fc"))
-            print("done", out)
+        await slide("cover", f"{d}/00_cover.png")
+        for i, s in enumerate(SLIDES): await slide("photo", f"{d}/{i + 1:02d}_{s[0]}.png", idx=i)
+        await slide("close", f"{d}/{N + 1:02d}_close.png")
+    print("done")
 asyncio.run(main())
