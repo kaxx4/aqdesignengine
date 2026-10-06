@@ -2,7 +2,7 @@
 Workflow C (bespoke, from tt_dd_tickets_set.py's Slide kit). 1080x1920, IG UI zones clear. Handle @aquaterra.live (the AQ live account named in the TerraThon site footer).
 1 cover: disco ball + FOLLOW  2 dance-floor photo  3 the decor (DIWALI blocks) photo  4 crew photos  5 the follow ask (AQ LIVE sticker + handle).
 Photos: the user's five, in git-ignored engine/assets/terrathon/follow_photos/ (people, public repo). They show a past Disco Diwali (the clapperboard reads 22/10/25); no past date is printed.
-Facts printed: Disco Diwali 10th November (user, 2026-10-01; year assumed 2026). No venue (never supplied), no price, no claim about what will happen on the day.
+Facts printed: NO dates at all (user, 2026-10-06: "remove the dates"). No venue (never supplied), no price, no claim about what will happen on the day.
 Adaptations: stories use the green-card/slab kit from the ticket stories; 'live' is read as the @aquaterra.live account.
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/tt_dd_follow_stories.py   -> out/collaterals/stories/dd_follow_story_N.png
 """
@@ -156,10 +156,10 @@ async def build():
     # ---- 1 COVER: disco ball, the tease ----
     s = Slide(1, 601)
     ty = await s.title("SOMETHING SHINY", "IS ON THE WAY", big_w=700, sub_w=640, top=104); stars(s)
-    bw = 640; ball, bh = ddm.disco_ball(bw, "b1"); svg_sticker(s, "ball", ball, (W - bw) / 2, ty + 10, bw, bh)
+    bw = 780; ball, bh = ddm.disco_ball(bw, "b1"); svg_sticker(s, "ball", ball, (W - bw) / 2, ty + 10, bw, bh)
     sy = ty + 10 + bh + 30; sh = BOT - sy + 20
     slab(s, "slab", 100, sy, 880, sh)
-    ign = rows_in(s, 100, sy, 880, sh, [("FOLLOW " + HANDLE, 52, INK), ("TO BE THE FIRST TO KNOW", 34, "#0E7C86"), ("DISCO DIWALI: 10TH NOVEMBER", 30, INK)])
+    ign = rows_in(s, 100, sy, 880, sh, [("FOLLOW " + HANDLE, 50, INK), ("TO BE THE FIRST TO KNOW", 36, "#0E7C86")])
     s.footer(cta="FOLLOW ALONG"); out.append(("1", s, ign + [("slab", "ball"), ("star_tl", "t1"), ("star_tr", "t1")]))
     # ---- 2 REMEMBER THIS? the dance floor ----
     s = Slide(2, 602)
@@ -182,7 +182,7 @@ async def build():
     s.footer(); out.append(("3", s, [("star_tl", "t1"), ("star_tr", "t1"), ("f1", "f2"), ("f1", "tkt"), ("f2", "tkt"), ("f2", "star_tr"), ("f2", "v1"), ("f2", "v2"), ("tkt", "v1"), ("tkt", "v2")]))
     # ---- 4 BRING YOUR CREW ----
     s = Slide(4, 604)
-    ty = await s.title("BRING YOUR CREW", "10TH NOVEMBER", big_w=720, sub_w=520, top=104); stars(s)
+    ty = await s.title("BRING YOUR CREW", "OR MAKE ONE THERE", big_w=720, sub_w=640, top=104); stars(s)
     fh = int((BOT - ty) * 0.6)
     s.frame("f1", PH["crew"], 50, ty + 30, 600, int(fh * 0.72), -3, "30% 40%", z=4); s.frame("f2", PH["night"], 470, ty + 30 + fh * 0.36, 560, fh, 3, "50% 70%", z=5)
     s.chip("c1", "LIVE UPDATES: " + HANDLE, 120, ty + 30 + int(fh * 1.36) + 40, 840, deg=-2, size=36)
@@ -193,7 +193,7 @@ async def build():
     lw = 620; lh = live_sticker(s, "live", (W - lw) / 2, ty + 20, lw, -4)
     sy = ty + 20 + lh + 40; sh = 300
     slab(s, "slab", 84, sy, 912, sh)
-    ign = rows_in(s, 84, sy, 912, sh, [(HANDLE, 84, INK), ("ON INSTAGRAM", 36, "#0E7C86"), ("DISCO DIWALI: 10TH NOVEMBER", 32, INK)])
+    ign = rows_in(s, 84, sy, 912, sh, [(HANDLE, 84, INK), ("ON INSTAGRAM", 36, "#0E7C86")])
     ball, bh = ddm.disco_ball(200, "b5"); svg_sticker(s, "ball", ball, W - 60 - 200, sy + sh + 30, 200, bh, 8, z=9)
     s.chip("c1", "TAP FOLLOW", 140, sy + sh + 50, 560, deg=-2, size=40)
     s.footer(cta="SEE YOU THERE"); out.append(("5", s, ign + [("slab", "live"), ("slab", "ball"), ("star_tl", "t1"), ("star_tr", "t1"), ("ball", "c1"), ("slab", "c1")]))
