@@ -31,8 +31,11 @@ Three audiences, one chain. **The student is the messenger.** A student sees the
 | Search by subject, class, board and locality; read reviews, experience and qualifications | site FAQ |
 | Made by AquaTerra, an NGO whose team are students | About page |
 | Focus is Kolkata | site FAQ |
+| Tutors apply through a form. AquaTerra's team runs background checks and selects who is listed | owner, 2026-10-06 |
+| Tutors have students who actively learn from them | owner, 2026-10-06 (confirm whether this holds for every listed tutor, see section 7) |
 
-**Held back until you confirm:** the word "verified" (the About page says "verified teachers" and `llms.txt` says credentials are verified, but I have not seen what the check is), any count, any area list, any review.
+**"Verified" now has a definition.** The owner confirmed it: tutors apply through a form, the team does background checks, and the team selects who is listed. So the public line is **"Every tutor is checked and selected by our team."** The word "verified" may appear only next to that line. "Not everyone who applies is listed" is true and is used on purpose, because it is the answer to a parent's biggest worry.
+**Held back until you confirm:** any count, any area list, any review, and any statement about how many students a tutor has.
 **Scope note:** the site also serves college students and competitive exams. This campaign speaks to school students only, so it never mentions them.
 **The correction beat** ("Not a charity. Not a class.") is allowed only where this list places it, and never as the first thing a viewer sees.
 
@@ -66,12 +69,12 @@ Eight parent and student questions, in the order a doubtful parent asks them. Th
 |---|---|---|---|---|
 | FQ0 | S | Highlight cover | "FAQ" | V9 |
 | FQ1 | S | What is Shikshaq? | "Where you find your tutor. Connecting every student in Kolkata to teachers." | V6 |
-| FQ2 | S | Which classes and boards? | "Classes IV to XII. ICSE, ISC, CBSE and State board." | V2 |
+| FQ2 | S | Which classes, boards and areas? | "Classes IV to XII. ICSE, ISC, CBSE and State board. Across Kolkata." Areas named from the data dump | V2 |
 | FQ3 | S | Who made it? Is it a charity? | "Made by AquaTerra, an NGO whose team are students. Not a charity. Not a class. A place to find your tutor." | V3 |
 | FQ4 | S | How do I find the right tutor? | "Filter by subject, class, board and area. Read the profile and the reviews." | V5 |
 | FQ5 | S | How do I contact a tutor? | "One tap on the profile opens WhatsApp. You message the tutor yourself." | V10 |
 | FQ6 | S | Do I pay Shikshaq? | "No. Fees are between you and the tutor. Shikshaq takes no commission." | V6 |
-| FQ7 | S | Which parts of Kolkata? | Answer from the data dump (the site names neighbourhoods) | V1 |
+| FQ7 | S | Are the tutors checked? | "Yes. Tutors apply through a form. Our team checks their background and selects who is listed." | V4 |
 | FQ8 | S | Is my phone number safe? | "Yes. Your details stay private and you choose who you contact." | V9 |
 | FQ9 | F x5 | Recap carousel: FQ1, FQ2, FQ3, FQ6 plus a call to action | | V4 |
 
@@ -84,7 +87,8 @@ Eight parent and student questions, in the order a doubtful parent asks them. Th
 | TQ2 | S | Does it cost to list? | "Free to list." |
 | TQ3 | S | Do you take a cut? | "No. You set your own rate and keep all of it." |
 | TQ4 | S | Who contacts me? | "Real people, messaging you on WhatsApp. Not sold leads." |
-| TQ5 | S | How do I list? | Steps from the real join flow (confirm the order) |
+| TQ5 | S | How do I list? | "Fill out a form. Our team checks your background. If you are selected, you are listed." |
+| TQ6 | S | Can anyone list? | "Tutors apply and our team selects who is listed. Listing is free." |
 
 ### Family 2: Anchor and definition
 | ID | Canvas | Asset | Look |
@@ -108,7 +112,7 @@ Five WhatsApp conversations, each shipped as a feed post and as a story cut. Dra
 | CH1 | S: "Ma, I found where to find a Maths tutor near us." P: "Another coaching centre?" S: "No centre. You search, pick a tutor and message them." P: "Show me." | V7 |
 | CH2 | P: "Who runs this? Some charity?" S: "AquaTerra, an NGO run by students. It is for any school student in Kolkata." P: "So not a charity class?" S: "Not a class at all. It is where you find your tutor." | V7 |
 | CH3 | P: "Do we pay them?" S: "Free for us to use. Fees are between you and the tutor. No commission." P: "Good." | V7 |
-| CH4 | P: "How will we know the tutor is good?" S: "Experience, qualifications and reviews are on the profile. We message first." P: "Message first, then decide." | V7 |
+| CH4 | P: "How will we know the tutor is good?" S: "Every tutor is checked and selected by the Shikshaq team, and the profile shows experience and reviews. We message first." P: "Message first, then decide." | V7 |
 | CH5 | P: "Which area?" S: "You filter by locality, so near us." P: "Send me the link." S: "Sending now." | V7 |
 
 Each CH ships as **CHn F** and **CHn S** (ten files).
@@ -157,14 +161,14 @@ Review wording is quoted exactly as on the site, first name and subject only. No
 | RV1 to RV6 | F x6 | One real review each | V8 |
 | RV7 | F x5 | Review wall carousel | V8 |
 | RV8 to RV10 | S x3 | Review stories | V8 |
-| MT1 to MT3 | S x3 | Meet a tutor, one tutor, one subject, one quote | V5 |
+| MT1 to MT3 | S x3 | Meet a tutor, one tutor, one subject, one quote. Each tutor approves the final post by WhatsApp message (name, photo, quote) before it goes out | V5 |
 | MT4 to MT6 | F x3 | Same tutors as feed posts | V5 |
 
 ### Family 9: Tutor side
 | ID | Canvas | Asset | Look |
 |---|---|---|---|
 | TT1 | F x5 | "Teach on Shikshaq" carousel: put your profile where students search | V5 |
-| TT2 to TT5 | S x4 | Tutor stories: the line, free to list, set your own rate, how to list | V6 |
+| TT2 to TT5 | S x4 | Tutor stories: the line, free to list and set your own rate, "Fill a form. We check. You are listed.", "Know a good tutor? Recommend them" | V6 |
 | TT6 | F | Tutor single poster | V6 |
 | TT7 to TT9 | F x3 | Tutor-and-parent conversations: a parent asks a tutor about timing, fee and trial class | V7 |
 | RC1 | F | "Recommend your tutor": students nominate their own teacher (the site already has a recommend flow) | V6 |
@@ -206,17 +210,17 @@ HC1 How it works · HC2 Who made it · HC3 Reviews. Three S files, circle-safe. 
 ## 5. Totals
 | Canvas | Files |
 |---|---|
-| Story (S) | **66** |
+| Story (S) | **67** |
 | Feed (F) | **72** |
 | Square (Q) | **5** |
-| **Total images** | **143** |
-| Gated on reviews and consent (family 8) | 20 of the 143 |
-| **Ready without the gate** | **123** |
+| **Total images** | **144** |
+| Gated on reviews and consent (family 8) | 20 of the 144 |
+| **Ready without the gate** | **124** |
 | Text assets | 10 items; T7 holds one caption per post |
 
 Feed posts, counting a carousel as one post: **41**, of which 10 are gated. The calendar uses **28 feed posts** (one a day) and holds 13 in reserve.
 
-**Lean cut if four weeks of production is too much:** drop family 6 (subject posters), family 10 (calendar) and TT7 to TT9. That removes 17 files and leaves **126**, or **106** without the gated proof.
+**Lean cut if four weeks of production is too much:** drop family 6 (subject posters), family 10 (calendar) and TT7 to TT9. That removes 17 files and leaves **127**, or **107** without the gated proof.
 
 ## 6. Four-week calendar
 Posting time follows the brain's default of 19:30 IST for feed. Status is posted through the day. Every Status slide stands alone, because a Status disappears in 24 hours.
@@ -248,7 +252,7 @@ Posting time follows the brain's default of 19:30 IST for feed. Status is posted
 |---|---|---|
 | Mon | WM1 | WM2 to WM4, HC2. T5 and T3 |
 | Tue | RV1 | RV8 to RV10, HC3 |
-| Wed | TT1 | TQ0 to TQ5 |
+| Wed | TT1 | TQ0 to TQ6 |
 | Thu | CH4 | TT2 to TT5 |
 | Fri | MT4 | MT1 to MT3 |
 | Sat | BB1 | RC2, RC3, IN3 |
@@ -268,9 +272,9 @@ Posting time follows the brain's default of 19:30 IST for feed. Status is posted
 If the data dump arrives late, the gated feed posts (RV1, RV7, MT4) swap with SJ5 to SJ7 from reserve.
 
 ## 7. What I still need
-1. **Reviews and counts.** I cannot reach `shikshaq.in`: the environment's network policy denied the host (`www.shikshaq.in`) and I am not working around that. Either add `shikshaq.in` and `www.shikshaq.in` to Allowed domains under the environment's Network access settings, or paste the reviews and counts you approve. Until then every family 8 slot, FQ7 and T5 hold a placeholder.
-2. **Verification wording.** What does "verified" mean in the product today? Until you say, no asset uses the word.
-3. **Tutor consent.** Do any tutors agree to appear in MT1 to MT6?
-4. **Join flow order.** Confirm the real steps for TQ5 and B1.
-5. **Interview wording.** Paste what people actually said Shikshaq was, for IN1.
+1. **Reviews and counts.** I cannot reach `shikshaq.in`: the environment's network policy denied the host (`www.shikshaq.in`) and I am not working around that. Either add `shikshaq.in` and `www.shikshaq.in` to Allowed domains under the environment's Network access settings, or paste the reviews and counts you approve. Until then every review slot (RV1 to RV10), the areas in FQ2 and T5 hold a placeholder.
+2. **The exact public wording on checks.** I use "Every tutor is checked and selected by our team." Say if you want it stronger or softer. I do not use the word "background" on posters aimed at children unless you say so. It appears on FQ7 and TQ5, which are parent and tutor facing.
+3. **Active students.** You said verified tutors have students who actively learn from them. Is that true of every listed tutor? If yes, I can say "every listed tutor teaches students right now" and use it on MT posts. If not, it stays out.
+4. **Tutor approvals.** I need each tutor's WhatsApp approval of their own post (name, photo, quote) before it goes out. Send me the tutors, or the quotes you already have from them.
+5. **Interview wording.** Paste what people actually said Shikshaq was, for the first poll story IN1.
 6. **Build prerequisites.** The Shikshaq renderer only does 1080x1350. I add the 1080x1920 story canvas with a safe zone, the FAQ and chat-pill templates, and the new blob shapes before Wave 1. I run `npm run test:render` on each.
