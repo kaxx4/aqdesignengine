@@ -20,9 +20,9 @@ Event: "The Summer AQ turns FIVE", AQ's 5th anniversary party. Ocean and mermaid
 
 Standing caveats: photos show real guests, many look like minors or students. Check consent before public use, and never fabricate captions or stats from these. Not yet run through `vision.plan_spots`.
 
-## unsorted-2026-10-07/ (event not confirmed)
+## disco-diwali-2025/ (event confirmed by the user, 2026-10-07)
 
-Uploaded in the same batch but the event is unclear. These look like a Diwali-style event (kurtas, red and black balloons, AquaTerra standee) rather than the Summer party. Move them to the right event folder once confirmed.
+Disco Diwali 2025 (clapperboard dated 22/10/25). Originally filed as unsorted, moved here once the user said the whole set is for Disco Diwali promos. The file list continues below the table.
 
 | File | Content |
 |---|---|
@@ -42,6 +42,15 @@ Uploaded in the same batch but the event is unclear. These look like a Diwali-st
 | 13_IMG_1500_dance-pink-light-phone.jpg | 3024x4032. Crowd in pink light, a guest filming on a phone in the foreground. |
 
 The same hall (tinsel pillars, hanging playing cards, silver star balloons, cream beams) appears in 05, 08, 11, 12, 13 and the video, so those are one event. The Disco Diwali booth (22/10/25) and the red drape entrance (03) point to that event, which makes the hall most likely Disco Diwali 2025. This is an inference, not confirmed.
+
+## Disco Diwali promo set (decision 2026-10-07)
+
+The user will use ALL photos in this library for Disco Diwali promos, including `summer-aq-turns-five/`. Those files stay in their folder so the Summer party history is not lost. Check these before a promo goes out:
+
+- **Visible Summer branding.** 05_five-banner-net.jpg (reads "The Summer AQ turns FIVE") and 02_gossip-board.jpg ("GOSSIP BOARD", AQ x Terra logo) show text from the Summer party. Crop to the artwork or leave them out of any post that claims to be Diwali.
+- **Guest-written text.** 02_gossip-board.jpg has sticky notes with guest names and a crush joke. Do not publish them readable.
+- **Minors and consent.** Many people shown look like students. Confirm consent before faces go on public posts.
+- **Best heroes for a Diwali promo.** disco-diwali-2025/10_disco-diwali-photo-booth.jpg (the DIWALI blocks are in frame), 11_dance-green-light-portrait.jpg (story ratio), 06_three-friends-fairy-lights.jpg (clean portrait, text-safe top strip of lights).
 
 ## Not stored
 
