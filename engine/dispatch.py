@@ -107,6 +107,7 @@ DEPTS = {
     "labs":    "labs",
     "ops":     "ops",
     "content": "content",
+    "shikshaq": "shikshaq",
 }
 
 MAX_ITEMS = 6                                     # R2
@@ -163,6 +164,19 @@ def accent(dept):
     return core.accent_for(DEPTS[dept])
 
 
+
+def photo_src(key):
+    """A photo key -> data URI. A key in core.PHOTOS, or a path to a real photo file
+    the team supplied (never stock). Anything else is not a real asset."""
+    if key in core.PHOTOS:
+        return core.PHOTOS[key]
+    if key and os.path.isfile(key):
+        import base64, mimetypes
+        mt = mimetypes.guess_type(key)[0] or "image/jpeg"
+        with open(key, "rb") as f:
+            return "data:%s;base64,%s" % (mt, base64.b64encode(f.read()).decode())
+    return None
+
 def tint_of(acc):
     return shapes.lighten(acc, CARD_TINT)
 
@@ -201,7 +215,7 @@ def validate_brief(brief):
                 raise BriefError(
                     "item %d %r is %d words, budget is %d (R4). Cut it: %r"
                     % (n, field, _words(it[field]), budget, it[field]))
-        if it.get("photo") and it["photo"] not in core.PHOTOS:
+        if it.get("photo") and photo_src(it["photo"]) is None:
             raise BriefError(
                 "item %d asks for photo %r. Real AQ photos only: %s. Never "
                 "fabricate imagery (section 9)."
@@ -310,7 +324,7 @@ async def poster(brief):
         (it.get("photo") for it in items if it.get("photo")), None)
     burst_box = None
     if photo_key:
-        if photo_key not in core.PHOTOS:
+        if photo_src(photo_key) is None:
             raise BriefError("cover_photo %r is not a real AQ photo." % photo_key)
         ps, rot, py = 198, -4, 130
         _, _, bw, bh = lay.rotated_bbox(0, 0, ps, ps, rot)
@@ -320,7 +334,7 @@ async def poster(brief):
             f'<div class="measure" data-tag="photo" style="position:absolute;top:{py}px;left:{px}px;'
             f'width:{ps}px;height:{ps}px;transform:rotate({rot}deg);z-index:9;'
             f'border:5px solid var(--ink);box-shadow:10px 10px 0 var(--ink);overflow:hidden">'
-            f'{tex.photo_ink(core.PHOTOS[photo_key], "width:100%;height:100%")}</div>')
+            f'{tex.photo_ink(photo_src(photo_key), "width:100%;height:100%")}</div>')
         els.append(("photo", px - over, py - over, bw, bh))
         inner.append(tex.tape(px + 56, py - 22, w=120, h=36, rot=-7, z=14))
         photo_bottom, photo_left = py + ps + over, px - over
@@ -838,7 +852,7 @@ async def _story_item(brief, it, i, n):
             f'<div class="measure" data-tag="band" style="position:absolute;top:{STORY_BAND_Y}px;'
             f'left:0;width:{W_STORY}px;height:{STORY_BAND_H}px;z-index:7;overflow:hidden;'
             f'border-top:{CARD_BORDER}px solid var(--ink);border-bottom:{CARD_BORDER}px solid var(--ink)">'
-            f'{tex.photo_ink(core.PHOTOS[it["photo"]], "width:100%;height:100%", focus="50% 22%")}'
+            f'{tex.photo_ink(photo_src(it["photo"]), "width:100%;height:100%", focus="50% 22%")}'
             f'</div>')
     else:
         plate = core.lit_of(acc)
