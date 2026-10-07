@@ -14,4 +14,23 @@ Event: "The Summer AQ turns FIVE", AQ's 5th anniversary party. Ocean and mermaid
 | 04_courtyard-crowd-garlands.jpg | 1200x1600 | Crowd in the courtyard under frangipani, orange and yellow flower garlands, two smiling guys in foreground, blue tent edge top left. | Warm candid. Two faces at right, so keep chips left or top. |
 | 05_five-banner-net.jpg | 1125x1500 | Hand-painted kraft banner "The Summer AQ turns FIVE" with shells, starfish, octopus, mermaid tail, hung on fishing net with film-strip polaroids of past events. | Best hero for the 5-year story. Painted type is the hook, so crop whole. Contains tiny printed past-event photos of people. |
 
+| 06_net-drapes-lanterns.jpg | 3024x4032 | Courtyard under a net, teal drapes, red and white paper lanterns, silver stars, blue tent edge, crowd below. (IMG_6981) | Teal drapes match the AQ teal. Sky and net give a free top half. |
+| 07_group-portrait-pink-light.jpg | 3024x4032 | Six friends posing in pink party light, star lights above. (IMG_6860) | Faces fill the frame, keep type to the top strip. |
+| 08_star-lights-courtyard-night.jpg | 4032x2268 | Night courtyard, hanging star and fairy lights, no people. (IMG_7002) | Safe, faceless background plate. Landscape 16:9. |
+
 Standing caveats: photos show real guests, many look like minors or students. Check consent before public use, and never fabricate captions or stats from these. Not yet run through `vision.plan_spots`.
+
+## unsorted-2026-10-07/ (event not confirmed)
+
+Uploaded in the same batch but the event is unclear. These look like a Diwali-style event (kurtas, red and black balloons, AquaTerra standee) rather than the Summer party. Move them to the right event folder once confirmed.
+
+| File | Content |
+|---|---|
+| 01_IMG_7180_group-aquaterra-banner.jpg | 4032x3024. Group posed on the floor and standing in front of an AquaTerra globe banner, red, black and white balloons. |
+| 02_IMG_7028_group-pink-balloons.jpg | 3024x4032. Group in festive wear under pink and black balloons, @ngo.aquaterra tag visible. |
+| 03_IMG_1451_red-drapes-entrance.jpg | 3024x4032. Red drape canopy with fairy lights over a courtyard, red carpet, guests photographing. |
+| 04_IMG_5201_video-720p.mp4 | 12.3s clip, downscaled from 1920x1440 (29MB original) to 720p. A DJ at a console in a dark hall with star lights, so likely the Summer party. Not confirmed. |
+
+## Not stored
+
+About ten more photos were shown inline in chat (blurred dance floor, playing-card ceiling hall, string-light courtyard, a Disco Diwali photo booth, a green-lit crowd shot, three friends under fairy lights). Only the 7 files above reached disk. The inline ones have no file, so they are not in this repo. Re-upload them as files to add them.
