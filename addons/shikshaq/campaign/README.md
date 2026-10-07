@@ -1,12 +1,12 @@
 # Campaign: "Shikshaq is where you find your tutor"
 
-The whole four-week campaign as code. Every asset is a spec in `catalog-*.mjs` rendered by a look in `looks-*.mjs`, gated on the
+The whole four-week campaign as code. Every asset is a spec in `catalog3a.mjs` and `catalog3b.mjs` rendered by the panel-stack engine in `stack.mjs`, gated on the
 DOM it actually drew. Nothing is hand-edited. A weak asset is a missing rule: fix the look or the gate, then rebuild.
 
 ```
-npm run campaign              build everything (about a minute): 150 images, sheets, phone and WhatsApp previews, all text
+npm run campaign              build everything (about two minutes): 240 images, sheets, phone and WhatsApp previews, all text
 npm run campaign -- --family=faq          one family      (--only=FQ1,FQ2 for named assets)
-npm run campaign:test         31 assertions, each one a failure this build actually hit
+npm run campaign:test         36 assertions, each one a failure this build actually hit
 npm run campaign:wire         pull the Supabase export into the gated slots (see below)
 npm run campaign:final        refuses to finish while any slot still holds placeholder data
 npm run lookbook              one sample of every look on every canvas
@@ -28,12 +28,12 @@ source id. By default the reviewer shows as an initial (`--attribution=first` to
 ## What each part owns
 | File | Owns |
 |---|---|
-| `catalog-a.mjs`, `catalog-b.mjs` | every visible word, every asset, its family, post and audience |
-| `looks-core.mjs`, `looks-more.mjs` | the 16 layouts. They hold no copy |
-| `characters.mjs` | the site's blob family plus the sun and X-lobe shapes, eyes, scallops, torn edges |
+| `catalog3a.mjs`, `catalog3b.mjs`, `catalog.mjs` | every visible word, every asset (240), its family, post and audience |
+| `stack.mjs`, `kit3.mjs`, `wsticker.mjs`, `looks.mjs` | the panel-stack engine (23 panel types), the icon and mascot kit, the WhatsApp sticker look. They hold no copy |
+| `characters.mjs`, `looks-core.mjs` | the site's blob family plus the sun and X-lobe shapes; canvas geometry |
 | `validate-campaign.mjs` | the copy gate: no dash, no digit without a fact, no "connects families", no "verified", the charity rule |
 | `renderer.mjs` + `../src/render.mjs` | one browser, the DOM gate, and the story safe zone (top 250, bottom 340) |
-| `plan.mjs`, `wa.mjs`, `captions.mjs` | the four-week calendar, the 16 WhatsApp pushes with their replies, the captions |
+| `plan.mjs`, `wa.mjs`, `captions.mjs` | the four-week calendar, the 30 WhatsApp pushes with their replies, the captions |
 | `resolve.mjs`, `wire-data.mjs`, `queries.sql` | data binding. Missing data becomes a visible draft, never invented copy |
 
 The shared engine change this build needed: `src/render.mjs` exports `gate()` and now takes a story safe zone, and its CLIPPED-Y tolerance scales with font

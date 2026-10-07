@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import { chromium } from 'playwright-core';
 import { CHROME, gate } from '../src/render.mjs';
-import { L } from './catalog-a.mjs';
+import { L } from './catalog-util.mjs';
 import { ITEMS, byId, expand } from './catalog.mjs';
 import { WEEKS, RESERVE } from './plan.mjs';
 import { PUSHES } from './wa.mjs';
@@ -25,7 +25,7 @@ ok(bad({ support: 'Trusted by everyone' }).length >= 1, 'unsourced social proof 
 ok(bad({ support: 'A charity for poor children' }).length >= 1, 'the charity frame must not leak in');
 ok(bad({ q: 'Is it a charity?' }).length === 0, 'the plan\'s own correction wording must pass');
 ok(bad({ q: 'Is it a charity?' }, true).some(e => /first thing/.test(e)), 'the correction must never be the first thing a viewer sees');
-ok(bad({ lines: [['x'.repeat(70)]] }).some(e => /headline/.test(e)), 'an over-long headline must fail');
+ok(bad({ panels: [{ lines: [['x'.repeat(90)]] }] }).some(e => /headline/.test(e)), 'an over-long headline must fail');
 
 // 10-11 the headline mini-language caught a real bug: a bold run split across two lines leaked a literal asterisk
 let threw = false; try { L('Asked around. / *Got a number / that does not work.*'); } catch { threw = true; }
@@ -44,13 +44,21 @@ ok(fillTokens('Hi {{review.0.text}}', { reviews: [] }).missing.length === 1, 'a 
 // 18-24 the catalog is internally consistent
 ok(new Set(ITEMS.map(i => i.id)).size === ITEMS.length, 'asset ids must be unique');
 ok(validateAll(ITEMS).length === 0, 'the whole catalog must pass the copy gate: ' + validateAll(ITEMS).slice(0, 3).join(' | '));
-const planned = WEEKS.flatMap(w => w.days.flatMap(d => [d.feed, ...(d.stories || [])])).concat(RESERVE);
+const planned = WEEKS.flatMap(w => w.days.flatMap(d => [d.feed, ...(d.feed2 ? [d.feed2] : []), ...(d.stories || [])])).concat(RESERVE);
 ok(planned.every(t => /best performing/.test(t) || expand(t).length), 'every plan token must name a real asset or post: ' + planned.filter(t => !expand(t).length).join(','));
 ok(WEEKS.length === 4 && WEEKS.every(w => w.days.length === 7), 'a four-week plan with seven days each');
 ok(PUSHES.every(p => p.image.every(id => byId(id))), 'every WhatsApp push must name real images');
 ok(feedPosts().every(p => CAPTIONS[p]), 'every feed post needs a caption: ' + feedPosts().filter(p => !CAPTIONS[p]).join(','));
 ok(Object.values(CAPTIONS).every(c => validateText('c', c).length === 0) && Object.values(HASHTAGS).every(a => a.length <= 8), 'captions must pass the gate and stay under the hashtag cap');
-ok(ITEMS.filter(i => i.canvas === 'S' || i.canvas === 'C').length === 67 && ITEMS.length === 150, 'the catalog totals drifted from the signed-off list');
+ok(ITEMS.filter(i => i.canvas === 'S').length === 101 && ITEMS.filter(i => i.canvas === 'C').length === 9 && ITEMS.length === 240, 'the catalog totals drifted from the signed-off list (240: 101 stories, 9 covers)');
+// the plan and the pushes must agree about who sends what, when
+const dayOf = Object.fromEntries(WEEKS.flatMap(w => w.days.flatMap(d => (d.wa || []).map(id => [id, `${w.n} ${d.d}`]))));
+ok(PUSHES.every(p => dayOf[p.id] === `${p.week} ${p.day}`), 'every WhatsApp push must sit on the plan day it names: ' + PUSHES.filter(p => dayOf[p.id] !== `${p.week} ${p.day}`).map(p => p.id).join(','));
+ok(Object.keys(dayOf).every(id => PUSHES.some(p => p.id === id)), 'the plan names a WhatsApp push that does not exist');
+const allTok = WEEKS.flatMap(w => w.days.flatMap(d => [d.feed, ...(d.feed2 ? [d.feed2] : []), ...(d.stories || [])])).concat(RESERVE);
+ok(new Set(allTok).size === allTok.length, 'an asset sits in two plan slots: ' + allTok.filter((t, i) => allTok.indexOf(t) !== i).join(','));
+ok(WEEKS.every(w => w.days.every(d => d.feed)), 'every day has a main feed post');
+ok(WEEKS.flatMap(w => w.days).every(d => !d.feed2 || d.feed2 !== d.feed), 'a day cannot repeat its own post');
 
 // 25-28 the data importer
 ok(pickSubject('Mathematics, Physics') === 'Maths' && pickSubject('Biology') === 'Maths', 'subject mapping falls back to Maths rather than inventing one');

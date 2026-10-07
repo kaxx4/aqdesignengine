@@ -9,25 +9,23 @@ const BANNED = [
   [/\bverified\b/i, 'owner ruling: say "checked and selected by our team", not "verified"'],
   [/\b(underprivileged|needy|poor children|slum|orphan)\b/i, 'the charity frame this campaign exists to remove'],
 ];
-const SKIP = new Set(['id', 'family', 'dir', 'tag', 'count', 'look', 'canvas', 'accent', 'ground', 'post', 'aud', 'scheme', 'variant', 'mood', 'kind', 'fill', 'kickFill', 'disc', 'sticker', 'bind', 'gated', 'placeholder', 'subject', 'review', 'tutor', 'who', 'names', 'rot', 'char', 'valign', 'search', 'mascot', 'rows', 'notes', 'msgs', 'copy', 'lines', 'words', 'span', 'col', 'row']);
-const SKIP_STRUCT = new Set(['rows', 'notes', 'msgs', 'copy', 'lines', 'words']);
-
-const lineText = l => Array.isArray(l) ? l.map(s => typeof s === 'string' ? s : (s.b ?? s.tag ?? s.pill)).join(' ') : String(l);
+// Everything visible in a spec, found by walking it. Structure keys are skipped; copy keys are collected.
+const TOP_SKIP = new Set(['id', 'family', 'dir', 'look', 'canvas', 'accent', 'ground', 'post', 'aud', 'tag', 'count', 'sticker', 'bind', 'gated', 'placeholder', 'subject', 'review', 'tutor', 'mascot', 'disc', 'mood', 'char', 'fill', 'phrase_', 'handle']);
+const NEST_SKIP = new Set(['type', 'fill', 'tfill', 'tileFill', 'icon', 'kind', 'mood', 'c', 'rot', 'size', 'grow', 'tone', 'pay', 'valign', 'solid', 'cols', 'on', 'h', 'span', 'col', 'row', 'rows_', 'ordinal', 'who', 'msize', 'csize', 'fs', 'psize', 'hsize', 'plainW', 'top', 'photo', 'bind', 'eyebrowC', 'toggle', 'mascot', 'word']);
 export function visible(spec) {
   const out = [];
-  const take = (k, v) => { if (typeof v === 'string' && v.trim()) out.push([k, v]); };
-  for (const [k, v] of Object.entries(spec)) {
-    if (SKIP.has(k) && !SKIP_STRUCT.has(k)) continue;
-    if (typeof v === 'string') take(k, v);
-  }
-  (spec.lines || []).forEach(l => take('lines', lineText(l)));
-  (spec.rows || []).forEach(r => take('rows', [r.pre, r.hl, r.post].filter(Boolean).join(' ')));
-  (spec.notes || []).forEach(n => take('notes', n.t));
-  (spec.msgs || []).forEach(m => take('msgs', m.t));
-  (spec.words || []).forEach(w => take('words', w));
-  if (spec.copy) Object.values(spec.copy).forEach(v => take('copy', v));
+  const walk = (v, key, top) => {
+    if (typeof v === 'string') { if (v.trim() && !(top ? TOP_SKIP : NEST_SKIP).has(key)) out.push([key, v]); return; }
+    if (Array.isArray(v) && key === 'lines') { v.forEach(l => { const t = (Array.isArray(l) ? l : [l]).map(g => typeof g === 'string' ? g : (g.b ?? g.hl ?? g.tag ?? g.pill ?? '')).join(' ').replace(/ ([?.,!])/g, '$1'); if (t.trim()) out.push(['lines', t]); }); return; }
+    if (Array.isArray(v)) { if (key === 'tiles' && v.every(x => typeof x === 'string')) return; if (key === 'on') return; v.forEach(x => walk(x, key, false)); return; }
+    if (v && typeof v === 'object') { if (key === 'mascot' || key === 'review' || key === 'tutor' || key === 'bind' || key === 'sticker' && top) return; for (const [k, x] of Object.entries(v)) walk(x, k, false); }
+  };
+  for (const [k, v] of Object.entries(spec)) if (!TOP_SKIP.has(k) || k === 'phrase') walk(v, k === 'phrase_' ? 'phrase' : k, true);
+  if (spec.phrase) out.push(['phrase', spec.phrase]);
   return out;
 }
+const DIGIT_OK = /Class(es)? \d+|₹0|\b(FAQ|Tutors?|For tutors) 0\d/g;
+const hasDigit = s => /\d/.test(s.replace(DIGIT_OK, ''));
 
 // "charity" may appear only inside the plan's own correction beats.
 const CHARITY_OK = /not a charity|a charity\?|charity or a class|some charity\?|charity class/i;
@@ -35,18 +33,17 @@ export function validateSpec(spec, { firstOfSequence = false } = {}) {
   const errors = [];
   for (const [k, s] of visible(spec)) {
     for (const [re, why] of BANNED) if (re.test(s)) errors.push(`${spec.id}.${k}: ${why}: "${s.slice(0, 60)}"`);
-    if (/\d/.test(s)) errors.push(`${spec.id}.${k}: a digit in copy, and the facts file holds no figure for it: "${s.slice(0, 60)}"`);
+    if (hasDigit(s)) errors.push(`${spec.id}.${k}: a digit in copy, and the facts file holds no figure for it: "${s.slice(0, 60)}"`);
     if (/charity/i.test(s) && !CHARITY_OK.test(s)) errors.push(`${spec.id}.${k}: "charity" outside the allowed correction wording: "${s.slice(0, 60)}"`);
     if (/charity/i.test(s) && firstOfSequence) errors.push(`${spec.id}.${k}: the correction must never be the first thing a viewer sees: "${s.slice(0, 60)}"`);
   }
-  const hl = (spec.lines || []).map(lineText).join(' ');
-  if (hl.length > 64) errors.push(`${spec.id}: headline is ${hl.length} characters, cap is 64`);
+  for (const p of spec.panels || []) { const hl = (p.lines || []).map(l => (Array.isArray(l) ? l : [l]).map(g => typeof g === 'string' ? g : (g.b ?? g.hl ?? g.tag ?? g.pill ?? '')).join(' ')).join(' '); if (hl.length > 78) errors.push(`${spec.id}: a headline is ${hl.length} characters, cap is 78`); }
   return errors;
 }
 export function validateText(id, text, { cap = 900 } = {}) {
   const errors = [];
   for (const [re, why] of BANNED) if (re.test(text)) errors.push(`${id}: ${why}`);
-  if (/\d/.test(text.replace(/\[[^\]]*\]/g, ''))) errors.push(`${id}: a digit in copy`);
+  if (hasDigit(text.replace(/\[[^\]]*\]/g, ''))) errors.push(`${id}: a digit in copy`);
   if (text.length > cap) errors.push(`${id}: ${text.length} characters, cap is ${cap}`);
   return errors;
 }

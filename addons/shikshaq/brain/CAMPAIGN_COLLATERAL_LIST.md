@@ -298,3 +298,33 @@ The list above was generated in full by `addons/shikshaq/campaign/` (see its `RE
 
 Differences from the list above: the six WhatsApp squares (WQ1 to WQ6) were added so each broadcast has its own forward-ready image, and the paper-spotlight
 tiles were removed from the bento board because this campaign is tutors only. The bento is rebuilt for the campaign (`BB1`).
+
+## 9. Rebuilt (2026-10-07): v3, on the real Shikshaq design language
+
+The first build (section 8) was judged off-language, bland and thin. v3 rebuilds every asset on the site's own panel system and widens the catalog.
+
+**Design language.** Every post is a stack of big-radius panels on the bone ground, as on the live site: a numbered or eyebrowed heading with the mixed-weight
+headline (400 plain plus 800 payoff), icon tiles with a thick ring, dotted card grounds, highlighted pill phrases, the sentence builder, class tiles,
+tilted overhanging sticker pills, and the circle and blob mascots in the unsafe bands of every story. Wayfinding is the metaphor: subject is a signpost,
+board is a route marker, class is a distance marker. One panel engine (`campaign/stack.mjs`) solves the type scale per post, so no asset is hand-sized.
+
+**Voice.** Copy now speaks the way a Kolkata student would say it to a parent ("Because asking aunties is slow", "Stuck on the same sum since Tuesday?").
+The gate is unchanged: no digits without a fact, no dashes, no "connects families", no "verified".
+
+**New series (all English, all in the three audiences' own words):** Things parents say (SY), Copy this message (MG), Questions to ask a tutor (AK),
+Exam season (EX), By the class (CS), Wayfinding signposts (WY), The facts, plainly (FT), one poster per subject on both canvases (SJ and SJs),
+and twelve die-cut WhatsApp stickers (ST).
+
+| Canvas | Files |
+|---|---|
+| Story (S) | **101** |
+| Feed (F) | **103** |
+| Square (Q) | **15** |
+| Highlight covers (C) | **9** |
+| WhatsApp stickers (K, transparent 512) | **12** |
+| **Total images** | **240** (21 gated on real reviews and tutor approval) |
+| Instagram feed or square posts | **67** (43 scheduled over four weeks: one main post a day plus a second on 15 days; 23 in a reserve bank; one forwardable set) |
+| WhatsApp pushes | **30**, each with its framing message, image and expected replies |
+
+The calendar is in `campaign/plan.mjs`; `texts/schedule.md` renders it. Seasonal posts (Puja, pre-boards, result day) are placed where they fit a typical
+run and can swap with the reserve bank to match the real calendar.

@@ -1,17 +1,19 @@
-// The look registry. renderHtml(spec) is the only door: spec in, a full HTML page out.
-import { page, frame } from '../src/kit.mjs';
-import { C } from '../src/tokens.mjs';
-import { lay, groundOf, plate, answer, eyesLook, mood, poll, cover, button, ui } from './looks-core.mjs';
-import { bands, brief, cardLook, swarm, chat, calendar, review, tutor, bento } from './looks-more.mjs';
+// The look registry. v3: everything is a panel stack (see stack.mjs), plus the circle-safe highlight cover.
+import { page } from '../src/kit.mjs';
+import { BONE, ACC } from './kit3.mjs';
+import { lay, cover } from './looks-core.mjs';
+import { stackLook } from './stack.mjs';
+import { wsticker } from './wsticker.mjs';
+import { frame } from '../src/kit.mjs';
 
-export const LOOKS = { plate, answer, eyes: eyesLook, mood, poll, cover, button, ui, bands, brief, card: cardLook, swarm, chat, calendar, review, tutor, bento };
+export const LOOKS = { stack: stackLook, cover, wsticker };
 
 export function renderHtml(spec) {
   const L = lay(spec.canvas), F = frame(spec.accent || 'orange');
-  const fn = LOOKS[spec.look];
+  const fn = LOOKS[spec.look || 'stack'];
   if (!fn) throw new Error(`unknown look "${spec.look}" on ${spec.id}`);
   const inner = fn(spec, L, F);
-  // Display type at tight leading overflows its line box by design: the campaign opts in to a proportional fit tolerance.
-  const html = page(L.W, L.H, inner, spec.look === 'cover' ? (spec.disc || F.tint) : groundOf(spec, F)).replace('<script>', '<script>window.__fitTol=.16;</script><script>');
+  const bg = spec.look === 'cover' ? (spec.disc || F.tint) : spec.look === 'wsticker' ? 'transparent' : BONE;
+  const html = page(L.W, L.H, inner, bg).replace('<script>', '<script>window.__fitTol=.16;</script><script>');
   return { html, L };
 }

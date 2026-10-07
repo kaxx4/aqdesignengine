@@ -45,17 +45,17 @@ export function writeSchedule(dir, items, data) {
   let md = '# Four-week schedule\n\nOne feed post a day, stories through the day, WhatsApp pushes by id. Times are IST. A post marked GATED waits on real data.\n\n';
   const gate = tok => { const e = expand(tok); if (!e.length && !/^WP|best performing/.test(tok)) errors.push(`plan names ${tok} but no asset has that id or post`); e.forEach(x => used.add(x.id)); return e.some(x => x.gated); };
   for (const wk of WEEKS) {
-    md += `## Week ${wk.n}: ${wk.theme}\n\n| Day | Feed (19:30) | Stories and Status | WhatsApp | Notes |\n|---|---|---|---|---|\n`;
+    md += `## Week ${wk.n}: ${wk.theme}\n\n| Day | Feed (19:30) | Second feed post (12:30) | Stories and Status | WhatsApp | Notes |\n|---|---|---|---|---|---|\n`;
     for (const d of wk.days) {
-      const g = gate(d.feed); (d.stories || []).forEach(gate);
+      const g = gate(d.feed), g2 = d.feed2 ? gate(d.feed2) : false; (d.stories || []).forEach(gate);
       const wa = (d.wa || []).map(id => { const p = PUSHES.find(x => x.id === id); return p ? `${id} ${p.time} ${p.to}` : id; }).join('; ');
-      md += `| ${d.d} | ${d.feed}${g ? ' (GATED)' : ''} | ${(d.stories || []).join(', ') || '-'}${d.rerun ? ' . Rerun: ' + d.rerun.join(', ') : ''} | ${wa || '-'} | ${d.note || ''} |\n`;
+      md += `| ${d.d} | ${d.feed}${g ? ' (GATED)' : ''} | ${d.feed2 ? d.feed2 + (g2 ? ' (GATED)' : '') : '-'} | ${(d.stories || []).join(', ') || '-'}${d.rerun ? ' . Rerun: ' + d.rerun.join(', ') : ''} | ${wa || '-'} | ${d.note || ''} |\n`;
     }
     md += '\n';
   }
   RESERVE.forEach(gate);
-  md += `## Reserve (swap in when a gated post is not ready)\n\n${RESERVE.join(', ')}\n\n`;
-  const unscheduled = ITEMS.filter(i => !used.has(i.id) && i.family !== 'wa' && !['PF4-1', 'PF4-2', 'PF4-3', 'PF4-4', 'RP5'].includes(i.id)).map(i => i.id);
+  md += `## Reserve bank (swap in when a gated post is not ready, or run in any quiet slot)\n\n${RESERVE.join(', ')}\n\n## WhatsApp stickers (ST1 to ST12)\n\nUpload once as a sticker pack and share the pack link in the student groups in week 2. They are not scheduled posts.\n\n`;
+  const unscheduled = ITEMS.filter(i => !used.has(i.id) && !['wa', 'stickers'].includes(i.family) && !['PF4-1', 'PF4-2', 'PF4-3', 'PF4-4', 'RP5'].includes(i.id)).map(i => i.id);
   if (unscheduled.length) errors.push(`assets in no plan slot: ${unscheduled.join(', ')}`);
   w(dir, 'schedule.md', md);
   return errors;

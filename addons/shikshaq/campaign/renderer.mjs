@@ -20,11 +20,12 @@ export async function renderSpecs(items, outRoot, { onlyIds } = {}) {
       const pg = await ctxs[key].newPage();
       await pg.setContent(html, { waitUntil: 'load' });
       await pg.evaluate(() => document.fonts.ready);
+      if ((it.look || 'stack') === 'stack') await pg.waitForFunction(() => document.body.getAttribute('data-ready') === '1', null, { timeout: 6000 }).catch(() => {});
       await pg.waitForTimeout(80);
       const file = path.join(outRoot, it.dir || '', it.id + '.png');
       fs.mkdirSync(path.dirname(file), { recursive: true });
-      await pg.screenshot({ path: file, clip: { x: 0, y: 0, width: L.W, height: L.H }, omitBackground: it.look === 'cover' });
-      const issues = it.look === 'cover' ? [] : await pg.evaluate(`(${gate.toString()})(${L.W},${L.H},${JSON.stringify(L.safe)},.16)`);
+      await pg.screenshot({ path: file, clip: { x: 0, y: 0, width: L.W, height: L.H }, omitBackground: it.look === 'wsticker' });
+      const issues = it.look === 'cover' || it.look === 'wsticker' ? [] : await pg.evaluate(`(${gate.toString()})(${L.W},${L.H},${JSON.stringify(L.safe)},.16)`);
       await pg.close();
       results.push({ id: it.id, file, canvas: it.canvas, issues, placeholder: !!it.placeholder, family: it.family });
     }

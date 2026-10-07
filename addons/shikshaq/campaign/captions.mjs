@@ -8,7 +8,7 @@ export const HASHTAGS = {
 };
 const NEXT = 'Search at shikshaq.in.';
 
-export const CAPTIONS = {
+const BASE = {
   H1: 'Shikshaq is where you find your tutor.\n\nConnecting every student in Kolkata to teachers. Search by subject, class, board and area, read the profile and the reviews, then message the tutor yourself on WhatsApp.\n\nClasses IV to XII. ICSE, ISC, CBSE and State board. Free for families.\n\n' + NEXT,
   H3: 'Maths, Science, English, Commerce. ICSE, ISC, CBSE and State board. Classes IV to XII.\n\nWhatever you are looking for, you filter by it on Shikshaq and then message the tutor yourself.\n\n' + NEXT,
   B2: 'Find your tutor in three steps.\n\nOne, search by subject, class, board and area. Two, read the profile and the reviews. Three, message the tutor on WhatsApp.\n\nFree for families. Show this to a parent.\n\n' + NEXT,
@@ -52,4 +52,58 @@ export const CAPTIONS = {
   RP1: 'Four weeks of Shikshaq, in one post.\n\nShikshaq is where you find your tutor. Connecting every student in Kolkata to teachers.\n\nSearch, read, message. Then show a parent.\n\n' + NEXT,
   FQ9: 'The short answers, saved. What it is, who it is for, whether it is a charity, whether you pay.\n\nThe full set is in the FAQ highlight on our profile.\n\n' + NEXT,
 };
-export const AUDIENCE = { H1: 'parents', H3: 'students', B2: 'parents', B3: 'parents', CH1: 'students', CH2: 'students', CH3: 'students', CH4: 'students', CH5: 'students', PF4: 'students', PF5: 'parents', BB1: 'parents', WM1: 'parents', TT1: 'tutors', TT6: 'tutors', TT7: 'tutors', TT8: 'tutors', TT9: 'tutors', RC1: 'students', CL1: 'students', CL2: 'students', CL3: 'students', RP1: 'parents', FQ9: 'parents' };
+// Series captions added with the v3 catalog. Each says one thing, in the series' own voice, and what to do next.
+const SUBJ = {
+  SJ1: ['Maths', 'Stuck on the same sum since Tuesday? A tutor who explains it twice, differently, is a search away.'],
+  SJ2: ['Science', 'Why does it work? Ask someone who will explain it, not just give the answer.'],
+  SJ3: ['English', 'Write it properly. Then write it better. A good English tutor does the second part with you.'],
+  SJ4: ['Commerce', 'Debit, credit, and the one doubt you keep saving for later. Ask it before the exam does.'],
+  SJ5: ['Computer', 'The code runs. The exam answer does not. A tutor who knows both fixes that.'],
+  SJ6: ['Hindi', 'Vyakaran, but make it make sense. Grammar sticks when someone shows you the pattern.'],
+  SJ7: ['History', 'Dates stick when someone tells you the story. Find a tutor who does.'],
+  SJ8: ['Geography', 'Maps, rivers, and a tutor who draws them for you.'],
+};
+const SUBJ_CAPS = Object.fromEntries(Object.entries(SUBJ).map(([k, [s, hook]]) => [k, `${hook}\n\nFind your ${s} tutor in Kolkata. Search by class, board and area, read the profile, then message the tutor yourself.\n\n` + NEXT]));
+const SAY_Q = [
+  ['Ask your friend\'s tutor\'s number.', 'Or search for one. Subject, class and your area. Three taps, no account needed.'],
+  ['Why another website?', 'Because asking aunties is slow. Hearsay and a phone number that may not even work is how it used to go.'],
+  ['Is the tutor even good?', 'Read the reviews. Message first. Every review comes from a student who actually messaged the teacher.'],
+  ['Is it far from home?', 'Filter by area. Howrah, Salt Lake, Jadavpur, Bhowanipore, Ballygunge and more.'],
+  ['How much will it cost?', 'Fees are between you and the tutor. Shikshaq takes no commission, so teachers keep every rupee.'],
+  ['Another coaching class?', 'No class. A tutor you pick. Shikshaq is made by AquaTerra, an NGO whose team are students.'],
+];
+const SAY_CAPS = Object.fromEntries(SAY_Q.map(([q, a], i) => [`SY${i + 1}`, `Things parents say, and what you can say back.\n\n"${q}"\n\n${a}\n\nSend this to the person who asked. ` + NEXT]));
+const MSG = [
+  ['MG1', 'The first message to a tutor.', 'Copy it, swap the board and subject, and send it on WhatsApp.'],
+  ['MG2', 'Asking about timing.', 'Say where you are and when you are free. It saves a round of messages.'],
+  ['MG3', 'Talking about the fee.', 'Fees are between you and the tutor. Ask early and agree it in the chat.'],
+  ['MG4', 'Moving a class politely.', 'A polite message and the chapter name. Tutors like both.'],
+];
+const MSG_CAPS = Object.fromEntries(MSG.map(([k, h, b]) => [k, `Copy this message. ${h}\n\n${b}\n\nFind a tutor to send it to. ` + NEXT]));
+const EXAM = [
+  ['EX1', 'Pre-boards, three things this week. One weak chapter, one doubt class, one early night. Small, and doable.'],
+  ['EX2', 'Puja break, three things before the pandals. Revise a chapter a day, keep a day for the pandals, book your doubt class before you go.'],
+  ['EX3', 'Result day, three things after the marks. Read them calmly, list where marks were lost by chapter, and then plan the next one.'],
+];
+const EXAM_CAPS = Object.fromEntries(EXAM.map(([k, b]) => [k, `${b}\n\nA tutor can help with the second and third. ` + NEXT]));
+const CLASS = [
+  ['CS1', 'Classes IV to VI. Starting out? A patient tutor beats a fast one.'],
+  ['CS2', 'Classes VII and VIII. Chapters get longer, and middle school is where the syllabus stops being small.'],
+  ['CS3', 'Classes IX and X. The board year is closer than it feels. Pick a tutor who knows your board.'],
+  ['CS4', 'Classes XI and XII. ISC, CBSE or State board: filter by yours, then read the reviews.'],
+];
+const CLASS_CAPS = Object.fromEntries(CLASS.map(([k, b]) => [k, `${b}\n\nSearch by class, board and area, then message the tutor yourself. ` + NEXT]));
+const WAY_CAPS = {
+  WY1: 'Which way to Maths? Or Science, English, Commerce, Computer, Hindi, History, Geography. Pick a subject and the tutors who teach it come up.\n\n' + NEXT,
+  WY2: 'Which way to your board? ICSE, ISC, CBSE or State board. Filter by yours first, then read the reviews.\n\n' + NEXT,
+  WY3: 'Which way to you? Filter by area and find a tutor near home. Salt Lake, Jadavpur, Howrah, Ballygunge, Bhowanipore and many other localities.\n\n' + NEXT,
+  WY4: 'Which way to your class? IV to XII, every board.\n\n' + NEXT,
+};
+const FACT_CAPS = {
+  FT1: 'What it costs, plainly. Nothing to contact a tutor, no listing fee, no commission, no invoices from Shikshaq. Fees are between you and the tutor.\n\n' + NEXT,
+  FT2: 'What it covers, plainly. Kolkata, classes IV to XII, four boards, eight subjects.\n\n' + NEXT,
+  FT3: 'Why it can be trusted, plainly. Tutors are checked and selected by our team before they are listed. Reviews come from students who messaged the tutor. Placement is never paid for.\n\n' + NEXT,
+};
+const AK_CAP = { AK1: 'Five questions to ask a tutor before you say yes. Which board and class, how they handle doubts, where they teach, how you agree the fee, what other students say.\n\nSave it and ask them on WhatsApp.\n\n' + NEXT };
+export const CAPTIONS = { ...BASE, ...SUBJ_CAPS, ...SAY_CAPS, ...MSG_CAPS, ...EXAM_CAPS, ...CLASS_CAPS, ...WAY_CAPS, ...FACT_CAPS, ...AK_CAP };
+export const AUDIENCE = { SY1: 'students', SY2: 'students', SY3: 'students', SY4: 'students', SY5: 'students', SY6: 'students', AK1: 'students', MG1: 'students', MG2: 'students', MG3: 'students', MG4: 'students', EX1: 'students', EX2: 'students', EX3: 'students', CS1: 'students', CS2: 'students', CS3: 'parents', CS4: 'students', WY1: 'students', WY2: 'students', WY3: 'parents', WY4: 'students', FT1: 'parents', FT2: 'parents', FT3: 'parents', SJ1: 'students', SJ2: 'students', SJ3: 'students', SJ4: 'students', SJ5: 'students', SJ6: 'students', SJ7: 'students', SJ8: 'students', RV1: 'parents', RV7: 'parents', MT4: 'parents', H1: 'parents', H3: 'students', B2: 'parents', B3: 'parents', CH1: 'students', CH2: 'students', CH3: 'students', CH4: 'students', CH5: 'students', PF4: 'students', PF5: 'parents', BB1: 'parents', WM1: 'parents', TT1: 'tutors', TT6: 'tutors', TT7: 'tutors', TT8: 'tutors', TT9: 'tutors', RC1: 'students', CL1: 'students', CL2: 'students', CL3: 'students', RP1: 'parents', FQ9: 'parents' };
