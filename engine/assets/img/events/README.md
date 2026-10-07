@@ -30,7 +30,14 @@ Uploaded in the same batch but the event is unclear. These look like a Diwali-st
 | 02_IMG_7028_group-pink-balloons.jpg | 3024x4032. Group in festive wear under pink and black balloons, @ngo.aquaterra tag visible. |
 | 03_IMG_1451_red-drapes-entrance.jpg | 3024x4032. Red drape canopy with fairy lights over a courtyard, red carpet, guests photographing. |
 | 04_IMG_5201_video-720p.mp4 | 12.3s clip, downscaled from 1920x1440 (29MB original) to 720p. A DJ at a console in a dark hall with star lights, so likely the Summer party. Not confirmed. |
+| 05_cards-hall-dance-green-light.jpg | 2000x1333. Dancers in a hall with hanging playing cards, chandeliers, silver tinsel pillar. Faces mostly turned away. |
+| 06_three-friends-fairy-lights.jpg | 2000x1333. Three smiling women in saris and kurta under fairy lights and hanging stars at dusk. Best portrait of the batch. |
+| 07_dance-blur-blue-light.jpg | 2000x1333. Motion-blurred dancers in blue light, arms raised. Energy shot, no readable faces. |
+| 08_cards-hall-crowd-purple.jpg | 2000x1333. Crowd in the same playing-card hall, purple light, blurry. |
+| 09_night-courtyard-string-lights-crowd.jpg | 2000x1333. Night courtyard, string lights, food counter, crowd in the foreground. |
+
+The playing-card hall and star-light photos suggest a card or night-sky themed event, not confirmed.
 
 ## Not stored
 
-About ten more photos were shown inline in chat (blurred dance floor, playing-card ceiling hall, string-light courtyard, a Disco Diwali photo booth, a green-lit crowd shot, three friends under fairy lights). Only the 7 files above reached disk. The inline ones have no file, so they are not in this repo. Re-upload them as files to add them.
+Still missing: the dark crowd dance photo with star balloons, the string-light courtyard with a yellow outfit, the Disco Diwali photo booth, and the green-lit portrait dance shot. They were shown in chat with no file. Re-upload to add them.
