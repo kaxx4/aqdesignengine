@@ -16,6 +16,9 @@ Output is `out/campaign-what-is-shikshaq/` (git-ignored): one folder per family,
 story chrome drawn over them, `wa-preview/` each WhatsApp push as a chat, `texts/` (schedule, captions with alt text, WhatsApp pushes,
 volunteer answers, reel scripts) and `manifest.json` (every asset, its post, audience and status).
 
+## Per-week packages and run sheets
+`node campaign/weekset.mjs N` makes the week's contact sheets (feed, stories) and `npm run campaign:weeks` writes `texts/week1..4.md` (every caption, alt text, story and push in posting order), three run sheets (Instagram, Stories, WhatsApp) and `reply-bank.md`. Reels are on hold; their engine is in `reels/`.
+
 ## Wiring the data (tomorrow)
 1. Run the queries in `queries.sql` against the Shikshaq project (read-only) and save each result as JSON in `campaign/import/`.
 2. Put the approved tutors in `import/tutors.json`: `[{"name","subject","quote","photo","approved":true}]`. A tutor with `approved` false stays a DRAFT.

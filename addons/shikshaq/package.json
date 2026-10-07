@@ -13,7 +13,8 @@
     "campaign:test": "node campaign/selftest-campaign.mjs",
     "campaign:wire": "node campaign/wire-data.mjs",
     "campaign:final": "node campaign/build.mjs --final",
-    "lookbook": "node campaign/lookbook.mjs"
+    "lookbook": "node campaign/lookbook.mjs",
+    "campaign:weeks": "node campaign/weekdoc.mjs && node campaign/runsheets.mjs"
   },
   "dependencies": {
     "playwright-core": "^1.49.0"
