@@ -77,8 +77,8 @@ const TYPES = {
   // saturated slab with three icon rows (Tell us the subject / Compare real profiles / Message on WhatsApp)
   steps(p, A) {
     const bg = fillOf(p.fill || 'orange', A), fg = fgOn(bg);
-    const rows = p.rows.map(r => `<div style="display:flex;gap:${px(30)};align-items:flex-start;margin-top:${px(34)}">${iconTile(r.icon || 'search', 104, { fill: 'rgba(31,31,31,.13)', stroke: fg, radius: .3 }, px)}<div><div style="${FAM}font-size:${px(58)};font-weight:800;letter-spacing:-.045em;color:${fg};line-height:1.05">${esc(r.t)}</div>${r.b ? `<div style="${GEIST}font-size:${px(40)};font-weight:500;color:${fg};opacity:.88;line-height:1.24;margin-top:${px(8)}">${esc(r.b)}</div>` : ''}</div></div>`).join('');
-    return { bg, html: `${p.ordinal ? label(p.ordinal, fg === INK ? 'rgba(31,31,31,.6)' : 'rgba(255,255,255,.7)', 26) : ''}${mix(p.lines, { size: p.size || 100, fg, pay: fg, plainW: 800 })}${rows}${p.foot ? body(p.foot, fg, 42, 700, `margin-top:${px(40)}`) : ''}` };
+    const rows = p.rows.map(r => `<div style="display:flex;gap:${px(30)};align-items:flex-start;margin-top:${px(34)}">${iconTile(r.icon || 'search', p.isize || 104, { fill: 'rgba(31,31,31,.13)', stroke: fg, radius: .3 }, px)}<div><div style="${FAM}font-size:${px(p.tsize || 58)};font-weight:800;letter-spacing:-.045em;color:${fg};line-height:1.05">${esc(r.t)}</div>${r.b ? `<div style="${GEIST}font-size:${px(p.bsize || 40)};font-weight:500;color:${fg};opacity:.88;line-height:1.24;margin-top:${px(8)}">${esc(r.b)}</div>` : ''}</div></div>`).join('');
+    return { bg, html: `${p.ordinal ? label(p.ordinal, fg === INK ? 'rgba(31,31,31,.6)' : 'rgba(255,255,255,.7)', 26) : ''}${p.lines ? mix(p.lines, { size: p.size || 100, fg, pay: fg, plainW: 800 }) : ''}${rows}${p.foot ? body(p.foot, fg, 42, 700, `margin-top:${px(40)}`) : ''}` };
   },
   // class tiles 1..12 on a bone card (the "by the class they are sitting" grid)
   grid(p, A) {

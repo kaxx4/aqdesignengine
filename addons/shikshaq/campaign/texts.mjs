@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { ITEMS, FAMILIES, expand, byId } from './catalog.mjs';
-import { WEEKS, RESERVE } from './plan.mjs';
+import { WEEKS, RESERVE, REELS, AQUATERRA } from './plan.mjs';
 import { PUSHES, ADMIN_ASK, FORMAT } from './wa.mjs';
 import { CAPTIONS, HASHTAGS, AUDIENCE } from './captions.mjs';
 import { fillTokens } from './resolve.mjs';
@@ -42,14 +42,14 @@ export function writeCaptions(dir, items) {
 
 export function writeSchedule(dir, items, data) {
   const errors = []; const used = new Set();
-  let md = '# Four-week schedule\n\nOne feed post a day, stories through the day, WhatsApp pushes by id. Times are IST. A post marked GATED waits on real data.\n\n';
+  let md = '# Four-week schedule\n\nLaunch Monday 12 October, no Puja pause. Five feed posts a week (Mon, Tue, Thu, Fri, Sat), stories every day, a reel on most days, four WhatsApp pushes a week. Times are IST. A post marked GATED waits on real data.\n\n';
   const gate = tok => { const e = expand(tok); if (!e.length && !/^WP|best performing/.test(tok)) errors.push(`plan names ${tok} but no asset has that id or post`); e.forEach(x => used.add(x.id)); return e.some(x => x.gated); };
   for (const wk of WEEKS) {
-    md += `## Week ${wk.n}: ${wk.theme}\n\n| Day | Feed (19:30) | Second feed post (12:30) | Stories and Status | WhatsApp | Notes |\n|---|---|---|---|---|---|\n`;
+    md += `## Week ${wk.n}: ${wk.theme}\n\n| Day | Feed (19:30) | Reel | Stories and Status | WhatsApp | Notes |\n|---|---|---|---|---|---|\n`;
     for (const d of wk.days) {
-      const g = gate(d.feed), g2 = d.feed2 ? gate(d.feed2) : false; (d.stories || []).forEach(gate);
+      const g = d.feed ? gate(d.feed) : false; if (d.reel && !REELS[d.reel]) errors.push(`plan names reel ${d.reel} that REELS does not define`); (d.stories || []).forEach(gate);
       const wa = (d.wa || []).map(id => { const p = PUSHES.find(x => x.id === id); return p ? `${id} ${p.time} ${p.to}` : id; }).join('; ');
-      md += `| ${d.d} | ${d.feed}${g ? ' (GATED)' : ''} | ${d.feed2 ? d.feed2 + (g2 ? ' (GATED)' : '') : '-'} | ${(d.stories || []).join(', ') || '-'}${d.rerun ? ' . Rerun: ' + d.rerun.join(', ') : ''} | ${wa || '-'} | ${d.note || ''} |\n`;
+      md += `| ${d.d} | ${d.feed ? d.feed + (g ? ' (GATED)' : '') + (AQUATERRA.includes(d.feed) ? ' (+AquaTerra)' : '') : '-'} | ${d.reel ? d.reel + ' ' + REELS[d.reel] : '-'} | ${(d.stories || []).join(', ') || '-'}${d.rerun ? ' . Rerun: ' + d.rerun.join(', ') : ''} | ${wa || '-'} | ${d.note || ''} |\n`;
     }
     md += '\n';
   }

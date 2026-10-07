@@ -4,7 +4,7 @@ import { chromium } from 'playwright-core';
 import { CHROME, gate } from '../src/render.mjs';
 import { L } from './catalog-util.mjs';
 import { ITEMS, byId, expand } from './catalog.mjs';
-import { WEEKS, RESERVE } from './plan.mjs';
+import { WEEKS, RESERVE, REELS, AQUATERRA } from './plan.mjs';
 import { PUSHES } from './wa.mjs';
 import { CAPTIONS, HASHTAGS } from './captions.mjs';
 import { validateSpec, validateAll, validateText } from './validate-campaign.mjs';
@@ -44,7 +44,7 @@ ok(fillTokens('Hi {{review.0.text}}', { reviews: [] }).missing.length === 1, 'a 
 // 18-24 the catalog is internally consistent
 ok(new Set(ITEMS.map(i => i.id)).size === ITEMS.length, 'asset ids must be unique');
 ok(validateAll(ITEMS).length === 0, 'the whole catalog must pass the copy gate: ' + validateAll(ITEMS).slice(0, 3).join(' | '));
-const planned = WEEKS.flatMap(w => w.days.flatMap(d => [d.feed, ...(d.feed2 ? [d.feed2] : []), ...(d.stories || [])])).concat(RESERVE);
+const planned = WEEKS.flatMap(w => w.days.flatMap(d => [...(d.feed ? [d.feed] : []), ...(d.stories || [])])).concat(RESERVE);
 ok(planned.every(t => /best performing/.test(t) || expand(t).length), 'every plan token must name a real asset or post: ' + planned.filter(t => !expand(t).length).join(','));
 ok(WEEKS.length === 4 && WEEKS.every(w => w.days.length === 7), 'a four-week plan with seven days each');
 ok(PUSHES.every(p => p.image.every(id => byId(id))), 'every WhatsApp push must name real images');
@@ -55,10 +55,11 @@ ok(ITEMS.filter(i => i.canvas === 'S').length === 101 && ITEMS.filter(i => i.can
 const dayOf = Object.fromEntries(WEEKS.flatMap(w => w.days.flatMap(d => (d.wa || []).map(id => [id, `${w.n} ${d.d}`]))));
 ok(PUSHES.every(p => dayOf[p.id] === `${p.week} ${p.day}`), 'every WhatsApp push must sit on the plan day it names: ' + PUSHES.filter(p => dayOf[p.id] !== `${p.week} ${p.day}`).map(p => p.id).join(','));
 ok(Object.keys(dayOf).every(id => PUSHES.some(p => p.id === id)), 'the plan names a WhatsApp push that does not exist');
-const allTok = WEEKS.flatMap(w => w.days.flatMap(d => [d.feed, ...(d.feed2 ? [d.feed2] : []), ...(d.stories || [])])).concat(RESERVE);
+const allTok = WEEKS.flatMap(w => w.days.flatMap(d => [...(d.feed ? [d.feed] : []), ...(d.stories || [])])).concat(RESERVE);
 ok(new Set(allTok).size === allTok.length, 'an asset sits in two plan slots: ' + allTok.filter((t, i) => allTok.indexOf(t) !== i).join(','));
-ok(WEEKS.every(w => w.days.every(d => d.feed)), 'every day has a main feed post');
-ok(WEEKS.flatMap(w => w.days).every(d => !d.feed2 || d.feed2 !== d.feed), 'a day cannot repeat its own post');
+ok(WEEKS.every(w => w.days.filter(d => d.feed).length >= 4 && w.days.filter(d => d.feed).length <= 5), 'the owner asked for four or five feed posts a week');
+ok(WEEKS.every(w => w.days.every(d => !d.reel || REELS[d.reel])), 'every planned reel must be defined');
+ok(AQUATERRA.every(t => expand(t).length), 'the AquaTerra list must name real posts');
 
 // 25-28 the data importer
 ok(pickSubject('Mathematics, Physics') === 'Maths' && pickSubject('Biology') === 'Maths', 'subject mapping falls back to Maths rather than inventing one');

@@ -200,18 +200,35 @@ export const ask = [
   ], { aud: 'students' })),
 ];
 
-// ---- NEW: copy this message -----------------------------------------------------------------------------------------------------------------------
-const MSG = [
-  ['The first message', 'Hello Sir, I found your profile on Shikshaq. I am in Class 10, ICSE. Are you taking new students for Maths?', 'Swap the board and subject. Say Ma’am if it is Ma’am.'],
-  ['Asking about timing', 'Are evenings after school possible? We are near Salt Lake. We can work around your slot.', 'Tell them where you are. It saves a round of messages.'],
-  ['Talking about the fee', 'What is your fee for one subject, three days a week? We would like to agree it here before we start.', 'Fees are between you and the tutor. Shikshaq takes nothing.'],
-  ['Moving a class', 'So sorry, can we move today’s class to tomorrow? I will send the chapter I am stuck on.', 'A polite message and the chapter name. Tutors like both.'],
+// ---- NEW: a parent's guide (replaces "copy this message": students do not script messages to tutors) ----------------------------------
+const PG = [
+  { ac: 'orange', eb: 'A parent’s guide', lines: L('Read a profile / in *thirty seconds*'), fill: 'orange', icon: 'file', rows: [
+    { icon: 'book', t: 'Subject and class', b: 'Is it what your child needs this term?' },
+    { icon: 'cap', t: 'Board', b: 'ICSE, ISC, CBSE or State board.' },
+    { icon: 'pin', t: 'Area and travel radius', b: 'Close enough to reach on a school day?' },
+    { icon: 'star', t: 'Reviews', b: 'Written by students who messaged the tutor.' } ], foot: 'Rates, boards, reviews and travel radius are all on one card.' },
+  { ac: 'indigo', eb: 'A parent’s guide', lines: L('Five questions / before you / *say yes*'), fill: 'indigo', rows: [
+    { icon: 'book', t: 'Which board and class?', b: 'Boards teach differently.' },
+    { icon: 'chat', t: 'How do you handle doubts?', b: 'Ask if a doubt can be sent on WhatsApp.' },
+    { icon: 'pin', t: 'Where do you teach?', b: 'Travel time eats study time.' },
+    { icon: 'heart', t: 'How do we agree the fee?', b: 'Between you and the tutor. No commission.' } ], foot: 'And read what other students say.' },
+  { ac: 'mint', eb: 'A parent’s guide', lines: L('What happens / *after you message*'), fill: 'mint', rows: [
+    { icon: 'chat', t: 'You message them on WhatsApp', b: 'Directly. No middleman.' },
+    { icon: 'users', t: 'You talk it through', b: 'The board, the chapters, the days that suit you.' },
+    { icon: 'heart', t: 'You agree the fee together', b: 'It stays between you and the tutor.' },
+    { icon: 'check', t: 'You decide', b: 'Nothing starts until you say so.' } ], foot: 'Free for families.' },
+  { ac: 'orange', eb: 'A parent’s guide', lines: L('Is this *safe*?'), fill: 'panel', rows: [
+    { icon: 'shield', t: 'Checked and selected', b: 'A human checks ID and degree. Our team selects who is listed.' },
+    { icon: 'star', t: 'Reviews from students', b: 'Only students who messaged the tutor can write one.' },
+    { icon: 'heart', t: 'No commission', b: 'Tutors keep every rupee. Nobody pays to rank higher.' },
+    { icon: 'chat', t: 'You message first', b: 'Then you decide.' } ], foot: 'Made by AquaTerra, an NGO whose team are students.' },
 ];
-const msgOf = ([t, text, foot], i, cv) => mk(`MG${i + 1}${cv === 'S' ? 's' : ''}`, 'msg', cv, ['orange', 'indigo', 'mint', 'orange'][i], [
-  H({ eyebrow: 'Copy this', lines: t.includes('first') ? L('The first / *message*') : t.includes('timing') ? L('Asking about / *timing*') : t.includes('fee') ? L('Talking about / *the fee*') : L('Moving / *a class*'), size: cv === 'S' ? 124 : 110, grow: .8 }),
-  { type: 'copy', fill: 'tint', text, foot, size: cv === 'S' ? 58 : 50, grow: 2 },
-], { aud: 'students', post: `MG${i + 1}${cv === 'S' ? 's' : ''}` });
-export const msg = [...MSG.map((x, i) => msgOf(x, i, 'F')), ...MSG.map((x, i) => msgOf(x, i, 'S'))];
+const pgOf = (x, i, cv) => mk(`PG${i + 1}${cv === 'S' ? 's' : ''}`, 'pguide', cv, x.ac, [
+  H({ eyebrow: x.eb, lines: x.lines, size: cv === 'S' ? 120 : 108, grow: .9, mascot: { kind: i % 2 ? 'smile' : 'eyes', size: 280 } }),
+  { type: 'steps', fill: x.fill, rows: x.rows, foot: x.foot, tsize: cv === 'S' ? 68 : 66, bsize: cv === 'S' ? 46 : 44, isize: 116, grow: 3.4 },
+  { type: 'cta', fill: 'accent', lines: L('Find a tutor.'), button: 'shikshaq.in', size: 90, grow: .3 },
+], { aud: 'parents', post: `PG${i + 1}${cv === 'S' ? 's' : ''}` });
+export const pguide = [...PG.map((x, i) => pgOf(x, i, 'F')), ...PG.map((x, i) => pgOf(x, i, 'S'))];
 
 // ---- NEW: exam season ---------------------------------------------------------------------------------------------------------------------------------
 const EXAM = [

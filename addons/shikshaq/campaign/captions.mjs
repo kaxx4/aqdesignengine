@@ -73,13 +73,13 @@ const SAY_Q = [
   ['Another coaching class?', 'No class. A tutor you pick. Shikshaq is made by AquaTerra, an NGO whose team are students.'],
 ];
 const SAY_CAPS = Object.fromEntries(SAY_Q.map(([q, a], i) => [`SY${i + 1}`, `Things parents say, and what you can say back.\n\n"${q}"\n\n${a}\n\nSend this to the person who asked. ` + NEXT]));
-const MSG = [
-  ['MG1', 'The first message to a tutor.', 'Copy it, swap the board and subject, and send it on WhatsApp.'],
-  ['MG2', 'Asking about timing.', 'Say where you are and when you are free. It saves a round of messages.'],
-  ['MG3', 'Talking about the fee.', 'Fees are between you and the tutor. Ask early and agree it in the chat.'],
-  ['MG4', 'Moving a class politely.', 'A polite message and the chapter name. Tutors like both.'],
-];
-const MSG_CAPS = Object.fromEntries(MSG.map(([k, h, b]) => [k, `Copy this message. ${h}\n\n${b}\n\nFind a tutor to send it to. ` + NEXT]));
+const PGC = {
+  PG1: 'A parent\'s guide: how to read a tutor profile in thirty seconds.\n\nSubject and class. Board. Area and travel radius. Reviews written by students who messaged the tutor. It is all on one card.\n\n',
+  PG2: 'A parent\'s guide: five questions before you say yes.\n\nWhich board and class, how they handle doubts, where they teach, how you agree the fee, and what other students say. Ask them on WhatsApp.\n\n',
+  PG3: 'A parent\'s guide: what happens after you message.\n\nYou talk it through, agree the fee together, and decide. Nothing starts until you say so.\n\n',
+  PG4: 'A parent\'s guide: is this safe?\n\nA human checks ID and degree and our team selects who is listed. Reviews come from students who messaged the tutor. Shikshaq takes no commission.\n\n',
+};
+const MSG_CAPS = Object.fromEntries(Object.entries(PGC).map(([k, v]) => [k, v + 'Save this for later. ' + NEXT]));
 const EXAM = [
   ['EX1', 'Pre-boards, three things this week. One weak chapter, one doubt class, one early night. Small, and doable.'],
   ['EX2', 'Puja break, three things before the pandals. Revise a chapter a day, keep a day for the pandals, book your doubt class before you go.'],
@@ -106,4 +106,4 @@ const FACT_CAPS = {
 };
 const AK_CAP = { AK1: 'Five questions to ask a tutor before you say yes. Which board and class, how they handle doubts, where they teach, how you agree the fee, what other students say.\n\nSave it and ask them on WhatsApp.\n\n' + NEXT };
 export const CAPTIONS = { ...BASE, ...SUBJ_CAPS, ...SAY_CAPS, ...MSG_CAPS, ...EXAM_CAPS, ...CLASS_CAPS, ...WAY_CAPS, ...FACT_CAPS, ...AK_CAP };
-export const AUDIENCE = { SY1: 'students', SY2: 'students', SY3: 'students', SY4: 'students', SY5: 'students', SY6: 'students', AK1: 'students', MG1: 'students', MG2: 'students', MG3: 'students', MG4: 'students', EX1: 'students', EX2: 'students', EX3: 'students', CS1: 'students', CS2: 'students', CS3: 'parents', CS4: 'students', WY1: 'students', WY2: 'students', WY3: 'parents', WY4: 'students', FT1: 'parents', FT2: 'parents', FT3: 'parents', SJ1: 'students', SJ2: 'students', SJ3: 'students', SJ4: 'students', SJ5: 'students', SJ6: 'students', SJ7: 'students', SJ8: 'students', RV1: 'parents', RV7: 'parents', MT4: 'parents', H1: 'parents', H3: 'students', B2: 'parents', B3: 'parents', CH1: 'students', CH2: 'students', CH3: 'students', CH4: 'students', CH5: 'students', PF4: 'students', PF5: 'parents', BB1: 'parents', WM1: 'parents', TT1: 'tutors', TT6: 'tutors', TT7: 'tutors', TT8: 'tutors', TT9: 'tutors', RC1: 'students', CL1: 'students', CL2: 'students', CL3: 'students', RP1: 'parents', FQ9: 'parents' };
+export const AUDIENCE = { SY1: 'students', SY2: 'students', SY3: 'students', SY4: 'students', SY5: 'students', SY6: 'students', AK1: 'students', PG1: 'parents', PG2: 'parents', PG3: 'parents', PG4: 'parents', EX1: 'students', EX2: 'students', EX3: 'students', CS1: 'students', CS2: 'students', CS3: 'parents', CS4: 'students', WY1: 'students', WY2: 'students', WY3: 'parents', WY4: 'students', FT1: 'parents', FT2: 'parents', FT3: 'parents', SJ1: 'students', SJ2: 'students', SJ3: 'students', SJ4: 'students', SJ5: 'students', SJ6: 'students', SJ7: 'students', SJ8: 'students', RV1: 'parents', RV7: 'parents', MT4: 'parents', H1: 'parents', H3: 'students', B2: 'parents', B3: 'parents', CH1: 'students', CH2: 'students', CH3: 'students', CH4: 'students', CH5: 'students', PF4: 'students', PF5: 'parents', BB1: 'parents', WM1: 'parents', TT1: 'tutors', TT6: 'tutors', TT7: 'tutors', TT8: 'tutors', TT9: 'tutors', RC1: 'students', CL1: 'students', CL2: 'students', CL3: 'students', RP1: 'parents', FQ9: 'parents' };
