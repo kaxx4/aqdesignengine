@@ -41,7 +41,7 @@ export const who = [
   mk('WM4', 'who', 'S', 'indigo', [
     H({ eyebrow: 'No commission', lines: L('Why we take / *nothing*'), size: 124, grow: .8 }),
     { type: 'answer', fill: 'indigo', lines: L('The moment we take / one, we start / having opinions.'), sub: 'About who you should pick.', mascot: { ...SUN, size: 360 }, size: 120, grow: 1.8 },
-    { type: 'bento', fill: 'bone', tiles: [{ label: 'Commission', big: '₹0', fill: 'card', icon: 'heart' }, { label: 'Invoices', big: 'None', fill: 'orange', icon: 'file' }], grow: 1 },
+    { type: 'bento', fill: 'bone', tiles: [{ label: 'Commission', big: '₹0', fill: 'card', icon: 'heart' }, { label: 'Listing fee', big: 'None', fill: 'orange', icon: 'file' }], grow: 1 },
   ], { aud: 'parents' }),
 ];
 
@@ -68,9 +68,9 @@ const TC = [
 export const tutors = [
   ...slides('TT1', 'tutors', 'F', 'orange', [
     { panels: [{ type: 'loud', fill: 'orange', lines: L('Teach on / Shikshaq.'), sub: 'Put your profile where students are searching.', button: 'For tutors', mascot: SMILE, msize: 340 }] },
-    { panels: [H({ eyebrow: 'How to join', lines: L('One form, / *three steps*'), size: 112, grow: .8 }), { type: 'steps', fill: 'orange', lines: L('Apply, get checked, / get listed'), rows: [{ icon: 'edit', t: 'Apply', b: 'A five-step form.' }, { icon: 'shield', t: 'Get checked', b: 'ID and degree, by a human.' }, { icon: 'users', t: 'Get listed', b: 'Reviewed in about three working days.' }], grow: 2 }] },
+    { panels: [H({ eyebrow: 'How to join', lines: L('One form, / *three steps*'), size: 112, grow: .8 }), { type: 'steps', fill: 'orange', lines: L('Apply, get checked, / get listed'), rows: [{ icon: 'edit', t: 'Apply', b: 'One short form.' }, { icon: 'shield', t: 'Get checked', b: 'ID and degree, by a human.' }, { icon: 'users', t: 'Get listed', b: 'Our team reviews every application.' }], grow: 2 }] },
     { accent: 'indigo', panels: [{ type: 'answer', fill: 'indigo', eyebrow: 'Keep every rupee', lines: L('You set / the rate. / We take / nothing.'), sub: 'There is no listing fee either.', mascot: { ...SUN, size: 320 }, size: 124 }] },
-    { panels: [H({ eyebrow: 'What you get', lines: L('Real students, / *no bidding*'), size: 112, grow: .9 }), { type: 'bento', fill: 'bone', tiles: [{ label: 'Listing fee', big: 'None', fill: 'card', icon: 'heart', h: 230 }, { label: 'Lead credits', big: 'None', fill: 'orange', icon: 'file', h: 230 }, { label: 'Enquiries', big: 'WhatsApp', fill: 'indigo', icon: 'chat', h: 230, size: 78 }, { label: 'Paid placement', big: 'Never', fill: 'mint', icon: 'shield', h: 230 }], grow: 1.8 }] },
+    { panels: [H({ eyebrow: 'What you get', lines: L('Real students, / *no middleman*'), size: 112, grow: .9 }), { type: 'bento', fill: 'bone', tiles: [{ label: 'Listing fee', big: 'None', fill: 'card', icon: 'heart', h: 230 }, { label: 'Commission', big: 'None', fill: 'orange', icon: 'file', h: 230 }, { label: 'Enquiries', big: 'WhatsApp', fill: 'indigo', icon: 'chat', h: 230, size: 78 }, { label: 'Paid placement', big: 'Never', fill: 'mint', icon: 'shield', h: 230 }], grow: 1.8 }] },
     { panels: [{ type: 'loud', fill: 'orange', lines: L('Free to list.'), sub: 'We were students in this city. The platform is built for how tuition actually works in Kolkata.', button: 'Apply to teach', mascot: SMILE, msize: 300 }] },
   ], 'tutors'),
   mk('TT2', 'tutors', 'S', 'orange', [{ type: 'loud', fill: 'orange', lines: L('Teach on / Shikshaq.'), sub: 'Put your profile where students are searching.', button: 'For tutors', mascot: SMILE, msize: 460 }], { aud: 'tutors' }),
@@ -81,10 +81,10 @@ export const tutors = [
   ], { aud: 'tutors' }),
   mk('TT4', 'tutors', 'S', 'orange', [
     H({ eyebrow: 'How to join', lines: L('Apply. Get checked. / *Get listed*.'), size: 108, grow: .8 }),
-    { type: 'steps', fill: 'orange', lines: L('Three steps'), rows: [{ icon: 'edit', t: 'Apply', b: 'A five-step form.' }, { icon: 'shield', t: 'Get checked', b: 'ID and degree, by a human.' }, { icon: 'users', t: 'Get listed', b: 'Reviewed in about three working days.' }], grow: 3 },
+    { type: 'steps', fill: 'orange', lines: L('Three steps'), rows: [{ icon: 'edit', t: 'Apply', b: 'One short form.' }, { icon: 'shield', t: 'Get checked', b: 'ID and degree, by a human.' }, { icon: 'users', t: 'Get listed', b: 'Our team reviews every application.' }], grow: 3 },
   ], { aud: 'tutors' }),
   mk('TT5', 'tutors', 'S', 'orange', [
-    H({ eyebrow: 'Real students', lines: L('No leads. / No *bidding*.'), size: 124, grow: .9 }),
+    H({ eyebrow: 'Real students', lines: L('Real people. / Real *messages*.'), size: 124, grow: .9 }),
     { type: 'pills', runs: ['Enquiries reach you on', { t: 'WhatsApp', fill: 'orange' }, '. Real reviews from real students, and', { t: 'no paid placement', fill: 'indigo' }, 'in results. Ever.'], psize: 58, grow: 1.6 },
     { type: 'cta', fill: 'orange', lines: L('Free to list.'), button: 'Apply to teach', size: 110, mascot: { ...EYES, size: 340 }, grow: 1 },
   ], { aud: 'tutors' }),
@@ -272,7 +272,7 @@ export const way = [...WAY.map((x, i) => wayOf(x, i, 'F')), ...WAY.map((x, i) =>
 
 // ---- NEW: the facts, plainly -----------------------------------------------------------------------------------------------------------------------
 const FACTS = [
-  ['orange', 'About money', L('What it / *costs*'), [{ label: 'Commission', big: '₹0', fill: 'card', icon: 'heart' }, { label: 'To contact', big: 'Free', fill: 'mint', icon: 'chat' }, { label: 'Listing fee', big: 'None', fill: 'orange', icon: 'file' }, { label: 'Invoices', big: 'Never', fill: 'indigo', icon: 'shield' }]],
+  ['orange', 'About money', L('What it / *costs*'), [{ label: 'Commission', big: '₹0', fill: 'card', icon: 'heart' }, { label: 'To contact', big: 'Free', fill: 'mint', icon: 'chat' }, { label: 'Listing fee', big: 'None', fill: 'orange', icon: 'file' }, { label: 'Fees go to', big: 'The tutor', fill: 'indigo', icon: 'shield', size: 80 }]],
   ['indigo', 'About coverage', L('What it / *covers*'), [{ label: 'City', big: 'Kolkata', fill: 'card', icon: 'pin', size: 84 }, { label: 'Classes', big: 'IV to XII', fill: 'orange', icon: 'book' }, { label: 'Boards', big: 'Four', fill: 'indigo', icon: 'file' }, { label: 'Subjects', big: 'Eight', fill: 'mint', icon: 'star' }]],
   ['mint', 'About trust', L('Why it / *can be trusted*'), [{ label: 'Before listing', big: 'Checked', fill: 'card', icon: 'shield', size: 84 }, { label: 'Reviews from', big: 'Students', fill: 'orange', icon: 'star', size: 84 }, { label: 'Paid placement', big: 'Never', fill: 'indigo', icon: 'heart' }, { label: 'Your number', big: 'Safe', fill: 'mint', icon: 'chat' }]],
 ];

@@ -40,7 +40,7 @@ export const faq = [
   ], { aud: 'parents', tag: 'FAQ' }),
   mk('FQ7', 'faq', 'S', 'indigo', [
     H({ eyebrow: 'FAQ 07', lines: L('Are the tutors / *checked*?'), size: 118 }),
-    { type: 'steps', fill: 'indigo', lines: L('Before a profile / goes live'), rows: [{ icon: 'edit', t: 'Tutors apply', b: 'A five-step form.' }, { icon: 'shield', t: 'A human checks', b: 'ID and degree, by hand.' }, { icon: 'users', t: 'Our team selects', b: 'Only then are they listed.' }], grow: 3 },
+    { type: 'steps', fill: 'indigo', lines: L('Before a profile / goes live'), rows: [{ icon: 'edit', t: 'Tutors apply', b: 'One short form.' }, { icon: 'shield', t: 'A human checks', b: 'ID and degree, by hand.' }, { icon: 'users', t: 'Our team selects', b: 'Only then are they listed.' }], grow: 3 },
   ], { aud: 'parents', tag: 'FAQ' }),
   mk('FQ8', 'faq', 'S', 'orange', [
     H({ eyebrow: 'FAQ 08', lines: L('Is my number / *safe*?'), size: 122 }),
@@ -65,10 +65,10 @@ const TQ = (id, n, q, a, sub, mas, accent = 'orange') => mk(id, 'tfaq', 'S', acc
 export const tfaq = [
   mk('TQ0', 'tfaq', 'C', 'orange', [], { look: 'cover', label: 'For tutors', mood: 'great', disc: '#FFF4E8', aud: 'tutors' }),
   TQ('TQ1', '01', L('What do I get / on *Shikshaq*?'), L('A profile / students search.'), 'Students and parents find you by subject, class, board and area.', SUN),
-  TQ('TQ2', '02', L('Does it cost / to *list*?'), L('Free to list.'), 'No listing fee. No lead credits. No bidding for students.', EYES),
+  TQ('TQ2', '02', L('Does it cost / to *list*?'), L('Free to list.'), 'No listing fee. No commission. You set your own rate.', EYES),
   TQ('TQ3', '03', L('Do you take / a *cut*?'), L('No. Keep every / rupee.'), 'You set your rate. We never invoice anyone.', LOBE, 'indigo'),
   TQ('TQ4', '04', L('Who *messages* me?'), L('Real people, / on WhatsApp.'), 'Enquiries reach you directly. Shikshaq never sits in the middle.', { kind: 'arch', mood: 'great' }),
-  TQ('TQ5', '05', L('How do I / *join*?'), L('Fill in one / form.'), 'A five-step form. Reviewed in about three working days.', SUN, 'mint'),
+  TQ('TQ5', '05', L('How do I / *join*?'), L('Fill in one / form.'), 'One short form. Our team reviews every application.', SUN, 'mint'),
   TQ('TQ6', '06', L('Can *anyone* list?'), L('Tutors apply. / We check.'), 'ID and degree checked by a human. No paid placement in results. Ever.', EYES),
 ];
 
@@ -99,7 +99,7 @@ export const hero = [
 // ---- Find your tutor in three steps -----------------------------------------------------------------------------------------------
 const STEP = (canvas) => [
   { panels: [{ type: 'loud', fill: 'indigo', lines: L('That one chapter / nobody / understands?'), sub: 'Here is how Shikshaq works. Three steps.', mascot: { kind: 'eyes', fill: '#FFFFFF' }, msize: 400 }] },
-  { accent: 'orange', panels: [H({ ordinal: '01', lines: L('Tell us / *the subject*'), sub: 'Subject, class and your area. Three taps, no account needed.', size: 124, grow: 1.1 }), { type: 'search', fill: 'card', chips: ['Class 10', 'Maths', 'Home tuition'], grow: 1.3 }] },
+  { accent: 'orange', panels: [H({ ordinal: '01', lines: L('Tell us / *the subject*'), sub: 'Subject, class and your area. Three taps, no account needed.', size: 124, grow: 1.1 }), { type: 'search', fill: 'card', toggle: false, chips: ['Class 10', 'Maths', 'Home tuition'], grow: 1.3 }] },
   { accent: 'orange', panels: [H({ ordinal: '02', lines: L('Compare / *real profiles*'), sub: 'Rates, boards, reviews and travel radius, all on one card.', size: 124, grow: 1.1 }), { type: 'chips', fill: 'card', solid: true, chips: ['Rates', 'Boards', 'Reviews', 'Travel radius'], csize: 56, grow: 1.3 }] },
   { accent: 'orange', panels: [H({ ordinal: '03', lines: L('Message / *on WhatsApp*'), size: 124, grow: 1 }), { type: 'chat', fill: 'tint', msgs: [{ who: 'S', t: 'Hello Sir, is the Maths slot on Saturday free?' }, { who: 'P', t: 'Yes. Tell me the board and what is giving trouble.' }], grow: 1.4 }, { type: 'tile', fill: 'orangeTint', icon: 'shield', label: 'Shikshaq never sits in the middle', lines: L('No fees, / no middleman, / *no commission*.'), size: 70, grow: 1 }] },
   { accent: 'indigo', panels: [H({ eyebrow: 'So what is it?', lines: L('Not a *charity*. / Not a class.'), size: 118, grow: 1 }), { type: 'answer', fill: 'indigo', lines: L('It is where / you find / your tutor.'), mascot: { kind: 'sun', size: 360 }, grow: 1.8 }, { type: 'pills', runs: ['Made by', { t: 'AquaTerra', fill: 'orange' }, ', an NGO whose team are students.'], grow: .8 }] },

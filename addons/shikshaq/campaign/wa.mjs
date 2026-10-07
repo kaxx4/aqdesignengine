@@ -35,7 +35,7 @@ export const PUSHES = [
   { id: 'WP10', week: 3, day: 'Tue', time: '18:00', to: 'Parent groups', image: ['RV1'], gated: 'reviews', replies: R('pay', 'checked'),
     message: 'A review from Shikshaq:\n\n"{{review.0.text}}"\n{{review.0.first}}, {{review.0.subject}}\n\nSearch by subject, class, board and area, then message the tutor yourself.\n\nshikshaq.in' },
   { id: 'WP27', week: 3, day: 'Thu', time: '12:00', to: 'Tutor and teacher groups', image: ['TT7'], replies: R('tutorlist', 'pay'),
-    message: 'This is the first message a parent sends a tutor on Shikshaq. It arrives on your WhatsApp from your profile.\n\nNot a sold lead. A real person, asking about a real slot.\n\nApply to teach: shikshaq.in' },
+    message: 'This is the first message a parent sends a tutor on Shikshaq. It arrives on your WhatsApp from your profile.\n\nA real person, asking about a real slot.\n\nApply to teach: shikshaq.in' },
   { id: 'WP28', week: 3, day: 'Sat', time: '18:30', to: 'Student and class groups', image: ['AK1-1'], replies: R('area', 'class'),
     message: 'Five questions to ask a tutor before you say yes. Swipe through, then ask them on WhatsApp.\n\nFind one at shikshaq.in' },
   { id: 'WP13', week: 4, day: 'Mon', time: '11:00', to: 'Parent groups', image: ['WQ1'], replies: R('pay', 'checked'),

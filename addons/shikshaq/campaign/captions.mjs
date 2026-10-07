@@ -41,7 +41,7 @@ const BASE = {
   MT5: 'Meet a tutor on Shikshaq.\n\nPosted with their approval. Every tutor is checked and selected by our team.\n\n' + NEXT,
   MT6: 'Meet a tutor on Shikshaq.\n\nPosted with their approval. Every tutor is checked and selected by our team.\n\n' + NEXT,
   TT1: 'Tutors: put your profile where students are searching.\n\nFill out a form. Our team checks your background. If you are selected, you are listed. It is free to list, you set your own rate, and you keep all of it.\n\nApply at shikshaq.in.',
-  TT6: 'Your students are searching.\n\nPut your profile where they look. Free to list. You set your own rate. Real people message you on WhatsApp, not sold leads.\n\nApply at shikshaq.in.',
+  TT6: 'Your students are searching.\n\nPut your profile where they look. Free to list. You set your own rate. Real people message you directly on WhatsApp.\n\nApply at shikshaq.in.',
   TT7: 'For tutors: the first message a parent sends you.\n\nStudents and parents message you directly on WhatsApp from your profile.\n\nApply at shikshaq.in.',
   TT8: 'For tutors: what is your fee?\n\nOn Shikshaq you set your own rate and keep all of it. You and the parent agree it between you.\n\nApply at shikshaq.in.',
   TT9: 'For tutors: parents will ask where you teach.\n\nYour profile shows your area, so families find a tutor near them.\n\nApply at shikshaq.in.',
@@ -100,7 +100,7 @@ const WAY_CAPS = {
   WY4: 'Which way to your class? IV to XII, every board.\n\n' + NEXT,
 };
 const FACT_CAPS = {
-  FT1: 'What it costs, plainly. Nothing to contact a tutor, no listing fee, no commission, no invoices from Shikshaq. Fees are between you and the tutor.\n\n' + NEXT,
+  FT1: 'What it costs, plainly. Nothing to contact a tutor, no listing fee, no commission. Fees go to the tutor, and are agreed between you.\n\n' + NEXT,
   FT2: 'What it covers, plainly. Kolkata, classes IV to XII, four boards, eight subjects.\n\n' + NEXT,
   FT3: 'Why it can be trusted, plainly. Tutors are checked and selected by our team before they are listed. Reviews come from students who messaged the tutor. Placement is never paid for.\n\n' + NEXT,
 };
