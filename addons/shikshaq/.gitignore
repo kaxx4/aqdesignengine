@@ -2,3 +2,6 @@ node_modules/
 facts/facts.live.json
 out/*
 !out/*-dry/
+campaign/import/*.json
+campaign/data.live.json
+campaign/data.json

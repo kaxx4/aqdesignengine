@@ -811,6 +811,7 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
   - **`brain/GAPS.md`** — the first-class, centrally-tracked open-questions log for the whole
     content system (voice, ideation, brochures). Check here before assuming a question is
     unresolved — several were answered by the 2026-08-26 ingestion.
+- `.claude/skills/aq-event-messaging/SKILL.md` — the AQ event-messaging skill (WhatsApp broadcasts, event groups, volunteer and 1:1 scripts, event captions), extracted into the repo so it travels with the engine. Use it for AQ event copy; `brain/VOICE.md` still owns poster copy.
 - `training_samples/reference_posters/` — the 44 references. `out/versions/<slug>/` — recreation
   iterations. `out/` — fresh generations. `sample_outputs/` — example engine outputs.
 
