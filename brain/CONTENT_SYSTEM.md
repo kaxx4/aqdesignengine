@@ -41,6 +41,7 @@ is missing something general, not that the surface gets a local escape hatch —
 | Real-photo carousel | `CAROUSEL_PLAYBOOK.md` | **built** | bespoke scripts + `vision.py` |
 | Instagram/LinkedIn post *ideas* | `IDEATION.md` | **spec** | n/a — feeds the surfaces above |
 | Voice / copy, any surface | `VOICE.md` | **spec** | n/a — feeds every surface |
+| AQ event messaging (WhatsApp broadcasts, event groups, volunteer comms, 1:1 scripts, event captions) | `.claude/skills/aq-event-messaging/SKILL.md` | **built** (a skill, trained on the Paradox 2026 corpus) | n/a — text only. Not for the Shikshaq addon, which has its own voice |
 | LinkedIn text post | `IDEATION.md` §7 | **spec** | none yet (no canvas needed — text only) |
 | One-pager / brochure / catalog / report / deck | `BROCHURE_CATALOG.md` | **spec** | would extend `build.py`/`core.py` to new `SIZES` + a PDF assembler |
 
