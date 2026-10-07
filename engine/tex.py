@@ -87,7 +87,7 @@ def duotone(src, shadow="#0A0A0A", highlight="#FF4D8C", size_css="width:100%;hei
             f'opacity:.18"></div>{scr}</div>')
 
 def photo_ink(src, size_css="width:100%;height:100%", contrast=1.35, radius="0", extra="",
-              focus="50% 50%"):
+              focus="50% 50%", fit="cover"):
     """High-contrast black-ink photo — the newsprint/zine treatment. One colour,
     maximum bite. Use when a photo must sit beside flat brand colour without
     competing with it.
@@ -99,9 +99,14 @@ def photo_ink(src, size_css="width:100%;height:100%", contrast=1.35, radius="0",
     centring a 1080x384 band on a standing figure lands on the torso, and the
     first DISPATCH story slide rendered a headless body holding a parcel. Faces
     sit high, so a wide band wants something like "50% 22%".
+
+    `fit` is object-fit. "cover" (default, unchanged) crops to fill. "fill" shows
+    the WHOLE photograph, which is only undistorted when the box already has the
+    photo's own aspect (see dispatch.photo_aspect). Nothing is cropped either way
+    the box is sized, which is what a team asking for "full size, do not crop" needs.
     """
     return (f'<div style="position:relative;overflow:hidden;{size_css};border-radius:{radius};{extra}">'
-            f'<img src="{src}" style="width:100%;height:100%;object-fit:cover;'
+            f'<img src="{src}" style="width:100%;height:100%;object-fit:{fit};'
             f'object-position:{focus};'
             f'filter:grayscale(1) contrast({contrast}) brightness(1.02)">'
             f'<div style="position:absolute;inset:0;{halftone(INK, 5, 0.28)}'

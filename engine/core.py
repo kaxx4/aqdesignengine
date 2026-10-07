@@ -241,8 +241,8 @@ DEPT = {
     "labs":    "#FFC700",   # lemon  — site --c-labs
     "ops":     "#0E7C86",   # teal   — site --c-ops (see DRIFT note below)
     "content": "#7E5BFF",   # grape  — site --c-content
-    "shikshaq": "#A4D70F",  # lime   — Shikshaq, chosen 2026-10-07. NOT welfare/mint: the brand's whole
-                            #          problem is being mistaken for welfare, so it gets its own hue.
+    "shikshaq": "#FFC700",  # lemon  — Shikshaq, set 2026-10-07 (was lime). Shares lemon with labs; separate dept.
+                            #          Never mint: Shikshaq is routinely mistaken for welfare.
 }
 # DRIFT, recorded not silently reconciled: the site's --c-ops/--teal is #12909C,
 # the engine's canon teal is #0E7C86. Changing ACCENTS[6] would restyle all 44

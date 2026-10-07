@@ -2,7 +2,7 @@
 
 Content comes from the community manager's verbal brief of 2026-10-07. Nothing is
 invented: no Disco Diwali date (asked to leave it out), no paper counts, no URLs.
-Shikshaq is a new department (lime, core.DEPT) on purpose: it must not read as
+Shikshaq is a new department (lemon/yellow, core.DEPT) on purpose: it must not read as
 welfare/mint. Photos are real team photos supplied for this issue, kept in the
 git-ignored scratchpad/dispatch04_photos/ (identifiable people, public repo).
 
@@ -38,6 +38,7 @@ BRIEF = {
     "kicker": "this week at aq",
     "dateline": "7 oct 2026",
     "tagline": "what's / moving",
+    "photo_fit": "full",              # show every photo whole, never cropped
     "cover_photo": "scratchpad/dispatch04_photos/events_team.jpg",
     "handle": "@ngo.aquaterra",
     "site": "ngoaquaterra.com",
@@ -73,12 +74,13 @@ BRIEF = {
         },
         {
             "dept": "ops", "chip": "hr",
-            "head": "the robots teach hr now",
-            "line": ("hr is still working through its ai lessons. the latest ones covered "
-                     "agents and projects, so the team is now officially more automated than us."),
-            "story": ("hr continues with its ai lessons, and the most recent sessions "
-                      "were about agents and projects. the team is learning how to hand "
-                      "work to ai properly, which is more than most of us can say."),
+            "head": "hr gets efficient with ai",
+            "line": ("hr's ai lessons continue, and the latest ones covered agents and "
+                     "projects. the goal is using ai efficiently, not just using it a lot."),
+            "story": ("hr continues its ai lessons, and the most recent sessions covered "
+                      "agents and projects. the point is not to use ai more, it is to use "
+                      "it well: hand it the repetitive work, set it up once as a project, "
+                      "and keep people for the parts that need judgment."),
             "photo": "scratchpad/dispatch04_photos/hr_meet.jpg",
         },
     ],

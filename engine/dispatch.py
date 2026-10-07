@@ -177,6 +177,16 @@ def photo_src(key):
             return "data:%s;base64,%s" % (mt, base64.b64encode(f.read()).decode())
     return None
 
+def photo_aspect(key):
+    """width/height of a photo key or file path, so a box can be cut to its shape."""
+    import io, base64
+    from PIL import Image
+    src = photo_src(key)
+    raw = base64.b64decode(src.split(",", 1)[1])
+    w, h = Image.open(io.BytesIO(raw)).size
+    return w / float(h)
+
+
 def tint_of(acc):
     return shapes.lighten(acc, CARD_TINT)
 
@@ -327,17 +337,21 @@ async def poster(brief):
         if photo_src(photo_key) is None:
             raise BriefError("cover_photo %r is not a real AQ photo." % photo_key)
         ps, rot, py = 198, -4, 130
-        _, _, bw, bh = lay.rotated_bbox(0, 0, ps, ps, rot)
-        over = (bw - ps) / 2.0
-        px = int(W_FEED - M - ps - over)
+        pw, ph = ps, ps
+        if brief.get("photo_fit") == "full":      # whole photograph, never cropped
+            pw = int(ps * min(photo_aspect(photo_key), 1.35))
+        _, _, bw, bh = lay.rotated_bbox(0, 0, pw, ph, rot)
+        over = (bw - pw) / 2.0
+        overv = (bh - ph) / 2.0
+        px = int(W_FEED - M - pw - over)
         inner.append(
             f'<div class="measure" data-tag="photo" style="position:absolute;top:{py}px;left:{px}px;'
-            f'width:{ps}px;height:{ps}px;transform:rotate({rot}deg);z-index:9;'
+            f'width:{pw}px;height:{ph}px;transform:rotate({rot}deg);z-index:9;'
             f'border:5px solid var(--ink);box-shadow:10px 10px 0 var(--ink);overflow:hidden">'
-            f'{tex.photo_ink(photo_src(photo_key), "width:100%;height:100%")}</div>')
-        els.append(("photo", px - over, py - over, bw, bh))
+            f'{tex.photo_ink(photo_src(photo_key), "width:100%;height:100%", fit="fill" if pw != ps else "cover")}</div>')
+        els.append(("photo", px - over, py - overv, bw, bh))
         inner.append(tex.tape(px + 56, py - 22, w=120, h=36, rot=-7, z=14))
-        photo_bottom, photo_left = py + ps + over, px - over
+        photo_bottom, photo_left = py + ph + overv, px - over
 
         # THE COUNT BURST. Brand furniture (R9): pink, never a department's hue.
         # It sits on the photo's lower-left corner, pinning the photo to the page
@@ -769,7 +783,20 @@ async def _story_item(brief, it, i, n):
     hw = W_STORY - 2 * M
     body_w = hw - 2 * STORY_CARD_PAD - 2 * CARD_BORDER
     G1, G2 = 46, 40
-    region_h = (STORY_BAND_Y - 44) - STORY_TOP
+    # FULL-PHOTO MODE (brief["photo_fit"] == "full"): the photograph is shown whole,
+    # never cropped, so the band becomes a taller colour plate with the photo set on
+    # it as a card cut to the photo's own shape. The text region gives up the height.
+    full = bool(it.get("photo")) and brief.get("photo_fit") == "full"
+    band_y, band_h = STORY_BAND_Y, STORY_BAND_H
+    if full:
+        # the plate hugs the photo (70px of colour above and below) and keeps its
+        # bottom edge where the standard band ends, so a wide screenshot does not
+        # float in an acre of plate and the text above gets the height back.
+        _a = photo_aspect(it["photo"])
+        _ph = min(560, int((hw - 24) / _a))
+        band_h = _ph + 140
+        band_y = (STORY_BAND_Y + STORY_BAND_H) - band_h
+    region_h = (band_y - 44) - STORY_TOP
 
     # THE NUMERAL IS SOLVED, NOT SET: it is the most compressible thing on the
     # slide, so it gives way until the whole stack (numeral, head, body card)
@@ -844,13 +871,34 @@ async def _story_item(brief, it, i, n):
     tp.append(("line", "#2E2E2B", tint, STORY_BODY, False))
 
     # -- the band (R8). Full bleed, always painted. --------------------------
-    if it.get("photo"):
+    if full:
+        plate = core.lit_of(acc)
+        asp = photo_aspect(it["photo"])
+        ph = 560
+        pw = int(ph * asp)
+        if pw > hw - 24:
+            pw = hw - 24
+            ph = int(pw / asp)
+        px = (W_STORY - pw) // 2
+        py = band_y + (band_h - ph) // 2
+        inner.append(
+            f'<div class="measure" data-tag="band" style="position:absolute;top:{band_y}px;'
+            f'left:0;width:{W_STORY}px;height:{band_h}px;background:{plate};z-index:7;'
+            f'border-top:{CARD_BORDER}px solid var(--ink);border-bottom:{CARD_BORDER}px solid var(--ink)"></div>')
+        inner.append(
+            f'<div class="measure" data-tag="photo" style="position:absolute;top:{py}px;left:{px}px;'
+            f'width:{pw}px;height:{ph}px;z-index:9;border:6px solid var(--ink);'
+            f'box-shadow:10px 10px 0 var(--ink);overflow:hidden">'
+            f'{tex.photo_ink(photo_src(it["photo"]), "width:100%;height:100%", fit="fill")}</div>')
+        els.append(("photo", px, py, pw + 10, ph + 10))
+        cp.append(("band", plate, ground, True))
+    elif it.get("photo"):
         # the crop window favours the upper frame: centring a letterbox on a
         # portrait photograph lands on the torso (the first render of this slide
         # was a headless body holding a parcel). Faces sit high.
         inner.append(
-            f'<div class="measure" data-tag="band" style="position:absolute;top:{STORY_BAND_Y}px;'
-            f'left:0;width:{W_STORY}px;height:{STORY_BAND_H}px;z-index:7;overflow:hidden;'
+            f'<div class="measure" data-tag="band" style="position:absolute;top:{band_y}px;'
+            f'left:0;width:{W_STORY}px;height:{band_h}px;z-index:7;overflow:hidden;'
             f'border-top:{CARD_BORDER}px solid var(--ink);border-bottom:{CARD_BORDER}px solid var(--ink)">'
             f'{tex.photo_ink(photo_src(it["photo"]), "width:100%;height:100%", focus="50% 22%")}'
             f'</div>')
@@ -858,18 +906,18 @@ async def _story_item(brief, it, i, n):
         plate = core.lit_of(acc)
         on_plate = core.text_on(plate)
         inner.append(
-            f'<div class="measure" data-tag="band" style="position:absolute;top:{STORY_BAND_Y}px;'
-            f'left:0;width:{W_STORY}px;height:{STORY_BAND_H}px;background:{plate};z-index:7;'
+            f'<div class="measure" data-tag="band" style="position:absolute;top:{band_y}px;'
+            f'left:0;width:{W_STORY}px;height:{band_h}px;background:{plate};z-index:7;'
             f'border-top:{CARD_BORDER}px solid var(--ink);border-bottom:{CARD_BORDER}px solid var(--ink);'
             f'display:flex;align-items:center;padding-left:{M}px">'
             f'<span class="measure" data-tag="plate" style="font-family:var(--d);font-weight:900;'
             f'font-size:72px;line-height:.94;letter-spacing:-.02em;color:{on_plate}">'
             f'{brief.get("kicker", "this week at aq").upper()}<br>no. {brief.get("issue", "01")}'
             f'</span></div>')
-        els.append(("plate", M, STORY_BAND_Y + 104, W_STORY - 2 * M, 150))
+        els.append(("plate", M, band_y + 104, W_STORY - 2 * M, 150))
         cp.append(("band", plate, ground, True))
         tp.append(("plate", on_plate, plate, 72, True))
-    els.append(("band", 0, STORY_BAND_Y, W_STORY, STORY_BAND_H))
+    els.append(("band", 0, band_y, W_STORY, band_h))
 
     _story_footer(inner, els, tp, brief, False,
                   it.get("cta") or brief.get("story_cta", "more in the group."))
