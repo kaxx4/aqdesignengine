@@ -36,8 +36,13 @@ Uploaded in the same batch but the event is unclear. These look like a Diwali-st
 | 08_cards-hall-crowd-purple.jpg | 2000x1333. Crowd in the same playing-card hall, purple light, blurry. |
 | 09_night-courtyard-string-lights-crowd.jpg | 2000x1333. Night courtyard, string lights, food counter, crowd in the foreground. |
 
-The playing-card hall and star-light photos suggest a card or night-sky themed event, not confirmed.
+| 10_disco-diwali-photo-booth.jpg | 2000x1500. DISCO DIWALI photo booth: black and silver balloon arch, red curtain, gold DIWALI blocks, clapperboard sign, eight girls posing with masks. Clapperboard date reads 22/10/25, so this is Disco Diwali 2025. |
+| 11_dance-green-light-portrait.jpg | 1126x2000. Packed dance floor, green-yellow light, silver tinsel pillar, hanging cards, joyful faces. Portrait, story-ready. |
+| 12_dark-crowd-star-balloons.jpg | 2000x1125. Dark crowd with raised arms, silver star balloons, tinsel pillar, falling cards. Very grainy. Likely a video frame. |
+| 13_IMG_1500_dance-pink-light-phone.jpg | 3024x4032. Crowd in pink light, a guest filming on a phone in the foreground. |
+
+The same hall (tinsel pillars, hanging playing cards, silver star balloons, cream beams) appears in 05, 08, 11, 12, 13 and the video, so those are one event. The Disco Diwali booth (22/10/25) and the red drape entrance (03) point to that event, which makes the hall most likely Disco Diwali 2025. This is an inference, not confirmed.
 
 ## Not stored
 
-Still missing: the dark crowd dance photo with star balloons, the string-light courtyard with a yellow outfit, the Disco Diwali photo booth, and the green-lit portrait dance shot. They were shown in chat with no file. Re-upload to add them.
+Still missing: the string-light courtyard with a girl in a yellow outfit. Re-upload it as a file to add it.
