@@ -166,10 +166,10 @@ class Slide:
         """AQ logo bottom-left; Rever's pill + the slide count bottom-right; kicker top-left."""
         s.add(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:{M}px;top:{H - 100}px;height:50px;z-index:9">')
         s.el("logo", M, H - 100, 296, 50)
-        rw = 176
-        s.add(f'<div class="measure" data-tag="rever_pill" style="position:absolute;left:{W - M - rw}px;top:{H - 106}px;width:{rw}px;height:62px;border:6px solid {ORCHID};border-radius:999px;'
-              f'background:#fff;display:flex;align-items:center;justify-content:center;z-index:12"><img src="{REVER}" style="height:30px"></div>')
-        s.el("rever_pill", W - M - rw, H - 106, rw, 62)
+        rw = 214
+        s.add(f'<div class="measure" data-tag="rever_pill" style="position:absolute;left:{W - M - rw}px;top:{H - 108}px;width:{rw}px;height:66px;border:6px solid {ORCHID};border-radius:999px;'
+              f'background:#fff;display:flex;align-items:center;justify-content:center;z-index:12"><img src="{REVER}" style="height:36px"></div>')
+        s.el("rever_pill", W - M - rw, H - 108, rw, 66)
         s.add(f'<div class="measure k" data-tag="count" style="position:absolute;right:{M + rw + 24}px;top:{H - 90}px;font-size:24px;line-height:1;color:{WHITE};z-index:9;white-space:nowrap;text-shadow:0 2px 10px rgba(0,0,0,.8)">{s.n:02d} / {TOTAL}</div>')
         s.el("count", W - M - rw - 24 - 96, H - 90, 96, 26)
         if kicker:
@@ -350,7 +350,7 @@ async def s_brief(n):
     s.add(f'<div class="measure k" data-tag="lab" style="position:absolute;left:1040px;top:122px;font-size:24px;line-height:1;color:{ORCHID};z-index:6;white-space:nowrap">WHAT THE PARTNERSHIP OFFERS REVER</div>')
     s.el("lab", 1040, 122, 620, 26); s.text_pair("lab", ORCHID, GROUND, 24, False)
     tiles = [("Rever Skydeck as the sole venue for the evening", stk.pin(100)), ("Exclusive food rights, with a menu curated for the event", stk.cloche(120)),
-             ("Direct access to a young audience Rever wants to build with", stk.heart(100)), ("Rever's name across our content, our team and the event itself", stk.shirt(104))]
+             ("An introduction to a young audience, at an event Rever hosts", stk.heart(100)), ("Rever's name across our content, our team and the event itself", stk.shirt(104))]
     for i, (t, st) in enumerate(tiles):
         inner = (f'<div style="display:flex;align-items:center;gap:26px;height:100%"><div style="flex:none;width:120px;display:flex;justify-content:center">{st[0]}</div>'
                  f'<div class="v" style="font-size:30px;line-height:1.12;color:{INK}">{t.upper()}</div></div>')
@@ -364,12 +364,11 @@ async def s_location(n):
     s.stars([(1760, 40)], 80)
     y = await s.heading(M, 110, 1000, "More than a venue.", "The only kitchen of the night.", 76, 54)
     body = ("Rever comes in as our Location Partner, and we will make sure Rever is also the Exclusive Food Partner. No outside vendors and no competing stalls: Rever's menu is the only food menu at the event.",
-            "We would love to work with your team on a special event menu. A short, curated set of simple, crowd-friendly items keeps service fast for 400+ guests, keeps quality consistent, and gives every guest a first taste of Rever.")
+            "We would love to build a special event menu with your team. Rever's kitchen decides what goes on it, and a short, tight menu keeps service fast for 400+ guests and quality consistent. Every guest gets a first taste of Rever.")
     s.add(f'<div class="measure b" data-tag="body" style="position:absolute;left:{M}px;top:{y + 36}px;width:900px;font-size:30px;line-height:1.38;color:{WHITE};z-index:6">'
           f'<p style="margin:0 0 20px">{body[0]}</p><p style="margin:0">{body[1]}</p></div>')
     s.el("body", M, y + 36, 900, 440); s.text_pair("body", WHITE, GROUND, 30, False)
     s.sticker("st_cloche", stk.cloche(width=520), 1180, 80, 5)
-    s.sticker("st_burger", stk.burger(width=330), 1500, 420, -8)
     s.sticker("st_pin", stk.pin(width=210), 1100, 470, -6)
     s.sticker("st_sp", (ddt_spark(64, GREEN, "c4"), 64, 64), 1480, 340, 0, 7)
     m = await B.measure_text([dict(text="ONE VENUE. ONE KITCHEN. ONE MENU,", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], W, H, extra_css=tt.FONT_CSS)
@@ -393,7 +392,7 @@ async def s_vis1(n):
     await s.heading(M, 104, 900, "Visibility,", "in detail.", 76, 56, gap=4)
     cards = [("Visibility", ["Rever logo on all event deliverables: posters, posts, tickets, the ticket page and WhatsApp broadcasts", "Rever logo on all AquaTerra core team shirts",
                              "“Exclusive Food and Location Partner” billing everywhere", "On-ground branding at the venue and stage mentions on the night"], stk.shirt(140)),
-             ("Reputation", ["30 to 50 Google reviews from our team", "Rever's Google reviews QR code displayed at the event, with guests encouraged to post"], stk.review(170))]
+             ("Reputation", ["Rever's Google reviews QR code displayed at the event, so guests can choose to leave their own honest review", "Our team does not write, buy or solicit reviews for Rever"], stk.review(170))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 640, head_icon(t, st) + bullets(items, 30, 24), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 30, False)
@@ -403,9 +402,9 @@ async def s_vis1(n):
 async def s_vis2(n):
     s = Slide(n); s.chrome("YOUR BRAND, FRONT AND CENTRE  (2 OF 2)")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 104, 900, "Visibility,", "in detail.", 76, 56, gap=4)
+    await s.heading(M, 104, 1200, "Promotion and content,", "in detail.", 76, 56, gap=4)
     cards = [("Promotion", ["Rever promoted on Instagram and across our WhatsApp community for close to a month", "Business card promotion for Rever", "A thank-you post after the event"], stk.megaphone(170)),
-             ("Content", ["5 to 10 planned reels, plus regular casual content", "Free use of our event photos and videos for Rever's own marketing"], stk.phone(110))]
+             ("Content", ["5 to 10 planned reels, plus regular casual content", "Our event photos and videos are free for Rever to use in its own marketing, with guest consent recorded"], stk.phone(110))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 480, head_icon(t, st) + bullets(items, 29, 22), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 29, False)
@@ -421,7 +420,7 @@ async def s_vis2(n):
 async def s_aud1(n):
     s = Slide(n); s.chrome("AUDIENCE AND DEMOGRAPHICS  (1 OF 2)")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 104, 1600, "The next wave of Rever's regulars,", "reached early.", 70, 54)
+    await s.heading(M, 104, 1600, "Who is in the room.", "A young crowd, introduced to Rever early.", 76, 56, gap=4)
     m = await B.measure_text([dict(text="16-19", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], W, H, extra_css=tt.FONT_CSS)
     fs = 100 * 480 / m[0]["text_w"]
     inner = (label("Age band, roughly", 28, INK, "margin-bottom:12px") + f'<div class="st" style="font-size:{fs:.0f}px;line-height:1.05;color:{INK};white-space:nowrap">16-19</div>')
@@ -433,7 +432,7 @@ async def s_aud1(n):
     inner = "".join(f'<div style="margin-bottom:22px">{label(k, 24, ORCHID)}<div class="b" style="font-size:31px;line-height:1.22;color:{WHITE};margin-top:6px">{v}</div></div>' for k, v in rows)
     s.add(f'<div class="measure" data-tag="rows" style="position:absolute;left:{M + 700}px;top:290px;width:1020px;z-index:6">{inner}</div>')
     s.el("rows", M + 700, 290, 1020, 330); s.text_pair("rows", WHITE, GROUND, 31, False)
-    s.photo_rect("ph_a", PH["courtyard"], M, 650, 1728, 290, "50% 70%", cap="The crowd at Disco Diwali 2025")
+    s.photo_rect("ph_a", PH["group"], M, 650, 1728, 290, "50% 32%", cap="Disco Diwali 2025")
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
@@ -443,10 +442,10 @@ async def s_aud2(n):
     await s.heading(M, 104, 1500, "The time slot.", "A young audience, introduced to Rever at the hours it is building.", 76, 52, gap=4)
     seg = lambda flex, bg, txt: (f'<div class="v" style="flex:{flex};background:{bg};border:4px solid {INK};border-radius:20px;display:flex;align-items:center;justify-content:center;text-align:center;'
                                  f'padding:10px 18px;font-size:34px;line-height:1.12;color:{INK}">{txt}</div>')
-    bar = f'<div style="display:flex;gap:12px;height:230px;margin:16px 0 40px">{seg(3, "#E4DFD0", "AFTER SCHOOL, COLLEGE AND TUITION")}{seg(1.7, ORCHID, "5 TO 6 PM")}{seg(3, GREEN, "REVER&rsquo;S LATE-NIGHT CROWD, 20 TO 30")}</div>'
+    bar = f'<div style="display:flex;gap:12px;height:230px;margin:16px 0 40px">{seg(3, "#E4DFD0", "AFTER SCHOOL, COLLEGE AND TUITION")}{seg(1.7, ORCHID, "5 TO 6 PM")}{seg(3, GREEN, "REVER&rsquo;S ESTABLISHED LATE-NIGHT TRADE")}</div>'
     inner = (label("The time slot", 28, INK) + bar +
              f'<div class="b" style="font-size:32px;line-height:1.4;color:{INK};max-width:1500px">This audience is free and looking for somewhere to go between 5 and 6 PM, after school, college and tuition hours. '
-             f'That early evening window sits before Rever\'s established 20 to 30 year old late-night crowd, and it is exactly the window this audience fills.</div>')
+             f'That early evening window sits before Rever\'s established late-night trade, and it is exactly the window this audience fills.</div>')
     s.slab("slot", M, 340, 1728, 590, inner, pad="36px 48px")
     s.text_pair("slot", INK, SLAB, 30, False)
     s.sticker("st_clock", stk.clock(width=200), 1650, 205, 8, 11)
@@ -486,11 +485,11 @@ async def s_hist1(n):
     cols = "grid-template-columns:260px 1fr 200px 150px;column-gap:18px"
     tab = (f'<div style="display:grid;{cols}">{th("Edition")}{th("Venue")}{th("Footfall")}{th("Funds raised")}'
            f'{td("DISCO DIWALI 2025")}{td("60 CHOWRINGHEE, WITH DJ AMAY")}{td("500+")}{td("RS. 4.3 LAKH")}'
-           f'{td("DISCO DIWALI 2026")}{td("REVER SKYDECK, MASQUERADE")}{td("400+<br>(CAPACITY&#8209;LED)")}{td("TO COME")}</div>')
-    s.slab("table", M, 290, 1080, 340, label("Disco Diwali, edition by edition", 26, INK, "margin-bottom:14px") + tab, pad="28px 36px")
+           f'{td("DISCO DIWALI 2026")}{td("REVER SKYDECK, MASQUERADE")}{td("Up to 400+<br>(venue capacity)")}{td("TO COME")}</div>')
+    s.slab("table", M, 290, 1080, 372, label("Disco Diwali, edition by edition", 26, INK, "margin-bottom:14px") + tab, pad="28px 36px")
     s.text_pair("table", INK, SLAB, 25, True)
-    inner = f'<div class="sg" style="font-size:44px;line-height:1.1;color:{INK}">Every edition has grown. Rever hosts the next one.</div>'
-    s.slab("callout", M, 670, 1080, 230, inner, rot=-1.0, fill=ORCHID, border=12, pad="30px 44px", tilt=True)
+    inner = f'<div class="sg" style="font-size:40px;line-height:1.1;color:{INK}">2025 filled the room and raised Rs. 4.3 lakh. 2026 is built around Rever Skydeck.</div>'
+    s.slab("callout", M, 700, 1080, 240, inner, rot=-1.0, fill=ORCHID, border=12, pad="30px 44px", tilt=True)
     s.text_pair("callout", INK, ORCHID, 44, True)
     s.add(f'<div class="measure k" data-tag="lab" style="position:absolute;left:1240px;top:290px;font-size:24px;line-height:1;color:{ORCHID};z-index:6;white-space:nowrap">ACROSS THE AQ EVENTS PORTFOLIO</div>')
     s.el("lab", 1240, 290, 560, 26); s.text_pair("lab", ORCHID, GROUND, 24, False)
@@ -509,8 +508,8 @@ async def s_hist2(n):
     s = Slide(n); s.chrome("EVENT HISTORY AND TRACK RECORD  (2 OF 2)")
     s.stars([(1760, 40)], 80)
     await s.heading(M, 96, 1500, "Who runs it.", None, 76)
-    inner = (f'<div class="b" style="font-size:27px;line-height:1.4;color:{INK}">'
-             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our community of 1,800+ student volunteers spans 25+ schools, '
+    inner = (f'<div class="b" style="font-size:29px;line-height:1.4;color:{INK}">'
+             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our student community spans 25+ schools, '
              'including DBPC, La Martiniere for Boys, La Martiniere for Girls, Modern High and Loreto. Net proceeds fund welfare work across the city.</div>')
     s.slab("who", M, 230, 860, 400, inner, pad="36px 40px")
     s.text_pair("who", INK, SLAB, 27, False)
@@ -547,9 +546,9 @@ async def s_masq(n):
     s.stars([(1760, 40), (40, 600)], 80)
     y = await s.heading(M, 110, 900, "A first for", "Kolkata's student scene.", 76, 56)
     s.add(f'<div class="measure b" data-tag="body" style="position:absolute;left:{M}px;top:{y + 30}px;width:840px;font-size:30px;line-height:1.38;color:{WHITE};z-index:6">'
-          f'A masquerade has not been done here before. Guests arrive masked, the room glows, and every photo is shareable.</div>')
+          f'A masquerade has not been done here before. Guests mask up once they are through the door, the room glows, and every photo is shareable.</div>')
     s.el("body", M, y + 30, 840, 130); s.text_pair("body", WHITE, GROUND, 30, False)
-    rows = ["Every guest has a reason to dress up and post", "The theme suits the Skydeck setting", "Curated photo booths around the venue put Rever's space in every shared photo", "It is new, so the story belongs to Rever"]
+    rows = ["Every guest has a reason to dress up and post", "The theme suits the Skydeck setting", "Curated photo booths around the venue put Rever's space in every shared photo", "It is new, so Rever is part of the first story"]
     inner = label("Why it works for Rever", 26, INK, "margin-bottom:16px")
     inner += "".join(f'<div style="display:flex;gap:20px;align-items:center;margin-bottom:16px">{numdot(i + 1, 48, 25)}<div class="v" style="font-size:27px;line-height:1.12;color:{INK}">{t.upper()}</div></div>' for i, t in enumerate(rows))
     s.slab("why", M, 540, 880, 420, inner, pad="28px 36px")
@@ -602,11 +601,13 @@ async def s_timeline(n):
     for a, b, c in ph:
         hot = a == "Event day"
         bg = f"background:{ORCHID};" if hot else ""
-        grid += (f'<div style="display:grid;{cols};border-top:4px solid {ORCHID};{bg}padding:15px 14px;margin:{"0 -14px" if hot else "0"};border-radius:{16 if hot else 0}px">'
+        grid += (f'<div style="display:grid;{cols};border-top:4px solid {ORCHID};{bg}padding:11px 14px;margin:{"0 -14px" if hot else "0"};border-radius:{16 if hot else 0}px">'
                  f'<div class="v" style="font-size:28px;line-height:1.1;color:{INK}">{a.upper()}</div><div class="b" style="font-size:25px;line-height:1.2;color:{INK}">{b}</div>'
                  f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{c}</div></div>')
-    s.slab("tl", M, 290, 1728, 650, label("Campaign timeline", 28, INK, "margin-bottom:14px") + grid, pad="30px 44px")
+    s.slab("tl", M, 280, 1728, 560, label("Campaign timeline", 28, INK, "margin-bottom:10px") + grid, pad="26px 44px")
     s.text_pair("tl", INK, SLAB, 25, False)
+    s.pill("callout", M, 868, "SIGN-OFF THIS WEEK KEEPS CLOSE TO A MONTH OF PROMOTION.", 32, align="left")
+    s.el("callout", M, 868, 1100, 67); s.text_pair("callout", INK, CTA, 32, True)
     s.sticker("st_clock", stk.clock(width=190), 1620, 70, 8)
     s.sticker("st_record", stk.record(width=230), 1360, 56, -6)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -616,11 +617,13 @@ async def s_run(n):
     s = Slide(n); s.chrome("CAMPAIGN AND EVENT TIMELINE  (RUN OF SHOW)")
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 900, "Run of show,", "10 November.", 76, 56, gap=4)
-    ros = [("9:00 AM", "Setup begins: decor, sound, stage and photo booths"), ("5:00 PM", "Gates open"), ("7:00 PM", "DJ set begins"), ("8:00 PM", "Entry closes"), ("9:00 PM", "DJ set ends, guided exit")]
-    inner = "".join(f'<div style="display:flex;gap:34px;align-items:center;padding:20px 0;border-top:3px solid #2A2A2E"><div class="v" style="flex:none;width:270px;font-size:56px;line-height:1;color:{ORCHID}">{t}</div>'
+    ros = [("9:00 AM", "Setup begins: decor, sound, stage and photo booths"), ("5:00 PM", "Gates open (kitchen live: times set with Rever)"), ("7:00 PM", "DJ set begins"), ("8:00 PM", "Entry closes"), ("9:00 PM", "DJ set ends, guided exit")]
+    inner = "".join(f'<div style="display:flex;gap:34px;align-items:center;padding:18px 0;border-top:3px solid #2A2A2E"><div class="v" style="flex:none;width:270px;font-size:54px;line-height:1;color:{ORCHID}">{t}</div>'
                     f'<div class="b" style="font-size:31px;line-height:1.25;color:{WHITE}">{a}</div></div>' for t, a in ros)
     s.add(f'<div class="measure" data-tag="ros" style="position:absolute;left:{M}px;top:310px;width:1000px;z-index:6">{inner}</div>')
-    s.el("ros", M, 310, 1000, 600); s.text_pair("ros", WHITE, GROUND, 31, False)
+    s.el("ros", M, 310, 1000, 560); s.text_pair("ros", WHITE, GROUND, 31, False)
+    s.pill("callout", M, 868, "KITCHEN PREP, SERVICE AND LAST-ORDER TIMES: SET WITH REVER.", 28, align="left")
+    s.el("callout", M, 868, 1000, 59); s.text_pair("callout", INK, CTA, 28, True)
     s.photo_rect("ph_a", PH["crowd"], 1180, 230, 628, 690, "50% 50%", cap="The hall, Disco Diwali 2025")
     s.sticker("st_record", stk.record(width=240), 1500, 640, -6, 11)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -630,27 +633,27 @@ async def s_run(n):
 async def s_crowd(n):
     s = Slide(n); s.chrome("A WELL-RUN NIGHT")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 104, 1400, "We manage the crowd.", "You focus on the food.", 76, 56)
-    cards = [("Entry", "QR ticket check-in and ID verification at the door", stk.badge(130)),
-             ("Security", "We bring in bouncers for security, so Rever's team can keep serving", stk.shield(150)),
-             ("Run-through", "A full technical run-through before event day", stk.clipboard(140))]
-    cw, gap = 560, 24
+    await s.heading(M, 104, 1700, "We run the door and the floor.", "Rever runs the kitchen.", 70, 56)
+    cards = [("Entry", "QR ticket check-in and ID verification at the door. Guests show ID first, then the masks go on.", ddt_ticket(150)),
+             ("Security", "We bring in bouncers for security at the door.", stk.shield(130)),
+             ("Age and alcohol", "Rever's rules apply on the night. We confirm them with Rever before anything is announced publicly.", stk.badge(104)),
+             ("Photos and consent", "Content showing guests follows recorded consent, with guardian consent for under-18s.", stk.camera(130))]
     for i, (t, d, st) in enumerate(cards):
-        inner = (f'<div style="display:flex;flex-direction:column;height:100%"><div style="display:flex;justify-content:space-between;align-items:center;height:150px;margin-bottom:14px">'
-                 f'<div class="v" style="font-size:44px;line-height:1.02;color:{INK};text-transform:uppercase">{t}</div><div style="flex:none">{st[0]}</div></div>'
-                 f'<div class="b" style="font-size:31px;line-height:1.35;color:{INK}">{d}</div></div>')
-        s.slab(f"card{i}", M + i * (cw + gap), 300, cw, 400, inner, pad="30px 40px")
-    s.text_pair("card0", INK, SLAB, 31, False)
-    s.photo_rect("ph_a", PH["green"], M, 730, 1728, 210, "50% 62%", cap="The dance floor at Disco Diwali 2025")
+        x, y = M + (i % 2) * 888, 296 + (i // 2) * 320
+        inner = (f'<div style="display:flex;gap:24px;height:100%"><div style="flex:1"><div class="v" style="font-size:36px;line-height:1.05;color:{INK};margin-bottom:14px;text-transform:uppercase">{t}</div>'
+                 f'<div class="b" style="font-size:27px;line-height:1.33;color:{INK}">{d}</div></div>'
+                 f'<div style="flex:none;width:140px;display:flex;justify-content:center;padding-top:4px">{st[0]}</div></div>')
+        s.slab(f"card{i}", x, y, 840, 292, inner, pad="28px 34px")
+    s.text_pair("card0", INK, SLAB, 27, False)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
 async def s_ask(n):
-    s = Slide(n); s.chrome("A WELL-RUN NIGHT  (2 OF 2)")
+    s = Slide(n); s.chrome("THE ASKS")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 104, 1200, "What we ask", "of Rever.", 76, 56)
+    await s.heading(M, 104, 1200, "What we ask of Rever.", "Every ask is open to discussion.", 76, 56)
     ask = [("The venue on 10 November", "Access to Rever Skydeck from the morning, for setup, decor, sound and stage, through to the close of the event", stk.pin(110)),
-           ("Food and service", "As Exclusive Food Partner, a curated event menu and service for 400+ guests at student-friendly prices", stk.cloche(130)),
+           ("Food and service", "As Exclusive Food Partner, an event menu designed by Rever and service for 400+ guests, with prices set by Rever and agreed up front", stk.cloche(130)),
            ("A named contact", "One person at Rever we coordinate with", stk.badge(96)),
            ("Promotion cards (optional)", "A return incentive for guests, if Rever would like to include one", ddt_ticket(150))]
     for i, (t, d, st) in enumerate(ask):
@@ -669,12 +672,12 @@ async def s_why(n):
     await s.heading(M, 104, 1400, "We looked at many venues.", "Rever stood out.", 76, 56)
     rs = [("The food.", "Great food sits at the heart of a good evening, and Rever's is what we want our guests to taste."),
           ("The kitchen.", "One kitchen running one curated menu means consistent quality and short lines."),
-          ("A menu the youth connects with.", "Food that gets people talking, posting and coming back."),
-          ("A shared goal.", "Rever wants to build with a younger audience. We bring that audience to the table.")]
+          ("A menu that gets people talking.", "Food that gets people talking, posting and coming back."),
+          ("A shared goal.", "If Rever wants to build with a younger audience, this is a first introduction, on Rever's terms.")]
     cw, gap = 411, 28
     for i, (t, d) in enumerate(rs):
         inner = (f'<div class="st" style="font-size:150px;line-height:.9;color:{INK};margin-bottom:16px">{i + 1}</div>'
-                 f'<div class="v" style="font-size:34px;line-height:1.05;color:{INK};text-transform:uppercase;margin-bottom:14px">{t}</div>'
+                 f'<div class="v" style="font-size:31px;line-height:1.05;color:{INK};text-transform:uppercase;margin-bottom:14px">{t}</div>'
                  f'<div class="b" style="font-size:27px;line-height:1.34;color:{INK}">{d}</div>')
         s.slab(f"r{i}", M + i * (cw + gap), 320, cw, 490, inner, pad="26px 30px")
     s.text_pair("r0", INK, SLAB, 27, False)
@@ -692,18 +695,40 @@ async def s_exchange(n):
         f'<div style="display:flex;gap:18px;align-items:center;margin-bottom:26px">{numdot(i + 1, 50, 26, WHITE)}<div class="v" style="font-size:31px;line-height:1.1;color:{INK}">{t.upper()}</div></div>' for i, t in enumerate(items)))
     s.slab("brings", M, 250, 480, 540, inner, rot=-1.0, fill=ORCHID, border=12, pad="34px 34px", tilt=True)
     s.text_pair("brings", INK, ORCHID, 31, True)
-    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "Direct access to 400+ high school and first-year college guests"),
-           ("Visibility", "Logo on all deliverables and core team shirts, on-ground branding, stage mentions"), ("Reputation", "Google reviews and a reviews QR code at the event"),
+    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "An introduction to 400+ high school and first-year college guests"),
+           ("Visibility", "Logo on all deliverables and core team shirts, on-ground branding, stage mentions"), ("Reputation", "A Google reviews QR code at the event, guests choose whether to post"),
            ("Promotion", "Close to a month across Instagram and our WhatsApp community, business card promotion"),
-           ("Content", "5 to 10 planned reels, standalone Rever reels, free use of our photos and videos"), ("Flexibility", "Every element is open to discussion and can be expanded")]
+           ("Content", "5 to 10 planned reels, standalone Rever reels, our photos and videos for Rever to use, with guest consent"), ("Flexibility", "Every element is open to discussion and can be expanded")]
     inner = label("Rever receives", 30, INK, "margin-bottom:10px")
     inner += "".join(f'<div style="display:flex;gap:22px;align-items:center;padding:11px 0;border-top:3px solid {ORCHID}"><div class="v" style="flex:none;width:215px;font-size:26px;color:{INK};text-transform:uppercase">{a}</div>'
                      f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{b}</div></div>' for a, b in rec)
     s.slab("receives", 620, 236, 1204, 604, inner, pad="26px 36px")
     s.text_pair("receives", INK, SLAB, 25, False)
-    s.pill("callout", M, 866, "AQUATERRA BRINGS THE AUDIENCE. REVER BRINGS THE ROOM AND THE MENU.", 32, align="left")
+    s.pill("callout", M, 866, "EACH SIDE BRINGS SOMETHING REAL. THE TERMS ARE AGREED IN WRITING.", 32, align="left")
     s.el("callout", M, 866, 1350, 68); s.text_pair("callout", INK, CTA, 32, True)
     s.sticker("st_cloche", stk.cloche(width=180), 270, 640, -6)
+    await s.render(f"{OUT}/slide_{n:02d}.png")
+
+
+async def s_terms(n):
+    s = Slide(n); s.chrome("TERMS")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 104, 1500, "Terms to agree together.", "In writing, before anything is announced.", 76, 54)
+    items = [("The venue", "Rever sets the terms for the venue on 10 November, including setup from the morning"),
+             ("Food and prices", "Rever designs the menu and sets the prices. Pre-order with the ticket, or pay on the night: Rever's call"),
+             ("Guest cap and covers", "A guest cap and a minimum number of paid covers, so neither side carries the risk alone"),
+             ("Costs", "Who covers decor, sound, stage, banners and menu boards, settled up front"),
+             ("Approvals", "Rever approves every post, reel and banner that carries its name before it goes out"),
+             ("Money", "Any fee, revenue share or invoice on one page. AquaTerra shares its 80G and Darpan documents"),
+             ("Promotion cards", "Optional: a return incentive on terms Rever sets"),
+             ("Timing", "Sign-off this week keeps close to a month of promotion")]
+    cw = 840
+    for i, (t, d) in enumerate(items):
+        x, y = M + (i % 2) * 888, 290 + (i // 2) * 164
+        inner = (f'<div style="display:flex;gap:22px;align-items:center;height:100%">{numdot(i + 1, 56, 28)}<div><div class="v" style="font-size:30px;line-height:1.05;color:{INK};text-transform:uppercase">{t}</div>'
+                 f'<div class="b" style="font-size:24px;line-height:1.26;color:{INK};margin-top:6px">{d}</div></div></div>')
+        s.slab(f"term{i}", x, y, cw, 148, inner, pad="10px 28px", border=8)
+    s.text_pair("term0", INK, SLAB, 24, False)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
@@ -758,17 +783,14 @@ ORDER = [
     s_hist2,
     s_mosaic,
     s_masq,
-    P("phone", "Every photo\nis shareable.", "Guests filming on the dance floor at Disco Diwali 2025", "50% 45%", split=True, tsize=96,
-      stickers=[(stk.phone(width=190), 700, 770, 8)]),
     s_content,
     s_timeline,
     s_run,
-    P("purple", "The hall,\nafter dark.", "The hall at Disco Diwali 2025 under purple light", "50% 55%", tsize=108),
     s_crowd,
     s_ask,
     s_why,
-    P("wall", "The room is\ndressed for it.", "The Disco Diwali 2025 photo wall: black and silver balloons, red curtain, gold DIWALI blocks", "50% 45%", tsize=104),
     s_exchange,
+    s_terms,
     s_next,
 ]
 TOTAL = len(ORDER)
