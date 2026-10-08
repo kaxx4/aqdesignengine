@@ -176,8 +176,9 @@ async def slide(kind, canvas, out, idx=None):
     elif kind == "close":
         items = [dict(text=max(DECK.get("close", ("", "WHATSAPP GROUP", ""))[:2], key=len), font="d", size=96, weight=900)]
     elif kind == "cover":
-        items = [dict(text="TERRATHON", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=ST_F),
-                 dict(text="MINI-FEETE", font="StretchPro", size=100, weight=400, letter_spacing="-0.02em", features=ST_F),
+        CT = DECK.get("cover_titles", ("TERRATHON", "MINI-FEETE"))
+        items = [dict(text=CT[0], font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=ST_F),
+                 dict(text=CT[1], font="StretchPro", size=100, weight=400, letter_spacing="-0.02em", features=ST_F),
                  dict(text=DECK["head"][0], font="d", size=124, weight=900), dict(text=DECK["head"][1], font="d", size=80, weight=400)]
     m = await B.measure_text(items, extra_css=tt.FONT_CSS) if items else []
 
@@ -196,7 +197,7 @@ async def slide(kind, canvas, out, idx=None):
             k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
             parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
     elif kind == "cover":
-        im, src = sticker_src("carnival.png"); ch = L["cover_hero_h"]; w = ch * im.width / im.height
+        im, src = sticker_src(DECK.get("cover_hero", "carnival.png")); ch = L["cover_hero_h"]; w = ch * im.width / im.height
         parts.append(put(src, "hero", (W - w) / 2, L["cover_hero_top"], w, ch, 3))
     else:
         im, src = sticker_src("smiley.png"); mw, mh = L["hero_max"]
@@ -223,7 +224,7 @@ async def slide(kind, canvas, out, idx=None):
         el("fest_pill", px_, py_, pw, ph_)
         parts.append(f'<div class="measure" data-tag="fest_pill" style="position:absolute;left:{px_}px;top:{py_}px;width:{pw}px;height:{ph_}px;'
                      f'border:6px solid {ORCHID};border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center;z-index:7;'
-                     f'font-family:var(--d);font-weight:900;font-size:31px;color:{INK}">TERRATHON</div>')
+                     f'font-family:var(--d);font-weight:900;font-size:31px;color:{INK}">{DECK.get("pill", "TERRATHON")}</div>')
 
     # ---- cover header ----
     if kind == "cover":
@@ -241,8 +242,8 @@ async def slide(kind, canvas, out, idx=None):
         t_px = 100 * 620 / m[0]["text_w"]; b_px = 100 * 830 / m[1]["text_w"]
         stx = lambda px_, sk=tt.ST_STROKE, ls=tt.ST_LS: (f'font-family:StretchPro;font-weight:400;-webkit-text-stroke:{sk * px_}px {INK};letter-spacing:{ls}em;'
                            f'font-feature-settings:{ST_F};font-size:{px_}px;line-height:1.05')
-        body = (f'<div style="{stx(t_px)}">TERRATHON</div><div style="{stx(b_px, 0.03, -0.02)};margin-top:6px">MINI-FEETE</div>'
-                f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DATE.replace("&", "&amp;")}</div>')
+        body = (f'<div style="{stx(t_px)}">{DECK.get("cover_titles", ("TERRATHON", "MINI-FEETE"))[0]}</div><div style="{stx(b_px, 0.03, -0.02)};margin-top:6px">{DECK.get("cover_titles", ("TERRATHON", "MINI-FEETE"))[1]}</div>'
+                f'<div style="font-family:var(--d);font-weight:400;font-size:38px;line-height:1.15;margin-top:14px">{DECK.get("cover_sub", DATE).replace("&", "&amp;")}</div>')
     elif kind == "point":
         import re
         HEAD_MAX, TAG_PX = (92, 36) if DECK.get("compact") else (104, 40)      # compact box: smaller type so 2 headline lines + 2 tagline lines still fit
