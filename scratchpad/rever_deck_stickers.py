@@ -197,6 +197,14 @@ def psign(width=230, seed=18):
     return wrap(art, (10, 0, 220, 240), width, seed)
 
 
+def shield(width=200, seed=21):
+    d = "M120,16 L204,46 C204,120 176,190 120,226 C64,190 36,120 36,46 Z"
+    art = (path(d, BD, 'transform="translate(0 8)"') + path(d, B) + path("M120,16 L36,46 C36,120 64,190 120,226 C96,150 98,80 120,16 Z", BL, 'opacity=".35"')
+           + path("M120,48 L180,68 C180,118 160,162 120,190 C80,162 60,118 60,68 Z", C) + star4(120, 118, 46, O, 0, .36) + circ(120, 118, 9, C)
+           + star4(210, 30, 16, Y, 0, .3) + star4(26, 200, 12, G, 0, .3))
+    return wrap(art, (0, 0, 240, 244), width, seed)
+
+
 def heart(width=200, seed=19):
     d = "M120,208 C40,152 24,110 24,76 C24,44 48,26 74,26 C98,26 112,40 120,58 C128,40 142,26 166,26 C192,26 216,44 216,76 C216,110 200,152 120,208 Z"
     art = (path(d, OD) + path(d, O, 'transform="translate(-4 -6)"') + stroke("M52,76 C52,60 62,50 78,50", C, 9, 'opacity=".9"') + star4(214, 30, 16, Y, 0, .3))
@@ -210,7 +218,7 @@ def calendar(width=240, seed=20):
     return wrap(art, (10, 0, 240, 230), width, seed)
 
 
-KIT = dict(mask=mask, cloche=cloche, burger=burger, pin=pin, camera=camera, phone=phone, megaphone=megaphone, review=review, shirt=shirt, clock=clock,
+KIT = dict(shield=shield, mask=mask, cloche=cloche, burger=burger, pin=pin, camera=camera, phone=phone, megaphone=megaphone, review=review, shirt=shirt, clock=clock,
            badge=badge, record=record, clipboard=clipboard, psign=psign, heart=heart, calendar=calendar)
 
 

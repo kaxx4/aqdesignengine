@@ -622,20 +622,20 @@ async def s_run(n):
 
 # ---------------------------------------------------------------- a well-run night, in two parts
 async def s_crowd(n):
-    s = Slide(n); s.chrome("A WELL-RUN NIGHT  (1 OF 2)")
+    s = Slide(n); s.chrome("A WELL-RUN NIGHT")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 104, 1200, "We manage the crowd.", "You run your kitchen.", 76, 56)
-    cards = [("Volunteers", "A briefed, trained team with clear roles and a single point of contact for Rever", stk.shirt(130)),
-             ("Entry", "QR ticket check-in, ID verification and security at the door", stk.badge(106)),
-             ("Parking and flow", "Marked drop-off, volunteer parking marshals and a smooth exit", stk.psign(112)),
-             ("Run-through", "A full technical run-through before event day", stk.clipboard(118))]
+    await s.heading(M, 104, 1400, "We manage the crowd.", "You focus on the food.", 76, 56)
+    cards = [("Entry", "QR ticket check-in and ID verification at the door", stk.badge(130)),
+             ("Security", "We bring in bouncers for security, so Rever's team can keep serving", stk.shield(150)),
+             ("Run-through", "A full technical run-through before event day", stk.clipboard(140))]
+    cw, gap = 560, 24
     for i, (t, d, st) in enumerate(cards):
-        x, y = M + (i % 2) * 888, 310 + (i // 2) * 320
-        inner = (f'<div style="display:flex;gap:24px;height:100%"><div style="flex:1"><div class="v" style="font-size:38px;line-height:1.02;color:{INK};margin-bottom:16px;text-transform:uppercase">{t}</div>'
-                 f'<div class="b" style="font-size:28px;line-height:1.35;color:{INK}">{d}</div></div>'
-                 f'<div style="flex:none;width:150px;display:flex;justify-content:center;padding-top:6px">{st[0]}</div></div>')
-        s.slab(f"card{i}", x, y, 840, 292, inner, pad="32px 36px")
-    s.text_pair("card0", INK, SLAB, 28, False)
+        inner = (f'<div style="display:flex;flex-direction:column;height:100%"><div style="display:flex;justify-content:space-between;align-items:center;height:150px;margin-bottom:14px">'
+                 f'<div class="v" style="font-size:44px;line-height:1.02;color:{INK};text-transform:uppercase">{t}</div><div style="flex:none">{st[0]}</div></div>'
+                 f'<div class="b" style="font-size:31px;line-height:1.35;color:{INK}">{d}</div></div>')
+        s.slab(f"card{i}", M + i * (cw + gap), 300, cw, 400, inner, pad="30px 40px")
+    s.text_pair("card0", INK, SLAB, 31, False)
+    s.photo_rect("ph_a", PH["green"], M, 730, 1728, 210, "50% 62%", cap="The dance floor at Disco Diwali 2025")
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
