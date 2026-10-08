@@ -404,7 +404,7 @@ async def s_vis2(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1200, "Promotion and content,", "in detail.", 76, 56, gap=4)
     cards = [("Promotion", ["Rever promoted on Instagram and across our WhatsApp community for close to a month", "Business card promotion for Rever", "A thank-you post after the event"], stk.megaphone(170)),
-             ("Content", ["5 to 10 planned reels, plus regular casual content", "Free use of our event photos and videos for Rever's own marketing"], stk.phone(110))]
+             ("Content", ["5 to 10 planned reels, plus regular casual content", "Free use of our event photos and videos for Rever's own marketing", "1.11M+ impressions across our last few events", "1,800+ members in our WhatsApp community, where Rever is promoted"], stk.phone(110))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 480, head_icon(t, st) + bullets(items, 29, 22), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 29, False)
