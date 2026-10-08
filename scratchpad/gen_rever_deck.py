@@ -392,7 +392,7 @@ async def s_vis1(n):
     await s.heading(M, 104, 900, "Visibility,", "in detail.", 76, 56, gap=4)
     cards = [("Visibility", ["Rever logo on all event deliverables: posters, posts, tickets, the ticket page and WhatsApp broadcasts", "Rever logo on all AquaTerra core team shirts",
                              "“Exclusive Food and Location Partner” billing everywhere", "On-ground branding at the venue and stage mentions on the night"], stk.shirt(140)),
-             ("Reputation", ["Rever's Google reviews QR code displayed at the event, so guests can choose to leave their own honest review", "Our team does not write, buy or solicit reviews for Rever"], stk.review(170))]
+             ("Reputation", ["Rever's Google reviews QR code displayed at the event, so guests can choose to leave their own honest review"], stk.review(170))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 640, head_icon(t, st) + bullets(items, 30, 24), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 30, False)
