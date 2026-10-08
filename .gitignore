@@ -48,3 +48,7 @@ scratchpad/cricket_zip/
 # TerraThon carousel photos: real people at events, PUBLIC repo. Regenerate from the source zips with scratchpad/tt_reasons8_prep.py
 engine/assets/terrathon/carousel_photos/
 engine/assets/terrathon/recap_photos/
+
+# REVER deck: local renders and working images contain real guest photos (public repo)
+scratchpad/rever_deck_out/
+scratchpad/work/
