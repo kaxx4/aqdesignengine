@@ -195,6 +195,12 @@ class Slide:
 
     async def render(s, out, ignore_extra=()):
         html = B.page(W, H, GROUND, "".join(s.parts), grain=False)
+        txt = re.sub(r"<style>.*?</style>|<svg.*?</svg>|<img[^>]*>", " ", "".join(s.parts), flags=re.S)
+        txt = re.sub(r"<br\s*/?>", " ", txt); txt = re.sub(r"</(div|p|span)>", "\n", txt); txt = re.sub(r"<[^>]+>", "", txt)
+        import html as _h
+        lines = [" ".join(_h.unescape(l).split()) for l in txt.split("\n")]
+        os.makedirs(f"{OUT}/text", exist_ok=True)
+        open(f"{OUT}/text/{os.path.basename(out)[:-4]}.txt", "w").write("\n".join(l for l in lines if l))
         names = [e[0] for e in s.els]
         deco = [n for n in names if n.startswith(("st_", "star", "ph_"))]
         ign = set()
