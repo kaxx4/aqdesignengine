@@ -57,6 +57,13 @@ QR = b64(os.path.join(ROOT, "engine/assets/terrathon/qr_instagram_ngo_aquaterra.
 _PH = {}
 
 
+SRC = os.path.join(ROOT, "scratchpad", "rever_deck_out", "src")   # user-supplied screenshots, cropped (git-ignored)
+
+
+def src_img(name):
+    return b64(os.path.join(SRC, name), "image/png")
+
+
 def photo_full(path, maxw, q=84):
     """Whole photo (aspect kept), resized so its long side is maxw, as a data URI."""
     k = (path, maxw, "full")
@@ -406,12 +413,12 @@ async def s_vis2(n):
     cards = [("Promotion", ["Rever promoted on Instagram and across our WhatsApp community for close to a month", "Business card promotion for Rever", "A thank-you post after the event"], stk.megaphone(170)),
              ("Content", ["5 to 10 planned reels, plus regular casual content", "Free use of our event photos and videos for Rever's own marketing", "1.11M+ impressions across our last few events", "1,800+ members in our WhatsApp community, where Rever is promoted"], stk.phone(110))]
     for i, (t, items, st) in enumerate(cards):
-        s.slab(f"slab{i}", M + i * 888, 300, 840, 480, head_icon(t, st) + bullets(items, 29, 22), pad="34px 44px")
+        s.slab(f"slab{i}", M + i * 888, 290, 840, 520, head_icon(t, st, 40, 100) + bullets(items, 26, 16), pad="30px 44px")
     s.text_pair("slab0", INK, SLAB, 29, False)
     inner = (f'<div style="display:flex;gap:44px;align-items:center;height:100%"><div class="v" style="flex:none;font-size:34px;line-height:1.05;color:{ORCHID}">OUR<br>STANDARD</div>'
              f'<div class="b" style="font-size:27px;line-height:1.36;color:{WHITE}">This list is a baseline, not a ceiling. We aim to overachieve on every deliverable we commit to a sponsor. '
              f'We have done that for our partners in the past, and we aim to do the same for Rever.</div></div>')
-    s.panel("standard", M, 812, 1728, 140, inner, pad="12px 44px")
+    s.panel("standard", M, 830, 1728, 124, inner, pad="10px 44px")
     s.text_pair("standard", WHITE, "#0B0B0D", 27, False)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
@@ -484,12 +491,13 @@ async def s_hist1(n):
     td = lambda t: f'<div class="v" style="font-size:25px;line-height:1.15;color:{INK};padding:16px 0 10px">{t}</div>'
     cols = "grid-template-columns:260px 1fr 200px 150px;column-gap:18px"
     tab = (f'<div style="display:grid;{cols}">{th("Edition")}{th("Venue")}{th("Footfall")}{th("Funds raised")}'
+           f'{td("DISCO DIWALI 2024")}{td("ORBIT CRYSTAL")}{td("350+")}{td("RS. 1.7 LAKH")}'
            f'{td("DISCO DIWALI 2025")}{td("60 CHOWRINGHEE, WITH DJ AMAY")}{td("500+")}{td("RS. 4.3 LAKH")}'
            f'{td("DISCO DIWALI 2026")}{td("REVER SKYDECK, MASQUERADE")}{td("300 to 350<br>(max)")}{td("TO COME")}</div>')
-    s.slab("table", M, 290, 1080, 372, label("Disco Diwali, edition by edition", 26, INK, "margin-bottom:14px") + tab, pad="28px 36px")
+    s.slab("table", M, 280, 1080, 430, label("Disco Diwali, edition by edition", 26, INK, "margin-bottom:14px") + tab, pad="28px 36px")
     s.text_pair("table", INK, SLAB, 25, True)
-    inner = f'<div class="sg" style="font-size:40px;line-height:1.1;color:{INK}">2025 filled the room and raised Rs. 4.3 lakh. 2026 is built around Rever Skydeck.</div>'
-    s.slab("callout", M, 700, 1080, 240, inner, rot=-1.0, fill=ORCHID, border=12, pad="30px 44px", tilt=True)
+    inner = f'<div class="sg" style="font-size:36px;line-height:1.1;color:{INK}">2025 filled the room and raised Rs. 4.3 lakh. 2026 is built around Rever Skydeck.</div>'
+    s.slab("callout", M, 736, 1080, 210, inner, rot=-1.0, fill=ORCHID, border=12, pad="30px 44px", tilt=True)
     s.text_pair("callout", INK, ORCHID, 44, True)
     s.add(f'<div class="measure k" data-tag="lab" style="position:absolute;left:1240px;top:290px;font-size:24px;line-height:1;color:{ORCHID};z-index:6;white-space:nowrap">ACROSS THE AQ EVENTS PORTFOLIO</div>')
     s.el("lab", 1240, 290, 560, 26); s.text_pair("lab", ORCHID, GROUND, 24, False)
@@ -762,6 +770,79 @@ async def s_next(n):
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
+# ---------------------------------------------------------------- supplied content: past events, sponsors, community
+EVENTS = [("The Starry Night", "starry", "550+", "Rs. 3 lakh", "Sky Turf, DJ Saif Side"),
+          ("Disco Diwali", "dd", "350+", "Rs. 1.7 lakh", "Orbit Crystal, 27th October"),
+          ("Paradox", "paradox", "1000+", "Rs. 8.9 lakh", ""),
+          ("The AQ Punjabi Night", "punjabi", "400+", "Rs. 2.2 lakh", "60 Chowringhee, DJ Omar, 8th June 2025"),
+          ("Starry Night 2.0", "starry2", "550+", "Rs. 6.7 lakh", "Sky Turf, DJ Rajiv, 26th December"),
+          ("Paradox 2026", "paradox26", "1000+", "", "Sports: 11:11, VS Arena, Battleground. Business event: Desi Lane, Esplanade"),
+          ("Summer Sunset", "summer", "500+", "", "60 Chowringhee Banquet, 6th June 2026")]
+
+
+async def s_events(n):
+    s = Slide(n); s.chrome("PROMINENT PAST EVENTS")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 96, 1500, "Prominent past events.", None, 76)
+    cw, chh, gx, gy = 408, 330, 32, 24
+    for i, (name, key, foot, funds, where) in enumerate(EVENTS):
+        x, y = M + (i % 4) * (cw + gx), 236 + (i // 4) * (chh + gy)
+        lines = f'<div class="v" style="font-size:31px;line-height:1;color:{INK}">FOOTFALL {foot}</div>'
+        if funds: lines += f'<div class="v" style="font-size:24px;line-height:1.1;color:{INK};margin-top:8px">RAISED {funds.upper()}</div>'
+        if where: lines += f'<div class="b" style="font-size:20px;line-height:1.22;color:{INK};margin-top:10px">{where}</div>'
+        inner = (f'<div class="v" style="font-size:25px;line-height:1.05;color:{INK};text-transform:uppercase;margin-bottom:14px">{name}</div>'
+                 f'<div style="display:flex;gap:18px;align-items:flex-start"><img src="{src_img(f"poster_{key}.png")}" style="width:150px;border-radius:12px;flex:none">'
+                 f'<div style="flex:1">{lines}</div></div>')
+        s.slab(f"ev{i}", x, y, cw, chh, inner, pad="20px 22px", border=8, radius=28)
+    s.text_pair("ev0", INK, SLAB, 20, False)
+    x, y = M + 3 * (cw + gx), 236 + (chh + gy)
+    s.slab("evcall", x, y, cw, chh, f'<div class="sg" style="font-size:34px;line-height:1.1;color:{INK};height:100%;display:flex;align-items:center">Disco Diwali 2025: 500+ guests, Rs. 4.3 lakh raised.</div>',
+           fill=ORCHID, border=10, pad="24px 28px", radius=28)
+    s.text_pair("evcall", INK, ORCHID, 34, True)
+    await s.render(f"{OUT}/slide_{n:02d}.png")
+
+
+async def s_sponsors(n):
+    s = Slide(n); s.chrome("PAST SPONSORS")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 96, 1500, "Brands that have", "partnered with AquaTerra before.", 76, 56)
+    iw = 1100; ih = int(iw * 510 / 905)
+    s.add(f'<img class="measure" data-tag="ph_sponsors" src="{src_img("sponsors.png")}" style="position:absolute;left:{(W - iw) // 2}px;top:300px;width:{iw}px;height:{ih}px;border:10px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box;background:#fff">')
+    s.el("ph_sponsors", (W - iw) // 2 - 10, 290, iw + 20, ih + 20)
+    await s.render(f"{OUT}/slide_{n:02d}.png")
+
+
+async def s_community(n):
+    s = Slide(n); s.chrome("THE COMMUNITY")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 96, 1500, "Who the AQ community is.", None, 76)
+    # age diversity: native pie + legend
+    import math
+    data = [("14 to 15 years (Class 9)", 260, 14.4, "#8FCBFF"), ("15 to 16 years (Class 10)", 265, 14.6, "#4DA3F5"), ("16 to 17 years (Class 11)", 370, 20.4, "#1E88E5"),
+            ("17 to 18 years (Class 12)", 450, 24.9, "#1666B8"), ("18+ years (college / university)", 465, 25.7, "#0A3D8F")]
+    tot = sum(d[1] for d in data); a0 = -math.pi / 2; paths = ""
+    for lab, v, pc, col in data:
+        a1 = a0 + 2 * math.pi * v / tot
+        x0, y0, x1, y1 = 150 + 140 * math.cos(a0), 150 + 140 * math.sin(a0), 150 + 140 * math.cos(a1), 150 + 140 * math.sin(a1)
+        paths += f'<path d="M150,150 L{x0:.1f},{y0:.1f} A140,140 0 {1 if a1 - a0 > math.pi else 0},1 {x1:.1f},{y1:.1f} Z" fill="{col}" stroke="#fff" stroke-width="4"/>'
+        a0 = a1
+    legend = "".join(f'<div style="display:flex;gap:14px;align-items:center;margin-bottom:16px"><span style="flex:none;width:26px;height:26px;border-radius:7px;background:{col};border:2px solid {INK}"></span>'
+                     f'<div><div class="v" style="font-size:22px;line-height:1.05;color:{INK};text-transform:uppercase">{lab}</div>'
+                     f'<div class="b" style="font-size:21px;line-height:1.2;color:{INK}">{v} respondents, {pc}%</div></div></div>' for lab, v, pc, col in data)
+    inner = (f'<div class="v" style="font-size:34px;line-height:1;color:{INK};margin-bottom:18px">AGE DIVERSITY</div>'
+             f'<div style="display:flex;gap:28px;align-items:center;margin-top:60px"><svg width="290" height="290" viewBox="0 0 300 300" style="flex:none">{paths}</svg><div>{legend}</div></div>')
+    s.slab("age", M, 230, 940, 700, inner, pad="32px 40px")
+    s.text_pair("age", INK, SLAB, 23, True)
+    inner = (f'<div class="v" style="font-size:34px;line-height:1;color:{WHITE};margin-bottom:16px">VOLUNTEER NETWORK</div>'
+             f'<div style="display:flex;gap:26px;align-items:flex-start"><div class="b" style="flex:1;font-size:26px;line-height:1.38;color:{WHITE}">'
+             'Students from DBPC, La Martiniere for Boys, La Martiniere for Girls, Modern High, Loreto and other leading Kolkata schools make up the AQ community. '
+             'Disco Diwali is where that happens, and it is growing every year.</div>'
+             f'<img src="{src_img("map.png")}" style="flex:none;width:300px;border-radius:18px;border:5px solid {ORCHID}"></div>')
+    s.panel("vol", 1060, 230, 764, 700, inner, pad="32px 36px")
+    s.text_pair("vol", WHITE, "#0B0B0D", 25, False)
+    await s.render(f"{OUT}/slide_{n:02d}.png")
+
+
 # ---------------------------------------------------------------- the running order
 ORDER = [
     s_cover,
@@ -779,7 +860,10 @@ ORDER = [
     P("friends", "Friend groups,\nfront and centre.", "Friends at an AquaTerra evening", "50% 100%", label_="AQUATERRA EVENTS", tsize=104),
     s_touch,
     s_hist1,
+    s_events,
+    s_sponsors,
     s_hist2,
+    s_community,
     s_mosaic,
     s_masq,
     s_content,
