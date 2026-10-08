@@ -170,7 +170,7 @@ class Slide:
         s.add(f'<div class="measure" data-tag="rever_pill" style="position:absolute;left:{W - M - rw}px;top:{H - 108}px;width:{rw}px;height:66px;border:6px solid {ORCHID};border-radius:999px;'
               f'background:#fff;display:flex;align-items:center;justify-content:center;z-index:12"><img src="{REVER}" style="height:36px"></div>')
         s.el("rever_pill", W - M - rw, H - 108, rw, 66)
-        s.add(f'<div class="measure k" data-tag="count" style="position:absolute;right:{M + rw + 24}px;top:{H - 90}px;font-size:24px;line-height:1;color:{WHITE};z-index:9;white-space:nowrap;text-shadow:0 2px 10px rgba(0,0,0,.8)">{s.n:02d} / {TOTAL}</div>')
+        s.add(f'<div class="measure k" data-tag="count" style="position:absolute;right:{M + rw + 16}px;top:{H - 96}px;font-size:24px;line-height:1;color:{WHITE};z-index:9;white-space:nowrap;background:rgba(0,0,0,.62);padding:8px 16px;border-radius:999px">{s.n:02d} / {TOTAL}</div>')
         s.el("count", W - M - rw - 24 - 96, H - 90, 96, 26)
         if kicker:
             s.add(f'<div class="measure k" data-tag="kicker" style="position:absolute;left:{M}px;top:56px;font-size:26px;line-height:1;color:{WHITE};z-index:6;white-space:nowrap">{kicker}</div>')
@@ -404,7 +404,7 @@ async def s_vis2(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1200, "Promotion and content,", "in detail.", 76, 56, gap=4)
     cards = [("Promotion", ["Rever promoted on Instagram and across our WhatsApp community for close to a month", "Business card promotion for Rever", "A thank-you post after the event"], stk.megaphone(170)),
-             ("Content", ["5 to 10 planned reels, plus regular casual content", "Our event photos and videos are free for Rever to use in its own marketing, with guest consent recorded"], stk.phone(110))]
+             ("Content", ["5 to 10 planned reels, plus regular casual content", "Our event photos and videos are free for Rever to use in its own marketing. Images of anyone under 18 are used only with guardian consent on file"], stk.phone(110))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 480, head_icon(t, st) + bullets(items, 29, 22), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 29, False)
@@ -457,7 +457,7 @@ async def s_touch(n):
     s = Slide(n); s.chrome("BRAND TOUCHPOINTS")
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1500, "Every point where a guest", "meets Rever.", 76, 56)
-    cols = [("Before the event", ["Rever tagged as venue on every ticket, post and story", "Reels shot at Rever Skydeck, published as collab posts",
+    cols = [("Before the event (after sign-off)", ["Rever tagged as venue on every ticket, post and story", "Reels shot at Rever Skydeck, published as collab posts",
                                 "Callouts across our WhatsApp community and broadcast lists", "Rever featured on the ticket page and confirmation messages"], 500, stk.phone(78)),
             ("At the event", ["Branded banners and standees at entry, stage and food counters", "Rever branding on photo booth backdrops", "Stage mentions from our hosts and the DJ set",
                               "Rever's menu as the only menu, with branded menu boards", "Reviews QR code displayed at high-traffic points"], 650, stk.camera(112)),
@@ -509,8 +509,8 @@ async def s_hist2(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 96, 1500, "Who runs it.", None, 76)
     inner = (f'<div class="b" style="font-size:29px;line-height:1.4;color:{INK}">'
-             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our student community spans 25+ schools, '
-             'including DBPC, La Martiniere for Boys, La Martiniere for Girls, Modern High and Loreto. Net proceeds fund welfare work across the city.</div>')
+             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our student community spans 25+ schools across Kolkata. '
+             'Net proceeds fund welfare work across the city.</div>')
     s.slab("who", M, 230, 860, 400, inner, pad="36px 40px")
     s.text_pair("who", INK, SLAB, 27, False)
     yrs = [("2021", 52), ("2022", 64), ("2023", 80), ("2024", 92), ("2025", 112)]
@@ -606,8 +606,8 @@ async def s_timeline(n):
                  f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{c}</div></div>')
     s.slab("tl", M, 280, 1728, 560, label("Campaign timeline", 28, INK, "margin-bottom:10px") + grid, pad="26px 44px")
     s.text_pair("tl", INK, SLAB, 25, False)
-    s.pill("callout", M, 868, "SIGN-OFF THIS WEEK KEEPS CLOSE TO A MONTH OF PROMOTION.", 32, align="left")
-    s.el("callout", M, 868, 1100, 67); s.text_pair("callout", INK, CTA, 32, True)
+    s.pill("callout", M, 868, "THE SOONER WE SIGN OFF, THE MORE OF THE MONTH WE CAN PROMOTE.", 32, align="left")
+    s.el("callout", M, 868, 1300, 67); s.text_pair("callout", INK, CTA, 32, True)
     s.sticker("st_clock", stk.clock(width=190), 1620, 70, 8)
     s.sticker("st_record", stk.record(width=230), 1360, 56, -6)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -622,8 +622,8 @@ async def s_run(n):
                     f'<div class="b" style="font-size:31px;line-height:1.25;color:{WHITE}">{a}</div></div>' for t, a in ros)
     s.add(f'<div class="measure" data-tag="ros" style="position:absolute;left:{M}px;top:310px;width:1000px;z-index:6">{inner}</div>')
     s.el("ros", M, 310, 1000, 560); s.text_pair("ros", WHITE, GROUND, 31, False)
-    s.pill("callout", M, 868, "KITCHEN PREP, SERVICE AND LAST-ORDER TIMES: SET WITH REVER.", 28, align="left")
-    s.el("callout", M, 868, 1000, 59); s.text_pair("callout", INK, CTA, 28, True)
+    s.pill("callout", M, 868, "KITCHEN TIMES: SET WITH REVER.", 28, align="left")
+    s.el("callout", M, 868, 640, 59); s.text_pair("callout", INK, CTA, 28, True)
     s.photo_rect("ph_a", PH["crowd"], 1180, 230, 628, 690, "50% 50%", cap="The hall, Disco Diwali 2025")
     s.sticker("st_record", stk.record(width=240), 1500, 640, -6, 11)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -636,14 +636,14 @@ async def s_crowd(n):
     await s.heading(M, 104, 1700, "We run the door and the floor.", "Rever runs the kitchen.", 70, 56)
     cards = [("Entry", "QR ticket check-in and ID verification at the door. Guests show ID first, then the masks go on.", ddt_ticket(150)),
              ("Security", "We bring in bouncers for security at the door.", stk.shield(130)),
-             ("Age and alcohol", "Rever's rules apply on the night. We confirm them with Rever before anything is announced publicly.", stk.badge(104)),
-             ("Photos and consent", "Content showing guests follows recorded consent, with guardian consent for under-18s.", stk.camera(130))]
+             ("Age and alcohol", "Rever sets the age and alcohol rules, in writing, as part of the agreement. We confirm them before anything is announced publicly.", stk.badge(104)),
+             ("Photos and consent", "Images of anyone under 18 are used only with guardian consent on file, and Rever approves each image before it goes out.", stk.camera(130))]
     for i, (t, d, st) in enumerate(cards):
-        x, y = M + (i % 2) * 888, 296 + (i // 2) * 320
+        x, y = M + (i % 2) * 888, 300 + (i // 2) * 290
         inner = (f'<div style="display:flex;gap:24px;height:100%"><div style="flex:1"><div class="v" style="font-size:36px;line-height:1.05;color:{INK};margin-bottom:14px;text-transform:uppercase">{t}</div>'
                  f'<div class="b" style="font-size:27px;line-height:1.33;color:{INK}">{d}</div></div>'
                  f'<div style="flex:none;width:140px;display:flex;justify-content:center;padding-top:4px">{st[0]}</div></div>')
-        s.slab(f"card{i}", x, y, 840, 292, inner, pad="28px 34px")
+        s.slab(f"card{i}", x, y, 840, 262, inner, pad="28px 34px")
     s.text_pair("card0", INK, SLAB, 27, False)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
@@ -695,10 +695,10 @@ async def s_exchange(n):
         f'<div style="display:flex;gap:18px;align-items:center;margin-bottom:26px">{numdot(i + 1, 50, 26, WHITE)}<div class="v" style="font-size:31px;line-height:1.1;color:{INK}">{t.upper()}</div></div>' for i, t in enumerate(items)))
     s.slab("brings", M, 250, 480, 540, inner, rot=-1.0, fill=ORCHID, border=12, pad="34px 34px", tilt=True)
     s.text_pair("brings", INK, ORCHID, 31, True)
-    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "An introduction to 400+ high school and first-year college guests"),
+    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "Reach to 400+ guests, mostly high school and first-year college students"),
            ("Visibility", "Logo on all deliverables and core team shirts, on-ground branding, stage mentions"), ("Reputation", "A Google reviews QR code at the event, guests choose whether to post"),
            ("Promotion", "Close to a month across Instagram and our WhatsApp community, business card promotion"),
-           ("Content", "5 to 10 planned reels, standalone Rever reels, our photos and videos for Rever to use, with guest consent"), ("Flexibility", "Every element is open to discussion and can be expanded")]
+           ("Content", "5 to 10 planned reels, standalone Rever reels, our photos and videos for Rever to use; under-18s only with guardian consent"), ("Flexibility", "Every element is open to discussion and can be expanded")]
     inner = label("Rever receives", 30, INK, "margin-bottom:10px")
     inner += "".join(f'<div style="display:flex;gap:22px;align-items:center;padding:11px 0;border-top:3px solid {ORCHID}"><div class="v" style="flex:none;width:215px;font-size:26px;color:{INK};text-transform:uppercase">{a}</div>'
                      f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{b}</div></div>' for a, b in rec)
@@ -718,10 +718,10 @@ async def s_terms(n):
              ("Food and prices", "Rever designs the menu and sets the prices. Pre-order with the ticket, or pay on the night: Rever's call"),
              ("Guest cap and covers", "A guest cap and a minimum number of paid covers, so neither side carries the risk alone"),
              ("Costs", "Who covers decor, sound, stage, banners and menu boards, settled up front"),
-             ("Approvals", "Rever approves every post, reel and banner that carries its name before it goes out"),
-             ("Money", "Any fee, revenue share or invoice on one page. AquaTerra shares its 80G and Darpan documents"),
+             ("Approvals", "Rever approves every post, reel, banner, ticket and broadcast that carries its name before it goes out"),
+             ("Money", "Any fee, revenue share and ticket price on one page, with tax treatment confirmed. We share our registration documents"),
              ("Promotion cards", "Optional: a return incentive on terms Rever sets"),
-             ("Timing", "Sign-off this week keeps close to a month of promotion")]
+             ("Timing", "The sooner we sign off, the more of the month we can use for promotion")]
     cw = 840
     for i, (t, d) in enumerate(items):
         x, y = M + (i % 2) * 888, 290 + (i // 2) * 164
@@ -734,7 +734,7 @@ async def s_terms(n):
 
 async def s_next(n):
     s = Slide(n); s.chrome("NEXT STEPS")
-    s.stars([(1760, 560), (30, 400)], 90)
+    s.stars([(1760, 560)], 90)
     await s.heading(M, 104, 1180, "Let's make this Diwali", "happen at Rever.", 76, 64)
     steps = ["A short meeting to align on the menu and deliverables", "A one-page agreement", "Campaign launch"]
     sx = M
@@ -754,6 +754,7 @@ async def s_next(n):
     s.add(f'<div class="measure" data-tag="qr" style="position:absolute;left:1350px;top:590px;width:320px;height:320px;border-radius:36px;background:#fff;border:14px solid {ORCHID};display:flex;align-items:center;justify-content:center;z-index:8;transform:rotate(3deg)">'
           f'<img src="{QR}" style="width:250px;height:250px"></div>')
     s.el("qr", 1350, 590, 320, 320)
+    s.add(f'<div class="measure k" data-tag="qrcap" style="position:absolute;left:1330px;top:922px;width:360px;text-align:center;font-size:21px;color:{WHITE};z-index:9">SCAN FOR @NGO.AQUATERRA</div>'); s.el("qrcap", 1330, 922, 360, 24); s.text_pair("qrcap", WHITE, GROUND, 21, False)
     s.cord(1830, 0, 280); s.ball("st_ball", 150, 1755, 270, 0)
     s.sticker("st_mask", stk.mask(width=210, plume=False, seed=5), 1690, 700, -10)
     s.sticker("st_diya", ddt_diya(150), 1236, 790, 6, 10)
@@ -775,10 +776,8 @@ ORDER = [
       stickers=[(stk.record(width=240), 680, 800, 6)]),
     s_aud1,
     s_aud2,
-    P("friends", "Friend groups,\nfront and centre.", "Friends at an AquaTerra evening", "50% 40%", label_="AQUATERRA EVENTS", tsize=104),
+    P("friends", "Friend groups,\nfront and centre.", "Friends at an AquaTerra evening", "50% 100%", label_="AQUATERRA EVENTS", tsize=104),
     s_touch,
-    P("booth", "The masks are\nalready here.", "Photo booth at Disco Diwali 2025, with masks and props", "50% 45%", tsize=104,
-      stickers=[(stk.mask(width=300, plume=False, seed=8), 1500, 90, 8)]),
     s_hist1,
     s_hist2,
     s_mosaic,
