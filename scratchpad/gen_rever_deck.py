@@ -783,63 +783,91 @@ EVENTS = [("The Starry Night", "starry", "550+", "Rs. 3 lakh", "Sky Turf, DJ Sai
 async def s_events(n):
     s = Slide(n); s.chrome("PROMINENT PAST EVENTS")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 96, 1500, "Prominent past events.", None, 76)
-    cw, chh, gx, gy = 408, 330, 32, 24
-    for i, (name, key, foot, funds, where) in enumerate(EVENTS):
-        x, y = M + (i % 4) * (cw + gx), 236 + (i // 4) * (chh + gy)
-        lines = f'<div class="v" style="font-size:31px;line-height:1;color:{INK}">FOOTFALL {foot}</div>'
-        if funds: lines += f'<div class="v" style="font-size:24px;line-height:1.1;color:{INK};margin-top:8px">RAISED {funds.upper()}</div>'
-        if where: lines += f'<div class="b" style="font-size:20px;line-height:1.22;color:{INK};margin-top:10px">{where}</div>'
-        inner = (f'<div class="v" style="font-size:25px;line-height:1.05;color:{INK};text-transform:uppercase;margin-bottom:14px">{name}</div>'
-                 f'<div style="display:flex;gap:18px;align-items:flex-start"><img src="{src_img(f"poster_{key}.png")}" style="width:150px;border-radius:12px;flex:none">'
-                 f'<div style="flex:1">{lines}</div></div>')
-        s.slab(f"ev{i}", x, y, cw, chh, inner, pad="20px 22px", border=8, radius=28)
-    s.text_pair("ev0", INK, SLAB, 20, False)
-    x, y = M + 3 * (cw + gx), 236 + (chh + gy)
-    s.slab("evcall", x, y, cw, chh, f'<div class="sg" style="font-size:34px;line-height:1.1;color:{INK};height:100%;display:flex;align-items:center">Disco Diwali 2025: 500+ guests, Rs. 4.3 lakh raised.</div>',
-           fill=ORCHID, border=10, pad="24px 28px", radius=28)
-    s.text_pair("evcall", INK, ORCHID, 34, True)
+    await s.heading(M, 96, 1500, "Events that filled the room.", "Footfall and funds raised, event by event.", 76, 52, gap=2)
+    rows = [("Paradox", "paradox", 1000, "Rs. 8.9 lakh", ""), ("Paradox 2026", "paradox26", 1000, "", "Sports: 11:11, VS Arena, Battleground. Business event: Desi Lane, Esplanade"),
+            ("The Starry Night", "starry", 550, "Rs. 3 lakh", "Sky Turf, DJ Saif Side"), ("Starry Night 2.0", "starry2", 550, "Rs. 6.7 lakh", "Sky Turf, DJ Rajiv, 26th December"),
+            ("Disco Diwali 2025", None, 500, "Rs. 4.3 lakh", "60 Chowringhee, DJ Amay"), ("Summer Sunset", "summer", 500, "", "60 Chowringhee Banquet, 6th June 2026"),
+            ("The AQ Punjabi Night", "punjabi", 400, "Rs. 2.2 lakh", "60 Chowringhee, DJ Omar, 8th June 2025"), ("Disco Diwali", "dd", 350, "Rs. 1.7 lakh", "Orbit Crystal, 27th October")]
+    y0, rh, bx, bmax = 292, 82, 760, 640
+    s.add(f'<div class="measure k" data-tag="hdr" style="position:absolute;left:{bx}px;top:{y0 - 36}px;font-size:20px;color:{ORCHID};z-index:6">FOOTFALL</div>'); s.el("hdr", bx, y0 - 36, 160, 22)
+    s.add(f'<div class="measure k" data-tag="hdr2" style="position:absolute;left:1560px;top:{y0 - 36}px;font-size:20px;color:{ORCHID};z-index:6">FUNDS RAISED</div>'); s.el("hdr2", 1560, y0 - 36, 200, 22)
+    for i, (name, key, foot, funds, where) in enumerate(rows):
+        y = y0 + i * rh
+        hot = name == "Disco Diwali 2025"
+        s.add(f'<div style="position:absolute;left:{M}px;top:{y - 6}px;width:1728px;height:{rh - 4}px;border-top:3px solid #26262A;z-index:2"></div>')
+        if key:
+            s.add(f'<img src="{src_img(f"poster_{key}.png")}" style="position:absolute;left:{M + 4}px;top:{y + 2}px;height:{rh - 14}px;border-radius:8px;z-index:6">')
+        else:
+            s.add(f'<div style="position:absolute;left:{M + 4}px;top:{y + 2}px;height:{rh - 14}px;width:{int((rh - 14) * .8)}px;border-radius:8px;background:{ORCHID};z-index:6;display:flex;align-items:center;justify-content:center">{stk.disco_ball(44)[0]}</div>')
+        sub = f'<div class="b" style="font-size:20px;line-height:1.15;color:#C9C4B8;margin-top:3px">{where}</div>' if where else ""
+        s.add(f'<div class="measure" data-tag="r{i}" style="position:absolute;left:{M + 84}px;top:{y + 2}px;width:560px;z-index:6"><div class="v" style="font-size:28px;line-height:1.05;color:{WHITE};text-transform:uppercase">{name}</div>{sub}</div>')
+        s.el(f"r{i}", M + 84, y + 4, 560, 70); 
+        bw = bmax * foot / 1000
+        s.add(f'<div class="measure v" data-tag="bar{i}" style="position:absolute;left:{bx}px;top:{y + 8}px;width:{bw:.0f}px;height:56px;border-radius:14px;background:{GREEN if hot else ORCHID};border:3px solid {HALO};z-index:6;'
+              f'display:flex;align-items:center;justify-content:flex-end;padding-right:18px;font-size:34px;color:{INK}">{foot}+</div>')
+        s.el(f"bar{i}", bx, y + 8, bw, 56)
+        if funds:
+            s.add(f'<div class="measure v" data-tag="f{i}" style="position:absolute;left:1560px;top:{y + 14}px;height:44px;padding:0 22px;border:4px solid {ORCHID};border-radius:999px;background:{CTA};display:flex;align-items:center;font-size:24px;color:{INK};white-space:nowrap;z-index:6">{funds.upper()}</div>')
+            s.el(f"f{i}", 1560, y + 14, 250, 44)
+    s.text_pair("r0", WHITE, GROUND, 27, True)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
 async def s_sponsors(n):
     s = Slide(n); s.chrome("PAST SPONSORS")
     s.stars([(1760, 40)], 80)
-    await s.heading(M, 96, 1500, "Brands that have", "partnered with AquaTerra before.", 76, 56)
-    iw = 1100; ih = int(iw * 510 / 905)
-    s.add(f'<img class="measure" data-tag="ph_sponsors" src="{src_img("sponsors.png")}" style="position:absolute;left:{(W - iw) // 2}px;top:300px;width:{iw}px;height:{ih}px;border:10px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box;background:#fff">')
-    s.el("ph_sponsors", (W - iw) // 2 - 10, 290, iw + 20, ih + 20)
+    ih = 700; iw = int(ih * 906 / 510); x0 = (W - iw) // 2; y0 = 210
+    s.add(f'<img class="measure" data-tag="ph_sponsors" src="{src_img("sponsors_clean.png")}" style="position:absolute;left:{x0}px;top:{y0}px;width:{iw}px;height:{ih}px;border:10px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box;background:#fff">')
+    s.el("ph_sponsors", x0 - 10, y0 - 10, iw + 20, ih + 20)
+    k = iw / 906
+    ty = y0 + int(392 * k)
+    s.add(f'<div class="measure v" data-tag="h1" style="position:absolute;left:{x0 + int(14 * k) + 8}px;top:{ty}px;font-size:{int(44 * k)}px;line-height:1;color:{INK};z-index:9;white-space:nowrap">BRANDS THAT HAVE<br>PARTNERED WITH US</div>')
+    s.el("h1", x0 + int(14 * k) + 8, ty, int(560 * k), int(95 * k)); s.text_pair("h1", INK, "#FFFFFF", int(44 * k), True)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
-async def s_community(n):
-    s = Slide(n); s.chrome("THE COMMUNITY")
-    s.stars([(1760, 40)], 80)
-    await s.heading(M, 96, 1500, "Who the AQ community is.", None, 76)
-    # age diversity: native pie + legend
+async def s_age(n):
     import math
+    s = Slide(n); s.chrome("THE COMMUNITY  (1 OF 2)")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 96, 1500, "Age diversity.", None, 76)
     data = [("14 to 15 years (Class 9)", 260, 14.4, "#8FCBFF"), ("15 to 16 years (Class 10)", 265, 14.6, "#4DA3F5"), ("16 to 17 years (Class 11)", 370, 20.4, "#1E88E5"),
             ("17 to 18 years (Class 12)", 450, 24.9, "#1666B8"), ("18+ years (college / university)", 465, 25.7, "#0A3D8F")]
     tot = sum(d[1] for d in data); a0 = -math.pi / 2; paths = ""
     for lab, v, pc, col in data:
         a1 = a0 + 2 * math.pi * v / tot
         x0, y0, x1, y1 = 150 + 140 * math.cos(a0), 150 + 140 * math.sin(a0), 150 + 140 * math.cos(a1), 150 + 140 * math.sin(a1)
-        paths += f'<path d="M150,150 L{x0:.1f},{y0:.1f} A140,140 0 {1 if a1 - a0 > math.pi else 0},1 {x1:.1f},{y1:.1f} Z" fill="{col}" stroke="#fff" stroke-width="4"/>'
+        paths += f'<path d="M150,150 L{x0:.1f},{y0:.1f} A140,140 0 {1 if a1 - a0 > math.pi else 0},1 {x1:.1f},{y1:.1f} Z" fill="{col}" stroke="#fff" stroke-width="3"/>'
         a0 = a1
-    legend = "".join(f'<div style="display:flex;gap:14px;align-items:center;margin-bottom:16px"><span style="flex:none;width:26px;height:26px;border-radius:7px;background:{col};border:2px solid {INK}"></span>'
-                     f'<div><div class="v" style="font-size:22px;line-height:1.05;color:{INK};text-transform:uppercase">{lab}</div>'
-                     f'<div class="b" style="font-size:21px;line-height:1.2;color:{INK}">{v} respondents, {pc}%</div></div></div>' for lab, v, pc, col in data)
-    inner = (f'<div class="v" style="font-size:34px;line-height:1;color:{INK};margin-bottom:18px">AGE DIVERSITY</div>'
-             f'<div style="display:flex;gap:28px;align-items:center;margin-top:60px"><svg width="290" height="290" viewBox="0 0 300 300" style="flex:none">{paths}</svg><div>{legend}</div></div>')
-    s.slab("age", M, 230, 940, 700, inner, pad="32px 40px")
-    s.text_pair("age", INK, SLAB, 23, True)
-    inner = (f'<div class="v" style="font-size:34px;line-height:1;color:{WHITE};margin-bottom:16px">VOLUNTEER NETWORK</div>'
-             f'<div style="display:flex;gap:26px;align-items:flex-start"><div class="b" style="flex:1;font-size:26px;line-height:1.38;color:{WHITE}">'
-             'Students from DBPC, La Martiniere for Boys, La Martiniere for Girls, Modern High, Loreto and other leading Kolkata schools make up the AQ community. '
-             'Disco Diwali is where that happens, and it is growing every year.</div>'
-             f'<img src="{src_img("map.png")}" style="flex:none;width:300px;border-radius:18px;border:5px solid {ORCHID}"></div>')
-    s.panel("vol", 1060, 230, 764, 700, inner, pad="32px 36px")
-    s.text_pair("vol", WHITE, "#0B0B0D", 25, False)
+    m = await B.measure_text([dict(text="25.7%", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], W, H, extra_css=tt.FONT_CSS)
+    pfs = 100 * 230 / m[0]["text_w"]
+    rows = "".join(f'<div style="display:flex;gap:26px;align-items:center;padding:12px 0;border-top:3px solid {col}"><span style="flex:none;width:250px;font-family:StretchPro;-webkit-text-stroke:.04em {INK};'
+                   f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{pfs:.0f}px;line-height:1;color:{INK};white-space:nowrap">{pc}%</span>'
+                   f'<div><div class="v" style="font-size:30px;line-height:1.05;color:{INK};text-transform:uppercase">{lab}</div>'
+                   f'<div class="b" style="font-size:25px;line-height:1.2;color:{INK}">{v} respondents</div></div></div>' for lab, v, pc, col in data)
+    inner = (f'<div style="display:flex;gap:56px;align-items:center;height:100%"><div style="flex:none;text-align:center"><svg width="520" height="520" viewBox="0 0 300 300">{paths}</svg>'
+             f'<div class="k" style="font-size:24px;color:{INK};margin-top:14px">{tot:,} respondents</div></div><div style="flex:1">{rows}</div></div>')
+    s.slab("age", M, 220, 1728, 730, inner, pad="26px 48px")
+    s.text_pair("age", INK, SLAB, 30, True)
+    await s.render(f"{OUT}/slide_{n:02d}.png")
+
+
+async def s_vol(n):
+    s = Slide(n); s.chrome("THE COMMUNITY  (2 OF 2)")
+    s.stars([(1760, 40)], 80)
+    await s.heading(M, 96, 1500, "Volunteer network.", None, 76)
+    s.add(f'<img class="measure" data-tag="ph_map" src="{src_img("map.png")}" style="position:absolute;left:{M}px;top:226px;width:480px;height:662px;object-fit:cover;border:9px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box">')
+    s.el("ph_map", M - 9, 217, 498, 680)
+    chips = "".join(f'<span class="v" style="display:inline-block;background:{CTA};border:5px solid {ORCHID};border-radius:999px;padding:8px 22px;font-size:26px;color:{INK};margin:0 12px 14px 0;white-space:nowrap">{c}</span>'
+                    for c in ("DBPC", "LA MARTINIERE FOR BOYS", "LA MARTINIERE FOR GIRLS", "MODERN HIGH", "LORETO", "AND OTHER LEADING KOLKATA SCHOOLS"))
+    inner = (f'<div class="b" style="font-size:36px;line-height:1.36;color:{WHITE};margin-bottom:26px">Students from these schools make up the AQ community. '
+             f'Disco Diwali is where that happens, and it is growing every year.</div><div style="margin-bottom:10px">{chips}</div>')
+    s.panel("vol", 640, 226, 1184, 420, inner, pad="36px 44px")
+    s.text_pair("vol", WHITE, "#0B0B0D", 36, False)
+    for i, (v, l) in enumerate((("1,800+", "STUDENT VOLUNTEERS"), ("25+", "SCHOOLS ACROSS KOLKATA"))):
+        s.slab(f"stat{i}", 640 + i * 604, 676, 580, 240, f'<div class="v" style="font-size:78px;line-height:1;color:{INK}">{v}</div><div class="k" style="font-size:26px;color:{INK};margin-top:10px">{l}</div>',
+               pad="26px 36px", fill=ORCHID if i == 0 else SLAB)
+    s.text_pair("stat0", INK, ORCHID, 78, True)
     await s.render(f"{OUT}/slide_{n:02d}.png")
 
 
@@ -863,7 +891,8 @@ ORDER = [
     s_events,
     s_sponsors,
     s_hist2,
-    s_community,
+    s_age,
+    s_vol,
     s_mosaic,
     s_masq,
     s_content,
