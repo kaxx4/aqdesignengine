@@ -1,4 +1,4 @@
-"""DISPATCH no. 04 (week 4). Three items: events, shikshaq, hr.
+"""DISPATCH no. 04 (week 4). Four items: events, shikshaq, hr, crftd.
 
 Content comes from the community manager's verbal brief of 2026-10-07. Nothing is
 invented: no Disco Diwali date (asked to leave it out), no paper counts, no URLs.
@@ -42,7 +42,7 @@ BRIEF = {
     "cover_photo": "scratchpad/dispatch04_photos/events_team.jpg",
     "handle": "@ngo.aquaterra",
     "site": "ngoaquaterra.com",
-    "story_cta": "swipe for all three.",
+    "story_cta": "swipe for all four.",
     "wa_signoff": ("the detail on each one is in the poster. if your team did "
                    "something that isn't here, reply and it goes in no. 05."),
     "ig_signoff": ("the detail on each one is in the stories. not in the volunteer "
@@ -82,6 +82,15 @@ BRIEF = {
                       "it well: hand it the repetitive work, set it up once as a project, "
                       "and keep people for the parts that need judgment."),
             "photo": "scratchpad/dispatch04_photos/hr_meet.jpg",
+        },
+        {
+            "dept": "crftd", "chip": "crftd",
+            "head": "crftd is drowning in orders",
+            "line": ("crftd has more orders than it can clear right now, so the queue has "
+                     "piled up. a good problem to have, but still a problem."),
+            "story": ("crftd has more orders than it can handle at the moment, and the "
+                      "queue has piled up. it is a good problem to have, but the team is "
+                      "working through the backlog before anything else."),
         },
     ],
 }

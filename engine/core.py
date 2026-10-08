@@ -241,6 +241,7 @@ DEPT = {
     "labs":    "#FFC700",   # lemon  — site --c-labs
     "ops":     "#0E7C86",   # teal   — site --c-ops (see DRIFT note below)
     "content": "#7E5BFF",   # grape  — site --c-content
+    "crftd":   "#FF4D2E",   # tomato — CRFTD, set 2026-10-08. Tomato is otherwise unused by a department.
     "shikshaq": "#FFC700",  # lemon  — Shikshaq, set 2026-10-07 (was lime). Shares lemon with labs; separate dept.
                             #          Never mint: Shikshaq is routinely mistaken for welfare.
 }

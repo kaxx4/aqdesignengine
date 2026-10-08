@@ -108,6 +108,7 @@ DEPTS = {
     "ops":     "ops",
     "content": "content",
     "shikshaq": "shikshaq",
+    "crftd": "crftd",
 }
 
 MAX_ITEMS = 6                                     # R2
