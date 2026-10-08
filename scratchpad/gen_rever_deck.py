@@ -410,7 +410,7 @@ async def s_vis2(n):
     s.text_pair("slab0", INK, SLAB, 29, False)
     inner = (f'<div style="display:flex;gap:44px;align-items:center;height:100%"><div class="v" style="flex:none;font-size:34px;line-height:1.05;color:{ORCHID}">OUR<br>STANDARD</div>'
              f'<div class="b" style="font-size:27px;line-height:1.36;color:{WHITE}">This list is a baseline, not a ceiling. We aim to overachieve on every deliverable we commit to a sponsor. '
-             f'We have done that for our partners in the past, and Rever will be no different.</div></div>')
+             f'We have done that for our partners in the past, and we aim to do the same for Rever.</div></div>')
     s.panel("standard", M, 812, 1728, 140, inner, pad="12px 44px")
     s.text_pair("standard", WHITE, "#0B0B0D", 27, False)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -509,7 +509,7 @@ async def s_hist2(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 96, 1500, "Who runs it.", None, 76)
     inner = (f'<div class="b" style="font-size:29px;line-height:1.4;color:{INK}">'
-             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our student community spans 25+ schools across Kolkata. '
+             'Team AquaTerra is a student-run, registered NGO, active since 2021, 80G certified and Darpan registered. Our community of 1,800+ student volunteers spans 25+ schools across Kolkata. '
              'Net proceeds fund welfare work across the city.</div>')
     s.slab("who", M, 230, 860, 400, inner, pad="36px 40px")
     s.text_pair("who", INK, SLAB, 27, False)
