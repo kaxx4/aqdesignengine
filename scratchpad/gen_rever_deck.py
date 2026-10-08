@@ -501,7 +501,7 @@ async def s_hist1(n):
     s.text_pair("callout", INK, ORCHID, 44, True)
     s.add(f'<div class="measure k" data-tag="lab" style="position:absolute;left:1240px;top:290px;font-size:24px;line-height:1;color:{ORCHID};z-index:6;white-space:nowrap">ACROSS THE AQ EVENTS PORTFOLIO</div>')
     s.el("lab", 1240, 290, 560, 26); s.text_pair("lab", ORCHID, GROUND, 24, False)
-    stats = [("650+", "GUESTS AT STARRY NIGHT 2025"), ("400+", "GUESTS AT PARADOX"), ("1.11M+", "IMPRESSIONS ACROSS OUR LAST FEW EVENTS"), ("1,800+", "MEMBERS IN OUR WHATSAPP COMMUNITY")]
+    stats = [("550+", "GUESTS AT STARRY NIGHT"), ("1000+", "GUESTS AT PARADOX"), ("1.11M+", "IMPRESSIONS ACROSS OUR LAST FEW EVENTS"), ("1,800+", "MEMBERS IN OUR WHATSAPP COMMUNITY")]
     m = await B.measure_text([dict(text=v, font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT) for v, _ in stats], W, H, extra_css=tt.FONT_CSS)
     vfs = min(56, min(100 * 190 / r["text_w"] for r in m))
     for i, (v, l) in enumerate(stats):
@@ -784,9 +784,9 @@ async def s_events(n):
     s = Slide(n); s.chrome("PROMINENT PAST EVENTS")
     s.stars([(1760, 40)], 80)
     await s.heading(M, 96, 1500, "Events that filled the room.", "Footfall and funds raised, event by event.", 76, 52, gap=2)
-    rows = [("Paradox", "paradox", 1000, "Rs. 8.9 lakh", ""), ("Paradox 2026", "paradox26", 1000, "", "Sports: 11:11, VS Arena, Battleground. Business event: Desi Lane, Esplanade"),
+    rows = [("Paradox", "paradox", 1000, "Rs. 8.9 lakh", ""), ("Paradox 2026", "paradox26", 1000, "Rs. 3.3 lakh", "Sports: 11:11, VS Arena, Battleground. Business event: Desi Lane, Esplanade"),
             ("The Starry Night", "starry", 550, "Rs. 3 lakh", "Sky Turf, DJ Saif Side"), ("Starry Night 2.0", "starry2", 550, "Rs. 6.7 lakh", "Sky Turf, DJ Rajiv, 26th December"),
-            ("Disco Diwali 2025", None, 500, "Rs. 4.3 lakh", "60 Chowringhee, DJ Amay"), ("Summer Sunset", "summer", 500, "", "60 Chowringhee Banquet, 6th June 2026"),
+            ("Disco Diwali 2025", None, 500, "Rs. 4.3 lakh", "60 Chowringhee, DJ Amay"), ("Summer Sunset", "summer", 500, "Rs. 4.8 lakh", "60 Chowringhee Banquet, 6th June 2026"),
             ("The AQ Punjabi Night", "punjabi", 400, "Rs. 2.2 lakh", "60 Chowringhee, DJ Omar, 8th June 2025"), ("Disco Diwali", "dd", 350, "Rs. 1.7 lakh", "Orbit Crystal, 27th October")]
     y0, rh, bx, bmax = 292, 82, 760, 640
     s.add(f'<div class="measure k" data-tag="hdr" style="position:absolute;left:{bx}px;top:{y0 - 36}px;font-size:20px;color:{ORCHID};z-index:6">FOOTFALL</div>'); s.el("hdr", bx, y0 - 36, 160, 22)
@@ -841,12 +841,12 @@ async def s_age(n):
         a0 = a1
     m = await B.measure_text([dict(text="25.7%", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT)], W, H, extra_css=tt.FONT_CSS)
     pfs = 100 * 230 / m[0]["text_w"]
-    rows = "".join(f'<div style="display:flex;gap:26px;align-items:center;padding:12px 0;border-top:3px solid {col}"><span style="flex:none;width:250px;font-family:StretchPro;-webkit-text-stroke:.04em {INK};'
+    rows = "".join(f'<div style="display:flex;gap:26px;align-items:center;padding:26px 0;border-top:3px solid {col}"><span style="flex:none;width:250px;font-family:StretchPro;-webkit-text-stroke:.04em {INK};'
                    f'letter-spacing:{tt.ST_LS}em;font-feature-settings:{tt.ST_FEAT};font-size:{pfs:.0f}px;line-height:1;color:{INK};white-space:nowrap">{pc}%</span>'
-                   f'<div><div class="v" style="font-size:30px;line-height:1.05;color:{INK};text-transform:uppercase">{lab}</div>'
-                   f'<div class="b" style="font-size:25px;line-height:1.2;color:{INK}">{v} respondents</div></div></div>' for lab, v, pc, col in data)
+                   f'<div><div class="v" style="font-size:34px;line-height:1.05;color:{INK};text-transform:uppercase">{lab}</div>'
+                   f'</div></div>' for lab, v, pc, col in data)
     inner = (f'<div style="display:flex;gap:56px;align-items:center;height:100%"><div style="flex:none;text-align:center"><svg width="520" height="520" viewBox="0 0 300 300">{paths}</svg>'
-             f'<div class="k" style="font-size:24px;color:{INK};margin-top:14px">{tot:,} respondents</div></div><div style="flex:1">{rows}</div></div>')
+             f'</div><div style="flex:1">{rows}</div></div>')
     s.slab("age", M, 220, 1728, 730, inner, pad="26px 48px")
     s.text_pair("age", INK, SLAB, 30, True)
     await s.render(f"{OUT}/slide_{n:02d}.png")
@@ -856,16 +856,17 @@ async def s_vol(n):
     s = Slide(n); s.chrome("THE COMMUNITY  (2 OF 2)")
     s.stars([(1760, 40)], 80)
     await s.heading(M, 96, 1500, "Volunteer network.", None, 76)
-    s.add(f'<img class="measure" data-tag="ph_map" src="{src_img("map.png")}" style="position:absolute;left:{M}px;top:226px;width:480px;height:662px;object-fit:cover;border:9px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box">')
-    s.el("ph_map", M - 9, 217, 498, 680)
+    s.add(f'<div class="measure" data-tag="ph_map" style="position:absolute;left:{M}px;top:226px;width:520px;height:690px;background:#5864FF;border:9px solid {ORCHID};border-radius:30px;z-index:8;box-sizing:content-box;'
+          f'display:flex;align-items:center;justify-content:center"><img src="{src_img("map_cut.png")}" style="height:610px;width:auto"></div>')
+    s.el("ph_map", M - 9, 217, 538, 708)
     chips = "".join(f'<span class="v" style="display:inline-block;background:{CTA};border:5px solid {ORCHID};border-radius:999px;padding:8px 22px;font-size:26px;color:{INK};margin:0 12px 14px 0;white-space:nowrap">{c}</span>'
                     for c in ("DBPC", "LA MARTINIERE FOR BOYS", "LA MARTINIERE FOR GIRLS", "MODERN HIGH", "LORETO", "AND OTHER LEADING KOLKATA SCHOOLS"))
-    inner = (f'<div class="b" style="font-size:36px;line-height:1.36;color:{WHITE};margin-bottom:26px">Students from these schools make up the AQ community. '
+    inner = (f'<div class="b" style="font-size:31px;line-height:1.36;color:{WHITE};margin-bottom:20px">Students from these schools make up the AQ community. '
              f'Disco Diwali is where that happens, and it is growing every year.</div><div style="margin-bottom:10px">{chips}</div>')
-    s.panel("vol", 640, 226, 1184, 420, inner, pad="36px 44px")
-    s.text_pair("vol", WHITE, "#0B0B0D", 36, False)
+    s.panel("vol", 680, 226, 1144, 420, inner, pad="36px 44px")
+    s.text_pair("vol", WHITE, "#0B0B0D", 31, False)
     for i, (v, l) in enumerate((("1,800+", "STUDENT VOLUNTEERS"), ("25+", "SCHOOLS ACROSS KOLKATA"))):
-        s.slab(f"stat{i}", 640 + i * 604, 676, 580, 240, f'<div class="v" style="font-size:78px;line-height:1;color:{INK}">{v}</div><div class="k" style="font-size:26px;color:{INK};margin-top:10px">{l}</div>',
+        s.slab(f"stat{i}", 680 + i * 584, 676, 560, 240, f'<div class="v" style="font-size:78px;line-height:1;color:{INK}">{v}</div><div class="k" style="font-size:26px;color:{INK};margin-top:10px">{l}</div>',
                pad="26px 36px", fill=ORCHID if i == 0 else SLAB)
     s.text_pair("stat0", INK, ORCHID, 78, True)
     await s.render(f"{OUT}/slide_{n:02d}.png")
