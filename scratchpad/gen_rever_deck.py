@@ -404,7 +404,7 @@ async def s_vis2(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1200, "Promotion and content,", "in detail.", 76, 56, gap=4)
     cards = [("Promotion", ["Rever promoted on Instagram and across our WhatsApp community for close to a month", "Business card promotion for Rever", "A thank-you post after the event"], stk.megaphone(170)),
-             ("Content", ["5 to 10 planned reels, plus regular casual content", "Our event photos and videos are free for Rever to use in its own marketing. Images of anyone under 18 are used only with guardian consent on file"], stk.phone(110))]
+             ("Content", ["5 to 10 planned reels, plus regular casual content", "Free use of our event photos and videos for Rever's own marketing"], stk.phone(110))]
     for i, (t, items, st) in enumerate(cards):
         s.slab(f"slab{i}", M + i * 888, 300, 840, 480, head_icon(t, st) + bullets(items, 29, 22), pad="34px 44px")
     s.text_pair("slab0", INK, SLAB, 29, False)
@@ -637,7 +637,7 @@ async def s_crowd(n):
     cards = [("Entry", "QR ticket check-in and ID verification at the door. Guests show ID first, then the masks go on.", ddt_ticket(150)),
              ("Security", "We bring in bouncers for security at the door.", stk.shield(130)),
              ("Age and alcohol", "No alcohol at the event. Under-18s may attend, with ID checked at the door. Rever confirms the age rules in writing before anything is announced.", stk.badge(104)),
-             ("Photos and consent", "Images of anyone under 18 are used only with guardian consent on file, and Rever approves each image before it goes out.", stk.camera(130))]
+             ("Photos and content", "Rever approves every image and reel that carries its name before it goes out.", stk.camera(130))]
     for i, (t, d, st) in enumerate(cards):
         x, y = M + (i % 2) * 888, 300 + (i // 2) * 290
         inner = (f'<div style="display:flex;gap:24px;height:100%"><div style="flex:1"><div class="v" style="font-size:36px;line-height:1.05;color:{INK};margin-bottom:14px;text-transform:uppercase">{t}</div>'
@@ -698,7 +698,7 @@ async def s_exchange(n):
     rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "Reach to 300 to 350 guests, mostly high school and first-year college students"),
            ("Visibility", "Logo on all deliverables and core team shirts, on-ground branding, stage mentions"), ("Reputation", "A Google reviews QR code at the event, guests choose whether to post"),
            ("Promotion", "Close to a month across Instagram and our WhatsApp community, business card promotion"),
-           ("Content", "5 to 10 planned reels, standalone Rever reels, our photos and videos for Rever to use; under-18s only with guardian consent"), ("Flexibility", "Every element is open to discussion and can be expanded")]
+           ("Content", "5 to 10 planned reels, standalone Rever reels, free use of our photos and videos"), ("Flexibility", "Every element is open to discussion and can be expanded")]
     inner = label("Rever receives", 30, INK, "margin-bottom:10px")
     inner += "".join(f'<div style="display:flex;gap:22px;align-items:center;padding:9px 0;border-top:3px solid {ORCHID}"><div class="v" style="flex:none;width:215px;font-size:26px;color:{INK};text-transform:uppercase">{a}</div>'
                      f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{b}</div></div>' for a, b in rec)

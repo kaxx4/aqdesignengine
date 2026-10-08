@@ -22,7 +22,7 @@ Method: 8 Haiku agents, each role-playing one person on Rever's side, reviewed t
 
 ## Still open, needs a decision or a number from AquaTerra
 1. Money: RESOLVED 2026-10-08 (user): no fee either way, Rever keeps food revenue, AQ keeps ticket revenue. Ticket price and minimum paid covers still unset.
-2. Age and alcohol: RESOLVED (user): under-18 entry allowed, no alcohol at the event. Guardian consent applies to photos.
+2. Age and alcohol: RESOLVED (user): under-18 entry allowed, no alcohol at the event. Guardian-consent point removed from the deck at user request.
 3. Bouncer provider, insurance, and Skydeck occupancy / fire NOC. Reviewers want names and certificates.
 4. Guest count: RESOLVED (user): 300 to 350 max, used everywhere for the 2026 event.
 5. DJ: "we are flying in a DJ" (slide 3) has no named artist or booking evidence.
