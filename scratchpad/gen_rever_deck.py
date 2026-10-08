@@ -340,9 +340,9 @@ async def s_cover(n):
 async def s_brief(n):
     s = Slide(n); s.chrome("THE PARTNERSHIP IN BRIEF")
     s.stars([(1760, 40)], 80)
-    y = await s.heading(M, 110, 880, "One evening.\n400+ guests.", "Hosted entirely at Rever Skydeck.", 76, 54, wl=2)
+    y = await s.heading(M, 110, 880, "One evening.\n300 to 350 guests.", "Hosted entirely at Rever Skydeck.", 76, 54, wl=2)
     s.add(f'<div class="measure b" data-tag="body" style="position:absolute;left:{M}px;top:{y + 30}px;width:840px;font-size:28px;line-height:1.38;color:{WHITE};z-index:6">'
-          f'Disco Diwali is one of Kolkata\'s largest student evenings. This year it is a masquerade, hosting an estimated 400+ guests at Rever Skydeck. '
+          f'Disco Diwali is one of Kolkata\'s largest student evenings. This year it is a masquerade, hosting 300 to 350 guests at Rever Skydeck, our cap for the night. '
           f'Headlining the night, we are flying in a DJ from Mumbai who made his debut with Blunt Entertainment.</div>')
     s.el("body", M, y + 30, 840, 190); s.text_pair("body", WHITE, GROUND, 28, False)
     s.photo_rect("ph_a", PH["dance"], M, 650, 780, 280, "50% 55%")
@@ -364,7 +364,7 @@ async def s_location(n):
     s.stars([(1760, 40)], 80)
     y = await s.heading(M, 110, 1000, "More than a venue.", "The only kitchen of the night.", 76, 54)
     body = ("Rever comes in as our Location Partner, and we will make sure Rever is also the Exclusive Food Partner. No outside vendors and no competing stalls: Rever's menu is the only food menu at the event.",
-            "We would love to build a special event menu with your team. Rever's kitchen decides what goes on it, and a short, tight menu keeps service fast for 400+ guests and quality consistent. Every guest gets a first taste of Rever.")
+            "We would love to build a special event menu with your team. Rever's kitchen decides what goes on it, and a short, tight menu keeps service fast for 300 to 350 guests and quality consistent. Every guest gets a first taste of Rever.")
     s.add(f'<div class="measure b" data-tag="body" style="position:absolute;left:{M}px;top:{y + 36}px;width:900px;font-size:30px;line-height:1.38;color:{WHITE};z-index:6">'
           f'<p style="margin:0 0 20px">{body[0]}</p><p style="margin:0">{body[1]}</p></div>')
     s.el("body", M, y + 36, 900, 440); s.text_pair("body", WHITE, GROUND, 30, False)
@@ -485,7 +485,7 @@ async def s_hist1(n):
     cols = "grid-template-columns:260px 1fr 200px 150px;column-gap:18px"
     tab = (f'<div style="display:grid;{cols}">{th("Edition")}{th("Venue")}{th("Footfall")}{th("Funds raised")}'
            f'{td("DISCO DIWALI 2025")}{td("60 CHOWRINGHEE, WITH DJ AMAY")}{td("500+")}{td("RS. 4.3 LAKH")}'
-           f'{td("DISCO DIWALI 2026")}{td("REVER SKYDECK, MASQUERADE")}{td("Up to 400+<br>(venue capacity)")}{td("TO COME")}</div>')
+           f'{td("DISCO DIWALI 2026")}{td("REVER SKYDECK, MASQUERADE")}{td("300 to 350<br>(max)")}{td("TO COME")}</div>')
     s.slab("table", M, 290, 1080, 372, label("Disco Diwali, edition by edition", 26, INK, "margin-bottom:14px") + tab, pad="28px 36px")
     s.text_pair("table", INK, SLAB, 25, True)
     inner = f'<div class="sg" style="font-size:40px;line-height:1.1;color:{INK}">2025 filled the room and raised Rs. 4.3 lakh. 2026 is built around Rever Skydeck.</div>'
@@ -636,7 +636,7 @@ async def s_crowd(n):
     await s.heading(M, 104, 1700, "We run the door and the floor.", "Rever runs the kitchen.", 70, 56)
     cards = [("Entry", "QR ticket check-in and ID verification at the door. Guests show ID first, then the masks go on.", ddt_ticket(150)),
              ("Security", "We bring in bouncers for security at the door.", stk.shield(130)),
-             ("Age and alcohol", "Rever sets the age and alcohol rules, in writing, as part of the agreement. We confirm them before anything is announced publicly.", stk.badge(104)),
+             ("Age and alcohol", "No alcohol at the event. Under-18s may attend, with ID checked at the door. Rever confirms the age rules in writing before anything is announced.", stk.badge(104)),
              ("Photos and consent", "Images of anyone under 18 are used only with guardian consent on file, and Rever approves each image before it goes out.", stk.camera(130))]
     for i, (t, d, st) in enumerate(cards):
         x, y = M + (i % 2) * 888, 300 + (i // 2) * 290
@@ -653,7 +653,7 @@ async def s_ask(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1200, "What we ask of Rever.", "Every ask is open to discussion.", 76, 56)
     ask = [("The venue on 10 November", "Access to Rever Skydeck from the morning, for setup, decor, sound and stage, through to the close of the event", stk.pin(110)),
-           ("Food and service", "As Exclusive Food Partner, an event menu designed by Rever and service for 400+ guests, with prices set by Rever and agreed up front", stk.cloche(130)),
+           ("Food and service", "As Exclusive Food Partner, an event menu designed by Rever and service for 300 to 350 guests, with prices set by Rever and agreed up front", stk.cloche(130)),
            ("A named contact", "One person at Rever we coordinate with", stk.badge(96)),
            ("Promotion cards (optional)", "A return incentive for guests, if Rever would like to include one", ddt_ticket(150))]
     for i, (t, d, st) in enumerate(ask):
@@ -695,12 +695,12 @@ async def s_exchange(n):
         f'<div style="display:flex;gap:18px;align-items:center;margin-bottom:26px">{numdot(i + 1, 50, 26, WHITE)}<div class="v" style="font-size:31px;line-height:1.1;color:{INK}">{t.upper()}</div></div>' for i, t in enumerate(items)))
     s.slab("brings", M, 250, 480, 540, inner, rot=-1.0, fill=ORCHID, border=12, pad="34px 34px", tilt=True)
     s.text_pair("brings", INK, ORCHID, 31, True)
-    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "Reach to 400+ guests, mostly high school and first-year college students"),
+    rec = [("Exclusivity", "Sole venue and sole food partner for the evening"), ("Audience", "Reach to 300 to 350 guests, mostly high school and first-year college students"),
            ("Visibility", "Logo on all deliverables and core team shirts, on-ground branding, stage mentions"), ("Reputation", "A Google reviews QR code at the event, guests choose whether to post"),
            ("Promotion", "Close to a month across Instagram and our WhatsApp community, business card promotion"),
            ("Content", "5 to 10 planned reels, standalone Rever reels, our photos and videos for Rever to use; under-18s only with guardian consent"), ("Flexibility", "Every element is open to discussion and can be expanded")]
     inner = label("Rever receives", 30, INK, "margin-bottom:10px")
-    inner += "".join(f'<div style="display:flex;gap:22px;align-items:center;padding:11px 0;border-top:3px solid {ORCHID}"><div class="v" style="flex:none;width:215px;font-size:26px;color:{INK};text-transform:uppercase">{a}</div>'
+    inner += "".join(f'<div style="display:flex;gap:22px;align-items:center;padding:9px 0;border-top:3px solid {ORCHID}"><div class="v" style="flex:none;width:215px;font-size:26px;color:{INK};text-transform:uppercase">{a}</div>'
                      f'<div class="b" style="font-size:25px;line-height:1.25;color:{INK}">{b}</div></div>' for a, b in rec)
     s.slab("receives", 620, 236, 1204, 604, inner, pad="26px 36px")
     s.text_pair("receives", INK, SLAB, 25, False)
@@ -715,11 +715,11 @@ async def s_terms(n):
     s.stars([(1760, 40)], 80)
     await s.heading(M, 104, 1500, "Terms to agree together.", "In writing, before anything is announced.", 76, 54)
     items = [("The venue", "Rever sets the terms for the venue on 10 November, including setup from the morning"),
-             ("Food and prices", "Rever designs the menu and sets the prices. Pre-order with the ticket, or pay on the night: Rever's call"),
-             ("Guest cap and covers", "A guest cap and a minimum number of paid covers, so neither side carries the risk alone"),
+             ("Food and prices", "Rever designs the menu, sets prices and keeps all food revenue. Pre-order or pay on the night: Rever's call"),
+             ("Guest cap and covers", "A hard cap of 300 to 350 guests, and a minimum number of paid covers so neither side carries the risk alone"),
              ("Costs", "Who covers decor, sound, stage, banners and menu boards, settled up front"),
              ("Approvals", "Rever approves every post, reel, banner, ticket and broadcast that carries its name before it goes out"),
-             ("Money", "Any fee, revenue share and ticket price on one page, with tax treatment confirmed. We share our registration documents"),
+             ("Money", "No fee either way. Rever keeps food revenue, AquaTerra keeps ticket revenue. We share our registration documents"),
              ("Promotion cards", "Optional: a return incentive on terms Rever sets"),
              ("Timing", "The sooner we sign off, the more of the month we can use for promotion")]
     cw = 840

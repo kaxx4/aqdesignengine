@@ -21,10 +21,10 @@ Method: 8 Haiku agents, each role-playing one person on Rever's side, reviewed t
 - Weak photo slides cut; footer carries Rever's logo on every slide; page counter backed for legibility.
 
 ## Still open, needs a decision or a number from AquaTerra
-1. Money: a fee, revenue share, ticket price, minimum paid covers. The terms slide names the items but no figures exist. Finance and founder both want one money page.
-2. Age and alcohol: the deck defers to Rever's rules. Decide AquaTerra's own position on under-18 entry and alcohol.
+1. Money: RESOLVED 2026-10-08 (user): no fee either way, Rever keeps food revenue, AQ keeps ticket revenue. Ticket price and minimum paid covers still unset.
+2. Age and alcohol: RESOLVED (user): under-18 entry allowed, no alcohol at the event. Guardian consent applies to photos.
 3. Bouncer provider, insurance, and Skydeck occupancy / fire NOC. Reviewers want names and certificates.
-4. "400+": estimate vs venue capacity vs cap. State one number once Rever confirms occupancy.
+4. Guest count: RESOLVED (user): 300 to 350 max, used everywhere for the 2026 event.
 5. DJ: "we are flying in a DJ" (slide 3) has no named artist or booking evidence.
 6. Photos: 2025 photos show identifiable guests, many apparently students. Confirm consent before sending. Captions for the unsorted photos are inferred (see engine/assets/img/events/README.md).
 7. "We have done that for our partners in the past, and Rever will be no different" (slide 7) reads as a warranty to a legal reviewer.
