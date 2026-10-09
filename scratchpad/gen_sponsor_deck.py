@@ -554,7 +554,7 @@ def s_stalls(c):
 
 
 def s_join(c):
-    strips = [226, 188, 230, 148, 192]
+    strips = [126, 188, 230, 148, 192]
     cells = [f'<div style="min-height:0">{ph(i, "50% 50%")}</div>' for i in strips]
     body = (f'<div style="position:relative;width:100%;height:100%">{grid(cells, "repeat(5,1fr)", None, 18)}'
             f'<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:{G};color:{INK};border-radius:80px;padding:40px 96px;'
@@ -566,7 +566,7 @@ def s_close(c):
     ct, rg = FACTS.get("contact", {}), FACTS.get("reg", {})
     qr = K.uri("../terrathon/qr_instagram_ngo_aquaterra.svg")
     row = lambda ic, t: f'<div style="display:flex;align-items:center;gap:20px;font:600 32px var(--e)">{K.icon(ic, 36, K.GREEN_D)}<span>{K.esc(t)}</span></div>'
-    photo_c = f'<div style="width:520px;flex:none">{ph(226, "50% 50%")}</div>'
+    photo_c = f'<div style="width:520px;flex:none">{ph(128, "55% 40%")}</div>'
     touch = K.card(f'<div class="mono" style="font-size:15px;color:{K.MUTE};margin-bottom:22px">Get in touch</div>'
                    f'<div style="font:900 78px/.95 var(--d);text-transform:uppercase;margin-bottom:34px">{K.esc(ct.get("name", ""))}</div>'
                    f'<div style="display:flex;flex-direction:column;gap:22px">{row("phone", ct.get("phone", ""))}{row("insta", ct.get("insta", ""))}{row("globe", ct.get("web", ""))}{row("mail", ct.get("mail", ""))}</div>',
