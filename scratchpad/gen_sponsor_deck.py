@@ -186,7 +186,7 @@ def s_welfare(c):
 
 def s_impact(c):
     data = [("1600+", "doctor check-ups in the Sundarbans", "pulse"), ("3000+", "dogs fed across Kolkata", "paw"),
-            ("5K+", "saplings planted by our team", "sprout"), ("2.5T", "tons of clothes collected in donation drives", "shirt"),
+            ("5K+", "saplings planted by our team", "sprout"), ("2.5T", "of clothes collected in donation drives", "shirt"),
             ("15K+", "bananas distributed in our most recent campaign", "box"), ("4000+", "kids reached across workshops", "users")]
     tiles = [K.kpi(v, l, ic, TONES[i % 3], 120) for i, (v, l, ic) in enumerate(data)]
     return S(grid(tiles, "1fr 1fr 1fr", 2, 26), (K.eyebrow("Impact"), K.title("What five years of *work* adds up to")), c)
