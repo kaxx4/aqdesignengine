@@ -160,7 +160,7 @@ def sponsors():
                     f'<div style="margin-top:9px">{ul(it)}</div></div>' for n, sub, t, it in tiers)
     right = pn(f'{eb("Ways to partner")}{bt("Pick your *place* in the night", 31)}{cards}'
                f'<div class="bc" style="padding:12px 14px"><div class="bl">Also open</div><div class="bp" style="margin-top:6px;font-size:12px"><b>Education and media partners</b>, <b>in-kind partners</b> (media, stationery, gift) and <b>category sponsors</b> (hydration, fashion), each with category exclusivity. <b>Prices on request:</b> call {K.esc(FACTS.get('contact', {}).get('name', ''))}, {K.esc(FACTS.get('contact', {}).get('role', ''))}.</div></div>'
-               f'<div style="flex:1;min-height:0">{ph(192, "50% 35%", 18)}</div>')
+               )
     return [flap, back, front], [left, centre, right]
 
 
