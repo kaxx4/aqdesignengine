@@ -584,12 +584,90 @@ def s_close(c):
 
 
 # ═════════════════════════════════════ BUILD ═════════════════════════════════════
-ORDER = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_notoneoff, s_series_diwali, s_series_starry, s_photo_summer, s_photo_diwali25, s_photo_sports, s_sponsors, s_feedback,
-         s_photo_energy, s_flagship, s_demo, s_community, s_reach, s_promote, s_offline, s_run, s_photo_night,
-         s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
+def make_cover(kicker, lede, chips, photo=148, focus="50% 38%"):
+    """A cover variant: same layout as the master cover, different kicker / lede / chips. The family shares one cover."""
+    def cover(c):
+        t = K.title("Disco" + NL + "*Diwali*", 190)
+        chip_html = "".join(K.chip(*ch) if ch[1] != "outline" else K.chip_o(ch[0]) for ch in chips)
+        left = (f'<div style="display:flex;flex-direction:column;justify-content:center;gap:34px;width:800px">'
+                f'{K.eyebrow(kicker)}{t}{K.lede(lede, 34, 720)}<div style="display:flex;gap:14px;flex-wrap:wrap">{chip_html}</div></div>')
+        right = f'<div style="flex:1;margin-left:64px;position:relative">{ph(photo, focus, alt="Disco Diwali dance floor")}</div>'
+        stick = sticker(stk.disco_ball, 200, 1590, 38, 8) + sticker(stk.diya, 170, 830, 130, -8)
+        return S(left + right + stick, None, c, body_style="margin-top:0")
+    return cover
 
 
-async def main(which):
+cover_sponsors_warm = make_cover("Welcome back: partnership proposal", "Good to be doing this again. Here is the 2026 edition of the flagship Diwali fundraiser, and what it means for you.",
+                                 [("All for charity", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ guests", "outline")], 194)
+cover_stalls = make_cover("Stall partners", "Put your stall in front of Kolkata\u2019s school and college students at the flagship Diwali fundraiser from AquaTerra.",
+                          [("Stalls open 6:30 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ guests", "outline")], 182, "50% 45%")
+cover_stalls_warm = make_cover("Stall partners, welcome back", "Thank you for trading with us. Here is the 2026 edition and how to book your stall again.",
+                               [("Stalls open 6:30 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ guests", "outline")], 186, "50% 40%")
+
+
+def s_thanks(c):
+    pics = [188, 190, 192, 194]
+    strip = "".join(f'<div style="flex:1;min-width:0;min-height:0">{ph(i, "50% 40%")}</div>' for i in pics)
+    body = (f'<div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;min-height:0">'
+            f'<div><div style="font:900 200px/.9 var(--d);text-transform:uppercase;letter-spacing:-.02em">Thank <em style="font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;background:linear-gradient(transparent 58%,{LM} 58%,{LM} 92%,transparent 92%)">you</em></div>'
+            f'<div style="font:600 38px/1.25 var(--e);margin-top:24px;max-width:1300px">Our partners helped put on six flagship events. Here is who, what they said, and what the night looks like.</div></div>'
+            f'<div style="display:flex;gap:20px;width:100%;height:340px">{strip}</div></div>')
+    return S(body, None, c, tone="green", body_style="margin-top:0")
+
+
+def s_thanks_stalls(c):
+    return photo_story(c, [(182, "50% 45%", 1, 1), (186, "50% 40%", 1, 1), (178, "50% 50%", 1, 1)], "1fr 1fr 1fr", 1, "The stalls, last time", "Past stalls", G)
+
+
+def s_thisyear(c):
+    cards = [("ticket", "600+ expected", "Up from 500 entries recorded at Disco Diwali 2025.", G), ("calendar", "2nd week of November", "Tentative date. We confirm it as soon as the venue is locked.", LM),
+             ("users", "School and college", "Classes 6-12 and college students, in one room.", BL), ("store", "Stalls and partners", "Stall space, in-kind partners and sponsorship tiers are all open.", G)]
+    cs = [K.card(f'<span class="disc" style="background:{t};color:{core.text_on(t)}">{K.icon(ic, 30)}</span><div><div style="font:900 44px/1 var(--d);text-transform:uppercase;margin-bottom:14px">{h}</div>'
+                 f'<div style="font:400 27px/1.3 var(--e);color:{INK2}">{d}</div></div>', "kpi", "padding:34px 38px") for ic, h, d, t in cards]
+    return S(grid(cs, "1fr 1fr", 2, 24), (K.eyebrow("This year"), K.title("The 2026 edition, *at a glance*")), c)
+
+
+def s_stall_offer(c):
+    facts = [("clock", "When", "Setup from 3:00 PM. Stalls go live at 6:30 PM and trade through the night."), ("users", "Who walks past", "School (classes 6-12) and college students, 600+ expected."),
+             ("store", "What you get", "Stall space at the venue, shoutouts, basic amenities and support."), ("link", "Fees and terms", "Shared once you are interested, so we can match them to your stall.")]
+    left = K.card("".join(f'<div style="display:flex;align-items:center;gap:22px;padding:20px 0;{"border-top:1.5px solid " + K.LINE + ";" if i else ""}">'
+                          f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])}">{K.icon(ic, 30)}</span>'
+                          f'<div><div class="mono" style="font-size:14px;color:{K.MUTE}">{k}</div><div style="font:600 29px/1.2 var(--e);margin-top:4px">{v}</div></div></div>'
+                          for i, (ic, k, v) in enumerate(facts)), "", "flex:1;padding:18px 40px;display:flex;flex-direction:column;justify-content:center")
+    right = f'<div style="width:620px;margin-left:40px;display:grid;grid-template-rows:1.3fr 1fr;gap:22px;min-height:0">{ph(182, "50% 45%")}{ph(186, "50% 35%")}</div>'
+    return S(left + right, (K.eyebrow("The short version"), K.title("Your stall, in *one* page")), c)
+
+
+def s_details(c):
+    steps = [("1", "Tell us about your stall", "What you sell, and what you would like from the night."), ("2", "We share the details", "Fees, layout and terms, matched to your stall."), ("3", "Lock your spot", "We confirm placement and send you the run of show.")]
+    cards = [K.card(f'<div class="kv" style="font-size:150px;color:{TONES[i % 3] if i != 2 else K.GREEN_D}">{n}</div><div><div style="font:900 42px/1 var(--d);text-transform:uppercase;margin-bottom:14px">{h}</div>'
+                    f'<div style="font:400 28px/1.3 var(--e);color:{INK2}">{d}</div></div>', "kpi", "padding:38px 40px") for i, (n, h, d) in enumerate(steps)]
+    return S(grid(cards, "1fr 1fr 1fr", None, 26), (K.eyebrow("Next step"), K.title("Fees and terms, *on request*")), c)
+
+
+
+SPONSORS_COLD = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_notoneoff, s_series_diwali, s_series_starry, s_photo_summer, s_photo_diwali25, s_photo_sports, s_sponsors, s_feedback,
+                 s_photo_energy, s_flagship, s_demo, s_community, s_reach, s_promote, s_offline, s_run, s_photo_night,
+                 s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
+SPONSORS_WARM = [cover_sponsors_warm, s_thanks, s_sponsors, s_feedback, s_proof, s_events, s_notoneoff, s_series_diwali, s_series_starry, s_photo_diwali25, s_thisyear, s_flagship,
+                 s_demo, s_community, s_reach, s_promote, s_run, s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
+STALLS_COLD = [cover_stalls, s_about, s_stall_offer, s_flagship, s_events, s_proof, s_notoneoff, s_series_diwali, s_photo_diwali25, s_photo_summer, s_demo, s_community, s_reach, s_promote,
+               s_offline, s_run, s_stalls, s_details, s_join, s_close]
+STALLS_WARM = [cover_stalls_warm, s_thanks_stalls, s_stall_offer, s_notoneoff, s_series_diwali, s_photo_diwali25, s_thisyear, s_demo, s_reach, s_run, s_stalls, s_details, s_join, s_close]
+DECKS = {"sponsors_cold": (SPONSORS_COLD, "Disco Diwali 2026  \u00b7  Partnership proposal"),
+         "sponsors_warm": (SPONSORS_WARM, "Disco Diwali 2026  \u00b7  Welcome back"),
+         "stalls_cold": (STALLS_COLD, "Disco Diwali 2026  \u00b7  Stall partners"),
+         "stalls_warm": (STALLS_WARM, "Disco Diwali 2026  \u00b7  Stalls, welcome back")}
+ORDER = SPONSORS_COLD
+
+
+def use(name):
+    global ORDER, OUT, LABEL
+    ORDER, LABEL = DECKS[name]
+    OUT = os.path.join(ROOT, "out", "decks", name)
+
+
+async def main(which, name):
     os.makedirs(OUT, exist_ok=True)
     total = len(ORDER)
     async with B.session(scale=1):
@@ -598,19 +676,18 @@ async def main(which):
             await B.render(html, f"{OUT}/slide_{i:02d}.png", K.W, K.H, page_bg=K.BG)
     if len(which) == total:
         pages = [Image.open(f"{OUT}/slide_{n:02d}.png").convert("RGB") for n in range(1, total + 1)]
-        pages[0].save(f"{OUT}/sponsors_cold.pdf", save_all=True, append_images=pages[1:], resolution=96, quality=90)
-        print("pdf written", total, "pages")
+        pages[0].save(f"{OUT}/{name}.pdf", save_all=True, append_images=pages[1:], resolution=96, quality=90)
+        print("pdf written", name, total, "pages")
 
 
 def text_dump():
-    """Every slide's copy as plain text (for persona review and copy checks): out/decks/sponsors_cold/deck_text.md"""
-    import re as _re
+    """Every slide's copy as plain text (for persona review and copy checks): out/decks/<deck>/deck_text.md"""
+    import re as _re, html as _h
     out = []
     for i, fn in enumerate(ORDER, 1):
         h = fn(Ctx(i, len(ORDER)))
         h = _re.sub(r"<style.*?</style>", "", h, flags=_re.S); h = _re.sub(r"<svg.*?</svg>", lambda m: " ".join(_re.findall(r">([^<>]{1,40})<", m.group(0))) + " ", h, flags=_re.S)
         h = _re.sub(r"<(br|/div|/li|/h1|/p|/section)[^>]*>", "\n", h); h = _re.sub(r"<[^>]+>", " ", h)
-        import html as _h
         lines = [_re.sub(r"\s+", " ", _h.unescape(x)).strip() for x in h.split("\n")]
         out.append(f"## Slide {i}\n" + "\n".join(x for x in lines if x))
     os.makedirs(OUT, exist_ok=True)
@@ -618,7 +695,12 @@ def text_dump():
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--text"]:
+    args = sys.argv[1:]
+    name = "sponsors_cold"
+    if "--deck" in args:
+        k = args.index("--deck"); name = args[k + 1]; del args[k:k + 2]
+    use(name)
+    if args == ["--text"]:
         text_dump(); sys.exit()
-    which = [int(a) for a in sys.argv[1:]] or list(range(1, len(ORDER) + 1))
-    asyncio.run(main(which))
+    which = [int(a) for a in args] or list(range(1, len(ORDER) + 1))
+    asyncio.run(main(which, name))
