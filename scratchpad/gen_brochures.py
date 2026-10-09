@@ -140,7 +140,7 @@ def sponsors():
                f'<div style="flex:1;min-height:0;margin-top:6px">{ph(148, "50% 38%", 22)}</div>'
                f'{eb("Sponsorship & partnership proposal")}<h1 class="bt" style="font-size:78px;margin-top:-2px">Disco<br><em>Diwali</em></h1>'
                f'<p class="bp" style="font-size:13.5px">The flagship Diwali fundraiser from AquaTerra, Kolkata’s student-run NGO. Every net rupee goes to welfare work.</p>'
-               f'<div style="display:flex;gap:6px;flex-wrap:wrap">{chip("All for charity", G)}{chip("600+ expected", INK, K.CREAM_ON_DARK)}</div>')
+               f'<div style="display:flex;gap:6px;flex-wrap:wrap">{chip("All for charity", G)}{chip("400+ expected", INK, K.CREAM_ON_DARK)}</div>')
     left = pn(f'{eb("About AquaTerra")}{bt("A student-run NGO that *delivers*", 31)}'
               f'<p class="bp">A registered NGO in Kolkata. We power some of the city’s biggest youth-led fundraising events, and every net rupee goes back into welfare work across the city.</p>'
               f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">{stat("5+", "years of student welfare work", G, "calendar", 34)}{stat("1.5K+", "student volunteers", BL, "users", 34)}{stat("500+", "welfare projects", LM, "heart", 34)}{stat("5K+", "Instagram followers", G, "insta", 34)}</div>'
@@ -148,7 +148,7 @@ def sponsors():
     pie = K.donut([("9-10", 29, G), ("11-12", 45, BL), ("College", 26, LM)], 300, 150)
     leg = "".join(f'<div style="display:flex;align-items:center;gap:7px;font:600 11.5px var(--e)"><i style="width:10px;height:10px;border-radius:50%;background:{c};display:block"></i>{n}</div>' for n, c in [("Class 9-10  29%", G), ("Class 11-12  45%", BL), ("College  26%", LM)])
     centre = pn(f'{eb("The night")}{bt("One night, *four* reasons", 31)}'
-                f'<div style="display:flex;align-items:flex-end;gap:12px"><div class="bk" style="font-size:66px;color:{K.GREEN_D}">600+</div><div class="bp" style="padding-bottom:8px">expected at the party</div></div>'
+                f'<div style="display:flex;align-items:flex-end;gap:12px"><div class="bk" style="font-size:66px;color:{K.GREEN_D}">400+</div><div class="bp" style="padding-bottom:8px">expected at the party</div></div>'
                 f'<div class="bp"><b>Tentative date:</b> 2nd week of November 2026.<br><b>Who:</b> school (classes 6-12) and college students.</div>'
                 f'<ul class="bu">' + "".join(f"<li>{K.icon(ic, 15, K.GREEN_D, 2)}<span>{t}</span></li>" for ic, t in [("store", "Food and sales stalls"), ("sparkle", "A traditional Diwali event"), ("music", "A DJ-led party night"), ("gift", "Cash prizes and surprise gifts")]) + '</ul>'
                 f'<div style="display:flex;align-items:center;gap:10px" class="bc">{pie.replace("width=\"300\" height=\"300\"", "width=\"104\" height=\"104\"")}<div style="display:flex;flex-direction:column;gap:5px">{leg}<div class="bl" style="font-size:10.7px">Survey of 1,810 respondents</div></div></div>'
@@ -170,29 +170,29 @@ def stalls():
               f'<div style="flex:1;min-height:0;display:grid;grid-template-rows:1.2fr 1fr 1fr;gap:9px">{ph(186, "50% 40%", 14)}{ph(130, "50% 40%", 14)}{ph(192, "50% 40%", 14)}</div>'
               f'<div class="bl">Not a one-off. Six flagship events and counting.</div>', "k")
     back = contact_panel(178, "50% 50%")
-    front = pn(f'<div style="display:flex;justify-content:space-between;align-items:center">{logo(24)}{chip("Stalls open 6:30 PM", G)}</div>'
+    front = pn(f'<div style="display:flex;justify-content:space-between;align-items:center">{logo(24)}{chip("Stalls open 4:00 PM", G)}</div>'
                f'<div style="flex:1;min-height:0;margin-top:6px">{ph(182, "50% 45%", 22)}</div>'
                f'{eb("Take a stall")}<h1 class="bt" style="font-size:78px;margin-top:-2px">Disco<br><em>Diwali</em></h1>'
                f'<p class="bp" style="font-size:13.5px">Put your stall in front of Kolkata’s school and college students at AquaTerra’s flagship Diwali fundraiser.</p>'
-               f'<div style="display:flex;gap:6px;flex-wrap:wrap">{chip("2nd week of Nov 2026 (tentative)", LM)}{chip("600+ expected", INK, K.CREAM_ON_DARK)}</div>')
+               f'<div style="display:flex;gap:6px;flex-wrap:wrap">{chip("2nd week of Nov 2026 (tentative)", LM)}{chip("400+ expected", INK, K.CREAM_ON_DARK)}</div>')
     pie = K.donut([("9-10", 29, G), ("11-12", 45, BL), ("College", 26, LM)], 300, 150)
     leg = "".join(f'<div style="display:flex;align-items:center;gap:7px;font:600 11.5px var(--e)"><i style="width:10px;height:10px;border-radius:50%;background:{c};display:block"></i>{n}</div>' for n, c in [("Class 9-10  29%", G), ("Class 11-12  45%", BL), ("College  26%", LM)])
     ben = [("pin", "Spots we know you’ll love"), ("wand", "Basic amenities and support"), ("megaphone", "Dedicated shoutouts"), ("store", "Ample stall space"),
            ("users", "Connect directly with your audience"), ("target", "Benefit from high footfall at the event")]
     left = pn(f'{eb("Why a stall")}{bt("A room full of *students*", 31)}'
-              f'<div style="display:flex;align-items:flex-end;gap:12px"><div class="bk" style="font-size:66px;color:{K.GREEN_D}">600+</div><div class="bp" style="padding-bottom:8px">expected at the party</div></div>'
+              f'<div style="display:flex;align-items:flex-end;gap:12px"><div class="bk" style="font-size:66px;color:{K.GREEN_D}">400+</div><div class="bp" style="padding-bottom:8px">expected at the party</div></div>'
               f'<div class="bc" style="display:flex;align-items:center;gap:10px">{pie.replace("width=\"300\" height=\"300\"", "width=\"104\" height=\"104\"")}<div style="display:flex;flex-direction:column;gap:5px">{leg}<div class="bl" style="font-size:10.7px">Survey of 1,810 respondents</div></div></div>'
               f'<div style="flex:1;min-height:0">{ph(190, "50% 45%", 18)}</div>')
-    ros = [("1:00 PM", "Decor and venue setup"), ("3:00 PM", "Stall setup"), ("4:00 PM", "DJ and sound setup"), ("5:30 PM", "Team and vendor briefing"),
-           ("6:30 PM", "Registrations open, stalls go live"), ("7:45 PM", "Dhol entry and opening"), ("8:00 - 10:30 PM", "DJ set: peak hours"), ("10:30 PM", "Closing moment")]
+    ros = [("1:00 PM", "Decor and venue setup"), ("3:00 PM", "Stall setup"), ("4:00 PM", "Stalls go live, DJ and sound setup"), ("5:30 PM", "Team and vendor briefing"),
+           ("6:30 PM", "Registrations open"), ("7:45 PM", "Dhol entry and opening"), ("8:00 - 9:00 PM", "DJ set: peak hours"), ("9:00 PM", "Closing moment")]
     tl = "".join(f'<div style="display:flex;gap:10px;align-items:flex-start;padding:7px 0;{"border-top:1.2px solid " + K.LINE + ";" if i else ""}"><div style="width:118px;flex:none">{chip(t, INK, K.CREAM_ON_DARK)}</div>'
                  f'<div style="font:600 12.5px/1.25 var(--e);padding-top:4px">{n}</div></div>' for i, (t, n) in enumerate(ros))
     centre = pn(f'{eb("Run of show")}{bt("The day, *hour* by hour", 31)}<div class="bc" style="padding:6px 14px">{tl}</div>'
-                f'<div class="bp" style="font-size:12px"><b>Stalls go live at 6:30 PM.</b> The night closes at 10:30 PM.</div><div style="flex:1;min-height:0">{ph(184, "50% 50%", 18)}</div>')
+                f'<div class="bp" style="font-size:12px"><b>Setup from 3:00 PM. Stalls go live at 4:00 PM.</b> The night ends at 9:00 PM.</div><div style="flex:1;min-height:0">{ph(184, "50% 50%", 18)}</div>')
     steps = [("1", "Call or message us", "Tell us what you sell and what you want from the night."), ("2", "We share the details", "Fees, layout and terms, matched to your stall."), ("3", "Lock your spot", "We confirm placement and send the run of show.")]
     cards = "".join(f'<div class="bc" style="display:flex;gap:12px;align-items:center;padding:12px 14px"><div class="bk" style="font-size:44px;color:{TONES[i % 3] if i != 2 else K.GREEN_D}">{n}</div><div><div style="font:900 15px/1.05 var(--d);text-transform:uppercase">{h}</div><div class="bp" style="font-size:12px;margin-top:4px">{d}</div></div></div>' for i, (n, h, d) in enumerate(steps))
     right = pn(f'{eb("Next step")}{bt("Fees and terms, *on request*", 31)}<p class="bp">We share fees, layout and terms once you are interested, so we can match them to your stall.</p>{cards}'
-               f'<div class="bc" style="padding:12px 14px"><div class="bl">What a stall gets</div><div style="margin-top:7px">{ul([t for _, t in ben[:4]])}</div></div>'
+               f'<div class="bc" style="padding:12px 14px"><div class="bl">What a stall gets</div><div style="margin-top:7px">{ul([t for _, t in ben[:3]] + ["Marketing and coverage"])}</div></div>'
                f'<div style="flex:1;min-height:0">{ph(126, "50% 40%", 18)}</div>')
     return [flap, back, front], [left, centre, right]
 

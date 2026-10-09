@@ -103,7 +103,7 @@ def photo_story(c, items, cols, rows, caption, tag, tone=G):
 
 def s_glance(c):
     facts = [("calendar", "When", "2nd week of November 2026 (tentative)"), ("users", "Who", "School (classes 6-12) and college students"),
-             ("ticket", "How many", "600+ guests expected"), ("heart", "Why", "Net proceeds fund AquaTerra\u2019s welfare work")]
+             ("ticket", "How many", "400+ guests expected"), ("heart", "Why", "Net proceeds fund AquaTerra\u2019s welfare work")]
     left = K.card("".join(f'<div style="display:flex;align-items:center;gap:22px;padding:20px 0;{"border-top:1.5px solid " + K.LINE + ";" if i else ""}">'
                           f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])}">{K.icon(ic, 30)}</span>'
                           f'<div><div class="mono" style="font-size:16px;color:{K.MUTE}">{k}</div><div style="font:600 30px/1.2 var(--e);margin-top:4px">{v}</div></div></div>'
@@ -136,7 +136,7 @@ def s_cover(c):
             f'{K.eyebrow("Sponsorship & partnership proposal")}{t}'
             f'{K.lede("The flagship Diwali fundraiser from AquaTerra, Kolkata’s student-run NGO. A DJ-led party night where every net rupee goes to welfare work.", 34, 720)}'
             f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("All for charity", G)}{K.chip("2nd week of Nov 2026 (tentative)", LM)}'
-            f'{K.chip_o("600+ expected")}</div></div>')
+            f'{K.chip_o("400+ expected")}</div></div>')
     right = f'<div style="flex:1;margin-left:64px;position:relative">{ph(148, "50% 38%", alt="Disco Diwali dance floor")}</div>'
     stick = sticker(stk.disco_ball, 200, 1590, 38, 8) + sticker(stk.diya, 170, 830, 130, -8)
     return S(left + right + stick, None, c, body_style="margin-top:0")
@@ -186,7 +186,7 @@ def s_welfare(c):
 
 
 def s_impact(c):
-    data = [("1600+", "doctor check-ups in the Sundarbans", "pulse"), ("3000+", "dogs fed across Kolkata", "paw"),
+    data = [("1400+", "doctor check-ups in the Sundarbans", "pulse"), ("3000+", "dogs fed across Kolkata", "paw"),
             ("5K+", "saplings planted by our team", "sprout"), ("2.5T", "of clothes collected in donation drives", "shirt"),
             ("15K+", "bananas distributed in our most recent campaign", "box"), ("4000+", "kids reached across workshops", "users")]
     tiles = [K.kpi(v, l, ic, TONES[i % 3], 120) for i, (v, l, ic) in enumerate(data)]
@@ -253,7 +253,7 @@ def s_series_diwali(c):
            f'<div style="position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,10,10,.88))"></div>'
            f'<div style="position:absolute;left:36px;right:36px;bottom:32px;color:{K.CREAM_ON_DARK}"><div class="mono" style="font-size:17px;color:{LM}">You are here</div>'
            f'<div style="font:900 96px/.92 var(--d);color:{LM};margin-top:8px">Nov 2026</div><div style="font:600 30px/1.25 var(--e)">2nd week, tentative</div></div></div>'
-           f'<div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{st("600+", "expected")}</div></div>')
+           f'<div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{st("400+", "expected")}</div></div>')
     body = f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;min-height:0">{c24}{c25}{c26}</div>'
     return S(body, (K.eyebrow("Disco Diwali", INK), K.title("Disco Diwali, *again*")), c, tone="lemon")
 
@@ -335,7 +335,7 @@ def s_flagship(c):
              f'<div style="padding:22px 28px;display:flex;align-items:center;gap:16px"><span style="width:16px;height:16px;border-radius:50%;background:{t};flex:none"></span>'
              f'<div style="font:900 34px/1.02 var(--d);text-transform:uppercase">{n}</div></div></div>' for n, img, t in feats]
     left = (f'<div style="width:620px;display:flex;flex-direction:column;justify-content:space-between;min-height:0">'
-            f'<div><div class="kv" style="font-size:230px;color:{G}">600+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:8px">expected at the Disco Diwali party</div></div>'
+            f'<div><div class="kv" style="font-size:230px;color:{G}">400+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:8px">expected at the Disco Diwali party</div></div>'
             f'<div class="card dk" style="padding:24px 30px;display:flex;flex-direction:column;gap:18px">'
             f'<div><div class="mono" style="font-size:16px;color:#A7A292">Tentative date</div><div style="font:900 36px/1 var(--d);text-transform:uppercase;margin-top:8px">2nd week of November 2026</div></div>'
             f'<div style="border-top:1.5px solid rgba(244,239,224,.14);padding-top:18px"><div class="mono" style="font-size:16px;color:#A7A292">Target market</div><div style="font:900 36px/1 var(--d);text-transform:uppercase;margin-top:8px">School (classes 6-12) and college students</div></div></div></div>')
@@ -430,8 +430,8 @@ def s_offline(c):
     return S(left + right, (K.eyebrow("Offline engagement"), K.title("We are on the *ground* too")), c)
 
 
-RUN = [("1:00 PM", "Decor and venue setup", 184), ("3:00 PM", "Stall setup", 182), ("4:00 PM", "DJ and sound setup", 188), ("5:30 PM", "Team and vendor briefing", 130),
-       ("6:30 PM", "Registrations open, stalls go live", 190), ("7:45 PM", "Dhol entry and opening", 192), ("8:00 - 10:30 PM", "DJ set: peak hours", 194), ("10:30 PM", "Closing moment", 148)]
+RUN = [("1:00 PM", "Decor and venue setup", 184), ("3:00 PM", "Stall setup", 182), ("4:00 PM", "Stalls go live, DJ and sound setup", 188), ("5:30 PM", "Team and vendor briefing", 130),
+       ("6:30 PM", "Registrations open", 190), ("7:45 PM", "Dhol entry and opening", 192), ("8:00 - 9:00 PM", "DJ set: peak hours", 194), ("9:00 PM", "Closing moment", 148)]
 
 
 def s_run(c):
@@ -547,7 +547,7 @@ def s_inkind(c):
 
 def s_stalls(c):
     ben = [("pin", "Spots we know you’ll love"), ("wand", "Basic amenities and support"), ("megaphone", "Dedicated shoutouts"), ("store", "Ample stall space"),
-           ("users", "Connect directly with your audience"), ("target", "Benefit from high footfall at the event"), ("eye", "Showcase your brand to a real audience"), ("trend", "Gain exposure on your social pages")]
+           ("users", "Connect directly with your audience"), ("target", "Benefit from high footfall at the event"), ("eye", "Showcase your brand to a real audience"), ("megaphone", "Marketing and coverage")]
     tiles = [K.card(f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])};width:64px;height:64px">{K.icon(ic, 30)}</span>'
                     f'<div style="font:600 25px/1.2 var(--e)">{t}</div>', "", "display:flex;align-items:center;gap:20px;padding:18px 26px") for i, (ic, t) in enumerate(ben)]
     left = f'<div style="width:640px;display:grid;grid-template-rows:1.1fr 1fr 1fr;gap:20px;min-height:0">{ph(182, "50% 45%")}{ph(186, "50% 35%")}{ph(178, "50% 50%")}</div>'
@@ -598,11 +598,11 @@ def make_cover(kicker, lede, chips, photo=148, focus="50% 38%"):
 
 
 cover_sponsors_warm = make_cover("Welcome back: partnership proposal", "Good to be doing this again. Here is the 2026 edition of the flagship Diwali fundraiser, and what it means for you.",
-                                 [("All for charity", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ expected", "outline")], 194)
+                                 [("All for charity", G), ("2nd week of Nov 2026 (tentative)", LM), ("400+ expected", "outline")], 194)
 cover_stalls = make_cover("Stall partners", "Put your stall in front of Kolkata\u2019s school and college students at the flagship Diwali fundraiser from AquaTerra.",
-                          [("Stalls open 6:30 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ expected", "outline")], 182, "50% 45%")
+                          [("Stalls open 4:00 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("400+ expected", "outline")], 182, "50% 45%")
 cover_stalls_warm = make_cover("Stall partners, welcome back", "Thank you for trading with us. Here is the 2026 edition and how to book your stall again.",
-                               [("Stalls open 6:30 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("600+ expected", "outline")], 178, "50% 50%")
+                               [("Stalls open 4:00 PM", G), ("2nd week of Nov 2026 (tentative)", LM), ("400+ expected", "outline")], 178, "50% 50%")
 
 
 def s_thanks(c):
@@ -620,7 +620,7 @@ def s_thanks_stalls(c):
 
 
 def s_thisyear(c):
-    cards = [("ticket", "600+ expected", "Up from 500 entries recorded at Disco Diwali 2025.", G), ("calendar", "2nd week of November", "Tentative date. We confirm it as soon as the venue is locked.", LM),
+    cards = [("ticket", "400+ expected", "Our 2024 edition drew 350+ guests and 2025 recorded 500 entries.", G), ("calendar", "2nd week of November", "Tentative date. We confirm it as soon as the venue is locked.", LM),
              ("users", "School and college", "Classes 6-12 and college students, in one room.", BL), ("store", "Stalls and partners", "Stall space, in-kind partners and sponsorship tiers are all open.", G)]
     cs = [K.card(f'<span class="disc" style="background:{t};color:{core.text_on(t)}">{K.icon(ic, 30)}</span><div><div style="font:900 44px/1 var(--d);text-transform:uppercase;margin-bottom:14px">{h}</div>'
                  f'<div style="font:400 27px/1.3 var(--e);color:{INK2}">{d}</div></div>', "kpi", "padding:34px 38px") for ic, h, d, t in cards]
@@ -628,7 +628,7 @@ def s_thisyear(c):
 
 
 def s_stall_offer(c):
-    facts = [("clock", "When", "Setup from 3:00 PM. Stalls go live at 6:30 PM. The night closes at 10:30 PM."), ("users", "Who walks past", "School (classes 6-12) and college students, 600+ expected."),
+    facts = [("clock", "When", "Setup from 3:00 PM. Stalls go live at 4:00 PM. The night ends at 9:00 PM."), ("users", "Who walks past", "School (classes 6-12) and college students, 400+ expected."),
              ("store", "What you get", "Stall space at the venue, shoutouts, basic amenities and support."), ("link", "Fees and terms", "Shared once you are interested, so we can match them to your stall.")]
     left = K.card("".join(f'<div style="display:flex;align-items:center;gap:22px;padding:20px 0;{"border-top:1.5px solid " + K.LINE + ";" if i else ""}">'
                           f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])}">{K.icon(ic, 30)}</span>'
