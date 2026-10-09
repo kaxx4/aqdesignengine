@@ -317,7 +317,7 @@ h1.t em{{font-family:var(--s);font-style:italic;font-weight:400;text-transform:n
 .dk .lede{{color:#D8D3C2}}
 .bd{{flex:1;min-height:0;display:flex;margin-top:40px;position:relative}}
 .ft{{position:absolute;left:{M}px;right:{M}px;bottom:36px;height:{FOOT_H}px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
-    font:700 15px var(--m);letter-spacing:.12em;text-transform:uppercase;color:{MUTE}}}
+    font:700 16px var(--m);letter-spacing:.12em;text-transform:uppercase;color:{MUTE}}}
 .dk .ft{{color:#A7A292}}
 .ft img{{height:30px;display:block}}
 .ft .mid{{display:flex;align-items:center;gap:18px}}
