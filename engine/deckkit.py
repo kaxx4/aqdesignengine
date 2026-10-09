@@ -215,6 +215,8 @@ def kpi(value, label, ic=None, tone=GREEN, size=84, dark=False):
 def donut(slices, size=560, thick=120, center=None, dark=False):
     """slices: [(label, pct, colour)]. Percent labels sit ON the ring; the legend is HTML beside it, never inside the SVG."""
     import math
+    pie = thick >= size / 2 - 8                      # thick == the radius draws a PIE (no hole), anything less a donut
+    if pie: thick = size / 2 - 4
     r = size / 2 - thick / 2 - 4; cx = cy = size / 2; circ = 2 * math.pi * r
     tot = sum(p for _, p, _ in slices); off = 0; arcs = ""; labels = ""
     gap = 5
@@ -223,7 +225,8 @@ def donut(slices, size=560, thick=120, center=None, dark=False):
         arcs += (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{col}" stroke-width="{thick}" '
                  f'stroke-dasharray="{ln:.2f} {circ - ln:.2f}" stroke-dashoffset="{-off:.2f}" transform="rotate(-90 {cx} {cy})"/>')
         mid = (off + frac * circ / 2) / circ * 2 * math.pi - math.pi / 2
-        lx, ly = cx + r * math.cos(mid), cy + r * math.sin(mid)
+        lr = (size / 2) * .62 if pie else r
+        lx, ly = cx + lr * math.cos(mid), cy + lr * math.sin(mid)
         labels += (f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" dominant-baseline="central" font-family="NeutralFace" font-weight="900" '
                    f'font-size="{34 if frac > .09 else 26}" fill="{core.text_on(col)}">{round(p)}%</text>')
         off += frac * circ

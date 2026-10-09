@@ -43,6 +43,7 @@ FACTS = json.load(open(os.path.join(PRIV, "facts.json"))) if os.path.exists(os.p
 OUT = os.path.join(ROOT, "out", "decks", "sponsors_cold")
 LABEL = "Disco Diwali 2026  ·  Partnership proposal"
 G, BL, LM, INK, MUTE = K.GREEN, K.BLUE, K.LEMON, K.INK, K.MUTE
+CREAM = K.CREAM_ON_DARK
 TONES = [G, BL, LM]            # the one accent rotation: every repeated element cycles these three, in this order
 
 
@@ -172,7 +173,7 @@ def s_vision(c):
          f'<em style="font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;color:{LM}">welfare</em> work across Kolkata.')
     left = (f'<div style="display:flex;flex-direction:column;justify-content:center;gap:44px;width:1060px">'
             f'<div style="font:900 84px/.98 var(--d);text-transform:uppercase;letter-spacing:-.01em">{t}</div>'
-            f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("1.5K+ community", G)}{K.chip("3.5K+ kids reached", BL, "#fff")}'
+            f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("1.5K+ community", G)}{K.chip("4000+ kids reached", BL, "#fff")}'
             f'{K.chip("80G certified", LM)}{K.chip_o("Darpan registered", dark=True)}</div></div>')
     right = f'<div style="flex:1;margin-left:64px;display:grid;grid-template-rows:1.15fr 1fr;gap:22px;min-height:0">{ph(156, "50% 55%")}{ph(160, "50% 45%")}</div>'
     return S(left + right, (K.eyebrow("Our vision", LM),), c, dark=True)
@@ -284,20 +285,21 @@ def s_flagship(c):
 
 
 def s_demo(c):
-    counts = [("Class 9-10", "14-16 years", 525, G), ("Class 11-12", "16-18 years", 820, BL), ("College", "18+ years", 465, LM), ("Volunteer network", "1.5K+ active volunteers", 1500, K.INK)]
+    counts = [("Class 9-10", "14-16 years", 525, G), ("Class 11-12", "16-18 years", 820, BL), ("College", "18+ years", 465, LM)]
     tot = sum(v for _, _, v, _ in counts)
     sl = [(n, 100 * v / tot, col) for n, _, v, col in counts]
     pct = [round(p) for _, p, _ in sl]; assert sum(pct) == 100, pct
     legend = "".join(
-        f'<div class="card" data-tag="card" style="display:flex;align-items:center;gap:22px;padding:22px 28px"><span style="width:26px;height:26px;border-radius:50%;background:{col};flex:none"></span>'
-        f'<div style="flex:1"><div style="font:900 34px/1 var(--d);text-transform:uppercase">{n}</div><div class="mono" style="font-size:14px;color:{K.MUTE};margin-top:6px">{sub}</div></div>'
-        f'<div class="kv" style="font-size:60px">{p}%</div></div>' for (n, sub, v, col), p in zip(counts, pct))
-    note = (f'<div style="font:400 20px/1.35 var(--e);color:{K.MUTE}">Age split from our survey of 1,810 respondents (Classes 9-12 and college), shown beside the 1.5K+ volunteer network. '
-            f'Percentages are approximate: a volunteer can also be a survey respondent.</div>')
-    pie = K.donut([(n, p, col) for (n, p, col) in sl], 640, 150, ("1.5K+", "COMMUNITY"))
-    left = f'<div style="width:700px;display:flex;align-items:center;justify-content:center">{pie}</div>'
-    right = f'<div style="flex:1;display:flex;flex-direction:column;gap:18px;justify-content:center">{legend}{note}</div>'
-    return S(left + right, (K.eyebrow("Demographics"), K.title("The AQ *community*, by age")), c)
+        f'<div class="card" data-tag="card" style="display:flex;align-items:center;gap:22px;padding:24px 30px"><span style="width:28px;height:28px;border-radius:50%;background:{col};flex:none"></span>'
+        f'<div style="flex:1"><div style="font:900 40px/1 var(--d);text-transform:uppercase">{n}</div><div class="mono" style="font-size:15px;color:{K.MUTE};margin-top:8px">{sub}</div></div>'
+        f'<div class="kv" style="font-size:72px">{p}%</div></div>' for (n, sub, v, col), p in zip(counts, pct))
+    vol = K.card(f'<span class="disc" style="background:{K.INK};color:{K.CREAM_ON_DARK}">{K.icon("users", 30)}</span>'
+                 f'<div><div class="kv" style="font-size:72px">1.5K+</div><div class="kl">active volunteers in the AQ network, on top of the audience</div></div>', "kpi", "padding:26px 30px;flex-direction:row;align-items:center;justify-content:flex-start;gap:26px")
+    note = f'<div style="font:400 20px/1.35 var(--e);color:{K.MUTE}">Age split of 1,810 survey respondents across Classes 9-12 and college.</div>'
+    pie = K.donut([(n, p, col) for (n, p, col) in sl], 700, 350)
+    left = f'<div style="width:760px;display:flex;align-items:center;justify-content:center">{pie}</div>'
+    right = f'<div style="flex:1;display:flex;flex-direction:column;gap:18px;justify-content:center">{legend}{vol}{note}</div>'
+    return S(left + right, (K.eyebrow("Demographics"), K.title("Who is in the *room*")), c)
 
 
 def s_map(c):
@@ -314,16 +316,16 @@ def s_map(c):
     return S(left + right, (K.eyebrow("Reach"), K.title("Where our *schools* are")), c)
 
 
-def s_funnel(c):
-    fn = K.funnel([("2,500+", "ASKED FOR A TICKET", G, 1.0), ("500", "ENTERED ON THE NIGHT", BL, .72), ("419", "PAID TICKETS", LM, .54)], 880, dark=True)
-    bars = K.hbars([("Early bird", "₹450", 136, "136", G), ("Phase 1", "₹500", 132, "132", BL), ("Phase 2", "₹550", 110, "110", LM), ("Surprise", "₹650", 41, "41", "#F4EFE0")],
-                   660, 40, 26, dark=True)
-    right = (f'<div style="flex:1;margin-left:56px;display:flex;flex-direction:column;gap:22px;min-height:0">'
-             f'<div class="card dk" style="padding:28px 34px"><div class="mono" style="font-size:14px;color:#A7A292;margin-bottom:22px">Tickets sold per price phase</div>{bars}</div>'
-             f'<div class="card dk" style="padding:26px 34px;display:flex;gap:26px;align-items:center"><div class="kv" style="font-size:92px;color:{LM};white-space:nowrap">1 in 5</div>'
-             f'<div style="font:400 26px/1.3 var(--e);color:#D8D3C2">of the people who wanted a ticket got one. The price rose every phase, so the later you asked, the more you paid.</div></div></div>')
-    left = f'<div style="width:880px;display:flex;align-items:center">{fn}</div>'
-    return S(left + right, (K.eyebrow("Exclusivity", LM), K.title("Everyone wants in. Few *get* in.")), c, dark=True)
+def s_reach(c):
+    T = [("Instagram", "5K+", "followers", "insta", G), ("Instagram", "4.3L", "views in a recent 30 days", "eye", BL),
+         ("Instagram", "21.7K", "views on the Summer Sunset post", "trend", LM), ("Instagram", "9.3K", "views on the Paradox 2026 post", "trend", G),
+         ("WhatsApp", "3,162", "members across 4 community groups", "users", BL), ("Student database", "2000+", "student contacts we can reach directly", "mail", LM),
+         ("Schools", "18", "leading Kolkata schools in our network", "school", G), ("All channels", "5M+", "impressions across social media and marketing", "megaphone", BL)]
+    cards = [K.card(f'<div style="display:flex;align-items:center;gap:14px"><span class="disc" style="background:{tone};color:{core.text_on(tone)};width:54px;height:54px">{K.icon(ic, 26)}</span>'
+                    f'<span class="mono" style="font-size:15px;color:#A7A292">{ch}</span></div>'
+                    f'<div><div class="kv" style="font-size:92px;color:{CREAM}">{v}</div><div class="kl" style="font-size:24px">{lab}</div></div>', "kpi", "padding:28px 32px", dark=True)
+             for ch, v, lab, ic, tone in T]
+    return S(grid(cards, "repeat(4,1fr)", 2, 22), (K.eyebrow("Reach", LM), K.title("Numbers, *by touchpoint*")), c, dark=True)
 
 
 def s_promote(c):
@@ -439,9 +441,9 @@ def _check_list(items, dark=False, big=False):
     return f'<ul class="ck" style="{fs}gap:{13 if big else 12}px">' + "".join(f"<li style='{fs}'>{K.icon('check', 26, K.GREEN_D if not dark else G, 2.4)}<span>{K.esc(i)}</span></li>" for i in items) + "</ul>"
 
 
-TIER = [("Title sponsor", "Powered by", LM, ["Exclusive standee spots on all days", "Logo on creatives and banners", "30+ stories and interactions", "60+ Google reviews", "Grid of 3 exclusive Instagram posts", "Chief guest speaker slot", "Emcee mentions across all events", "Stall space at the event"]),
-        ("Co-sponsor", "Second billing", BL, ["Exclusive standee spots on all days", "Logo on creatives and banners", "20+ stories and interactions", "55+ Google reviews", "1 exclusive Instagram post", "Emcee mentions across all events", "Stall space at the event"]),
-        ("Associate sponsor", "Visible partner", G, ["Standees at the events", "Logo on creatives and banners", "5+ stories and interactions", "30+ online reviews", "Stall space at the event"])]
+TIER = [("Title sponsor", "Powered by", LM, ["Exclusive standee spots on the night", "Logo on creatives and banners", "30+ stories and interactions", "60+ Google reviews", "Grid of 3 exclusive Instagram posts", "Chief guest speaker slot", "Emcee mentions through the night", "Stall space at the event"]),
+        ("Co-sponsor", "Second billing", BL, ["Exclusive standee spots on the night", "Logo on creatives and banners", "20+ stories and interactions", "55+ Google reviews", "1 exclusive Instagram post", "Emcee mentions through the night", "Stall space at the event"]),
+        ("Associate sponsor", "Visible partner", G, ["Standees at the event", "Logo on creatives and banners", "5+ stories and interactions", "30+ online reviews", "Stall space at the event"])]
 
 
 def s_tiers_glance(c):
@@ -453,10 +455,10 @@ def s_tiers_glance(c):
 
 
 def s_matrix(c):
-    rows = [("Standee spots", "Exclusive, all days", "Exclusive, all days", "At the events"), ("Logo on creatives and banners", 1, 1, 1),
+    rows = [("Standee spots", "Exclusive, on the night", "Exclusive, on the night", "At the event"), ("Logo on creatives and banners", 1, 1, 1),
             ("Stories and interactions", "30+", "20+", "5+"), ("Online reviews", "60+ Google", "55+ Google", "30+ online"),
             ("Story reshares", "25+", 0, 0), ("Content on your standees and products", 1, 1, 0), ("Instagram feature", "Grid of 3 posts", "1 post", 0),
-            ("Chief guest speaker", 1, 0, 0), ("Emcee mentions across all events", 1, 1, 0), ("Stall space at the event", 1, 1, 1), ("Coupons, cards and samples", 1, 1, 0)]
+            ("Chief guest speaker", 1, 0, 0), ("Emcee mentions through the night", 1, 1, 0), ("Stall space at the event", 1, 1, 1), ("Coupons, cards and samples", 1, 1, 0)]
     cell = lambda v: (K.icon("check", 30, K.GREEN_D, 2.6) if v == 1 else (f'<span style="color:{K.MUTE};font:600 24px var(--e)">—</span>' if v == 0 else f'<span style="font:600 24px var(--e)">{K.esc(v)}</span>'))
     head = "".join(f'<div style="display:flex;justify-content:center">{K.chip(n, t, size=22)}</div>' for n, _, t, _ in TIER)
     body = "".join(f'<div style="display:contents"><div style="font:600 24px var(--e);padding:0 4px">{K.esc(r[0])}</div>'
@@ -468,9 +470,9 @@ def s_matrix(c):
 
 
 def s_partners(c):
-    P = [("Education partner", "book", G, ["Promotional standees at all event locations", "Logo on creatives and banners", "5+ stories and interactions", "25+ Google reviews", "Exclusive Instagram post", "Webinar promotion on WhatsApp", "25+ story reshares", "Coupons and business cards"]),
-         ("Media partner", "news", BL, ["Designated stall space at all event locations", "Logo on creatives and banners", "Reel made for you, at your store or the event", "5+ stories and interactions", "Your e-commerce link shared with a 2000+ student database", "30+ online reviews", "Offer coupons and business cards"]),
-         ("Cafe partner", "coffee", LM, ["Designated stall space at all event locations", "Logo on creatives and banners", "Reel made for you, at your cafe or the event", "5+ stories and interactions", "Your link shared with a 2000+ student database", "45+ Zomato and Swiggy reviews", "20+ Google reviews", "Offer coupons and pamphlets"])]
+    P = [("Education partner", "book", G, ["Promotional standees at the venue", "Logo on creatives and banners", "5+ stories and interactions", "25+ Google reviews", "Exclusive Instagram post", "Webinar promotion on WhatsApp", "25+ story reshares", "Coupons and business cards"]),
+         ("Media partner", "news", BL, ["Designated stall space at the venue", "Logo on creatives and banners", "Reel made for you, at your store or the event", "5+ stories and interactions", "Your e-commerce link shared with a 2000+ student database", "30+ online reviews", "Offer coupons and business cards"]),
+         ("Cafe partner", "coffee", LM, ["Designated stall space at the venue", "Logo on creatives and banners", "Reel made for you, at your cafe or the event", "5+ stories and interactions", "Your link shared with a 2000+ student database", "45+ Zomato and Swiggy reviews", "20+ Google reviews", "Offer coupons and pamphlets"])]
     cards = []
     PICS = [(160, "50% 40%"), (188, "50% 35%"), (182, "50% 45%")]
     for (n, ic, t, it), pic in zip(P, PICS):
@@ -533,7 +535,7 @@ def s_close(c):
 
 # ═════════════════════════════════════ BUILD ═════════════════════════════════════
 ORDER = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_sponsors, s_feedback,
-         s_photo_energy, s_flagship, s_demo, s_map, s_funnel, s_promote, s_social, s_offline, s_run, s_photo_night,
+         s_photo_energy, s_flagship, s_demo, s_map, s_reach, s_promote, s_offline, s_run, s_photo_night,
          s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
 
 

@@ -35,3 +35,10 @@ Cohesion 8/10 from all six. Clarity of ask 3-4/10 from all buyers: **no prices, 
 
 ## Open items needing the user (nothing invented)
 Price per tier + slots left + payment deadline; venue and firm date; share of proceeds to charity; one attendance definition; review-count wording; single-night vs multi-day wording; 3.5K vs 4000+ kids; real 80G/12A/Darpan numbers; consent for child photos; named, permissioned testimonials; Summer Sunset funds; a second (adult) contact.
+
+## Round-4 rulings (user, 2026-10-09)
+- Review-count deliverables: KEEP AS WRITTEN (user's call; the legal/policy risk is recorded above and was not acted on).
+- Event framing: one night. 'all days / five days / all events / all event locations' rewritten to 'on the night' / 'at the venue'.
+- Exclusivity funnel REMOVED. Replaced by slide 17 "Numbers, by touchpoint" (Instagram 5K+ followers, 4.3L views/30d, 21.7K and 9.3K post views, WhatsApp 3,162 members, 2000+ student database, 18 schools, 5M+ impressions). All figures from the source deck; the post-view numbers come from the poster screenshots.
+- Age chart: a true PIE of the audience demographic (Class 9-10 29%, 11-12 45%, college 26%; sums to 100). Volunteer network (1.5K+) is a separate stat tile, NOT a slice. This reverses the earlier 4-slice choice after the user said "i basically want a pie chart of the demographic"; flagged for confirmation.
+- Kids reached unified to 4000+ (source had 3.5K+ and 4000+). Flagged.
