@@ -100,11 +100,11 @@ def crop_uri(path, box, maxside=1200):
 _TRIM = {}
 
 
-def logo_uri(path, pad=.04):
+def logo_uri(path, pad=.04, flat=False):
     """A logo trimmed to its ink. Source logos carry big transparent or white margins (a mark could fill 30% of its tile). Trims by the alpha
     box when there is real alpha, else by the non-white box. Pair with mix-blend-mode:multiply on a light tile to drop any white that remains."""
     p = asset(path)
-    if p in _TRIM: return _TRIM[p]
+    if (p, flat) in _TRIM: return _TRIM[(p, flat)]
     im = Image.open(p).convert("RGBA"); a = im.getchannel("A")
     if a.getextrema()[0] < 250: bb = a.point(lambda v: 255 if v > 24 else 0).getbbox()
     else:
@@ -115,9 +115,11 @@ def logo_uri(path, pad=.04):
         w, h = im.size; px_ = int((bb[2] - bb[0]) * pad) + 2; py_ = int((bb[3] - bb[1]) * pad) + 2
         im = im.crop((max(0, bb[0] - px_), max(0, bb[1] - py_), min(w, bb[2] + px_), min(h, bb[3] + py_)))
     if max(im.size) > 700: im.thumbnail((700, 700), Image.LANCZOS)
+    if flat:                      # for a LIGHT tile: composite on white so antialiased edge pixels cannot show a dark fringe
+        bgw = Image.new("RGBA", im.size, "white"); bgw.alpha_composite(im); im = bgw.convert("RGB")
     b = io.BytesIO(); im.save(b, "PNG", optimize=True)
-    _TRIM[p] = "data:image/png;base64," + base64.b64encode(b.getvalue()).decode()
-    return _TRIM[p]
+    _TRIM[(p, flat)] = "data:image/png;base64," + base64.b64encode(b.getvalue()).decode()
+    return _TRIM[(p, flat)]
 
 
 # ── icons: ONE set (24px grid, 1.8 stroke, round). Replaces the three emoji sets in the source deck. ──────────────

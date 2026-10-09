@@ -100,11 +100,39 @@ def photo_story(c, items, cols, rows, caption, tag, tone=G):
     return S(body, None, c, body_style="margin-top:0")
 
 
+def s_glance(c):
+    facts = [("calendar", "When", "2nd week of November 2026 (tentative)"), ("users", "Who", "School (classes 6-12) and college students"),
+             ("ticket", "How many", "600+ guests expected"), ("heart", "Why", "Net proceeds fund AquaTerra\u2019s welfare work")]
+    left = K.card("".join(f'<div style="display:flex;align-items:center;gap:22px;padding:20px 0;{"border-top:1.5px solid " + K.LINE + ";" if i else ""}">'
+                          f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])}">{K.icon(ic, 30)}</span>'
+                          f'<div><div class="mono" style="font-size:14px;color:{K.MUTE}">{k}</div><div style="font:600 30px/1.2 var(--e);margin-top:4px">{v}</div></div></div>'
+                          for i, (ic, k, v) in enumerate(facts)), "", "width:760px;padding:18px 40px;display:flex;flex-direction:column;justify-content:center")
+    ladder = [("Title sponsor", LM), ("Co-sponsor", BL), ("Associate sponsor", G), ("Education, media and cafe partners", K.PAPER), ("In-kind partners", K.PAPER), ("Stall space at the venue", K.PAPER)]
+    rows = "".join(f'<div style="background:{t};color:{core.text_on(t) if t != K.PAPER else K.INK};border:1.5px solid {K.LINE};border-radius:20px;padding:18px 30px;'
+                   f'font:900 34px/1 var(--d);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center">{n}{K.icon("arrow", 30, "currentColor", 2.2)}</div>' for n, t in ladder)
+    right = f'<div style="flex:1;margin-left:40px;display:flex;flex-direction:column;gap:14px;justify-content:center"><div class="mono" style="font-size:15px;color:{K.MUTE};margin-bottom:6px">Ways to be part of it</div>{rows}</div>'
+    return S(left + right, (K.eyebrow("The short version"), K.title("The offer, in *one* page")), c)
+
+
+def s_proof(c):
+    chips = "".join(f'<div style="flex:1;min-width:0">{_poster(e[0])}</div>' for e in [EVENTS[0], EVENTS[1], EVENTS[2], EVENTS[3], EVENTS[4]])
+    body = (f'<div style="display:flex;flex-direction:column;width:100%;gap:36px;min-height:0"><div style="display:flex;gap:60px;align-items:flex-end">'
+            f'<div><div class="kv" style="font-size:250px;color:{G}">\u20b922.5L+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:6px">raised for welfare across five flagship events</div></div>'
+            f'<div style="padding-bottom:14px"><div class="kv" style="font-size:120px;color:{LM}">2,850+</div><div style="font:600 30px/1.2 var(--e);color:#D8D3C2;margin-top:6px">guests across the same five</div></div></div>'
+            f'<div style="display:flex;gap:18px;width:100%;flex:1;min-height:0;align-items:flex-start">{chips}</div></div>')
+    return S(body, (K.eyebrow("The proof", LM),), c, dark=True)
+
+
+def s_photo_tiers(c):
+    return photo_story(c, [(186, "50% 40%", 1, 2), (184, "50% 50%", 2, 1), (178, "50% 50%", 2, 1)], "1fr 1fr 1fr", 2,
+                       "Your brand, in the middle of it", "On the night", G)
+
+
 def s_cover(c):
     t = K.title("Disco" + NL + "*Diwali*", 190)
     left = (f'<div style="display:flex;flex-direction:column;justify-content:center;gap:34px;width:800px">'
             f'{K.eyebrow("Sponsorship & partnership proposal")}{t}'
-            f'{K.lede("The flagship Diwali fundraiser from AquaTerra, Kolkata’s student-run NGO. A DJ-led party night where every rupee goes to welfare work.", 34, 720)}'
+            f'{K.lede("The flagship Diwali fundraiser from AquaTerra, Kolkata’s student-run NGO. A DJ-led party night where every net rupee goes to welfare work.", 34, 720)}'
             f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("All for charity", G)}{K.chip("2nd week of November 2026", LM)}'
             f'{K.chip_o("600+ guests")}</div></div>')
     right = f'<div style="flex:1;margin-left:64px;position:relative">{ph(148, "50% 38%", alt="Disco Diwali dance floor")}</div>'
@@ -157,9 +185,9 @@ def s_welfare(c):
 
 def s_impact(c):
     data = [("1600+", "doctor check-ups in the Sundarbans", "pulse"), ("3000+", "dogs fed across Kolkata", "paw"),
-            ("5K+", "saplings planted by our team", "sprout"), ("2.5 tons", "of clothes collected in donation drives", "shirt"),
+            ("5K+", "saplings planted by our team", "sprout"), ("2.5T", "tons of clothes collected in donation drives", "shirt"),
             ("15K+", "bananas distributed in our most recent campaign", "box"), ("4000+", "kids reached across workshops", "users")]
-    tiles = [K.kpi(v, l, ic, TONES[i % 3], 96) for i, (v, l, ic) in enumerate(data)]
+    tiles = [K.kpi(v, l, ic, TONES[i % 3], 120) for i, (v, l, ic) in enumerate(data)]
     return S(grid(tiles, "1fr 1fr 1fr", 2, 26), (K.eyebrow("Impact"), K.title("What five years of *work* adds up to")), c)
 
 
@@ -192,8 +220,8 @@ def _poster(p):
 def s_events(c):
     cards = []
     for p, name, when, foot, funds, where in EVENTS:
-        stat = lambda v, l: (f'<div><div class="kv" style="font-size:46px">{v}</div><div class="mono" style="font-size:13px;color:{K.MUTE};margin-top:6px">{l}</div></div>')
-        stats = f'<div style="display:flex;gap:22px;margin:16px 0 14px">{stat(foot, "footfall")}{stat(funds, "raised") if funds else ""}</div>'
+        stat = lambda v, l: (f'<div><div class="kv" style="font-size:42px">{v}</div><div class="mono" style="font-size:13px;color:{K.MUTE};margin-top:6px">{l}</div></div>')
+        stats = f'<div style="display:flex;gap:18px;margin:16px 0 14px">{stat(foot, "footfall")}{stat(funds, "raised") if funds else ""}</div>'
         cards.append(K.card(f'<div style="display:flex;gap:24px;height:100%;align-items:center"><div style="width:210px;flex:none">{_poster(p)}</div>'
                             f'<div style="display:flex;flex-direction:column;justify-content:center;min-width:0">'
                             f'<div class="mono" style="font-size:14px;color:{K.MUTE}">{when}</div>'
@@ -213,7 +241,7 @@ def s_sponsors(c):
         bg = "#16181C" if dk else K.PAPER
         blend = "" if dk else "mix-blend-mode:multiply;"
         tiles.append(f'<div style="background:{bg};border:1.5px solid {K.LINE};border-radius:20px;display:flex;align-items:center;justify-content:center;padding:20px 26px;overflow:hidden">'
-                     f'<img src="{K.logo_uri(a)}" style="max-width:100%;max-height:100%;object-fit:contain;{blend}" alt=""></div>')
+                     f'<img src="{K.logo_uri(a, flat=not dk)}" style="max-width:100%;max-height:100%;object-fit:contain;{blend}" alt=""></div>')
     return S(grid(tiles, "repeat(6,1fr)", 5, 16), (K.eyebrow("Trusted by"), K.title("Past *sponsors*")), c)
 
 
@@ -229,7 +257,7 @@ def s_feedback(c):
         mark = f'<div style="font:900 {120 if big else 80}px/.7 var(--d);color:{G if dark else K.GREEN_D}">“</div>'
         return K.card(f'{mark}<div style="font:{"900" if big else "600"} {size}px/1.22 var({"--d" if big else "--e"});{"text-transform:uppercase;" if big else ""}margin-top:12px;flex:1">{K.esc(text)}</div>'
                       f'<div style="height:64px;display:flex;align-items:center"><div style="background:#fff;border:1.5px solid {K.LINE};border-radius:14px;padding:8px 18px;height:60px;display:flex;align-items:center">'
-                      f'<img src="{K.logo_uri(i)}" style="max-height:40px;max-width:200px;mix-blend-mode:multiply" alt=""></div></div>',
+                      f'<img src="{K.logo_uri(i, flat=True)}" style="max-height:40px;max-width:200px;mix-blend-mode:multiply" alt=""></div></div>',
                       "q", f"display:flex;flex-direction:column;{'padding:46px 52px;' if big else 'padding:28px 32px;'}", dark=dark)
     hero = q(*QUOTES[0], 60, True, True)
     small = grid([q(i, t, 27) for i, t in QUOTES[1:]], "1fr 1fr", 2, 22)
@@ -242,14 +270,15 @@ def s_photo_energy(c):
 
 
 def s_flagship(c):
-    feats = [("store", "Food and sales stalls", G), ("sparkle", "A traditional Diwali event", LM), ("music", "The party: DJ-led night", BL), ("gift", "Cash prizes and surprise gifts", G)]
-    cards = [K.card(f'<span class="disc" style="background:{t};color:{core.text_on(t)};width:70px;height:70px">{K.icon(ic, 34)}</span>'
-                    f'<div style="font:900 38px/1.02 var(--d);text-transform:uppercase">{n}</div>', "kpi", "padding:30px 34px", dark=True) for ic, n, t in feats]
-    left = (f'<div style="width:660px;display:flex;flex-direction:column;justify-content:space-between;min-height:0">'
+    feats = [("Food and sales stalls", 182, G), ("A traditional Diwali event", 184, LM), ("The party: a DJ-led night", 188, BL), ("Cash prizes and surprise gifts", 198, G)]
+    cards = [f'<div class="card dk" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column"><div style="flex:1;min-height:0">{K.photo(img, "50% 40%", r=0)}</div>'
+             f'<div style="padding:22px 28px;display:flex;align-items:center;gap:16px"><span style="width:16px;height:16px;border-radius:50%;background:{t};flex:none"></span>'
+             f'<div style="font:900 34px/1.02 var(--d);text-transform:uppercase">{n}</div></div></div>' for n, img, t in feats]
+    left = (f'<div style="width:620px;display:flex;flex-direction:column;justify-content:space-between;min-height:0">'
             f'<div><div class="kv" style="font-size:230px;color:{G}">600+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:8px">attendees at the Disco Diwali party</div></div>'
-            f'<div style="display:flex;flex-direction:column;gap:14px">'
-            f'<div class="card dk" style="padding:22px 28px"><div class="mono" style="font-size:14px;color:#A7A292">Tentative date</div><div style="font:900 40px/1 var(--d);text-transform:uppercase;margin-top:8px">2nd week of November 2026</div></div>'
-            f'<div class="card dk" style="padding:22px 28px"><div class="mono" style="font-size:14px;color:#A7A292">Target market</div><div style="font:900 40px/1 var(--d);text-transform:uppercase;margin-top:8px">School (classes 6-12) and college students</div></div></div></div>')
+            f'<div class="card dk" style="padding:24px 30px;display:flex;flex-direction:column;gap:18px">'
+            f'<div><div class="mono" style="font-size:14px;color:#A7A292">Tentative date</div><div style="font:900 36px/1 var(--d);text-transform:uppercase;margin-top:8px">2nd week of November 2026</div></div>'
+            f'<div style="border-top:1.5px solid rgba(244,239,224,.14);padding-top:18px"><div class="mono" style="font-size:14px;color:#A7A292">Target market</div><div style="font:900 36px/1 var(--d);text-transform:uppercase;margin-top:8px">School (classes 6-12) and college students</div></div></div></div>')
     right = f'<div style="flex:1;margin-left:48px;min-height:0">{grid(cards, "1fr 1fr", 2, 22)}</div>'
     return S(left + right, (K.eyebrow("The flagship", LM), K.title("One night, *four* reasons")), c, dark=True)
 
@@ -286,7 +315,7 @@ def s_map(c):
 
 
 def s_funnel(c):
-    fn = K.funnel([("2,500+", "ASKED FOR A TICKET", G, 1.0), ("500", "ENTERED ON THE NIGHT", BL, .72), ("419", "PAID FULL-PRICE TICKETS", LM, .54)], 880, dark=True)
+    fn = K.funnel([("2,500+", "ASKED FOR A TICKET", G, 1.0), ("500", "ENTERED ON THE NIGHT", BL, .72), ("419", "PAID TICKETS", LM, .54)], 880, dark=True)
     bars = K.hbars([("Early bird", "₹450", 136, "136", G), ("Phase 1", "₹500", 132, "132", BL), ("Phase 2", "₹550", 110, "110", LM), ("Surprise", "₹650", 41, "41", "#F4EFE0")],
                    660, 40, 26, dark=True)
     right = (f'<div style="flex:1;margin-left:56px;display:flex;flex-direction:column;gap:22px;min-height:0">'
@@ -315,16 +344,18 @@ WA = [("Community AquaTerra (1/2)", 847), ("Community AquaTerra (2/2)", 746), ("
 
 
 def s_social(c):
-    ig = K.crop_uri(166, (0, 0, 1, .98))
+    ig = K.crop_uri(166, (.30, .05, .97, .27))
     rows = "".join(f'<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 0;border-top:1.5px solid {K.LINE}">'
                    f'<span style="font:600 25px var(--e)">{K.esc(n)}</span><span class="kv" style="font-size:40px">{m}</span></div>' for n, m in WA)
     wa = K.card(f'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px"><span class="disc" style="background:{LM};color:{INK}">{K.icon("users", 30)}</span>'
                 f'<div><div style="font:900 34px/1 var(--d);text-transform:uppercase">WhatsApp communities</div>'
                 f'<div class="mono" style="font-size:14px;color:{K.MUTE};margin-top:6px">Members per group, {sum(m for _, m in WA):,} in total</div></div></div>{rows}', "", "flex:1;padding:28px 34px")
     left = (f'<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;min-height:0">'
-            f'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;height:300px">{K.kpi("5K+", "followers on @ngo.aquaterra", "insta", G, 100)}{K.kpi("4.3L", "Instagram views in a recent 30 days", "eye", BL, 100)}</div>{wa}</div>')
-    right = (f'<div style="width:560px;margin-left:48px;display:flex;justify-content:center;min-height:0">'
-             f'<div style="width:100%;align-self:center;aspect-ratio:720/778;background:url({ig}) center/cover;border-radius:28px;box-shadow:0 0 0 1.5px {K.LINE},0 24px 40px -26px rgba(0,0,0,.5)"></div></div>')
+            f'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;height:300px">{K.kpi("5K+", "followers on Instagram", "insta", G, 100)}{K.kpi("4.3L", "Instagram views in a recent 30 days", "eye", BL, 100)}</div>{wa}</div>')
+    right = (f'<div style="width:640px;margin-left:48px;display:flex;flex-direction:column;justify-content:center;gap:16px;min-height:0">'
+             f'<div class="mono" style="font-size:14px;color:{K.MUTE}">Our Instagram profile</div>'
+             f'<div style="width:100%;aspect-ratio:480/171;background:url({ig}) center/cover;border-radius:24px;box-shadow:0 0 0 1.5px {K.LINE},0 24px 40px -26px rgba(0,0,0,.5)"></div>'
+             f'{ph(194, "50% 40%")}</div>')
     return S(left + right, (K.eyebrow("Presence"), K.title("Where the *audience* already is")), c)
 
 
@@ -366,12 +397,12 @@ def s_why(c):
            ("megaphone", "Brand awareness", "Placement across signage, content and take-home merchandise that lasts beyond the event.", LM),
            ("eye", "Visibility", "In front of thousands of Kolkata’s most engaged students, in one night.", G)]
     cards = [K.card(f'<span class="disc" style="background:{t};color:{core.text_on(t)}">{K.icon(ic, 30)}</span>'
-                    f'<div><div style="font:900 40px/1 var(--d);text-transform:uppercase;margin-bottom:14px">{n}</div><div style="font:400 27px/1.3 var(--e);color:{INK2}">{d}</div></div>',
+                    f'<div style="flex:none"><div style="font:900 38px/1 var(--d);text-transform:uppercase;margin-bottom:14px;min-height:76px;display:flex;align-items:flex-end">{n}</div><div style="font:400 27px/1.3 var(--e);color:{INK2}">{d}</div></div>',
                     "kpi", "padding:30px 34px") for ic, n, d, t in why]
     left = f'<div style="width:1000px">{grid(cards, "1fr 1fr", 2, 22)}</div>'
     right = (f'<div style="flex:1;margin-left:44px;display:grid;grid-template-rows:1.25fr 1fr;gap:22px;min-height:0">'
-             f'<div class="card" style="padding:18px;display:flex;align-items:center;justify-content:center;min-height:0"><img src="{K.uri(K.asset(204))}" style="max-height:100%;max-width:100%;border-radius:14px" alt=""></div>'
-             f'<div class="card" style="padding:18px;display:flex;align-items:center;justify-content:center;min-height:0"><img src="{K.uri(K.asset(206))}" style="max-height:100%;max-width:100%;border-radius:14px" alt=""></div></div>')
+             f'<div class="card" style="padding:18px;display:flex;align-items:center;justify-content:center;min-height:0"><img src="{K.uri(K.asset(204))}" style="max-height:100%;max-width:100%;border-radius:14px" alt=""><div class="mono" style="font-size:13px;color:{K.MUTE};margin-left:18px;width:120px">Your logo on the standee</div></div>'
+             f'<div class="card" style="padding:18px;display:flex;align-items:center;justify-content:center;min-height:0"><img src="{K.uri(K.asset(206))}" style="max-height:100%;max-width:70%;border-radius:14px" alt=""><div class="mono" style="font-size:13px;color:{K.MUTE};margin-left:18px;width:110px">Your logo on thank-you cards</div></div></div>')
     return S(left + right, (K.eyebrow("The fit"), K.title("Why this fits *you*")), c)
 
 
@@ -431,8 +462,8 @@ def s_matrix(c):
     body = "".join(f'<div style="display:contents"><div style="font:600 24px var(--e);padding:0 4px">{K.esc(r[0])}</div>'
                    + "".join(f'<div style="display:flex;justify-content:center;align-items:center">{cell(v)}</div>' for v in r[1:]) + '</div>' for r in rows)
     sep = "".join(f'<div style="position:absolute;left:0;right:0;top:{70 + i * 56}px;height:1.5px;background:{K.LINE}"></div>' for i in range(len(rows) + 1))
-    table = (f'<div class="card" data-tag="card" style="width:100%;padding:24px 40px;position:relative"><div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;align-items:center;'
-             f'grid-auto-rows:56px;grid-template-rows:70px;"><div></div>{head}{body}</div></div>')
+    table = (f'<div class="card" data-tag="card" style="width:100%;padding:24px 40px;position:relative"><div style="position:relative"><div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;align-items:center;'
+             f'grid-auto-rows:56px;grid-template-rows:70px;"><div></div>{head}{body}</div>{sep}</div></div>')
     return S(table, (K.eyebrow("Sponsorship offerings"), K.title("Tiers, *side* by side")), c)
 
 
@@ -492,7 +523,7 @@ def s_close(c):
                    "", "padding:44px 52px;flex:1;display:flex;flex-direction:column;justify-content:center")
     reg = K.card(f'<div class="mono" style="font-size:15px;color:{K.MUTE};margin-bottom:18px">Registration</div>'
                  f'<div style="display:flex;flex-direction:column;gap:14px;align-items:flex-start">{K.chip(rg.get("tax", "80G certified"), G, size=26)}'
-                 f'{K.chip("Darpan " + rg.get("darpan", ""), BL, "#fff", 24)}'
+                 f'{K.chip("Registration no. " + rg.get("darpan", ""), BL, "#fff", 24)}'
                  f'<div style="font:400 23px/1.3 var(--e);color:{INK2}">{K.esc(rg.get("trust", ""))}. {K.esc(rg.get("csr", ""))}.</div></div>', "", "padding:30px 34px")
     qrc = K.card(f'<img src="{qr}" style="width:150px;border-radius:10px;flex:none" alt="QR code for @ngo.aquaterra"><div><div style="font:900 34px/1 var(--d);text-transform:uppercase">Follow the work</div>'
                  f'<div class="mono" style="font-size:14px;color:{K.MUTE};margin-top:10px">@ngo.aquaterra</div></div>', "", "padding:24px 30px;display:flex;align-items:center;gap:24px")
@@ -501,9 +532,9 @@ def s_close(c):
 
 
 # ═════════════════════════════════════ BUILD ═════════════════════════════════════
-ORDER = [s_cover, s_about, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_sponsors, s_feedback,
+ORDER = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_sponsors, s_feedback,
          s_photo_energy, s_flagship, s_demo, s_map, s_funnel, s_promote, s_social, s_offline, s_run, s_photo_night,
-         s_why, s_tiers, s_tiers_glance, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
+         s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind, s_stalls, s_join, s_close]
 
 
 async def main(which):
