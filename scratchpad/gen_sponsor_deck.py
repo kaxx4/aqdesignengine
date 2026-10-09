@@ -203,12 +203,12 @@ def s_growth(c):
 
 
 EVENTS = [  # (poster, name, when, footfall, funds, where)
-    ((132, (0, .186, 1, .75)), "The Starry Night", "Dec 2024", "550+", "₹3L", "Sky Turf, DJ Saif Side"),
-    ((134, (0, .186, 1, .75)), "Disco Diwali", "Oct 2024", "350+", "₹1.7L", "Orbit Crystal"),
+    ((132, (0, .19, 1, .728)), "The Starry Night", "Dec 2024", "550+", "₹3L", "Sky Turf, DJ Saif Side"),
+    ((134, (0, .19, 1, .728)), "Disco Diwali", "Oct 2024", "350+", "₹1.7L", "Orbit Crystal"),
     (136, "Paradox", "2025", "1000+", "₹8.9L", "VS Arena, Battleground, Desi Lane Esplanade"),
-    ((138, (0, .186, 1, .75)), "The AQ Punjabi Night", "Jun 2025", "400+", "₹2.2L", "60 Chowringhee, DJ Omar"),
-    ((142, (0, .19, 1, .755)), "Starry Night 2.0", "Dec 2025", "550+", "₹6.7L", "Sky Turf, DJ Rajiv"),
-    ((146, (0, .095, 1, .88)), "Summer Sunset", "Jun 2026", "500+", None, "60 Chowringhee Banquet"),
+    ((138, (0, .19, 1, .728)), "The AQ Punjabi Night", "Jun 2025", "400+", "₹2.2L", "60 Chowringhee, DJ Omar"),
+    ((142, (0, .19, 1, .728)), "Starry Night 2.0", "Dec 2025", "550+", "₹6.7L", "Sky Turf, DJ Rajiv"),
+    ((146, (0, .095, 1, .865)), "Summer Sunset", "Jun 2026", "500+", None, "60 Chowringhee Banquet"),
 ]
 
 
