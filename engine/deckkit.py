@@ -37,9 +37,10 @@ ASSETS = os.path.join(_HERE, "assets", "sponsorship")
 W, H, M = 1920, 1080, 96
 BG, PAPER, INK = "#F4EFE0", "#FBF8F0", "#0A0A0A"
 INK2, MUTE, LINE = "#34342F", "#66645B", "rgba(10,10,10,.12)"
-GREEN, BLUE, LEMON, TOMATO = "#2FD284", "#1E88E5", "#FFC700", "#FF4D2E"
-GREEN_D, BLUE_D = "#14864F", "#1666B8"           # the same hues darkened until they clear 4.5:1 as small type on cream
-DARK, DARK2 = "#0B0C0E", "#16181C"               # dark-slide ground and card
+GREEN, BLUE, LEMON, TOMATO = "#2CD484", "#5C64FC", "#FC4404", "#FC4404"   # sampled from the user's Figma export; LEMON is kept as a NAME but is now the deck orange
+ORANGE, PURPLE, INDIGO = "#FC4404", "#6424DC", "#2B1FA8"
+GREEN_D, BLUE_D = "#14864F", "#3A43D6"           # the same hues darkened until they clear 4.5:1 as small type on cream
+DARK, DARK2 = "#000000", "#14141A"               # dark-slide ground and card
 CREAM_ON_DARK = "#F4EFE0"
 R_FRAME, R_CARD = 28, 22
 
@@ -171,8 +172,13 @@ def icon(name, size=32, color="currentColor", sw=1.8):
 
 
 # ── type helpers ──────────────────────────────────────────────────────────────────────────────
-def title(text, size=84, color=None):
-    """Heading. `*word*` marks THE one accent word (Instrument Serif italic on a lemon highlight). Newlines become <br>."""
+def title(text, size=None, color=None):
+    """Heading, sized by length so a 2-line title fills the band the way the source deck's do. `*word*` marks THE accent word, drawn as a
+    TILTED TAG (the source deck's '5+' and '80G' call-outs) instead of the serif highlight. Newlines become <br>."""
+    plain = text.replace("*", "")
+    longest = max(len(x) for x in plain.split("\n"))
+    if size is None:
+        size = max(70, min(124, int(1640 / (0.68 * longest))))
     t = esc(text).replace("\n", "<br>")
     t = re.sub(r"\*(.+?)\*", r'<em>\1</em>', t, count=1)
     c = f"color:{color};" if color else ""
@@ -209,6 +215,14 @@ def kpi(value, label, ic=None, tone=GREEN, size=84, dark=False):
     label length. ONE grammar for every number in every deck."""
     ico = (f'<span class="disc" style="background:{tone};color:{core.text_on(tone)}">{icon(ic, 30, "currentColor")}</span>' if ic else "<span></span>")
     return card(f'{ico}<div><div class="kv" style="font-size:{size}px">{esc(value)}</div><div class="kl">{esc(label)}</div></div>', "kpi", dark=dark)
+
+
+def pillstat(value, label, bg=GREEN, size=96):
+    """The source deck's stat badge: the NUMBER lives inside a fully-rounded pill, a small caps caption sits under it."""
+    fg = core.text_on(bg) if bg else "inherit"
+    st = f"background:{bg};" if bg else "background:transparent;padding-left:0;"
+    return (f'<div class="pillstat"><span class="pv" style="{st}color:{fg};font-size:{size}px">{esc(value)}</span>'
+            f'<span class="pl">{esc(label)}</span></div>')
 
 
 # ── chart grammar ─────────────────────────────────────────────────────────────────────────────
@@ -296,41 +310,53 @@ def map_svg(mp, height=820, pin_fill=GREEN, dark=False):
 
 # ── scaffold ──────────────────────────────────────────────────────────────────────────────────
 CSS = f"""
+
+/* ── grounds: the source deck alternates LOUD flat colour fields with black and cream ── */
 .s{{position:relative;width:{W}px;height:{H}px;background:{BG};overflow:hidden;font-family:var(--e);color:{INK};
-    display:flex;flex-direction:column;padding:78px {M}px {FOOT_H + 48}px}}
-.s.dk{{background:{DARK};color:{CREAM_ON_DARK}}}
-.s.gr{{background:{GREEN}}}.s.yl{{background:{LEMON}}}.s.bl{{background:{BLUE};color:#fff}}
-.s.gr .eb,.s.yl .eb{{color:{INK}}}.s.bl .eb{{color:#fff}}
-.s.gr .ft,.s.yl .ft{{color:rgba(10,10,10,.62)}}.s.bl .ft{{color:rgba(255,255,255,.8)}}
-.s.yl h1.t em{{background:linear-gradient(transparent 58%,{GREEN} 58%,{GREEN} 92%,transparent 92%)}}
-.s.gr h1.t em,.s.bl h1.t em{{background:linear-gradient(transparent 58%,{LEMON} 58%,{LEMON} 92%,transparent 92%);color:{INK}}}
-.s.bl .lede{{color:#fff}}.s.gr .lede,.s.yl .lede{{color:{INK}}}
+    display:flex;flex-direction:column;padding:70px {M}px {FOOT_H + 44}px}}
+.s.t-black{{background:#000;color:#fff}}
+.s.t-blue{{background:{BLUE};color:#fff}}
+.s.t-green{{background:{GREEN};color:{INK}}}
+.s.t-orange{{background:{ORANGE};color:#fff}}
+.s.t-purple{{background:{PURPLE};color:#fff}}
+.s.t-cream{{background:{BG};color:{INK}}}
 .hd{{display:flex;flex-direction:column;gap:20px;flex:none}}
-.eb{{display:flex;align-items:center;gap:12px;font:700 19px var(--m);letter-spacing:.14em;text-transform:uppercase;color:{INK2}}}
-.dk .eb{{color:#C9C4B3}}
-.eb i{{width:13px;height:13px;border-radius:50%;display:block}}
-h1.t{{font-family:var(--d);font-weight:900;text-transform:uppercase;line-height:.94;letter-spacing:-.012em;margin:0}}
-h1.t em{{font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;
-    background:linear-gradient(transparent 58%,{LEMON} 58%,{LEMON} 92%,transparent 92%);padding:0 .08em;margin:0 -.04em}}
-.dk h1.t em{{background:linear-gradient(transparent 58%,#B8860B 58%,#B8860B 92%,transparent 92%);color:{CREAM_ON_DARK}}}
+.eb{{display:none}}
+h1.t{{font-family:var(--d);font-weight:900;text-transform:uppercase;line-height:.88;letter-spacing:-.02em;margin:0}}
+/* the accent word becomes a tilted tag, like the source deck's '5+' and '80G' call-outs */
+h1.t em{{font-family:var(--d);font-style:normal;font-weight:900;text-transform:uppercase;letter-spacing:-.01em;display:inline-block;transform:rotate(-3deg);
+    background:{GREEN};color:{INK};padding:.02em .16em .06em;border-radius:.14em;margin:0 .04em}}
+.t-green h1.t em{{background:{BLUE};color:#fff}}
+.t-blue h1.t em,.t-purple h1.t em{{background:{GREEN};color:{INK}}}
+.t-orange h1.t em{{background:{INK};color:#fff}}
+.t-black h1.t em{{background:{BLUE};color:#fff}}
 .lede{{font-family:var(--e);line-height:1.34;color:{INK2};margin:0}}
-.dk .lede{{color:#D8D3C2}}
-.bd{{flex:1;min-height:0;display:flex;margin-top:40px;position:relative}}
-.ft{{position:absolute;left:{M}px;right:{M}px;bottom:36px;height:{FOOT_H}px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+.t-black .lede,.t-blue .lede,.t-orange .lede,.t-purple .lede{{color:#fff}}
+.t-green .lede{{color:{INK}}}
+.bd{{flex:1;min-height:0;display:flex;margin-top:36px;position:relative}}
+.ft{{position:absolute;left:{M}px;right:{M}px;bottom:34px;height:{FOOT_H}px;display:flex;align-items:center;justify-content:space-between;
     font:700 16px var(--m);letter-spacing:.12em;text-transform:uppercase;color:{MUTE}}}
-.dk .ft{{color:#A7A292}}
 .ft img{{height:30px;display:block}}
-.ft .mid{{display:flex;align-items:center;gap:18px}}
-.ft .pg{{justify-self:end}}
-.ft .dot{{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.6}}
+.ft .mid{{display:none}}
+.t-black .ft,.t-blue .ft,.t-orange .ft,.t-purple .ft{{color:rgba(255,255,255,.78)}}.t-green .ft{{color:rgba(10,10,10,.65)}}
+/* ── cards: paper on cream/green; the source's PERIWINKLE card with white type on black; black card on a colour field ── */
 .card{{background:{PAPER};border:1.5px solid {LINE};border-radius:{R_CARD}px;box-shadow:0 18px 38px -26px rgba(10,10,10,.34);padding:30px 34px}}
-.card.dk{{background:{DARK2};border-color:rgba(244,239,224,.14);box-shadow:none;color:{CREAM_ON_DARK}}}
-.chip{{display:inline-flex;align-items:center;gap:10px;padding:10px 22px;border-radius:999px;font-family:var(--e);font-weight:600;white-space:nowrap}}
-.ph{{background-size:cover;background-repeat:no-repeat;width:100%;height:100%;box-shadow:0 0 0 1.5px {LINE},0 18px 38px -26px rgba(10,10,10,.4)}}
+.t-black .card,.t-black .card.dk{{background:{BLUE};border:0;box-shadow:none;color:#fff}}
+.t-blue .card,.t-orange .card,.t-purple .card{{background:#000;border:0;box-shadow:none;color:#fff}}
+.t-green .card{{background:{BLUE};border:0;box-shadow:none;color:#fff}}
+.t-black .card *:not(.disc):not(.chip):not(.disc *):not(.chip *),.t-blue .card *:not(.disc):not(.chip):not(.disc *):not(.chip *),
+.t-orange .card *:not(.disc):not(.chip):not(.disc *):not(.chip *),.t-purple .card *:not(.disc):not(.chip):not(.disc *):not(.chip *),
+.t-green .card *:not(.disc):not(.chip):not(.disc *):not(.chip *){{color:#fff !important}}
+.card.dk{{background:#000;color:#fff;border:0;box-shadow:none}}
+.nofoot .ft{{display:none}}
+.t-black ul.ck li,.t-blue ul.ck li,.t-orange ul.ck li,.t-purple ul.ck li{{color:#fff}}
+.t-green ul.ck li{{color:{INK}}}
+.tg{{display:inline-block;transform:rotate(-3deg);border-radius:.14em;padding:0 .14em .04em;margin:0 .03em}}
+.chip{{display:inline-flex;align-items:center;gap:10px;padding:10px 24px;border-radius:999px;font-family:var(--d);font-weight:900;text-transform:uppercase;letter-spacing:.01em;white-space:nowrap}}
+.ph{{background-size:cover;background-repeat:no-repeat;width:100%;height:100%}}
 .kpi{{display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:0}}
-.kv{{font-family:var(--d);font-weight:900;line-height:.95;letter-spacing:-.01em}}
+.kv{{font-family:var(--d);font-weight:900;line-height:.92;letter-spacing:-.015em}}
 .kl{{font:600 24px/1.25 var(--e);color:{INK2};margin-top:10px}}
-.dk .kl,.card.dk .kl{{color:#D8D3C2}}
 .disc{{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}}
 .cap{{position:absolute;left:18px;bottom:18px;background:rgba(244,239,224,.92);color:{INK};font:600 18px var(--e);padding:8px 18px;border-radius:999px}}
 .frame{{position:relative}}
@@ -338,6 +364,9 @@ h1.t em{{font-family:var(--s);font-style:italic;font-weight:400;text-transform:n
 ul.ck{{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}}
 ul.ck li{{display:flex;gap:14px;align-items:flex-start;font:400 25px/1.28 var(--e);color:{INK2}}}
 ul.ck li svg{{flex:none;margin-top:3px}}
+.pillstat{{display:flex;flex-direction:column;align-items:flex-start;gap:10px}}
+.pillstat .pv{{display:inline-flex;align-items:center;padding:.06em .42em .1em;border-radius:999px;font-family:var(--d);font-weight:900;line-height:1;letter-spacing:-.015em}}
+.pillstat .pl{{font:700 20px/1.2 var(--m);letter-spacing:.08em;text-transform:uppercase;max-width:340px}}
 """
 
 
@@ -353,10 +382,11 @@ def footer(n, total, deck_label, dark=False):
 
 
 def slide(body, head=None, n=1, total=1, deck_label="", dark=False, body_style="", cls="", tone=None):
-    """The ONLY scaffold. head = (eyebrow, title_html, optional lede_html). Body fills the rest of the frame."""
+    """The ONLY scaffold. tone = black | blue | green | orange | purple | cream (the source deck's grounds). dark=True with no tone means black."""
+    tone = tone or ("black" if dark else "cream")
+    tone = {"lemon": "orange"}.get(tone, tone)
     hd = ""
     if head:
         hd = f'<div class="hd">{"".join(head)}</div>'
     bd = f'<div class="bd" style="{body_style}">{body}</div>' if body is not None else ""
-    tcls = {"green": " gr", "lemon": " yl", "blue": " bl"}.get(tone, "")
-    return page(f'<section class="s p{" dk" if dark else ""}{tcls} {cls}">{hd}{bd}{footer(n, total, deck_label, dark)}</section>')
+    return page(f'<section class="s p t-{tone} {cls}">{hd}{bd}{footer(n, total, deck_label, dark)}</section>')

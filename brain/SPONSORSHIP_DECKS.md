@@ -97,3 +97,15 @@ User answers, all applied:
 - Stalls: fees, stall size, power and layout are "shared with your stall details" once interested. "Marketing and coverage" is a stall benefit. Brochures: both trifolds; digital print shop, RGB is fine.
 BUG FOUND AND FIXED: the earlier blanket "600+" to "400+" replace also turned the impact tile "1600+ doctor check-ups" into "1400+", which shipped in the previous PDFs. Restored to 1600+.
 STILL OPEN (nobody has the facts): review-count deliverables remain as the user chose (legal/platform risk recorded); "Paradox 2026" still labels the 9.3K Instagram post-views tile while the event card says Paradox 2025; the companion art piece required by CLAUDE.md has not been produced this session.
+
+## Restyle toward the user's source deck (2026-10-09, "bring the deck closer in design to the deck I gave you")
+I had NOT looked at the source deck's design until now (earlier image reads were rate-limited; I worked from extracted text and rasters). Re-read it and sampled its palette: black #000, periwinkle #5C64FC, mint green #2CD484, orange #FC4404, purple #6424DC, indigo #3C04B4. It has NO yellow and NO cream grounds on the main slides.
+What changed in `engine/deckkit.py` and the two builds:
+- Palette now the source's (GREEN #2CD484, BLUE #5C64FC, orange #FC4404 under the old LEMON/LM names, purple, indigo). The old yellow and lemon-highlight are gone.
+- LOUD FLAT COLOUR GROUNDS per slide from one table (`TONE_OF` in gen_sponsor_deck.py): black, periwinkle, green, orange, purple, with cream kept for dense reading slides. Cards go periwinkle on black and black on a colour field, as in the source.
+- Headings are bigger, heavier and auto-sized by length; the one accent word is a TILTED TAG (the source's "5+" and "80G" call-outs) instead of the serif highlight.
+- Stat numbers sit in fully rounded PILLS with a small-caps caption (about, impact), like the source.
+- Cover rebuilt after the source's: full-bleed photo, thick white rounded frame, title top-left, DISCO DIWALI in a white rounded box, logo in a white pill.
+- Brochures: tag-style accents, periwinkle back cover, orange date chips.
+Kept from my system (deliberately, not in the source): 28px rounded photo frames, line icons, the funnel-free reach slide, the pie, the recurrence run. The source's tiny-text list slides (tier text blocks at ~8pt) were NOT copied: they were the legibility problem.
+Not matched: the source's hand-placed tilted stickers and emoji badges, its torn-edge photo shapes, and its map. Say if you want any of those.

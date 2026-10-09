@@ -45,10 +45,10 @@ CSS = f"""
 .pn{{width:{PW}px;height:{H}px;padding:30px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;min-height:0}}
 .pn.t-g{{background:{G}}}.pn.t-l{{background:{LM}}}.pn.t-b{{background:{BL};color:#fff}}.pn.t-k{{background:{K.DARK};color:{K.CREAM_ON_DARK}}}
 .bt{{font-family:var(--d);font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:-.01em;margin:0}}
-.bt em{{font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;background:linear-gradient(transparent 58%,{LM} 58%,{LM} 92%,transparent 92%);padding:0 .06em}}
-.t-l .bt em{{background:linear-gradient(transparent 58%,{G} 58%,{G} 92%,transparent 92%)}}
-.t-g .bt em,.t-b .bt em{{background:linear-gradient(transparent 58%,{LM} 58%,{LM} 92%,transparent 92%);color:{INK}}}
-.t-k .bt em{{color:{K.CREAM_ON_DARK};background:linear-gradient(transparent 58%,#B8860B 58%,#B8860B 92%,transparent 92%)}}
+.bt em{{font-family:var(--d);font-style:normal;font-weight:900;text-transform:uppercase;letter-spacing:-.01em;display:inline-block;transform:rotate(-3deg);
+    background:{G};color:{INK};padding:0 .14em .04em;border-radius:.14em;margin:0 .03em}}
+.t-g .bt em{{background:{BL};color:#fff}}.t-b .bt em{{background:{G};color:{INK}}}.t-l .bt em{{background:{INK};color:#fff}}.t-k .bt em{{background:{BL};color:#fff}}
+.t-b .bc,.t-b .bc .bk{{color:{INK}}}.t-b .bc .bl{{color:#4A4A44}}
 .bp{{font:400 13px/1.38 var(--e);color:{K.INK2};margin:0}}
 .t-b .bp,.t-k .bp{{color:inherit}}
 .bl{{font:700 10.7px var(--m);letter-spacing:.1em;text-transform:uppercase;color:#4A4A44}}
@@ -117,15 +117,16 @@ POSTERS = [(132, (0, .19, 1, .728)), (134, (0, .19, 1, .728)), 136, (138, (0, .1
 
 
 def contact_panel(photo=130, focus="50% 40%"):
+    ic = '#fff'
     ct = FACTS.get("contact", {}); rg = FACTS.get("reg", {})
     qr = K.uri("../terrathon/qr_instagram_ngo_aquaterra.svg")
-    row = lambda ic, t: f'<div style="display:flex;align-items:center;gap:10px;font:600 13px var(--e)">{K.icon(ic, 17, K.GREEN_D)}<span>{K.esc(t)}</span></div>'
+    row = lambda icn, t: f'<div style="display:flex;align-items:center;gap:10px;font:600 13px var(--e)">{K.icon(icn, 17, "#fff")}<span>{K.esc(t)}</span></div>'
     inner = (f'{logo(26)}<div style="flex:1;min-height:0">{ph(photo, focus, 18)}</div>{eb("Get in touch")}{bt(ct.get("name", ""), 34)}<div class="bp" style="font-weight:600;margin-top:-6px">{K.esc(ct.get("role", ""))}</div>'
              f'<div style="display:flex;flex-direction:column;gap:9px;margin-top:6px">{row("phone", ct.get("phone", ""))}{row("insta", ct.get("insta", ""))}{row("globe", ct.get("web", ""))}{row("mail", ct.get("mail", ""))}</div>'
              f'<div class="bc" style="display:flex;gap:12px;align-items:center;margin-top:10px"><img src="{qr}" style="width:78px;border-radius:6px" alt="QR code for @ngo.aquaterra"><div><div class="bk" style="font-size:18px;text-transform:uppercase">Follow the work</div><div class="bl" style="margin-top:5px">instagram.com/ngo.aquaterra</div></div></div>'
-             f'<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;align-items:flex-start">{chip(rg.get("tax", "80G certified"), G)}{chip("80G approval no. " + rg.get("darpan", ""), BL)}'
+             f'<div style="display:flex;flex-direction:column;gap:6px;margin-top:10px;align-items:flex-start">{chip(rg.get("tax", "80G certified"), G)}{chip("80G approval no. " + rg.get("darpan", ""), INK, "#fff")}'
              f'<div class="bp" style="font-size:11px">{K.esc(rg.get("trust", ""))}.</div></div>')
-    return pn(inner)
+    return pn(inner, "b")
 
 
 # ───────────────────────── SPONSORS TRIFOLD ─────────────────────────
