@@ -134,7 +134,7 @@ def s_cover(c):
     left = (f'<div style="display:flex;flex-direction:column;justify-content:center;gap:34px;width:800px">'
             f'{K.eyebrow("Sponsorship & partnership proposal")}{t}'
             f'{K.lede("The flagship Diwali fundraiser from AquaTerra, Kolkata’s student-run NGO. A DJ-led party night where every net rupee goes to welfare work.", 34, 720)}'
-            f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("All for charity", G)}{K.chip("2nd week of November 2026", LM)}'
+            f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("All for charity", G)}{K.chip("2nd week of Nov 2026 (tentative)", LM)}'
             f'{K.chip_o("600+ guests")}</div></div>')
     right = f'<div style="flex:1;margin-left:64px;position:relative">{ph(148, "50% 38%", alt="Disco Diwali dance floor")}</div>'
     stick = sticker(stk.disco_ball, 200, 1590, 38, 8) + sticker(stk.diya, 170, 830, 130, -8)
@@ -205,7 +205,7 @@ def s_growth(c):
 EVENTS = [  # (poster, name, when, footfall, funds, where)
     ((132, (0, .19, 1, .728)), "The Starry Night", "Dec 2024", "550+", "₹3L", "Sky Turf, DJ Saif Side"),
     ((134, (0, .19, 1, .728)), "Disco Diwali", "Oct 2024", "350+", "₹1.7L", "Orbit Crystal"),
-    (136, "Paradox", "2025", "1000+", "₹8.9L", "VS Arena, Battleground, Desi Lane Esplanade"),
+    (136, "Paradox 3.0", "Third edition", "1000+", "₹8.9L", "VS Arena, Battleground, Desi Lane Esplanade"),
     ((138, (0, .19, 1, .728)), "The AQ Punjabi Night", "Jun 2025", "400+", "₹2.2L", "60 Chowringhee, DJ Omar"),
     ((142, (0, .19, 1, .728)), "Starry Night 2.0", "Dec 2025", "550+", "₹6.7L", "Sky Turf, DJ Rajiv"),
     ((146, (0, .095, 1, .865)), "Summer Sunset", "Jun 2026", "500+", None, "60 Chowringhee Banquet"),
