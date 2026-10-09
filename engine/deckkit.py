@@ -302,7 +302,7 @@ CSS = f"""
 .s.gr{{background:{GREEN}}}.s.yl{{background:{LEMON}}}.s.bl{{background:{BLUE};color:#fff}}
 .s.gr .eb,.s.yl .eb{{color:{INK}}}.s.bl .eb{{color:#fff}}
 .s.gr .ft,.s.yl .ft{{color:rgba(10,10,10,.62)}}.s.bl .ft{{color:rgba(255,255,255,.8)}}
-.s.yl h1.t em{{background:linear-gradient(transparent 58%,#fff 58%,#fff 92%,transparent 92%)}}
+.s.yl h1.t em{{background:linear-gradient(transparent 58%,{GREEN} 58%,{GREEN} 92%,transparent 92%)}}
 .s.gr h1.t em,.s.bl h1.t em{{background:linear-gradient(transparent 58%,{LEMON} 58%,{LEMON} 92%,transparent 92%);color:{INK}}}
 .s.bl .lede{{color:#fff}}.s.gr .lede,.s.yl .lede{{color:{INK}}}
 .hd{{display:flex;flex-direction:column;gap:20px;flex:none}}

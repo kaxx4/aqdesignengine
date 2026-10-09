@@ -116,16 +116,17 @@ def s_glance(c):
 
 
 def s_proof(c):
-    chips = "".join(f'<div style="flex:1;min-width:0">{_poster(e[0])}</div>' for e in [EVENTS[0], EVENTS[1], EVENTS[2], EVENTS[3], EVENTS[4]])
+    pics = [("../img/events/summer-aq-turns-five/03_dance-floor-starlights.jpg", "50% 50%"), (148, "50% 40%"), (126, "50% 40%"), (194, "50% 40%")]
+    strip = "".join(f'<div style="flex:1;min-width:0;min-height:0">{ph(i, f)}</div>' for i, f in pics)
     body = (f'<div style="display:flex;flex-direction:column;width:100%;gap:36px;min-height:0"><div style="display:flex;gap:60px;align-items:flex-end">'
             f'<div><div class="kv" style="font-size:250px;color:{G}">\u20b922.5L+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:6px">raised for welfare across five flagship events</div></div>'
             f'<div style="padding-bottom:14px"><div class="kv" style="font-size:120px;color:{LM}">2,850+</div><div style="font:600 30px/1.2 var(--e);color:#D8D3C2;margin-top:6px">guests across the same five</div></div></div>'
-            f'<div style="display:flex;gap:18px;width:100%;flex:1;min-height:0;align-items:flex-start">{chips}</div></div>')
+            f'<div style="display:flex;gap:20px;width:100%;flex:1;min-height:0">{strip}</div></div>')
     return S(body, (K.eyebrow("The proof", LM),), c, dark=True)
 
 
 def s_photo_tiers(c):
-    return photo_story(c, [(186, "50% 40%", 1, 2), (184, "50% 50%", 2, 1), (178, "50% 50%", 2, 1)], "1fr 1fr 1fr", 2,
+    return photo_story(c, [(186, "50% 40%", 1, 2), (190, "50% 50%", 2, 1), (178, "50% 50%", 2, 1)], "1fr 1fr 1fr", 2,
                        "Your brand, in the middle of it", "On the night", G)
 
 
@@ -155,7 +156,7 @@ def s_about(c):
 
 def s_different(c):
     items = [("eye", "Student run", "Every event is planned and run entirely by student volunteers.", G, 130, "50% 40%"),
-             ("heart", "Welfare first", "Net proceeds go directly into funding welfare projects and campaigns.", BL, 156, "50% 40%"),
+             ("heart", "Welfare first", "Net proceeds go directly into funding welfare projects and campaigns.", BL, 160, "50% 40%"),
              ("megaphone", "Visibility", "A night of visibility in front of thousands of Kolkata’s most engaged students.", LM, 126, "50% 35%")]
     cards = []
     for ic, t, d, tone, img, f in items:
@@ -175,7 +176,7 @@ def s_vision(c):
             f'<div style="font:900 84px/.98 var(--d);text-transform:uppercase;letter-spacing:-.01em">{t}</div>'
             f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("1.5K+ community", G)}{K.chip("4000+ kids reached", BL, "#fff")}'
             f'{K.chip("80G certified", LM)}{K.chip_o("Darpan registered", dark=True)}</div></div>')
-    right = f'<div style="flex:1;margin-left:64px;display:grid;grid-template-rows:1.15fr 1fr;gap:22px;min-height:0">{ph(156, "50% 55%")}{ph(160, "50% 45%")}</div>'
+    right = f'<div style="flex:1;margin-left:64px;min-height:0">{ph(164, "50% 35%")}</div>'
     return S(left + right, (K.eyebrow("Our vision", LM),), c, dark=True)
 
 
@@ -246,11 +247,12 @@ def s_series_diwali(c):
                 f'<div style="flex:1;min-height:0">{img}</div><div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{stats}</div></div>')
     st = lambda a, b: f'<div style="font:900 34px/1 var(--d);text-transform:uppercase">{a}</div><div class="mono" style="font-size:14px;color:{K.MUTE}">{b}</div>'
     c24 = col("Oct 2024", _poster(EVENTS[1][0]).replace("aspect-ratio:4/5", "height:100%"), st("350+", "guests") + st("\u20b91.7L", "raised"), "")
-    c25 = col("Oct 2025", ph(30, "50% 50%"), st("500", "entries") + st("22 Oct", "the night"), "")
+    c25 = col("Oct 2025", ph(30, "50% 50%"), st("500", "entries") + st("Year", "two"), "")
     c26 = (f'<div style="display:flex;flex-direction:column;gap:18px;min-height:0;min-width:0"><div>{K.chip("2026 (tentative)", INK, K.CREAM_ON_DARK, 26)}</div>'
-           f'<div style="flex:1;min-height:0;background:{INK};color:{K.CREAM_ON_DARK};border-radius:{K.R_FRAME}px;padding:40px;display:flex;flex-direction:column;justify-content:center;gap:18px">'
-           f'<div class="mono" style="font-size:16px;color:#A7A292">You are here</div><div style="font:900 120px/.9 var(--d);color:{LM}">600+</div>'
-           f'<div style="font:600 30px/1.25 var(--e)">expected, 2nd week of November</div></div>'
+           f'<div style="flex:1;min-height:0;position:relative;border-radius:{K.R_FRAME}px;overflow:hidden">{K.photo(148, "50% 40%", r=0)}'
+           f'<div style="position:absolute;inset:0;background:linear-gradient(transparent 35%,rgba(10,10,10,.88))"></div>'
+           f'<div style="position:absolute;left:36px;right:36px;bottom:32px;color:{K.CREAM_ON_DARK}"><div class="mono" style="font-size:17px;color:{LM}">You are here</div>'
+           f'<div style="font:900 130px/.9 var(--d);color:{LM};margin-top:8px">600+</div><div style="font:600 30px/1.25 var(--e)">expected, 2nd week of November</div></div></div>'
            f'<div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{st("Back", "for 2026")}</div></div>')
     body = f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;min-height:0">{c24}{c25}{c26}</div>'
     return S(body, (K.eyebrow("Disco Diwali", INK), K.title("Disco Diwali, *again*")), c, tone="lemon")
@@ -377,7 +379,7 @@ def s_reach(c):
          ("WhatsApp", "3,162", "members across 4 community groups", "users", BL), ("Student database", "2000+", "student contacts we can reach directly", "mail", LM),
          ("Schools", "18", "leading Kolkata schools in our network", "school", G), ("All channels", "5M+", "impressions across social media and marketing", "megaphone", BL)]
     cards = [K.card(f'<div style="display:flex;align-items:center;gap:14px"><span class="disc" style="background:{tone};color:{core.text_on(tone)};width:54px;height:54px">{K.icon(ic, 26)}</span>'
-                    f'<span class="mono" style="font-size:15px;color:#A7A292">{ch}</span></div>'
+                    f'<span class="mono" style="font-size:19px;color:#C9C4B3">{ch}</span></div>'
                     f'<div><div class="kv" style="font-size:92px;color:{CREAM}">{v}</div><div class="kl" style="font-size:24px">{lab}</div></div>', "kpi", "padding:28px 32px", dark=True)
              for ch, v, lab, ic, tone in T]
     return S(grid(cards, "repeat(4,1fr)", 2, 22), (K.eyebrow("Reach", LM), K.title("Numbers, *by touchpoint*")), c, dark=True)
@@ -444,7 +446,7 @@ def s_run(c):
 
 
 def s_photo_night(c):
-    return photo_story(c, [(34, "50% 50%", 1, 1), (192, "50% 30%", 2, 2), (184, "50% 50%", 1, 1)], "1fr 1.4fr 1fr", 2,
+    return photo_story(c, [(196, "50% 50%", 1, 1), (192, "50% 30%", 2, 2), (130, "50% 40%", 1, 1)], "1fr 1.4fr 1fr", 2,
                        "Every corner worth a photo", "On the night", BL)
 
 
