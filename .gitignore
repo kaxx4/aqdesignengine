@@ -52,3 +52,12 @@ engine/assets/terrathon/recap_photos/
 # REVER deck: local renders and working images contain real guest photos (public repo)
 scratchpad/rever_deck_out/
 scratchpad/work/
+
+# Sponsorship / stalls decks + brochures (2026-10-09). The source export and everything extracted from it contain
+# identifiable school children, third-party partner logos and a named contact's phone number, and this repo is PUBLIC.
+# The code that builds the decks is committed; the data is not. Regenerate assets with scratchpad/deck_assets.py
+# from a copy of the source PDF placed at training_samples/sponsorship_deck/source_export.pdf.
+engine/assets/sponsorship/
+training_samples/sponsorship_deck/
+scratchpad/sponsorship_private/
+out/decks/
