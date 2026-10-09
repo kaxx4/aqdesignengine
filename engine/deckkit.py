@@ -299,6 +299,12 @@ CSS = f"""
 .s{{position:relative;width:{W}px;height:{H}px;background:{BG};overflow:hidden;font-family:var(--e);color:{INK};
     display:flex;flex-direction:column;padding:78px {M}px {FOOT_H + 48}px}}
 .s.dk{{background:{DARK};color:{CREAM_ON_DARK}}}
+.s.gr{{background:{GREEN}}}.s.yl{{background:{LEMON}}}.s.bl{{background:{BLUE};color:#fff}}
+.s.gr .eb,.s.yl .eb{{color:{INK}}}.s.bl .eb{{color:#fff}}
+.s.gr .ft,.s.yl .ft{{color:rgba(10,10,10,.62)}}.s.bl .ft{{color:rgba(255,255,255,.8)}}
+.s.yl h1.t em{{background:linear-gradient(transparent 58%,#fff 58%,#fff 92%,transparent 92%)}}
+.s.gr h1.t em,.s.bl h1.t em{{background:linear-gradient(transparent 58%,{LEMON} 58%,{LEMON} 92%,transparent 92%);color:{INK}}}
+.s.bl .lede{{color:#fff}}.s.gr .lede,.s.yl .lede{{color:{INK}}}
 .hd{{display:flex;flex-direction:column;gap:20px;flex:none}}
 .eb{{display:flex;align-items:center;gap:12px;font:700 19px var(--m);letter-spacing:.14em;text-transform:uppercase;color:{INK2}}}
 .dk .eb{{color:#C9C4B3}}
@@ -346,10 +352,11 @@ def footer(n, total, deck_label, dark=False):
             f'<div class="mid"><span>{esc(deck_label)}</span></div><span class="pg">{n:02d} / {total:02d}</span></div>')
 
 
-def slide(body, head=None, n=1, total=1, deck_label="", dark=False, body_style="", cls=""):
+def slide(body, head=None, n=1, total=1, deck_label="", dark=False, body_style="", cls="", tone=None):
     """The ONLY scaffold. head = (eyebrow, title_html, optional lede_html). Body fills the rest of the frame."""
     hd = ""
     if head:
         hd = f'<div class="hd">{"".join(head)}</div>'
     bd = f'<div class="bd" style="{body_style}">{body}</div>' if body is not None else ""
-    return page(f'<section class="s p{" dk" if dark else ""} {cls}">{hd}{bd}{footer(n, total, deck_label, dark)}</section>')
+    tcls = {"green": " gr", "lemon": " yl", "blue": " bl"}.get(tone, "")
+    return page(f'<section class="s p{" dk" if dark else ""}{tcls} {cls}">{hd}{bd}{footer(n, total, deck_label, dark)}</section>')
