@@ -112,7 +112,10 @@ def shuriken(label, x, y, z=5, k=tt.NATIVE * 0.67):
     return (f'<img src="{src}" class="measure" data-tag="{label}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:{z}">'), (label, x, y, w, h)
 
 
-async def build_all(outdir):
+async def build_all(outdir, story=False):
+    Hc = 1920 if story else H
+    dy, fdy = (250, 330) if story else (0, 0)
+    foot = [[] for _ in range(N)]
     # ---- measure type once ----
     m = await B.measure_text([
         dict(text="DISCOO DIWAALI", font="StretchPro", size=100, weight=400, letter_spacing=f"{tt.ST_LS}em", features=tt.ST_FEAT),
@@ -250,29 +253,31 @@ async def build_all(outdir):
     s5_sub = 22 + nov_px * .86 + 22
 
     # ---- footer ----
+    foot_els = [[] for _ in range(N)]
     for k in range(N):
-        parts[k].append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:1252px;height:56px;z-index:9">')
-        slides_els[k].append(("logo", 27, 1252, 320, 56))
+        foot[k].append(f'<img class="measure" data-tag="logo" src="{core.LOGO}" style="position:absolute;left:27px;top:{1252 + fdy}px;height:56px;z-index:9">')
+        foot_els[k].append(("logo", 27, 1252 + fdy, 320, 56))
         lab = "FOLLOW @NGO.AQUATERRA" if k == N - 1 else "SWIPE"
         cw = cta_w["FOLLOW" if k == N - 1 else "SWIPE"] * (40 / 40)
         ch = 68
         cx = W - cw - 22
-        parts[k].append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{cx}px;top:1244px;width:{cw}px;height:{ch}px;border:6px solid {ORCHID};border-radius:999px;'
+        foot[k].append(f'<div class="measure" data-tag="cta" style="position:absolute;left:{cx}px;top:{1244 + fdy}px;width:{cw}px;height:{ch}px;border:6px solid {ORCHID};border-radius:999px;'
                         f'background:{CTA_FILL};display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:30px;color:{INK};'
                         f'white-space:nowrap">{lab}{" &rsaquo;" if k < N - 1 else ""}</div>')
-        slides_els[k].append(("cta", cx, 1244, cw, ch))
+        foot_els[k].append(("cta", cx, 1244 + fdy, cw, ch))
 
     rnd = random.Random(7)
-    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(520))
-    ground = (f'<div style="position:absolute;inset:0;background:{GROUND}"></div><svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
+    specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, Hc):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * Hc / H)))
+    ground = (f'<div style="position:absolute;inset:0;background:{GROUND}"></div><svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{Hc}">{specks}</svg>')
 
     os.makedirs(outdir, exist_ok=True)
     text_pairs = [("h", WHITE, GROUND, 52, False), ("note", WHITE, GROUND, 40, False), ("cap", INK, SLAB, 36, False), ("cta", INK, CTA_FILL, 30, True)]
     for k in range(N):
         body = "".join(parts[k]).replace("__DATE__", s5_date).replace("__SUBTOP__", f"{s5_sub:.1f}")
-        html = B.page(W, H, GROUND, f"<style>{tt.FONT_CSS}</style>" + ground + body, grain=False)
-        els = slides_els[k]
-        await B.render(html, f"{outdir}/dd_teaser_{k + 1:02d}.png", W, H, elements=els, text_pairs=text_pairs, containers=("slab",),
+        body = f'<div style="position:absolute;left:0;top:{dy}px;width:{W}px;height:{H}px">{body}</div>' + "".join(foot[k])
+        html = B.page(W, Hc, GROUND, f"<style>{tt.FONT_CSS}</style>" + ground + body, grain=False)
+        els = [(l, x, y + dy, w, h) for (l, x, y, w, h) in slides_els[k]] + foot_els[k]
+        await B.render(html, f"{outdir}/dd_teaser{'_story' if story else ''}_{k + 1:02d}.png", W, Hc, elements=els, text_pairs=text_pairs, containers=("slab",),
                        page_bg=GROUND, expect_hero=False, margin=12,
                        bleed_tags=("string", "pin", "ball", "ticket3", "tape", "star0", "star1"),
                        collision_ignore={("pol0", "ball"), ("pol0", "note0"), ("ball", "note0"),
@@ -285,7 +290,7 @@ async def build_all(outdir):
 
 async def main():
     async with B.session():
-        await build_all(os.environ.get("TT_OUT", "out/versions/terrathon_dd_teaser"))
+        await build_all(os.environ.get("TT_OUT", "out/versions/terrathon_dd_teaser"), story=os.environ.get("TT_STORY") == "1")
     print("done")
 
 
