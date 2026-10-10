@@ -18,31 +18,26 @@ ORCHID, CTA_FILL, INK, WHITE, GROUND, GREEN = fc.ORCHID, fc.CTA_FILL, fc.INK, fc
 K, OFF = (1.05, 190) if STORY else (1.0, 0)
 Y = lambda y: round(OFF + y * K)
 
-SX = {"L": 70, "R": 1010}                  # the two strings the chat hangs from, outside the title's width so nothing crosses it
-BW = 380
-BUBBLES = [  # side, y, rot, text, heart, avatar
-    ("L", 530, -3, "is it happening??", True, True),
-    ("R", 515, 3, "okay but when do we get details?", False, True),
-    ("L", 690, 3, "what do we even wear??", False, False),
-    ("R", 695, -3, "who's the dj? asking for everyone", True, False),
-    ("L", 855, -3, "can i bring my whole group?", False, True),
-    ("R", 860, 3, "is there a dance floor?", True, False),
-    ("L", 1015, 3, "someone tell me everything", False, False),
-    ("R", 1025, -3, "i need my outfit planned NOW", False, True)]
-REPLY = (270, 1165, 540, -2, "answers soon. we hear you.")   # AQ's own answer, orchid, not on a string
-PHOTOS = [(470, 590, 150, 200, -5, "dance", "55% 35%"), (480, 900, 150, 200, 5, "group", "40% 40%")]
+BUBBLES = [  # x, y, w, rot, text, heart, avatar   (scattered like the reference: varied widths, staggered, tilted)
+    (50, 385, 340, -5, "is it happening??", True, True),
+    (500, 370, 530, 3, "okay but when do we get details?", False, True),
+    (170, 530, 410, 3, "what do we even wear??", False, False),
+    (620, 535, 420, -3, "who's the dj? asking for everyone", True, False),
+    (230, 700, 440, -2, "can i bring my whole group?", False, True),
+    (60, 905, 400, 3, "is there a dance floor?", True, False),
+    (500, 910, 530, -3, "someone tell me everything", False, True),
+    (150, 1040, 450, 3, "i need my outfit planned NOW", False, False)]
+REPLY = (130, 1178, 540, -2, "answers soon. we hear you.")   # AQ's own answer, orchid
+PHOTOS = [(50, 690, 150, 200, -6, "dance", "55% 35%"), (880, 700, 150, 200, 5, "group", "40% 40%"), (760, 1030, 150, 200, -4, "decor", "50% 55%")]
 
 
 async def main():
     s = fc.Slide(1, 701)
     im, src = fc.tt.crop_to_alpha("shuriken.png")
-    ys = [Y(y) for _, y, *_ in BUBBLES]
-    ty = Y(300)
+    ty = Y(150)
     yb, _ = await s.title("EVERYONE KEEPS ASKING", "DISCO DIWALI", ty, w1=700, w2=780)
     s.allow("t1", "t2")
-    for i, (side, y, rot, txt, heart, av) in enumerate(BUBBLES):
-        w = BW
-        x = 40 if side == "L" else 1040 - w
+    for i, (x, y, w, rot, txt, heart, av) in enumerate(BUBBLES):
         lines = max(1, math.ceil(len(txt) * 16.5 / (w - 56)))
         h = lines * 40 + 46
         yy = Y(y)
@@ -50,11 +45,11 @@ async def main():
               f'display:flex;align-items:center;padding:0 28px;font-family:var(--e);font-size:32px;line-height:1.15;color:{INK};z-index:6">{txt}</div>')
         s.el(f"b{i}", *rb(x, yy, w, h, rot))
         if heart:
-            hx, hy = (x + w - 90, yy + h - 12) if side == "L" else (x + 30, yy + h - 12)
+            hx, hy = (x + w - 90, yy + h - 12) if i % 2 == 0 else (x + 30, yy + h - 12)
             s.add(f'<div class="measure" data-tag="h{i}" style="position:absolute;left:{hx}px;top:{hy}px;width:58px;height:42px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;font-size:22px;z-index:8">\u2764\ufe0f</div>')
             s.el(f"h{i}", hx, hy, 58, 42); s.allow(f"b{i}", f"h{i}")
         if av:
-            ax, ay = (x + w - 30, yy - 24) if side == "L" else (x - 22, yy - 24)
+            ax, ay = (x + w - 30, yy - 24) if i in (0, 2) else (x - 22, yy - 24)
             s.add(f'<div class="measure" data-tag="a{i}" style="position:absolute;left:{ax}px;top:{ay}px;width:52px;height:52px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:50%;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;z-index:8">'
                   f'<img src="{src}" style="width:30px"></div>')
             s.el(f"a{i}", ax, ay, 52, 52); s.allow(f"b{i}", f"a{i}")
