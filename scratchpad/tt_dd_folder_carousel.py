@@ -3,7 +3,7 @@ Mechanism borrowed from a reference post: a desktop-UI parody. A context-menu pi
 title (bold + light), a pixel cursor sitting on a letter, a dropdown list card with one highlighted row, flat blue folders, and
 three photos peeking out of a folder front. Dressed in TerraThon: black ground, orchid-bordered cream UI, StretchPro name,
 kit shuriken, the DD disco ball / ticket / diya stickers, the user's three real Disco Diwali photos.
-TEASER: tickets are NOT on sale yet (user, 2026-10-10), so no sale CTA, no link in bio.
+TEASER (user, 2026-10-10): tickets are NOT on sale yet and the user does not want them mentioned at all: no ticket copy, no ticket sticker, no link in bio.
 Slides: 1 cover (the folder) / 2 dance.jpg / 3 decor.jpg / 4 group.jpg / 5 closer (Paste yourself into this folder).
 NO date, venue or price printed anywhere (user: "do not mention date or anything"). Photos: engine/assets/terrathon/dd_photos/.
 Adaptations: reference's brand handle -> @ngo.aquaterra; reference's stock selfies -> real DD photos; macOS blue folder -> TT blue.
@@ -196,9 +196,9 @@ async def build():
     s.cursor("cur", x2 + 470, y2 + p2 * .55)
     ty = yb + 40
     ball, bh = ddm.disco_ball(380, "b5"); svg_sticker(s, "ball", ball, W - 60 - 380, ty, 380, bh, 6)
-    tk, tkh = ddm.ticket(560, "t5"); svg_sticker(s, "tkt", tk, 40, ty + 80, 560, tkh, -8)
+    tk, tkh = ddm.diya(340, "d5"); svg_sticker(s, "tkt", tk, 170, ty + 50, 340, tkh, -8)
     ly = ty + max(bh, tkh + 80) + 50
-    s.listcard("list", ["Tickets dropping soon", "Save this folder", "Bring your people"], 190, ly, 700, hi=0)
+    s.listcard("list", ["Save this folder", "Send it to your people", "More soon"], 190, ly, 700, hi=0)
     s.footer(cta="STAY TUNED"); s.allow("t2", "cur"); s.allow("ball", "tkt"); s.allow("t2", "star_tr")
     out.append(("5", s))
     return out
