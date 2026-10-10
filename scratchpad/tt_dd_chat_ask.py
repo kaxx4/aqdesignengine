@@ -37,9 +37,6 @@ async def main():
     s = fc.Slide(1, 701)
     im, src = fc.tt.crop_to_alpha("shuriken.png")
     ys = [Y(y) for _, y, *_ in BUBBLES]
-    for side, x in SX.items():                    # one string per side, from the top edge down to just past its last pin
-        last = max(Y(y) for sd, y, *_ in BUBBLES if sd == side) + 70
-        s.add(f'<div style="position:absolute;left:{x - 1}px;top:0;width:3px;height:{last}px;background:{CTA_FILL};opacity:.9;z-index:2"></div>')
     ty = Y(300)
     yb, _ = await s.title("EVERYONE KEEPS ASKING", "DISCO DIWALI", ty, w1=700, w2=780)
     s.allow("t1", "t2")
@@ -50,10 +47,8 @@ async def main():
         h = lines * 40 + 46
         yy = Y(y)
         s.add(f'<div class="measure" data-tag="b{i}" style="position:absolute;left:{x}px;top:{yy}px;width:{w}px;height:{h}px;box-sizing:border-box;transform:rotate({rot}deg);border:5px solid {ORCHID};border-radius:36px;background:{CTA_FILL};'
-              f'display:flex;align-items:center;padding:0 26px 0 {58 if side == 'L' else 28}px;font-family:var(--e);font-size:32px;line-height:1.15;color:{INK};z-index:6">{txt}</div>')
+              f'display:flex;align-items:center;padding:0 28px;font-family:var(--e);font-size:32px;line-height:1.15;color:{INK};z-index:6">{txt}</div>')
         s.el(f"b{i}", *rb(x, yy, w, h, rot))
-        px, py = SX[side], yy + h / 2                 # the pin where the string meets the bubble
-        s.add(f'<div style="position:absolute;left:{px - 11}px;top:{py - 11}px;width:22px;height:22px;box-sizing:border-box;border:5px solid {ORCHID};border-radius:50%;background:{CTA_FILL};z-index:7"></div>')
         if heart:
             hx, hy = (x + w - 90, yy + h - 12) if side == "L" else (x + 30, yy + h - 12)
             s.add(f'<div class="measure" data-tag="h{i}" style="position:absolute;left:{hx}px;top:{hy}px;width:58px;height:42px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;font-size:22px;z-index:8">\u2764\ufe0f</div>')
