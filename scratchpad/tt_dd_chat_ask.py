@@ -18,50 +18,62 @@ ORCHID, CTA_FILL, INK, WHITE, GROUND, GREEN = fc.ORCHID, fc.CTA_FILL, fc.INK, fc
 K, OFF = (1.05, 190) if STORY else (1.0, 0)
 Y = lambda y: round(OFF + y * K)
 
-STRINGS = [(60, 330), (110, 560), (340, 250), (545, 290), (975, 1050), (1030, 560)]   # (x, end y) in design space; the title column stays clear
-BUBBLES = [  # x, y, w, rot, text, heart, avatar
-    (60, 520, 400, -5, "is it happening??", True, True),
-    (520, 505, 480, 5, "okay but when do we get details?", False, True),
-    (90, 650, 420, -3, "what do we even wear??", False, False),
-    (540, 665, 440, 3, "who's the dj? asking for everyone", True, False),
-    (40, 800, 320, -5, "can i bring my whole group?", False, True),
-    (690, 800, 360, 4, "is there a dance floor?", True, False),
-    (60, 1015, 430, -3, "someone tell me everything", True, True),
-    (560, 1020, 420, 4, "i need my outfit planned NOW", False, False),
-    (260, 1135, 540, -2, "answers soon. we hear you.", True, False)]
-PHOTOS = [(365, 800, 150, 200, -5, "dance", "55% 35%"), (530, 830, 150, 200, 5, "group", "40% 40%")]
+SX = {"L": 70, "R": 1010}                  # the two strings the chat hangs from, outside the title's width so nothing crosses it
+BW = 380
+BUBBLES = [  # side, y, rot, text, heart, avatar
+    ("L", 530, -3, "is it happening??", True, True),
+    ("R", 515, 3, "okay but when do we get details?", False, True),
+    ("L", 690, 3, "what do we even wear??", False, False),
+    ("R", 695, -3, "who's the dj? asking for everyone", True, False),
+    ("L", 855, -3, "can i bring my whole group?", False, True),
+    ("R", 860, 3, "is there a dance floor?", True, False),
+    ("L", 1015, 3, "someone tell me everything", False, False),
+    ("R", 1025, -3, "i need my outfit planned NOW", False, True)]
+REPLY = (270, 1165, 540, -2, "answers soon. we hear you.")   # AQ's own answer, orchid, not on a string
+PHOTOS = [(470, 590, 150, 200, -5, "dance", "55% 35%"), (480, 900, 150, 200, 5, "group", "40% 40%")]
 
 
 async def main():
     s = fc.Slide(1, 701)
     im, src = fc.tt.crop_to_alpha("shuriken.png")
-    # strings (behind everything)
-    for i, (x, ye) in enumerate(STRINGS):
-        s.add(f'<div style="position:absolute;left:{x}px;top:0;width:3px;height:{Y(ye)}px;background:{CTA_FILL};opacity:.9;z-index:2"></div>')
+    ys = [Y(y) for _, y, *_ in BUBBLES]
+    for side, x in SX.items():                    # one string per side, from the top edge down to just past its last pin
+        last = max(Y(y) for sd, y, *_ in BUBBLES if sd == side) + 70
+        s.add(f'<div style="position:absolute;left:{x - 1}px;top:0;width:3px;height:{last}px;background:{CTA_FILL};opacity:.9;z-index:2"></div>')
     ty = Y(300)
     yb, _ = await s.title("EVERYONE KEEPS ASKING", "DISCO DIWALI", ty, w1=700, w2=780)
     s.allow("t1", "t2")
-    for i, (x, y, w, rot, txt, heart, av) in enumerate(BUBBLES):
+    for i, (side, y, rot, txt, heart, av) in enumerate(BUBBLES):
+        w = BW
+        x = 40 if side == "L" else 1040 - w
         lines = max(1, math.ceil(len(txt) * 16.5 / (w - 56)))
         h = lines * 40 + 46
         yy = Y(y)
         s.add(f'<div class="measure" data-tag="b{i}" style="position:absolute;left:{x}px;top:{yy}px;width:{w}px;height:{h}px;box-sizing:border-box;transform:rotate({rot}deg);border:5px solid {ORCHID};border-radius:36px;background:{CTA_FILL};'
-              f'display:flex;align-items:center;padding:0 26px;font-family:var(--e);font-size:32px;line-height:1.15;color:{INK};z-index:6">{txt}</div>')
+              f'display:flex;align-items:center;padding:0 26px 0 {58 if side == 'L' else 28}px;font-family:var(--e);font-size:32px;line-height:1.15;color:{INK};z-index:6">{txt}</div>')
         s.el(f"b{i}", *rb(x, yy, w, h, rot))
+        px, py = SX[side], yy + h / 2                 # the pin where the string meets the bubble
+        s.add(f'<div style="position:absolute;left:{px - 11}px;top:{py - 11}px;width:22px;height:22px;box-sizing:border-box;border:5px solid {ORCHID};border-radius:50%;background:{CTA_FILL};z-index:7"></div>')
         if heart:
-            hx, hy = x + 26, yy + h - 12
-            s.add(f'<div class="measure" data-tag="h{i}" style="position:absolute;left:{hx}px;top:{hy}px;width:58px;height:42px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;font-size:22px;z-index:8">❤️</div>')
+            hx, hy = (x + w - 90, yy + h - 12) if side == "L" else (x + 30, yy + h - 12)
+            s.add(f'<div class="measure" data-tag="h{i}" style="position:absolute;left:{hx}px;top:{hy}px;width:58px;height:42px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;font-size:22px;z-index:8">\u2764\ufe0f</div>')
             s.el(f"h{i}", hx, hy, 58, 42); s.allow(f"b{i}", f"h{i}")
         if av:
-            ax, ay = (x + w - 34, yy - 22) if i % 2 else (x - 20, yy + h - 40)
+            ax, ay = (x + w - 30, yy - 24) if side == "L" else (x - 22, yy - 24)
             s.add(f'<div class="measure" data-tag="a{i}" style="position:absolute;left:{ax}px;top:{ay}px;width:52px;height:52px;box-sizing:border-box;border:4px solid {ORCHID};border-radius:50%;background:{CTA_FILL};display:flex;align-items:center;justify-content:center;z-index:8">'
                   f'<img src="{src}" style="width:30px"></div>')
             s.el(f"a{i}", ax, ay, 52, 52); s.allow(f"b{i}", f"a{i}")
+    rx, ry, rw, rrot, rtxt = REPLY
+    rh = 86
+    s.add(f'<div class="measure" data-tag="reply" style="position:absolute;left:{rx}px;top:{Y(ry)}px;width:{rw}px;height:{rh}px;box-sizing:border-box;transform:rotate({rrot}deg);border:5px solid {CTA_FILL};border-radius:36px;background:{ORCHID};'
+          f'display:flex;align-items:center;justify-content:center;font-family:var(--e);font-weight:700;font-size:32px;color:{INK};z-index:6">{rtxt}</div>')
+    s.el("reply", *rb(rx, Y(ry), rw, rh, rrot))
     for j, (x, y, w, h, rot, key, pos) in enumerate(PHOTOS):
         fc.photo_card(s, f"ph{j}", key, x, Y(y), w, h, rot, pos, z=5)
     s.footer(cta="ANSWERS SOON")
-    for i in range(len(BUBBLES)):                      # overlapping tilted bubbles touch their neighbours' bounding boxes; the looking gate judges them
+    for i in range(len(BUBBLES)):                      # tilted bubbles can touch neighbours' bounding boxes; the looking gate judges them
         for j in range(i + 1, len(BUBBLES)): s.allow(f"b{i}", f"b{j}")
+        s.allow(f"b{i}", "reply")
     for i in range(len(BUBBLES)):
         for j in range(len(PHOTOS)): s.allow(f"b{i}", f"ph{j}")
     out = "out/collaterals/dd_chat_ask" + ("_story" if STORY else "") + ".png"
