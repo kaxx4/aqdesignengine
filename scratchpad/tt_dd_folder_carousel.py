@@ -215,4 +215,5 @@ async def main():
                            collision_ignore=set(map(tuple, s.ign)), margin=12, crop_tags=("win", "p_l", "p_c", "p_r"))
             print("done", out)
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
