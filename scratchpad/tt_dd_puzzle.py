@@ -131,7 +131,20 @@ def build(name):
     specks = ""
     rnd = random.Random(int(name) * 11)
     specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(480))
-    html += f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>'
+    # cool ground: deep indigo base, coloured glow orbs (orchid / blue / mint), disco light rays from the top, 4-point sparkles
+    glow = (f'<div style="position:absolute;inset:0;background:'
+            f'radial-gradient(ellipse 70% 38% at 12% 8%,rgba(222,104,240,.55),transparent 70%),'
+            f'radial-gradient(ellipse 65% 40% at 92% 14%,rgba(3,150,255,.5),transparent 70%),'
+            f'radial-gradient(ellipse 80% 40% at 50% 104%,rgba(222,104,240,.45),transparent 70%),'
+            f'radial-gradient(ellipse 50% 30% at 4% 70%,rgba(47,210,132,.28),transparent 70%),'
+            f'radial-gradient(ellipse 50% 30% at 98% 60%,rgba(3,150,255,.3),transparent 70%),#09051a;z-index:0"></div>')
+    rays = (f'<div style="position:absolute;inset:0;z-index:1;background:repeating-conic-gradient(from -90deg at 50% -6%,rgba(255,255,255,.075) 0deg 5deg,transparent 5deg 15deg);'
+            f'-webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 0%,transparent 75%)"></div>')
+    def spark(cx, cy, r, op):
+        k = r * .22
+        return (f'<path d="M{cx},{cy - r} Q{cx + k},{cy - k} {cx + r},{cy} Q{cx + k},{cy + k} {cx},{cy + r} Q{cx - k},{cy + k} {cx - r},{cy} Q{cx - k},{cy - k} {cx},{cy - r}Z" fill="#fff" opacity="{op}"/>')
+    sp_ = "".join(spark(rnd.uniform(0, W), rnd.uniform(0, H), rnd.choice([7, 9, 12, 16, 22]), rnd.uniform(.35, .9)) for _ in range(34))
+    html += glow + rays + f'<svg style="position:absolute;inset:0;z-index:2" width="{W}" height="{H}">{specks}{sp_}</svg>'
     # board slab (white, orchid keyline) behind the puzzle: holes show it
     html += (f'<div class="measure" data-tag="board" style="position:absolute;left:{BX - 14}px;top:{BY - 14}px;width:{BW + 28}px;height:{BH + 28}px;box-sizing:border-box;background:{SLAB};border:8px solid {ORCHID};border-radius:22px;z-index:3"></div>')
     els.append(("board", BX - 14, BY - 14, BW + 28, BH + 28))
