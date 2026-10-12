@@ -115,4 +115,5 @@ async def main():
             await B.render(html, out, W, H, elements=els, page_bg="#000", expect_hero=False, margin=12, crop_tags=("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"))
             print("done", out)
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
