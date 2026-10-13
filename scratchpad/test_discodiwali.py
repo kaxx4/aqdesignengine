@@ -195,4 +195,13 @@ ok(dp.dy_info == 0 and dp.dy_title == 0, "a square canvas does not inherit a neg
 wp = dd.Poster("wa_poster", LF, "feed").build()
 ok('data-tag="cta"' not in wp and "LINK IN BIO" not in wp.upper(), "the WhatsApp poster has no CTA pill and no 'link in bio' (there is no link to point at)")
 
+# --- white type with a thin black border (launch pack) ----------------------------------------------------------------------
+for ty in ("foil", "outline", "stack", "editorial"):
+    h = dd.Poster("story_launch", LF, "story", typo=ty).build()
+    ok("paint-order:stroke fill!important" in h and "-webkit-text-stroke:4px #000!important" in h, f"story typo={ty}: type gets a black border painted UNDER its fill")
+    ok("-webkit-text-fill-color:#fff!important" in h and "color:#fff!important" in h, f"story typo={ty}: every text colour is forced to white")
+ok(all(f'[data-tag="{t}"]' in dd.Poster.WHITE_BORDER_CSS for t in dd.Poster.TEXT_TAGS), "the override names every text tag the launch kinds use")
+ok("-webkit-text-stroke:4px #000!important" not in dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", typo="foil").build(),
+   "the border rule is scoped to the launch pack: the other kinds keep their gold and foil")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

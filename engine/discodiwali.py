@@ -471,6 +471,15 @@ class Poster:
                 f'<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>')
 
     # ---- kinds ------------------------------------------------------------------------------------
+    TEXT_TAGS = ("sub1", "sub2", "date", "month", "time", "status", "note", "cue", "edition")
+    # Launch-pack type is WHITE with a thin BLACK border, like the reference launch poster (user, 2026-10-13). One !important override on the
+    # text elements and everything inside them, so it beats every treatment's inline colour: gold lines, the foil gradient clip and the hollow
+    # numerals all become solid white. paint-order puts the fill over the stroke, so the 4px stroke shows as a 2px border OUTSIDE the glyph
+    # and never thins the letters, at any type size.
+    WHITE_BORDER_CSS = ("".join(f'[data-tag="{t}"],[data-tag="{t}"] *,' for t in TEXT_TAGS).rstrip(",") +
+                        "{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;-webkit-background-clip:border-box!important;"
+                        "background-clip:border-box!important;-webkit-text-stroke:4px #000!important;paint-order:stroke fill!important}")
+
     @staticmethod
     def neutralise(html):
         """Re-set every text face in NeutralFace (the brand display face, --d): the serif italic, mono and Eina lines all become NeutralFace.
@@ -487,7 +496,10 @@ class Poster:
         getattr(self, "_" + self.kind)()
         self.overlays()
         page = B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
-        return self.neutralise(page) if self.neutral_only else page      # the whole page, so the default .p font rule is NeutralFace too
+        if not self.neutral_only:
+            return page
+        page = self.neutralise(page)                                      # the whole page, so the default .p font rule is NeutralFace too
+        return page.replace("</style>", self.WHITE_BORDER_CSS + "</style>", 1)
 
     def _announce(self):
         if self.style == "photo":
