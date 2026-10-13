@@ -39,7 +39,7 @@ K = 0.9                      # the reference is 1200x1500; every reference coord
 S = lambda v: round(v * K)
 BASE_H = 1350
 MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
-STYLES = ("plate", "diya", "stroke", "blue")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
+STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
 KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
@@ -51,7 +51,7 @@ REQUIRED = {
     "teaser_arch":  ("edition", "date", "line", "photo", "cta"),
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
 }
-OPTIONAL = {"announce": ("note",), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -183,6 +183,9 @@ class Poster:
         if self.style == "blue":
             self._blue_base()
             return
+        if self.style == "photo":
+            self._photo_base()
+            return
         plate = "bg_diya_portrait.jpg" if self.style == "diya" else "bg_beaded_portrait.jpg"
         if H <= BASE_H:
             self.img(plate, 0, 0, W, H, z=1, tag="plate", extra="object-fit:cover;")
@@ -211,6 +214,59 @@ class Poster:
             f"-webkit-mask-image:{mask};mask-image:{mask};mix-blend-mode:screen;opacity:.75", 3)
         cy = round(64 * 100 / 100)                                  # dim ellipse centre, % of height
         lay(f"background:radial-gradient(ellipse 62% 44% at 50% {cy}%,rgba(0,0,0,.86),rgba(0,0,0,.55) 62%,rgba(0,0,0,.05) 100%)", 4)
+
+    def _photo_base(self):
+        """Back to front: ink, a real event photo graded dark, a navy multiply so the photo and the plate share one hue, the soft diya plate
+        SCREEN-blended on top (its black centre drops out, so the photo shows through the middle while the gold lotus corners glow), then a
+        gentle dim under the type. The raw tiled pattern is NOT used here: it is for edge cases only (user, 2026-10-13)."""
+        W, H, P = self.W, self.H, self.parts
+        ph = self.c.get("photo", "03")
+        P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
+                 f'filter:contrast(1.12) saturate(.9) brightness(.95)">')
+        P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#0A1E7A,#050A33);'
+                 f'mix-blend-mode:multiply;opacity:.6"></div>')
+        plate = "bg_diya_portrait.jpg"
+        ex = "mix-blend-mode:screen;"
+        if H <= BASE_H:
+            self.img(plate, 0, 0, W, H, z=3, tag="plate", extra="object-fit:cover;" + ex)
+        else:
+            self.img(plate, 0, 0, W, BASE_H, z=3, tag="plate", extra=ex)
+            self.img(plate, 0, H - BASE_H, W, BASE_H, z=3, tag="plate",
+                     extra=ex + "transform:scaleY(-1);-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);mask-image:linear-gradient(to top,transparent 0%,#000 45%);")
+        P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(ellipse 66% 40% at 50% 66%,'
+                 f'rgba(0,0,0,.62),rgba(0,0,0,.3) 65%,rgba(0,0,0,0) 100%)"></div>')
+
+    def raw(self, label, html, cx, cy, w, h, css="", z=12):
+        """A centred block of arbitrary markup with its declared box. For the editorial type, where one line mixes faces."""
+        self.parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:translate(-50%,-50%);white-space:nowrap;'
+                          f'line-height:1;color:{OFFWHITE};z-index:{z};{css}">{html}</div>')
+        self.box(label, cx - w / 2, cy - h / 2, w, h)
+
+    def _announce_editorial(self):
+        """Editorial type for style="photo": tracked small caps, a serif italic accent, one big date, mono meta between gold rules."""
+        c, di, W = self.c, self.dy_info, self.W
+        GL = "#E8C063"                                          # gold lifted for small type on a photo ground
+        self.base(); self.top_group(); self.title()
+        cx = S(673)
+        self.raw("sub1", "MASQUERADE SANGEET", cx, S(952) + self.dy_title, S(560), S(40),
+                 "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
+        self.raw("sub2", "Edition", cx, S(1008) + self.dy_title, S(260), S(60),
+                 f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{GL}")
+        date = c["date"].upper()
+        day, _, rest = date.partition(" ")
+        self.raw("date", f'<span style="font-family:var(--s);font-style:italic;font-weight:400;font-size:{S(150)}px;color:{OFFWHITE}">{day.rstrip("TH")}</span>'
+                         f'<span style="font-family:var(--e);font-weight:700;font-size:{S(54)}px;letter-spacing:.06em;margin-left:{S(18)}px;vertical-align:{S(34)}px">{rest}</span>',
+                 W // 2, S(1128) + di, S(820), S(150), "text-shadow:0 2px 24px rgba(0,0,0,.6)")
+        rule = f'<span style="display:inline-block;width:{S(120)}px;height:2px;background:{GOLD};vertical-align:middle"></span>'
+        meta = f'{c["time"].upper()}'
+        self.raw("time", f'{rule}<span style="margin:0 {S(26)}px">{meta}</span>{rule}', W // 2, S(1232) + di, S(760), S(36),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.22em;color:{GL}")
+        self.raw("status", c["status"].upper(), W // 2, S(1290) + di, S(700), S(40),
+                 f"font-family:var(--e);font-weight:600;font-size:{S(32)}px;letter-spacing:.2em")
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46),
+                     f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
+        self.pill("cta", c["cta"], S(1412) + di, h=S(80))
 
     def top_group(self):
         MK = .48
@@ -274,6 +330,8 @@ class Poster:
         return B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
 
     def _announce(self):
+        if self.style == "photo":
+            return self._announce_editorial()
         c, di = self.c, self.dy_info
         self.base(); self.top_group(); self.title(); self.edition()
         self.line("date", c["date"], S(1090) + di, S(76))
@@ -458,6 +516,10 @@ async def _demo():
         for i, (kind, content, st, mk) in enumerate(TEASERS, 1):
             for canvas in ("story", "feed"):
                 await render_poster(kind, content, canvas, os.path.join(tdir, f"t{i}_{kind}_{canvas}.png"), style=st, mask=mk)
+        pdir = os.path.join(out, "photo")
+        for ph in ("03", "05", "12"):
+            for canvas in ("feed", "story"):
+                await render_poster("announce", dict(DEMO[0][1], photo=ph), canvas, os.path.join(pdir, f"announce_{ph}_{canvas}.png"), style="photo", mask="copper")
         bdir = os.path.join(out, "blue")
         for kind, content in DEMO:
             for canvas in ("feed", "story"):

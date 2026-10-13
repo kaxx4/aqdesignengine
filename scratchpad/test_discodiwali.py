@@ -121,4 +121,11 @@ ok("filter:url(#ca)" in bl and 'id="ca"' in bl, "the title lockup carries the RG
 ok(bl.count('data-tag="plate"') >= 4, "every blend layer is tagged plate (deliberate full bleed)")
 ok('id="ca"' not in feed, "other directions do not carry the shader")
 
+# --- photo direction: photo behind, soft plate screen-blended, editorial type -------------------------------------------
+ph = dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", mask="copper").build()
+ok('data-tag="photo"' in ph and "mix-blend-mode:screen" in ph, "the photo direction puts a real photo behind a SCREEN-blended plate")
+ok("pattern_diya_navy" not in ph and ph.count("data:image/jpeg") >= 2, "it uses the soft plate and never the raw tiled pattern (that is for edge cases only)")
+ok("var(--s)" in ph and "letter-spacing:.34em" in ph, "the type is editorial: serif italic accents and tracked small caps")
+ok(refused("announce", dict(ANN, photo="05"), needle="") is False, "announce accepts an optional photo field")
+
 print(f"\nALL {N} ASSERTIONS PASSED")
