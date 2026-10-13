@@ -128,4 +128,17 @@ ok("pattern_diya_navy" not in ph and ph.count("data:image/jpeg") >= 2, "it uses 
 ok("var(--s)" in ph and "letter-spacing:.34em" in ph, "the type is editorial: serif italic accents and tracked small caps")
 ok(refused("announce", dict(ANN, photo="05"), needle="") is False, "announce accepts an optional photo field")
 
+# --- type treatments --------------------------------------------------------------------------------------------------
+def photo_html(typo):
+    return dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", mask="copper", typo=typo).build()
+try:
+    dd.Poster("announce", ANN, "feed", style="photo", typo="neon"); bad = False
+except ValueError:
+    bad = True
+ok(bad, "an unknown typo is refused")
+ok("background-clip:text" in photo_html("foil"), "foil clips a gold gradient to the glyphs")
+ok("-webkit-text-stroke:3px" in photo_html("outline") and "transparent" in photo_html("outline"), "outline draws hollow numerals so the photo reads through them")
+ok("rotate(-90deg)" in photo_html("vertical"), "vertical runs its rail type up the edges")
+ok(all(len(photo_html(t)) > 1000 for t in dd.TYPOS), "every typo treatment builds")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

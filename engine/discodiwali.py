@@ -39,6 +39,7 @@ K = 0.9                      # the reference is 1200x1500; every reference coord
 S = lambda v: round(v * K)
 BASE_H = 1350
 MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
+TYPOS = ("editorial", "foil", "outline", "vertical", "stack")   # type treatments for style="photo" announce
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
 KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
@@ -131,13 +132,15 @@ def _fit(text, size, max_w, weight=700):
 
 class Poster:
     """One poster under construction. Layers append in z-order; `box` keeps the declared bbox beside every element."""
-    def __init__(self, kind, content, canvas, style="plate", mask="asset"):
+    def __init__(self, kind, content, canvas, style="plate", mask="asset", typo="editorial"):
         validate_brief(kind, content, canvas)
         if style not in STYLES:
             raise ValueError(f"style must be one of {STYLES}, got {style!r}")
         if mask not in MASKS:
             raise ValueError(f"mask must be one of {MASKS}, got {mask!r}")
-        self.kind, self.c, self.canvas, self.style, self.mask = kind, content, canvas, style, mask
+        if typo not in TYPOS:
+            raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
+        self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
         self.W, self.H = core.SIZES["feed" if canvas == "feed" else "story"]
         dh = self.H - BASE_H
         self.dy_top, self.dy_title, self.dy_info = round(dh * .15), round(dh * .62), dh
@@ -242,31 +245,102 @@ class Poster:
                           f'line-height:1;color:{OFFWHITE};z-index:{z};{css}">{html}</div>')
         self.box(label, cx - w / 2, cy - h / 2, w, h)
 
+    # ---- type treatments for style="photo" -----------------------------------------------------------------------
+    GL = "#E8C063"                                              # gold lifted for small type on a photo ground
+    FOIL = ("background:linear-gradient(180deg,#FFF6CF 0%,#F0C65A 34%,#A8721A 60%,#F7DC86 82%,#C48A22 100%);-webkit-background-clip:text;"
+            "background-clip:text;-webkit-text-fill-color:transparent;color:transparent;")
+
     def _announce_editorial(self):
-        """Editorial type for style="photo": tracked small caps, a serif italic accent, one big date, mono meta between gold rules."""
-        c, di, W = self.c, self.dy_info, self.W
-        GL = "#E8C063"                                          # gold lifted for small type on a photo ground
         self.base(); self.top_group(); self.title()
+        if self.typo != "vertical":
+            self._edition_lines()
+        getattr(self, "_info_" + self.typo)()
+
+    def _edition_lines(self):
         cx = S(673)
         self.raw("sub1", "MASQUERADE SANGEET", cx, S(952) + self.dy_title, S(560), S(40),
                  "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
         self.raw("sub2", "Edition", cx, S(1008) + self.dy_title, S(260), S(60),
-                 f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{GL}")
-        date = c["date"].upper()
-        day, _, rest = date.partition(" ")
-        self.raw("date", f'<span style="font-family:var(--s);font-style:italic;font-weight:400;font-size:{S(150)}px;color:{OFFWHITE}">{day.rstrip("TH")}</span>'
+                 f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
+
+    def _day_rest(self):
+        day, _, rest = self.c["date"].upper().partition(" ")
+        return day.rstrip("TH"), rest
+
+    def _info_editorial(self):
+        c, di, W, GL = self.c, self.dy_info, self.W, self.GL
+        day, rest = self._day_rest()
+        self.raw("date", f'<span style="font-family:var(--s);font-style:italic;font-weight:400;font-size:{S(150)}px;color:{OFFWHITE}">{day}</span>'
                          f'<span style="font-family:var(--e);font-weight:700;font-size:{S(54)}px;letter-spacing:.06em;margin-left:{S(18)}px;vertical-align:{S(34)}px">{rest}</span>',
                  W // 2, S(1128) + di, S(820), S(150), "text-shadow:0 2px 24px rgba(0,0,0,.6)")
         rule = f'<span style="display:inline-block;width:{S(120)}px;height:2px;background:{GOLD};vertical-align:middle"></span>'
-        meta = f'{c["time"].upper()}'
-        self.raw("time", f'{rule}<span style="margin:0 {S(26)}px">{meta}</span>{rule}', W // 2, S(1232) + di, S(760), S(36),
+        self.raw("time", f'{rule}<span style="margin:0 {S(26)}px">{c["time"].upper()}</span>{rule}', W // 2, S(1232) + di, S(760), S(36),
                  f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.22em;color:{GL}")
         self.raw("status", c["status"].upper(), W // 2, S(1290) + di, S(700), S(40),
                  f"font-family:var(--e);font-weight:600;font-size:{S(32)}px;letter-spacing:.2em")
         if c.get("note"):
-            self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46),
-                     f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
+            self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
         self.pill("cta", c["cta"], S(1412) + di, h=S(80))
+
+    def _info_foil(self):
+        """A gold-foil italic numeral (a gradient clipped to the glyphs), with the month and year stacked in tracked caps beside it."""
+        c, di, W, GL = self.c, self.dy_info, self.W, self.GL
+        day, rest = self._day_rest()
+        month, _, year = rest.partition(", ")
+        self.raw("date", f'<span style="font-family:var(--s);font-style:italic;font-size:{S(250)}px;{self.FOIL}filter:drop-shadow(0 4px 18px rgba(0,0,0,.55))">{day}</span>'
+                         f'<span style="display:inline-block;margin-left:{S(30)}px;text-align:left;line-height:1.3;font-family:var(--e);font-weight:700;'
+                         f'font-size:{S(46)}px;letter-spacing:.26em;vertical-align:{S(60)}px">{month}<br><span style="color:{GL}">{year}</span></span>',
+                 W // 2, S(1148) + di, S(760), S(210))
+        self.raw("time", c["time"].upper() + f'&nbsp;&nbsp;·&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1262) + di, S(900), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
+        self.raw("status", "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
+        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
+
+    def _info_outline(self):
+        """Hollow numerals: transparent fill, a hairline stroke, so the photo reads THROUGH the date. The month is solid beside it."""
+        c, di, W, GL = self.c, self.dy_info, self.W, self.GL
+        day, rest = self._day_rest()
+        month, _, year = rest.partition(", ")
+        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(300)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px {OFFWHITE}">{day}</span>',
+                 S(330), S(1172) + di, S(400), S(250))
+        self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;letter-spacing:.02em">{month}</span><br>'
+                          f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
+                 S(830), S(1172) + di, S(480), S(210), "line-height:1.02;text-align:left")
+        self.raw("time", f'{c["time"].upper()}&nbsp;&nbsp;/&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1318) + di, S(900), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
+        self.pill("cta", c["cta"], S(1414) + di, h=S(76))
+
+    def _info_vertical(self):
+        """Rail type: the edition and the cause run vertically up both edges; the centre is one italic date line over tracked meta."""
+        c, di, W, GL = self.c, self.dy_info, self.W, self.GL
+        def rail(label, text, x):
+            L, T = S(360), S(26)
+            self.raw(label, text, x, S(1262) + di, L, T,
+                     f"font-family:var(--m);font-weight:700;font-size:{S(18)}px;letter-spacing:.2em;color:{GL};transform:translate(-50%,-50%) rotate(-90deg)")
+            self.elements[-1] = (label, round(x - T / 2), round(S(1262) + di - L / 2), T, L)     # the box as DRAWN: rotated
+        rail("railL", c["edition"].upper(), S(58))
+        rail("railR", "ALL FOR CHARITY", W - S(58))
+        self.raw("date", c["date"], W // 2, S(1160) + di, S(760), S(110),
+                 f"font-family:var(--s);font-style:italic;font-size:{S(92)}px;text-shadow:0 2px 24px rgba(0,0,0,.6)")
+        self.raw("time", f'<span style="color:{GL}">{c["time"].upper()}</span>', W // 2, S(1244) + di, S(560), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(24)}px;letter-spacing:.3em")
+        self.raw("status", c["status"].upper(), W // 2, S(1296) + di, S(700), S(36),
+                 f"font-family:var(--e);font-weight:600;font-size:{S(30)}px;letter-spacing:.24em")
+        self.pill("cta", c["cta"], S(1408) + di, h=S(80))
+
+    def _info_stack(self):
+        """A heavy NeutralFace line, the numeral solid and the month hollow, over one mono meta line and a serif italic kicker."""
+        c, di, W, GL = self.c, self.dy_info, self.W, self.GL
+        day, rest = self._day_rest()
+        month, _, year = rest.partition(", ")
+        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(200)}px;letter-spacing:.01em">{day}</span>'
+                         f'<span style="font-family:var(--d);font-weight:900;font-size:{S(200)}px;margin-left:{S(26)}px;-webkit-text-fill-color:transparent;'
+                         f'-webkit-text-stroke:3px {OFFWHITE}">{month[:3]}</span>',
+                 W // 2, S(1160) + di, S(760), S(170), "text-shadow:0 4px 28px rgba(0,0,0,.5)")
+        self.raw("time", f'{year}&nbsp;&nbsp;·&nbsp;&nbsp;{c["time"].upper()}', W // 2, S(1262) + di, S(700), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(25)}px;letter-spacing:.26em;color:{GL}")
+        self.raw("status", c["status"], W // 2, S(1326) + di, S(640), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(54)}px")
+        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
 
     def top_group(self):
         MK = .48
@@ -460,15 +534,15 @@ class Poster:
         self.line("thanks", c["thanks"], S(1462) + di, S(36), max_w=self.W - 2 * 60)
 
 
-async def render_poster(kind, content, canvas, out_png, style="plate", mask="asset"):
+async def render_poster(kind, content, canvas, out_png, style="plate", mask="asset", typo="editorial"):
     """Validate, build and render one poster through the full gate stack. Returns the output path."""
-    p = Poster(kind, content, canvas, style, mask)
+    p = Poster(kind, content, canvas, style, mask, typo)
     html = p.build()
     os.makedirs(os.path.dirname(out_png), exist_ok=True)
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
