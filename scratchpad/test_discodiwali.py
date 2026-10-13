@@ -114,4 +114,11 @@ tr.build()
 fr = {e[0]: e for e in tr.elements}
 ok(fr["f1"][2] > fr["badge"][2] + fr["badge"][4] or fr["f1"][1] > fr["badge"][1] + fr["badge"][3], "trio frames start below the LIVE badge, never under it")
 
+# --- blue blend-mode direction -------------------------------------------------------------------------------------
+bl = dd.Poster("announce", ANN, "feed", style="blue", mask="copper").build()
+ok("color-dodge" in bl and "repeating-conic-gradient" in bl, "the blue direction layers a colour-dodge blue and screen-blended disco beams")
+ok("filter:url(#ca)" in bl and 'id="ca"' in bl, "the title lockup carries the RGB-split shader and its filter is defined")
+ok(bl.count('data-tag="plate"') >= 4, "every blend layer is tagged plate (deliberate full bleed)")
+ok('id="ca"' not in feed, "other directions do not carry the shader")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

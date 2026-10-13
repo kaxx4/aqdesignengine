@@ -39,7 +39,7 @@ K = 0.9                      # the reference is 1200x1500; every reference coord
 S = lambda v: round(v * K)
 BASE_H = 1350
 MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
-STYLES = ("plate", "diya", "stroke")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask
+STYLES = ("plate", "diya", "stroke", "blue")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
 KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
@@ -52,6 +52,14 @@ REQUIRED = {
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
 }
 OPTIONAL = {"announce": ("note",), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
+
+# SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
+BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
+             '<feColorMatrix in="SourceGraphic" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>'
+             '<feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>'
+             '<feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>'
+             '<feOffset in="r" dx="-3" dy="0" result="ro"/><feOffset in="b" dx="3" dy="0" result="bo"/>'
+             '<feBlend in="ro" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="bo" mode="screen"/></filter></defs></svg>')
 
 _cache = {}
 def uri(name):
@@ -172,6 +180,9 @@ class Poster:
         self.parts.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
         if self.style == "stroke" or self.kind == "teaser_full":
             return                          # no sequin plate: the ground is plain ink, sparkles and grain still lay over it
+        if self.style == "blue":
+            self._blue_base()
+            return
         plate = "bg_diya_portrait.jpg" if self.style == "diya" else "bg_beaded_portrait.jpg"
         if H <= BASE_H:
             self.img(plate, 0, 0, W, H, z=1, tag="plate", extra="object-fit:cover;")
@@ -182,6 +193,24 @@ class Poster:
             self.img(plate, 0, H - BASE_H, W, BASE_H, z=1, tag="plate",
                      extra="transform:scaleY(-1);-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);"
                            "mask-image:linear-gradient(to top,transparent 0%,#000 45%);")
+
+    def _blue_base(self):
+        """Layered blend recipe, back to front: ink, FULL-SCREEN navy diya pattern, a blue layer colour-DODGED over it (burns the gold,
+        blooms the lotus), disco beams SCREENed from the top right through a radial mask, then a dim ellipse over the type zone so the
+        pattern still lives in the corners. Every layer is tagged plate: deliberate full bleed."""
+        W, H, P = self.W, self.H, self.parts
+        def lay(css, z):
+            P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:{z};pointer-events:none;{css}"></div>')
+        P.append(BLUE_DEFS)
+        P.append(f'<img data-tag="plate" src="{uri("pattern_diya_navy.jpg")}" style="position:absolute;left:{-(H - W) // 2}px;top:0;'
+                 f'width:{H}px;height:{H}px;object-fit:cover;z-index:1;filter:brightness(.7) saturate(1.15)">')
+        lay("background:radial-gradient(circle at 82% 10%,#3D7BFF 0%,rgba(20,60,220,0) 58%),linear-gradient(165deg,#1038FF,#001060 70%);"
+            "mix-blend-mode:color-dodge;opacity:.6", 2)
+        mask = "radial-gradient(circle at 88% -6%,#000 0,rgba(0,0,0,.5) 50%,transparent 90%)"
+        lay("background:repeating-conic-gradient(from 188deg at 88% -6%,rgba(120,175,255,.95) 0deg 3deg,transparent 3deg 10deg);"
+            f"-webkit-mask-image:{mask};mask-image:{mask};mix-blend-mode:screen;opacity:.75", 3)
+        cy = round(64 * 100 / 100)                                  # dim ellipse centre, % of height
+        lay(f"background:radial-gradient(ellipse 62% 44% at 50% {cy}%,rgba(0,0,0,.86),rgba(0,0,0,.55) 62%,rgba(0,0,0,.05) 100%)", 4)
 
     def top_group(self):
         MK = .48
@@ -218,7 +247,7 @@ class Poster:
         tw = S(2000 * TK)
         tx = S(30 - 265 * TK) + cx_shift
         ty = S(y_ref - 320 * TK) + self.dy_title
-        self.img("title_lockup.png", tx, ty, tw, z=9, tag="title")
+        self.img("title_lockup.png", tx, ty, tw, z=9, tag="title", extra="filter:url(#ca);" if self.style == "blue" else "")
         self.box("title", S(30) + cx_shift, S(y_ref) + self.dy_title, S(1160 * scale), S(670 * scale))
 
     def edition(self, y_sub=950, y_ed=1000):
@@ -429,6 +458,12 @@ async def _demo():
         for i, (kind, content, st, mk) in enumerate(TEASERS, 1):
             for canvas in ("story", "feed"):
                 await render_poster(kind, content, canvas, os.path.join(tdir, f"t{i}_{kind}_{canvas}.png"), style=st, mask=mk)
+        bdir = os.path.join(out, "blue")
+        for kind, content in DEMO:
+            for canvas in ("feed", "story"):
+                await render_poster(kind, content, canvas, os.path.join(bdir, f"{kind}_{canvas}.png"), style="blue", mask="copper")
+        for i, (kind, content, st, mk) in enumerate(TEASERS, 1):
+            await render_poster(kind, content, "story", os.path.join(bdir, f"t{i}_{kind}_story.png"), style="blue", mask="copper")
     print("demo set done ->", out)
 
 if __name__ == "__main__":
