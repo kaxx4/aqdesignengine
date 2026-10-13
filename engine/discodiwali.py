@@ -694,10 +694,11 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     p = Poster(kind, content, canvas, style, mask, typo, **opts)
     html = p.build()
     os.makedirs(os.path.dirname(out_png), exist_ok=True)
+    # ("date","time"): foil's numeral line box is taller than its glyphs; the ink clears the time line (checked by eye)
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("date", "time"),   # foil: the numeral's line box is taller than its glyphs; ink clears the time line (checked by eye) ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
