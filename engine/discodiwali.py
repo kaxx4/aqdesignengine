@@ -40,6 +40,12 @@ S = lambda v: round(v * K)
 BASE_H = 1350
 MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
 TYPOS = ("editorial", "foil", "outline", "vertical", "stack", "minimal", "whisper")   # type treatments for style="photo" announce
+# Composition presets for style="photo" announce. mask = (dx, dy, scale, tilt) in reference px / multiplier / degrees; title = (scale, y_ref).
+# The edition lines and info stack are placed RELATIVE to the title's real bottom, so every preset keeps the lockup's notch tuck.
+LAYOUTS = {"classic": {},
+           "mask_hero":   dict(mask=(80, -60, 1.5, 6),   title=(.84, 500)),     # a huge mask bleeding off the right edge, title lower
+           "title_hero":  dict(mask=(470, 20, .62, 8),   title=(1.04, 350)),     # the lockup bleeds wide, the mask shrinks to a corner accent
+           "mask_behind": dict(mask=(-100, 170, 1.25, -6), title=(.9, 430))}   # the mask sits BEHIND the title: the lockup overprints it
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
 KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
@@ -132,7 +138,7 @@ def _fit(text, size, max_w, weight=700):
 
 class Poster:
     """One poster under construction. Layers append in z-order; `box` keeps the declared bbox beside every element."""
-    def __init__(self, kind, content, canvas, style="plate", mask="asset", typo="editorial", mask_tilt=0, mask_scale=1.0):
+    def __init__(self, kind, content, canvas, style="plate", mask="asset", typo="editorial", mask_tilt=0, mask_scale=1.0, layout="classic"):
         validate_brief(kind, content, canvas)
         if style not in STYLES:
             raise ValueError(f"style must be one of {STYLES}, got {style!r}")
@@ -141,7 +147,14 @@ class Poster:
         if typo not in TYPOS:
             raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
-        self.mask_tilt, self.mask_scale = mask_tilt, mask_scale          # per-poster composition jitter: degrees, multiplier
+        if layout not in LAYOUTS:
+            raise ValueError(f"layout must be one of {tuple(LAYOUTS)}, got {layout!r}")
+        self.layout = layout
+        L = LAYOUTS[layout]
+        self.mask_dx, self.mask_dy, ms, mt = L.get("mask", (0, 0, 1.0, 0))
+        self.mask_tilt = mask_tilt or mt                                  # explicit kwargs win over the preset
+        self.mask_scale = mask_scale if mask_scale != 1.0 else ms
+        self.title_scale, self.title_yref = L.get("title", (1.0, 390))
         self.W, self.H = core.SIZES["feed" if canvas == "feed" else "story"]
         dh = self.H - BASE_H
         self.dy_top, self.dy_title, self.dy_info = round(dh * .15), round(dh * .62), dh
@@ -255,17 +268,26 @@ class Poster:
     FOIL = ("background:linear-gradient(180deg,#FFF6CF 0%,#F0C65A 34%,#A8721A 60%,#F7DC86 82%,#C48A22 100%);-webkit-background-clip:text;"
             "background-clip:text;-webkit-text-fill-color:transparent;color:transparent;")
 
+    def _title_for_layout(self):
+        ts, yr = self.title_scale, self.title_yref
+        shift = 0 if self.layout == "classic" else self._centre_shift(ts)
+        self.title(scale=ts, cx_shift=shift, y_ref=yr)
+        # where the lockup really ends and its notch sits, for the edition lines
+        self._tcx = S(30) + shift + S(580 * ts) + S(63 * ts)
+        self._tbottom = yr + 670 * ts
+
     def _announce_editorial(self):
-        self.base(); self.top_group(); self.title()
+        self.base(); self.top_group(); self._title_for_layout()
         if self.typo not in ("vertical", "minimal", "whisper"):
             self._edition_lines()
         getattr(self, "_info_" + self.typo)()
 
     def _edition_lines(self):
-        cx = S(673)
-        self.raw("sub1", "MASQUERADE SANGEET", cx, S(952) + self.dy_title, S(560), S(40),
+        cx = self._tcx
+        b = self._tbottom
+        self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
                  "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
-        self.raw("sub2", "Edition", cx, S(1008) + self.dy_title, S(260), S(60),
+        self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
                  f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
 
     def _day_rest(self):
@@ -374,7 +396,7 @@ class Poster:
         elif self.mask == "copper":
             # copper_mask.png content spans x160-1560, y215-1135 of a 1680x1278 asset; 0.55 ref-px per asset-px
             u = .55
-            self.img("mask_copper.png", S(370 - 160 * u), S(40 - 215 * u) + self.dy_top, S(1680 * u), z=6, tag="mask",
+            self.img("mask_copper.png", S(370 - 160 * u + self.mask_dx), S(40 - 215 * u + self.mask_dy) + self.dy_top, S(1680 * u), z=6, tag="mask",
                      extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));" + self._mask_xf())
         elif self.style == "stroke":
             # mask_stroked.png is the mask padded by 90px of red stroke on every side (scratchpad/make_mask_stroke.py)
@@ -382,7 +404,7 @@ class Poster:
             self.img("mask_stroked.png", S(415 - 190 * MK) - pad, S(-145) + self.dy_top - pad, round(mw * 2180 / 2000), z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.6));")
         else:
-            self.img("mask.png", S(415 - 190 * MK), S(-145) + self.dy_top, mw, z=6, tag="mask",
+            self.img("mask.png", S(415 - 190 * MK + self.mask_dx), S(-145 + self.mask_dy) + self.dy_top, mw, z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
         if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
             self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=5, tag="lights")   # z 5 < mask z 6: the mask is IN FRONT of the lights (user, 2026-10-13)

@@ -147,4 +147,17 @@ zs = lambda h, tag: int(_re.search(r'data-tag="%s"[^>]*z-index:(\d+)' % tag, h).
 ok(zs(feed, "mask") > zs(feed, "lights"), "the mask is IN FRONT of the string lights (user directive)")
 ok(zs(ph, "mask") > zs(ph, "lights"), "and in the photo direction too")
 
+# --- layout presets ------------------------------------------------------------------------------------------------------
+def layout_poster(lay):
+    q = dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", mask="copper", typo="editorial", layout=lay); q.build(); return q
+try:
+    dd.Poster("announce", ANN, "feed", layout="diagonal"); bad = False
+except ValueError:
+    bad = True
+ok(bad, "an unknown layout is refused")
+ok(all(layout_poster(l) for l in dd.LAYOUTS), "every layout preset builds")
+bx = lambda q, n: {e[0]: e for e in q.elements}[n]
+ok(bx(layout_poster("mask_behind"), "sub1")[2] != bx(layout_poster("classic"), "sub1")[2], "the edition lines follow the title's real bottom, not fixed coordinates")
+ok(dd.LAYOUTS["title_hero"]["title"][1] >= 340, "title_hero keeps the disco ball clear of the LIVE badge (y_ref >= 340)")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

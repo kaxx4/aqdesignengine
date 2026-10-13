@@ -1,6 +1,6 @@
 # DISCO DIWALI FORMAT (v1, 2026-10-13)
 
-The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (49 assertions). Operator quickstart is section 7.
+The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (53 assertions). Operator quickstart is section 7.
 
 Status: the 2026 announcement was recreated from its reference and accepted by the looking gate (`scratchpad/dd_announce.py`, v2). The module generalises it to five kinds, two canvases and three visual directions. Rules marked PROVEN were each caught by a render and fixed.
 
@@ -57,6 +57,9 @@ Measured on the reference (`compare.geometry`): full-bleed, coverage 0.539, the 
 
 ### Photo teasers (kinds `teaser_full`, `teaser_arch`, `teaser_trio`)
 Real event photos from `engine/assets/img/events/unsorted-2026-10-07/` (by NN prefix, e.g. `"03"`) in the branding: a full-bleed photo sunk into ink under the title, a gold-edged arch window, or three tilted print frames. All three work on feed and story. **Consent caveat: several photos show minors and none has a consent record. Check before any public post.**
+
+### Layout presets (`layout=` on `style="photo"` announce)
+`classic` (title centred, mask top right) · `mask_hero` (a huge mask bleeding off the right edge, title lower) · `title_hero` (the lockup bleeds wide, mask shrinks to a corner accent) · `mask_behind` (the mask sits BEHIND the title, which overprints it). The edition lines are placed relative to the lockup's real bottom, so every preset keeps the notch tuck. `mask_tilt=` and `mask_scale=` override a preset. Batches: `scratchpad/dd_variations.py` (12 posters across direction, type, photo, mask) and `scratchpad/dd_layouts.py` (8 posters across layout). JPEG samples are in `sample_outputs/disco_diwali/` (never commit the 2x PNGs: ~8 MB each).
 
 ## 6. Conflicts with CLAUDE.md and how they were resolved (precedence ladder, sec 2)
 - Ground, palette and fonts differ from the AQ house style. Resolved as a format exception, like TerraThon. The format wins inside `discodiwali.py` only.
