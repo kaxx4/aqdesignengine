@@ -283,4 +283,9 @@ ok(wb["title"] == prb["title"] and wb["mask"] == prb["mask"] and wb["badge"] == 
 ok(wb["status"][2] > prb["status"][2], "the info lines drop into the freed space")
 ok("LINK IN BIO" in visible_text(prh), "the Instagram poster keeps its link pill")
 
+# --- WhatsApp poster with the pill reading LINK BELOW (user, 2026-10-13) ---------------------------------------------------------------
+bq = dd.Poster("poster_ref", dict(PR, link="Link below"), "feed"); bh = bq.build(); bb = {e[0]: e for e in bq.elements}
+ok("LINK BELOW" in visible_text(bh) and "LINK IN BIO" not in visible_text(bh), "the pill reads LINK BELOW and not LINK IN BIO")
+ok(all(bb[k] == prb[k] for k in prb) and set(bb) == set(prb), "every element sits exactly where it does on the Instagram poster")
+
 print(f"\nALL {N} ASSERTIONS PASSED")
