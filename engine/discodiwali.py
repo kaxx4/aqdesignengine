@@ -60,11 +60,11 @@ REQUIRED = {
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
     "story_launch": ("edition", "status", "photo"),
     "wa_poster":    ("edition", "date", "time", "status", "photo"),
-    "wa_dp":        ("edition", "date"),
+    "wa_dp":        ("edition",),
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": (), "story_ref": ("note", "link"), "poster_ref": ("note", "link")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -698,26 +698,29 @@ class Poster:
         self._announce_editorial()
 
     def _wa_dp(self):
-        """A group display picture: 1080x1080, but WhatsApp crops it to a CIRCLE, so everything lives inside r~470 of the centre. Title, a small
-        mask, the date and the edition line. No LIVE badge: it would be cropped and unreadable at DP size."""
-        W, H = self.W, self.H
-        P = self.parts
+        """WhatsApp group DP in the approved design family (user, 2026-10-13: "rebuild the DP to match"). 1080x1080 shown as a CIRCLE r=540, so
+        the poster's elements are scaled down and centred: copper mask, ball-free title (tuck of the edition lines kept), white NeutralFace with
+        the black border, diya plate. No LIVE badge (cropped and unreadable at DP size) and no date unless one is supplied."""
+        W, H, P = self.W, self.H, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
         self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
-        P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 54%,rgba(0,0,0,.78),rgba(0,0,0,.35) 62%,rgba(0,0,0,0) 100%)"></div>')
-        # mask: content spans x160-1560 / y215-1135 of the 1680x1278 asset; scale .25 puts its content ~350px wide
-        # WhatsApp shows a CIRCLE of r=540 about the centre. Chord half-width at height y: sqrt(540^2 - (y-540)^2). The date, the widest
-        # line, sits at y~740 where the chord is ~1000 wide, so a 56px NeutralFace date (~650px) clears the edge with room.
-        k = .27
-        mc = (540, 251)                                  # mask content centre
-        self.img("mask_copper.png", round(mc[0] - 860 * k), round(mc[1] - 675 * k), round(1680 * k), z=6, tag="mask",
-                 extra="transform:rotate(-6deg);filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
-        self.box("mask", round(mc[0] - 700 * k), round(mc[1] - 460 * k), round(1400 * k), round(920 * k))
-        self.title(scale=.66, cx_shift=round((W - 1160 * .66 * .9) / 2 - S(30)), y_ref=412)
-        self.raw("date", self.c["date"], W // 2, 812, 700, 64,
-                 f"font-family:var(--e);font-weight:600;font-size:56px;letter-spacing:.04em;{self.FOIL}filter:drop-shadow(0 2px 1px rgba(0,0,0,.95)) drop-shadow(0 0 20px rgba(0,0,0,.75))")
-        self.raw("edition", self.c["edition"].upper(), W // 2, 884, 640, 30,
-                 f"font-family:var(--e);font-weight:600;font-size:21px;letter-spacing:.3em;text-indent:.3em;color:{self.GL}")
+        DY = 50                                           # centres the content's mass on the circle's centre
+        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x)
+        mx, my = 340, 170 + DY
+        self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
+                 extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+        self.box("mask", mx, my, 400, 263)
+        t = .466                                          # ball-free title: visible width 800, left 140
+        tx, ty = 140, 360 + DY
+        self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")
+        self.box("title", tx, ty, 800, 425)
+        r = t / .6034 * 1.15                              # the poster's edition lines at this scale, nudged up for DP-size legibility
+        self.raw("sub1", "MASQUERADE SANGEET", 540 + round(72 * t / .6034), ty + round(456 * t / .6034), round(520 * r), round(44 * r),
+                 f"font-family:var(--e);font-weight:600;font-size:{round(38 * r)}px")
+        self.raw("sub2", "Edition", 540 + round(72 * t / .6034), ty + round(501 * t / .6034), round(170 * r), round(40 * r),
+                 f"font-family:var(--e);font-weight:400;font-size:{round(37 * r)}px")
+        if self.c.get("date"):
+            self.raw("date", self.c["date"], 540, ty + 470, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info

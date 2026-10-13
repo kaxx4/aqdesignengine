@@ -11,7 +11,7 @@ Each assertion reproduces something that went wrong building the set (2026-10-13
 
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/test_discodiwali.py
 """
-import datetime, importlib.util, os, re, sys
+import math, datetime, importlib.util, os, re, sys
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENGINE = os.path.join(os.getcwd(), "engine")
@@ -287,5 +287,14 @@ ok("LINK IN BIO" in visible_text(prh), "the Instagram poster keeps its link pill
 bq = dd.Poster("poster_ref", dict(PR, link="Link below"), "feed"); bh = bq.build(); bb = {e[0]: e for e in bq.elements}
 ok("LINK BELOW" in visible_text(bh) and "LINK IN BIO" not in visible_text(bh), "the pill reads LINK BELOW and not LINK IN BIO")
 ok(all(bb[k] == prb[k] for k in prb) and set(bb) == set(prb), "every element sits exactly where it does on the Instagram poster")
+
+# --- the DP rebuilt in the approved design (user, 2026-10-13) ----------------------------------------------------------------------------
+dq = dd.Poster("wa_dp", dict(edition="Masquerade Sangeet Edition"), "square"); dh2 = dq.build(); dbx = {e[0]: e for e in dq.elements}
+ok(all(math.hypot(cx - 540, cy - 540) <= 540 for e in dq.elements for cx in (e[1], e[1] + e[3]) for cy in (e[2], e[2] + e[4])),
+   "EVERY declared box of the new DP (mask, title, both edition lines) lies inside the circular crop")
+ok("date" not in dbx and not any(w in visible_text(dh2) for w in ("NOVEMBER", "2026")), "the DP prints no date by default")
+ok(_nb in dh2 and _wb not in dh2, "the DP uses the ball-free title lockup")
+ok(_dp in dh2 and "var(--e)" not in dh2 and "var(--s)" not in dh2, "the DP sits on the diya plate with NeutralFace-only type")
+ok("LIVE" not in visible_text(dh2) and "badge" not in dbx, "the DP carries no LIVE badge")
 
 print(f"\nALL {N} ASSERTIONS PASSED")

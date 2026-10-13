@@ -33,7 +33,7 @@ async def main():
                                    style="photo", mask=mk, typo=ty, layout=lay)
         await dd.render_poster("wa_poster", dict(FACTS, photo="05"), "feed", os.path.join(out, "whatsapp_poster.png"),
                                style="photo", mask="copper", typo="foil")
-        await dd.render_poster("wa_dp", dict(edition=FACTS["edition"], date=FACTS["date"]), "square", os.path.join(out, "whatsapp_dp.png"),
+        await dd.render_poster("wa_dp", dict(edition=FACTS["edition"]), "square", os.path.join(out, "whatsapp_dp.png"),
                                style="plate", mask="copper")
     from PIL import Image, ImageDraw
     dp = Image.open(os.path.join(out, "whatsapp_dp.png")).convert("RGB")
