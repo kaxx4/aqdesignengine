@@ -330,9 +330,10 @@ class Poster:
         self.raw("time", f'{rule}<span style="margin:0 {S(26)}px">{c["time"].upper()}</span>{rule}', W // 2, S(1232) + di, S(760), S(36),
                  f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.22em;color:{GL}")
         self.raw("status", c["status"].upper(), W // 2, S(1290) + di, S(700), S(40),
-                 f"font-family:var(--e);font-weight:600;font-size:{S(32)}px;letter-spacing:.2em")
+                 f"font-family:var(--e);font-weight:600;font-size:{S(40) if self.neutral_only else S(32)}px;letter-spacing:.2em")
         if c.get("note"):
-            self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
+            self.raw("note", c["note"], W // 2, S(1340) + di, S(420), S(46),
+                     f"font-family:var(--s);font-style:italic;font-size:{S(38) if not self.neutral_only else S(28)}px;color:{GL}")
         self.pill("cta", c.get("cta", ""), S(1412) + di, h=S(80))
 
     def _info_foil(self):
@@ -344,6 +345,13 @@ class Poster:
                          f'<span style="display:inline-block;margin-left:{S(30)}px;text-align:left;line-height:1.3;font-family:var(--e);font-weight:700;'
                          f'font-size:{S(46)}px;letter-spacing:.26em;vertical-align:{S(60)}px">{month}<br><span style="color:{GL}">{year}</span></span>',
                  W // 2, S(1148) + di, S(760), S(210))
+        if self.neutral_only:      # launch pack: time small, STATUS the big line, note smaller (the reference poster's hierarchy)
+            self.raw("time", c["time"].upper(), W // 2, S(1290) + di, S(700), S(34), f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.18em;color:{GL}")
+            self.raw("status", c["status"], W // 2, S(1340) + di, S(900), S(60), f"font-family:var(--e);font-weight:600;font-size:{S(46)}px")
+            if c.get("note"):
+                self.raw("note", c["note"], W // 2, S(1388) + di, S(520), S(40), f"font-family:var(--e);font-weight:600;font-size:{S(28)}px")
+            self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
+            return
         self.raw("time", c["time"].upper() + f'&nbsp;&nbsp;·&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1262) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
         self.raw("status", c.get("note") or "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
@@ -359,6 +367,13 @@ class Poster:
         self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;letter-spacing:.02em">{month}</span><br>'
                           f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
                  S(838), S(1172) + di, S(440), S(200), "line-height:1.02;text-align:left")
+        if self.neutral_only:      # launch pack: time small, STATUS the big line, note smaller
+            self.raw("time", c["time"].upper(), W // 2, S(1290) + di, S(700), S(34), f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.18em;color:{GL}")
+            self.raw("status", c["status"], W // 2, S(1338) + di, S(900), S(60), f"font-family:var(--e);font-weight:600;font-size:{S(46)}px")
+            if c.get("note"):
+                self.raw("note", c["note"], W // 2, S(1384) + di, S(520), S(40), f"font-family:var(--e);font-weight:600;font-size:{S(28)}px")
+            self.pill("cta", c.get("cta", ""), S(1414) + di, h=S(76))
+            return
         self.raw("time", f'{c["time"].upper()}&nbsp;&nbsp;/&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1318) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
         if c.get("note"):
@@ -478,7 +493,12 @@ class Poster:
     # and never thins the letters, at any type size.
     WHITE_BORDER_CSS = ("".join(f'[data-tag="{t}"],[data-tag="{t}"] *,' for t in TEXT_TAGS).rstrip(",") +
                         "{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;-webkit-background-clip:border-box!important;"
-                        "background-clip:border-box!important;-webkit-text-stroke:4px #000!important;paint-order:stroke fill!important}")
+                        "background-clip:border-box!important;-webkit-text-stroke:4px #000!important;paint-order:stroke fill!important;"
+                        # NeutralFace ONLY (user, 2026-10-13): forced on every text element so no inline face can survive, the two cuts it ships
+                        # (Bold for everything, Regular for the one 'EDITION' word, as in the reference poster), natural spacing, no italics
+                        "font-family:var(--d)!important;font-weight:700!important;font-style:normal!important;letter-spacing:.01em!important;"
+                        "text-indent:0!important;text-transform:uppercase!important}"
+                        '[data-tag="sub2"],[data-tag="sub2"] *{font-weight:400!important}')
 
     @staticmethod
     def neutralise(html):
@@ -677,7 +697,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("date", "time"),   # foil: the numeral's line box is taller than its glyphs; ink clears the time line (checked by eye) ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
