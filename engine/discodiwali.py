@@ -39,7 +39,7 @@ K = 0.9                      # the reference is 1200x1500; every reference coord
 S = lambda v: round(v * K)
 BASE_H = 1350
 MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
-TYPOS = ("editorial", "foil", "outline", "vertical", "stack")   # type treatments for style="photo" announce
+TYPOS = ("editorial", "foil", "outline", "vertical", "stack", "minimal", "whisper")   # type treatments for style="photo" announce
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
 KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
@@ -224,10 +224,12 @@ class Poster:
         gentle dim under the type. The raw tiled pattern is NOT used here: it is for edge cases only (user, 2026-10-13)."""
         W, H, P = self.W, self.H, self.parts
         ph = self.c.get("photo", "03")
+        # TEXT BUDGET RULE (user, 2026-10-13): the more of the canvas a photo owns, the less copy it carries. The sparse typos let more photo through.
+        sparse = self.typo in ("minimal", "whisper")
         P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
-                 f'filter:contrast(1.12) saturate(.9) brightness(.95)">')
+                 f'filter:contrast(1.12) saturate(.95) brightness({1.1 if sparse else .95})">')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#0A1E7A,#050A33);'
-                 f'mix-blend-mode:multiply;opacity:.6"></div>')
+                 f'mix-blend-mode:multiply;opacity:{.42 if sparse else .6}"></div>')
         plate = "bg_diya_portrait.jpg"
         ex = "mix-blend-mode:screen;"
         if H <= BASE_H:
@@ -236,8 +238,10 @@ class Poster:
             self.img(plate, 0, 0, W, BASE_H, z=3, tag="plate", extra=ex)
             self.img(plate, 0, H - BASE_H, W, BASE_H, z=3, tag="plate",
                      extra=ex + "transform:scaleY(-1);-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);mask-image:linear-gradient(to top,transparent 0%,#000 45%);")
+        if sparse:   # a bottom shade so the one line of copy that remains still reads on a bright photo
+            P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0) 58%,rgba(0,0,0,.72) 100%)"></div>')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(ellipse 66% 40% at 50% 66%,'
-                 f'rgba(0,0,0,.62),rgba(0,0,0,.3) 65%,rgba(0,0,0,0) 100%)"></div>')
+                 f'rgba(0,0,0,{.26 if sparse else .62}),rgba(0,0,0,{.1 if sparse else .3}) 65%,rgba(0,0,0,0) 100%)"></div>')
 
     def raw(self, label, html, cx, cy, w, h, css="", z=12):
         """A centred block of arbitrary markup with its declared box. For the editorial type, where one line mixes faces."""
@@ -252,7 +256,7 @@ class Poster:
 
     def _announce_editorial(self):
         self.base(); self.top_group(); self.title()
-        if self.typo != "vertical":
+        if self.typo not in ("vertical", "minimal", "whisper"):
             self._edition_lines()
         getattr(self, "_info_" + self.typo)()
 
@@ -328,6 +332,19 @@ class Poster:
                  f"font-family:var(--e);font-weight:600;font-size:{S(30)}px;letter-spacing:.24em")
         self.pill("cta", c["cta"], S(1408) + di, h=S(80))
 
+    def _info_minimal(self):
+        """Three things only: the title, ONE foil date line, the CTA. The photo gets everything else."""
+        c, di, W = self.c, self.dy_info, self.W
+        self.raw("date", c["date"], W // 2, S(1262) + di, S(900), S(110),
+                 f"font-family:var(--s);font-style:italic;font-size:{S(96)}px;{self.FOIL}filter:drop-shadow(0 2px 1px rgba(0,0,0,.95)) drop-shadow(0 0 22px rgba(0,0,0,.75))")
+        self.pill("cta", c["cta"], S(1404) + di, h=S(76))
+
+    def _info_whisper(self):
+        """The title and one mono line. No pill, no edition, no time: the date and where to go, set small."""
+        c, di, W = self.c, self.dy_info, self.W
+        self.raw("date", f'{c["date"].upper()}&nbsp;&nbsp;·&nbsp;&nbsp;{c["cta"].upper()}', W // 2, S(1410) + di, S(900), S(36),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.24em;color:{self.GL};text-shadow:0 2px 14px rgba(0,0,0,.8)")
+
     def _info_stack(self):
         """A heavy NeutralFace line, the numeral solid and the month hollow, over one mono meta line and a serif italic kicker."""
         c, di, W, GL = self.c, self.dy_info, self.W, self.GL
@@ -364,7 +381,7 @@ class Poster:
             self.img("mask.png", S(415 - 190 * MK), S(-145) + self.dy_top, mw, z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));")
         if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
-            self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=7, tag="lights")
+            self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=5, tag="lights")   # z 5 < mask z 6: the mask is IN FRONT of the lights (user, 2026-10-13)
         self.badge()
 
     def badge(self):

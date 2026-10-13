@@ -141,4 +141,10 @@ ok("-webkit-text-stroke:3px" in photo_html("outline") and "transparent" in photo
 ok("rotate(-90deg)" in photo_html("vertical"), "vertical runs its rail type up the edges")
 ok(all(len(photo_html(t)) > 1000 for t in dd.TYPOS), "every typo treatment builds")
 
+# --- stacking: the mask is in front of the string lights ----------------------------------------------------------------
+import re as _re
+zs = lambda h, tag: int(_re.search(r'data-tag="%s"[^>]*z-index:(\d+)' % tag, h).group(1))
+ok(zs(feed, "mask") > zs(feed, "lights"), "the mask is IN FRONT of the string lights (user directive)")
+ok(zs(ph, "mask") > zs(ph, "lights"), "and in the photo direction too")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

@@ -1,6 +1,6 @@
 # DISCO DIWALI FORMAT (v1, 2026-10-13)
 
-The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (34 assertions). Operator quickstart is section 7.
+The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (49 assertions). Operator quickstart is section 7.
 
 Status: the 2026 announcement was recreated from its reference and accepted by the looking gate (`scratchpad/dd_announce.py`, v2). The module generalises it to five kinds, two canvases and three visual directions. Rules marked PROVEN were each caught by a render and fixed.
 
@@ -29,7 +29,7 @@ References: `training_samples/disco_diwali/ref_announce_2026.png`, `ref_announce
 Still wanted: the navy diya LANDSCAPE plate (shown in chat, never reached the disk).
 
 ## 3. The skeleton (z-order, back to front)
-ground black -> plate (corner clusters, centre left black on purpose) -> [carpet] -> mask -> string lights -> LIVE badge -> title lockup -> type stack or hero numeral -> [sold-out banner] -> gold sparkles (screen blend) -> film grain (screen blend).
+ground black -> plate (corner clusters, centre left black on purpose) -> [carpet] -> string lights -> mask (IN FRONT of the lights) -> LIVE badge -> title lockup -> type stack or hero numeral -> [sold-out banner] -> gold sparkles (screen blend) -> film grain (screen blend).
 Measured on the reference (`compare.geometry`): full-bleed, coverage 0.539, the quiet band sits between the title and the date block.
 
 ## 4. Rules
@@ -42,7 +42,9 @@ Measured on the reference (`compare.geometry`): full-bleed, coverage 0.539, the 
 7. **A declared box must be as tall as the glyphs.** A numeral boxed at 74% of its drawn height "collided" with its label and hid a real 4px overlap. PROVEN, asserted.
 8. **A taller canvas stacks two plates**, the second flipped and faded in, because cropping a 4:5 plate to 9:16 leaves a dead black middle. Extra height goes to TOP 15%, TITLE 62%, INFO 100%, so the CTA stays bottom-anchored. PROVEN.
 9. **The title, mask and type never touch.** Intentional tucks (subtitle into the title's left notch) are declared as collision-ignore pairs, filtered to the labels that exist in that kind.
-10. **Nothing is invented.** A price, venue or lineup is printed only if a field exists and the caller supplies it. A missing or unknown field raises with the field named.
+10. **The mask is always in front of the string lights** (user, 2026-10-13). Lights sit at z 5, mask at z 6; asserted in the self-test.
+11. **Text budget: the more of the canvas a photo owns, the less copy it carries.** `typo="minimal"` keeps the title, one foil date line and the CTA; `typo="whisper"` keeps the title and one mono line. Both lighten the dim layer so more photo shows, and add a bottom shade so the remaining line still reads. Use them whenever the photo is the full background.
+12. **Nothing is invented.** A price, venue or lineup is printed only if a field exists and the caller supplies it. A missing or unknown field raises with the field named.
 
 ## 5. Visual directions (the `style` and `mask` options)
 | Direction | Call | Character |
@@ -50,6 +52,7 @@ Measured on the reference (`compare.geometry`): full-bleed, coverage 0.539, the 
 | Silver and sequins | `style="plate"`, `mask="asset"` | the reference. Busy, jewelled, string lights on |
 | **Copper and diya** | `style="diya"`, `mask="copper"` | **the classier direction (user, 2026-10-13).** Navy and gold lotus-diya corners, copper mask, no string lights. Quiet and warm |
 | Stroked mask, plain ink | `style="stroke"`, `mask="asset"` | silver mask with a red speckled die-cut stroke on a plain black ground; the type does all the work |
+| Photo + soft plate | `style="photo"`, `mask="copper"`, `typo=` editorial / foil / outline / vertical / stack / minimal / whisper | a real photo behind the SCREEN-blended soft diya plate; seven type treatments. Foil and outline are the strongest |
 | Red satin mask | `style="stroke"`, `mask="red"` | a mask drawn from scratch. Works, but reads flatter than the photographed masks. Fallback only |
 
 ### Photo teasers (kinds `teaser_full`, `teaser_arch`, `teaser_trio`)
