@@ -220,4 +220,21 @@ for lay_, ty_ in (("classic", "foil"), ("mask_hero", "outline"), ("mask_behind",
                for e in nd.elements if e[0] not in ("plate", "photo", "mask", "title")), f"no-date story ({lay_}/{ty_}): the link-sticker zone is still clear")
 ok("10TH NOVEMBER" in visible_text(dd.Poster("story_launch", LF, "story", typo="foil").build()) or "NOVEMBER" in visible_text(dd.Poster("story_launch", LF, "story", typo="foil").build()), "a story given a date still prints it (the date is optional, not deleted)")
 
+# --- ONE mask placement for every story (user, 2026-10-13: story_01 is the reference) --------------------------------------------
+import re as _re3
+def mask_geom(h):
+    st = _re3.search(r'<img src="[^"]*" data-tag="mask" style="([^"]*)"', h).group(1)
+    return tuple(_re3.search(k + r":(-?\d+)px", st).group(1) for k in ("left", "top", "width")), ("transform" in st)
+STORY_REF = mask_geom(dd.Poster("story_launch", NDF | {"photo": "03"}, "story", style="photo", mask="copper", typo="foil", layout="classic").build())
+ok(STORY_REF == (("254", "60", "832"), False), "story_01's reference mask placement is left 254 / top 60 / width 832, untilted")
+for lay_ in dd.LAYOUTS:
+    for mk_ in ("copper", "asset"):
+        g = mask_geom(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", style="photo", mask=mk_, typo="outline", layout=lay_, mask_tilt=9, mask_scale=1.4).build())
+        if mk_ == "copper":
+            ok(g == STORY_REF, f"a story asking for layout={lay_}, tilt 9, scale 1.4 with the copper mask still gets story_01's placement")
+        else:
+            ok(g[0] == ("254", "60", "832") and not g[1], f"...and so does the silver mask (layout={lay_}): fitted to the same footprint")
+tt = lambda lay_: [e for e in (lambda q: (q.build(), q.elements)[1])(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", style="photo", typo="foil", layout=lay_)) if e[0] == "title"]
+ok(tt("mask_hero") == tt("classic") == tt("mask_behind"), "the title sits in the same place on every story too (the presets moved mask and title together)")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

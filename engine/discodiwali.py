@@ -154,6 +154,10 @@ class Poster:
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
         if kind in ("story_launch", "wa_poster"):
             style = self.style = "photo"                      # these kinds ARE the photo direction
+        if kind == "story_launch":
+            # ONE mask placement for every story (user, 2026-10-13: "use story_01 as the reference"): the classic position, no tilt, no scale.
+            # Layout presets and mask_tilt/mask_scale are ignored here, because the presets move the mask and the title together.
+            layout, mask_tilt, mask_scale = "classic", 0, 1.0
         self.type_scale = 1.14 if kind == "story_launch" else 1.0      # a story is read at a third of the size: its type is scaled up
         self.neutral_only = kind in LAUNCH_KINDS                      # launch pack: ALL type is NeutralFace (user, 2026-10-13)
         self.no_pill = kind in ("story_launch", "wa_poster")   # no CTA pill: a link sticker goes there (story) / there is no link (WhatsApp)
@@ -449,8 +453,13 @@ class Poster:
             self.img("mask_stroked.png", S(415 - 190 * MK) - pad, S(-145) + self.dy_top - pad, round(mw * 2180 / 2000), z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.6));")
         else:
-            self.img("mask.png", S(415 - 190 * MK + self.mask_dx), S(-145 + self.mask_dy) + self.dy_top, mw, z=6, tag="mask",
-                     extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
+            if self.kind == "story_launch":
+                # fitted so the SILVER mask's visible outline lands on the COPPER mask's story_01 footprint (measured from both alpha channels:
+                # copper outline 332,164 to 1028,622 on the 1080 canvas; silver at left 254, top 60, width 832 reproduces it within 3px of height)
+                self.img("mask.png", 254, 60, 832, z=6, tag="mask", extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+            else:
+                self.img("mask.png", S(415 - 190 * MK + self.mask_dx), S(-145 + self.mask_dy) + self.dy_top, mw, z=6, tag="mask",
+                         extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
         if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
             self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=5, tag="lights")   # z 5 < mask z 6: the mask is IN FRONT of the lights (user, 2026-10-13)
         self.badge()
