@@ -61,3 +61,6 @@ engine/assets/sponsorship/
 training_samples/sponsorship_deck/
 scratchpad/sponsorship_private/
 out/decks/
+# Rever marketing deck (2026-10-13): page rasters and crops cut from the two exported PDFs (children, partner logos, a phone number).
+# Regenerate with scratchpad/rever_marketing_assets.py from the two PDFs placed under training_samples/sponsorship_deck/.
+engine/assets/rever_marketing/

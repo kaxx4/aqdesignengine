@@ -822,6 +822,8 @@ brand (not AQ): weekly three-post planner, bento templates, copy and layout gate
 B path and shares no code with `engine/`. Read `addons/shikshaq/README_ADDON.md` and its `brain/BRAIN.md`
 before touching it. Its source of truth lives outside this repo.
 
+**Addon: Rever marketing deck (2026-10-13).** `scratchpad/gen_rever_marketing_deck.py` builds the 14-slide TerraThon-look marketing plan for Rever (Exclusive Food and Location Partner) from a `FACTS` dict, re-using `gen_rever_deck.py`'s Slide class and `rever_marketing_stickers.py`. Photos are cropped from the two source PDFs by `rever_marketing_assets.py` into git-ignored `engine/assets/rever_marketing/`. Read `brain/REVER_MARKETING_DECK.md` first: it lists where the two source decks disagree on figures. Companion plate: `brain/companion/MIRRORED_NIGHT_PHILOSOPHY.md` + `mirrored_night.{png,pdf}`.
+
 ## 12. CURRENT STATE / WHAT'S PENDING (honest — full detail in `brain/ENGINE_STATE.md`)
 - Workflow A: 3 archetypes fully self-correcting (`number_hero`, `radial_orbit`, `giant_type`);
   `stacked_zones` registered. Pending: 5 more (`diagonal_cascade`, `off_frame_bleed`,
