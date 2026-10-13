@@ -132,7 +132,7 @@ def _fit(text, size, max_w, weight=700):
 
 class Poster:
     """One poster under construction. Layers append in z-order; `box` keeps the declared bbox beside every element."""
-    def __init__(self, kind, content, canvas, style="plate", mask="asset", typo="editorial"):
+    def __init__(self, kind, content, canvas, style="plate", mask="asset", typo="editorial", mask_tilt=0, mask_scale=1.0):
         validate_brief(kind, content, canvas)
         if style not in STYLES:
             raise ValueError(f"style must be one of {STYLES}, got {style!r}")
@@ -141,6 +141,7 @@ class Poster:
         if typo not in TYPOS:
             raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
+        self.mask_tilt, self.mask_scale = mask_tilt, mask_scale          # per-poster composition jitter: degrees, multiplier
         self.W, self.H = core.SIZES["feed" if canvas == "feed" else "story"]
         dh = self.H - BASE_H
         self.dy_top, self.dy_title, self.dy_info = round(dh * .15), round(dh * .62), dh
@@ -359,6 +360,9 @@ class Poster:
         self.raw("status", c["status"], W // 2, S(1326) + di, S(640), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(54)}px")
         self.pill("cta", c["cta"], S(1420) + di, h=S(76))
 
+    def _mask_xf(self):
+        return f"transform:rotate({self.mask_tilt}deg) scale({self.mask_scale});transform-origin:60% 40%;" if (self.mask_tilt or self.mask_scale != 1.0) else ""
+
     def top_group(self):
         MK = .48
         mw = S(2000 * MK)
@@ -371,7 +375,7 @@ class Poster:
             # copper_mask.png content spans x160-1560, y215-1135 of a 1680x1278 asset; 0.55 ref-px per asset-px
             u = .55
             self.img("mask_copper.png", S(370 - 160 * u), S(40 - 215 * u) + self.dy_top, S(1680 * u), z=6, tag="mask",
-                     extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+                     extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));" + self._mask_xf())
         elif self.style == "stroke":
             # mask_stroked.png is the mask padded by 90px of red stroke on every side (scratchpad/make_mask_stroke.py)
             pad = round(90 * MK * K)
@@ -379,7 +383,7 @@ class Poster:
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.6));")
         else:
             self.img("mask.png", S(415 - 190 * MK), S(-145) + self.dy_top, mw, z=6, tag="mask",
-                     extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));")
+                     extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
         if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
             self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=5, tag="lights")   # z 5 < mask z 6: the mask is IN FRONT of the lights (user, 2026-10-13)
         self.badge()
@@ -551,9 +555,9 @@ class Poster:
         self.line("thanks", c["thanks"], S(1462) + di, S(36), max_w=self.W - 2 * 60)
 
 
-async def render_poster(kind, content, canvas, out_png, style="plate", mask="asset", typo="editorial"):
+async def render_poster(kind, content, canvas, out_png, style="plate", mask="asset", typo="editorial", **opts):
     """Validate, build and render one poster through the full gate stack. Returns the output path."""
-    p = Poster(kind, content, canvas, style, mask, typo)
+    p = Poster(kind, content, canvas, style, mask, typo, **opts)
     html = p.build()
     os.makedirs(os.path.dirname(out_png), exist_ok=True)
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
