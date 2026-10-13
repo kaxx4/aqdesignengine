@@ -297,4 +297,12 @@ ok(_nb in dh2 and _wb not in dh2, "the DP uses the ball-free title lockup")
 ok(_dp in dh2 and "var(--e)" not in dh2 and "var(--s)" not in dh2, "the DP sits on the diya plate with NeutralFace-only type")
 ok("LIVE" not in visible_text(dh2) and "badge" not in dbx, "the DP carries no LIVE badge")
 
+# --- bulk WhatsApp posters: poster_ref + photo (user, 2026-10-13) -------------------------------------------------------------------------
+phq = dd.Poster("poster_ref", dict(PR, link="Link below", photo="03"), "feed"); phh = phq.build(); phb = {e[0]: e for e in phq.elements}
+ok(all(phb[k] == prb[k] for k in prb) and set(phb) == set(prb), "a photo poster has every element exactly where the diya-plate poster has it")
+ok('data-tag="photo"' in phh and _dp not in phh, "the photo replaces the diya plate")
+ok("LINK BELOW" in visible_text(phh) and not any(w in visible_text(phh) for w in ("NOVEMBER", "2026", "4:30")), "pill reads LINK BELOW; no date or time")
+ok(dd.photo_uri("03") in phh and dd.photo_uri("05") not in phh, "the requested photo, and only it, is embedded")
+ok("var(--e)" not in phh and "var(--s)" not in phh, "NeutralFace-only type on photo posters")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

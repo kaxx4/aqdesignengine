@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -606,7 +606,14 @@ class Poster:
         status and note at x 540, link pill 316..766 x 1118..1221. The lights are fitted to the reference's bulbs. No disco ball, no date/time."""
         c, W, P = self.c, self.W, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
-        self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
+        if c.get("photo"):
+            # photo variant (bulk WhatsApp posters): a real event photo edge to edge, graded exactly like story_ref, in place of the diya plate
+            P.append(f'<img data-tag="photo" src="{photo_uri(c["photo"])}" style="position:absolute;inset:0;width:{W}px;height:{self.H}px;object-fit:cover;'
+                     f'z-index:1;filter:contrast(1.08) saturate(1.0) brightness(.92)">')
+            P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(8,6,30,.55) 0%,'
+                     'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
+        else:
+            self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
         self.img("string_lights.png", 160, -53, 1045, z=5, tag="lights")
         k = .4925                                         # copper mask: visible outline 343..1035 x 108..560
         self.img("mask_copper.png", round(343 - 157 * k), round(108 - 211 * k), round(1680 * k), z=6, tag="mask",
