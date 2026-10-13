@@ -237,4 +237,12 @@ for lay_ in dd.LAYOUTS:
 tt = lambda lay_: [e for e in (lambda q: (q.build(), q.elements)[1])(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", style="photo", typo="foil", layout=lay_)) if e[0] == "title"]
 ok(tt("mask_hero") == tt("classic") == tt("mask_behind"), "the title sits in the same place on every story too (the presets moved mask and title together)")
 
+# --- "MASQUERADE SANGEET" is a real line of type on the launch pack (user, 2026-10-13) ---------------------------------------------
+import re as _re4
+def sub1_px(h):
+    m = _re4.search(r'data-tag="sub1"[^>]*font-size:(\d+)px', h)
+    return int(m.group(1))
+ok(sub1_px(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", typo="foil").build()) >= 40, "launch-pack 'MASQUERADE SANGEET' is at least 40px (it was 23px)")
+ok(sub1_px(dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", typo="foil").build()) < 30, "the other kinds keep the small caption size (the change is scoped to the launch pack)")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

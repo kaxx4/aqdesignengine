@@ -311,10 +311,14 @@ class Poster:
     def _edition_lines(self):
         cx = self._tcx
         b = self._tbottom
-        self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
-                 "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
+        if self.neutral_only:                        # launch pack: the edition name is a real line of type, not a caption (user, 2026-10-13)
+            self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 118) + self.dy_title, S(640), S(52),
+                     "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(46))
+        else:
+            self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
+                     "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
         if self.neutral_only:                        # NeutralFace is an uppercase face: a small tracked gold EDITION, not a 58px serif word
-            self.raw("sub2", "Edition", cx, S(b - 58) + self.dy_title, S(210), S(34),
+            self.raw("sub2", "Edition", cx, S(b - 50) + self.dy_title, S(210), S(34),
                      f"font-family:var(--e);font-weight:600;font-size:{S(28)}px;letter-spacing:.42em;text-indent:.42em;color:{self.GL}")
         else:
             self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
