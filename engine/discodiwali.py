@@ -18,7 +18,7 @@ Rules (all from the reference, see DISCO_DIWALI.md sec 4; precedence: the format
   R6  the red carpet ALWAYS fades into black toward its narrow end (user directive, 2026-10-13); it is never a hard-edged slab.
   R5  every kind validates its brief and RAISES with the field named (the dispatch.py contract).
 
-Kinds: announce | countdown | tickets_open | sold_out | save_the_date.      Canvases: feed (1080x1350) | story (1080x1920).
+Kinds: announce | countdown | tickets_open | sold_out | save_the_date | teaser_full | teaser_arch | teaser_trio (photo teasers).      Canvases: feed (1080x1350) | story (1080x1920).
 
 CLI:   PYTHONIOENCODING=utf-8 python engine/discodiwali.py            -> renders the demo set to out/discodiwali/
 """
@@ -38,17 +38,20 @@ OFFWHITE, GOLD, GROUND = "#F2F2F2", "#C9971C", "#000000"
 K = 0.9                      # the reference is 1200x1500; every reference coordinate scales by this onto 1080
 S = lambda v: round(v * K)
 BASE_H = 1350
-MASKS = ("asset", "red")      # asset: the supplied jewelled mask. red: the drawn red satin mask (mask_red.svg)
-STYLES = ("plate", "stroke")   # plate: beaded celestial corners (the reference). stroke: plain ink ground, red-stroked mask
-KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date")
+MASKS = ("asset", "copper", "red")      # asset: supplied silver mask. copper: supplied copper mask (classier colourway). red: drawn red satin mask
+STYLES = ("plate", "diya", "stroke")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask
+KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
     "countdown":    ("edition", "date", "days", "cta"),
     "tickets_open": ("edition", "headline", "cta"),
     "sold_out":     ("edition", "date", "thanks"),
     "save_the_date": ("edition", "day", "month", "year", "time", "cta"),
+    "teaser_full":  ("edition", "date", "line", "photo", "cta"),
+    "teaser_arch":  ("edition", "date", "line", "photo", "cta"),
+    "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
 }
-OPTIONAL = {"announce": ("note",), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": ()}
+OPTIONAL = {"announce": ("note",), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
 
 _cache = {}
 def uri(name):
@@ -56,6 +59,33 @@ def uri(name):
         mime = "image/png" if name.endswith(".png") else "image/svg+xml" if name.endswith(".svg") else "image/jpeg"
         _cache[name] = f"data:{mime};base64," + base64.b64encode(open(ASSETS + name, "rb").read()).decode()
     return _cache[name]
+
+PHOTO_DIR = os.path.join(ROOT, "engine", "assets", "img", "events", "unsorted-2026-10-07")
+_photo_cache = {}
+def photo_path(ref):
+    """A real event photo, by file name or by its NN_ prefix (e.g. "03"). Raises if it is not in the library."""
+    if os.path.isfile(ref):
+        return ref
+    cand = os.path.join(PHOTO_DIR, ref)
+    if os.path.isfile(cand):
+        return cand
+    import glob
+    hits = sorted(glob.glob(os.path.join(PHOTO_DIR, f"{ref}_*.jpg")))
+    if len(hits) == 1:
+        return hits[0]
+    raise ValueError(f"photo {ref!r} is not in {PHOTO_DIR} (give a file name or a unique NN prefix)")
+
+def photo_uri(ref, max_px=1500):
+    """Embed a photo downscaled to max_px on its long side: the library holds 3024x4032 originals."""
+    path = photo_path(ref)
+    if path not in _photo_cache:
+        import io
+        from PIL import Image
+        im = Image.open(path).convert("RGB")
+        im.thumbnail((max_px, max_px))
+        buf = io.BytesIO(); im.save(buf, "JPEG", quality=86)
+        _photo_cache[path] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    return _photo_cache[path]
 
 def days_to_go(date_iso, today=None):
     """Whole days from today to an ISO date. Derived from the supplied date, so it is a fact, not an invention."""
@@ -73,6 +103,13 @@ def validate_brief(kind, content, canvas):
     extra = set(content) - set(REQUIRED[kind]) - set(OPTIONAL[kind])
     if extra:
         raise ValueError(f"{kind}: unknown field(s) {sorted(extra)}; allowed {REQUIRED[kind] + OPTIONAL[kind]}")
+    if kind in ("teaser_full", "teaser_arch"):
+        photo_path(content["photo"])
+    if kind == "teaser_trio":
+        if not isinstance(content["photos"], (list, tuple)) or len(content["photos"]) != 3:
+            raise ValueError("teaser_trio: 'photos' must be a list of exactly 3 photos")
+        for ph in content["photos"]:
+            photo_path(ph)
     if kind == "countdown" and not str(content["days"]).isdigit():
         raise ValueError("countdown: 'days' must be a whole number (use days_to_go(iso_date))")
 
@@ -133,15 +170,16 @@ class Poster:
     def base(self):
         W, H = self.W, self.H
         self.parts.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
-        if self.style == "stroke":
+        if self.style == "stroke" or self.kind == "teaser_full":
             return                          # no sequin plate: the ground is plain ink, sparkles and grain still lay over it
+        plate = "bg_diya_portrait.jpg" if self.style == "diya" else "bg_beaded_portrait.jpg"
         if H <= BASE_H:
-            self.img("bg_beaded_portrait.jpg", 0, 0, W, H, z=1, tag="plate", extra="object-fit:cover;")
+            self.img(plate, 0, 0, W, H, z=1, tag="plate", extra="object-fit:cover;")
         else:
             # Taller than the plate's 4:5: cropping it to 9:16 loses the corner clusters and leaves a dead black middle.
             # Stack TWO plates instead, the second flipped and faded in from above, so all four corners carry beading.
-            self.img("bg_beaded_portrait.jpg", 0, 0, W, BASE_H, z=1, tag="plate")
-            self.img("bg_beaded_portrait.jpg", 0, H - BASE_H, W, BASE_H, z=1, tag="plate",
+            self.img(plate, 0, 0, W, BASE_H, z=1, tag="plate")
+            self.img(plate, 0, H - BASE_H, W, BASE_H, z=1, tag="plate",
                      extra="transform:scaleY(-1);-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);"
                            "mask-image:linear-gradient(to top,transparent 0%,#000 45%);")
 
@@ -153,6 +191,11 @@ class Poster:
             u = .87
             self.img("mask_red.svg", S(415 - 40 * u), S(-150) + self.dy_top, S(1260 * u), z=6, tag="mask",
                      extra="transform:rotate(-7deg);transform-origin:40% 55%;filter:drop-shadow(0 8px 24px rgba(0,0,0,.6));")
+        elif self.mask == "copper":
+            # copper_mask.png content spans x160-1560, y215-1135 of a 1680x1278 asset; 0.55 ref-px per asset-px
+            u = .55
+            self.img("mask_copper.png", S(370 - 160 * u), S(40 - 215 * u) + self.dy_top, S(1680 * u), z=6, tag="mask",
+                     extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
         elif self.style == "stroke":
             # mask_stroked.png is the mask padded by 90px of red stroke on every side (scratchpad/make_mask_stroke.py)
             pad = round(90 * MK * K)
@@ -161,18 +204,22 @@ class Poster:
         else:
             self.img("mask.png", S(415 - 190 * MK), S(-145) + self.dy_top, mw, z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));")
-        self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=7, tag="lights")
+        if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
+            self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=7, tag="lights")
+        self.badge()
+
+    def badge(self):
         bw = S(293)
         self.img("live_badge.png", S(45), S(48) + self.dy_top, bw, z=8, tag="badge")
         self.box("badge", S(45), S(48) + self.dy_top, bw, round(bw * 1005 / 1061))
 
-    def title(self, scale=1.0, cx_shift=0):
+    def title(self, scale=1.0, cx_shift=0, y_ref=390):
         TK = .676 * scale
         tw = S(2000 * TK)
         tx = S(30 - 265 * TK) + cx_shift
-        ty = S(390 - 320 * TK) + self.dy_title
+        ty = S(y_ref - 320 * TK) + self.dy_title
         self.img("title_lockup.png", tx, ty, tw, z=9, tag="title")
-        self.box("title", S(30) + cx_shift, S(390) + self.dy_title, S(1160 * scale), S(670 * scale))
+        self.box("title", S(30) + cx_shift, S(y_ref) + self.dy_title, S(1160 * scale), S(670 * scale))
 
     def edition(self, y_sub=950, y_ed=1000):
         e = self.c["edition"]
@@ -242,6 +289,76 @@ class Poster:
         self.line("time", c["time"], S(1292) + di, S(40), weight=400, cx=S(800), max_w=S(470))
         self.pill("cta", c["cta"], S(1386) + di)
 
+    # ---- photo teasers: real event photos in the Disco Diwali branding ----------------------------------------
+    def _centre_shift(self, scale):
+        """cx_shift that centres a title scaled by `scale` on the canvas (its content is 1160 ref-px wide at scale 1)."""
+        return S((1200 - 1160 * scale) / 2 - 30)
+
+    def _teaser_info(self, date_y=1215, edition_y=1275):
+        c, di = self.c, self.dy_info
+        self.line("date", c["date"], S(date_y) + di, S(62))
+        self.line("edition", c["edition"], S(edition_y) + di, S(34), weight=400)
+        self.pill("cta", c["cta"], S(1386) + di, h=S(96))
+
+    def _photo_tag(self, name, ref, x, y, w, h, z, extra="", filt="contrast(1.06) saturate(.92) brightness(.78)"):
+        self.parts.append(f'<img data-tag="{name}" src="{photo_uri(ref)}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;'
+                          f'object-fit:cover;z-index:{z};filter:{filt};{extra}">')
+
+    def _teaser_full(self):
+        c, di = self.c, self.dy_info
+        self.parts.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        self._photo_tag("photo", c["photo"], 0, 0, self.W, self.H, 1)
+        # warm copper wash (multiply) + a vignette that sinks the photo into ink where the type sits
+        self.parts.append('<div style="position:absolute;inset:0;background:#8a4a2a;mix-blend-mode:multiply;opacity:.35;z-index:2"></div>')
+        self.parts.append('<div style="position:absolute;inset:0;z-index:3;background:linear-gradient(to bottom,rgba(0,0,0,.55) 0%,rgba(0,0,0,.05) 26%,'
+                          'rgba(0,0,0,.55) 52%,rgba(0,0,0,.92) 72%,#000 100%);pointer-events:none"></div>')
+        self.badge()
+        TS = .78
+        self.title(scale=TS, cx_shift=self._centre_shift(TS), y_ref=585)
+        self.line("tagline", c["line"], S(1150) + di, S(54), max_w=self.W - 2 * 70)
+        self._teaser_info(date_y=1222, edition_y=1280)
+
+    def _teaser_arch(self):
+        c, di = self.c, self.dy_info
+        self.base(); self.badge()
+        aw, ah = S(700), S(900) + self.dy_title
+        ax, ay = (self.W - aw) // 2, S(70) + self.dy_top
+        self.parts.append(f'<div data-tag="arch" style="position:absolute;left:{ax}px;top:{ay}px;width:{aw}px;height:{ah}px;border-radius:{aw // 2}px {aw // 2}px {S(16)}px {S(16)}px;'
+                          f'border:3px solid {GOLD};overflow:hidden;z-index:4;box-shadow:0 0 60px rgba(201,151,28,.25)">'
+                          f'<img src="{photo_uri(c["photo"])}" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.1) saturate(1) brightness(1.15)">'
+                          f'<div style="position:absolute;inset:0;background:#8a4a2a;mix-blend-mode:multiply;opacity:.2"></div>'
+                          f'<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 40%,rgba(0,0,0,.9) 100%);pointer-events:none"></div></div>')
+        self.box("arch", ax, ay, aw, ah)
+        TS = .6
+        self.title(scale=TS, cx_shift=self._centre_shift(TS), y_ref=760)
+        self.line("tagline", c["line"], S(1170) + di, S(40), max_w=self.W - 2 * 70)
+        self.line("date", c["date"], S(1232) + di, S(56))
+        self.line("edition", c["edition"], S(1290) + di, S(30), weight=400)
+        self.pill("cta", c["cta"], S(1395) + di, h=S(90))
+
+    def _teaser_trio(self):
+        import math
+        c, di = self.c, self.dy_info
+        self.base(); self.badge()
+        f = 1 + .45 * (self.H - BASE_H) / BASE_H               # frames grow with the extra height instead of leaving a dead middle
+        fw, fh = round(S(300) * f), round(S(380) * f)
+        lift = round((self.dy_title - self.dy_top) * .4)       # and drift toward the title as it moves down
+        spec = [(S(60), S(345), -6), (S(450), S(300), 2), (S(810 - 40 * (f - 1) * 4), S(355), -4)]   # below the badge, loosely stacked
+        for i, ((x, y, rot), ph) in enumerate(zip(spec, c["photos"])):
+            y += self.dy_top + lift
+            self.parts.append(f'<div data-tag="f{i + 1}" style="position:absolute;left:{x}px;top:{y}px;width:{fw}px;height:{fh}px;transform:rotate({rot}deg);'
+                              f'background:#EDE6D8;padding:{S(14)}px {S(14)}px {S(58)}px;z-index:{4 + i};box-shadow:0 18px 40px rgba(0,0,0,.65)">'
+                              f'<img src="{photo_uri(ph)}" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.06) saturate(.92) brightness(.85)"></div>')
+            r = math.radians(abs(rot))
+            bw, bh = fw * math.cos(r) + fh * math.sin(r), fw * math.sin(r) + fh * math.cos(r)
+            self.box(f"f{i + 1}", x + (fw - bw) / 2, y + (fh - bh) / 2, bw, bh)
+        TS = .55
+        self.title(scale=TS, cx_shift=self._centre_shift(TS), y_ref=770)
+        self.line("tagline", c["line"], S(1170) + di, S(38), max_w=self.W - 2 * 70)
+        self.line("date", c["date"], S(1232) + di, S(54))
+        self.line("edition", c["edition"], S(1288) + di, S(30), weight=400)
+        self.pill("cta", c["cta"], S(1395) + di, h=S(90))
+
     def _sold_out(self):
         c, di = self.c, self.dy_info
         self.base(); self.top_group(); self.title(); self.edition()
@@ -263,14 +380,15 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     os.makedirs(os.path.dirname(out_png), exist_ok=True)
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
-              ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("banner", "date"), ("banner", "title")]
+              ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
+              ("title", "tagline"), ("title", "edition"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
-    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet") if l in labels),
+    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet", "arch") if l in labels),
                    collision_ignore=ignore, text_pairs=text_pairs,
-                   bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain", "carpet", "banner"),
-                   crop_tags=("plate", "sparkles", "grain"), page_bg=GROUND)
+                   bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain", "carpet", "banner", "photo"),
+                   crop_tags=("plate", "sparkles", "grain", "photo", "arch"), page_bg=GROUND)
     return out_png
 
 
@@ -284,6 +402,17 @@ DEMO = [
     ("save_the_date", dict(edition="Masquerade Sangeet Edition", day="10", month="November", year="2026", time="4:30 PM Onwards", cta="Link in bio")),
 ]
 
+TEASERS = [
+    ("teaser_full", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", line="Lights. Music. Masks.",
+                         photo="03", cta="Link in bio"), "diya", "copper"),
+    ("teaser_full", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", line="Ticket sales open soon",
+                         photo="05", cta="Link in bio"), "diya", "copper"),
+    ("teaser_arch", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", line="Save the date",
+                         photo="12", cta="Link in bio"), "diya", "copper"),
+    ("teaser_trio", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", line="The dance floor is waiting",
+                         photos=["07", "08", "09"], cta="Link in bio"), "diya", "copper"),
+]
+
 async def _demo():
     out = os.path.join(ROOT, "out", "discodiwali")
     async with B.session():
@@ -292,8 +421,14 @@ async def _demo():
                 await render_poster(kind, content, canvas, os.path.join(out, f"{kind}_{canvas}.png"))
         for kind, content in DEMO:
             await render_poster(kind, content, "feed", os.path.join(out, f"{kind}_feed_stroke.png"), style="stroke")
+        for kind, content in DEMO:
+            await render_poster(kind, content, "feed", os.path.join(out, f"{kind}_feed_diya.png"), style="diya", mask="copper")
         for kind, content in DEMO[:1] + DEMO[4:]:
             await render_poster(kind, content, "feed", os.path.join(out, f"{kind}_feed_red.png"), style="stroke", mask="red")
+        tdir = os.path.join(out, "teasers")
+        for i, (kind, content, st, mk) in enumerate(TEASERS, 1):
+            for canvas in ("story", "feed"):
+                await render_poster(kind, content, canvas, os.path.join(tdir, f"t{i}_{kind}_{canvas}.png"), style=st, mask=mk)
     print("demo set done ->", out)
 
 if __name__ == "__main__":

@@ -759,6 +759,12 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | `build.measure_text()` knew only `core.FONTS`, so a string in any other face (TerraThon's StretchPro, Sigmar One) measured in the FALLBACK font. StretchPro is a ligature face where `EE` is ONE glyph 2.97x a single `E`; the fallback measured it 1.98x, ~33% narrow, so a title sized off that number overflows its slab | TerraThon, 2026-09-29 | **`build.measure_text(..., extra_css=)`** takes the `@font-face` rules. Self-test: `scratchpad/test_measure_custom_font.py` (3 assertions; the first proves the bug, the second the fix) |
 | **Any non-zero `letter-spacing` silently turns optional ligatures OFF.** Adding the tight tracking the references use to StretchPro made `WICKEET` render as two ordinary E's — the stretched glyph vanished from every title, with the gate CLEAN and the score barely moved (0.036 vs 0.046). A ligature face is a font whose look IS the ligature | TerraThon, 2026-09-29 | rule: a ligature face needs `font-feature-settings:'liga' 1,'dlig' 1` whenever it is tracked, and `build.measure_text(features=)` so the measurement agrees. Self-test: `scratchpad/test_measure_custom_font.py` assertions 4-5 (5 total) |
 
+| A format with its OWN ground, palette and lettering (Disco Diwali: ink ground, silver/gold/copper, a hand-lettered Devanagari title asset) had no home: Workflow A's archetypes are cream-ground AQ accents, and a bespoke script would re-decide the skeleton for every poster | Disco Diwali, 2026-10-13 | **`engine/discodiwali.py`** — a FORMAT MODULE (same shape as `dispatch.py`): five kinds (announce, countdown, tickets_open, sold_out, save_the_date), feed and story, three visual directions, a validated brief that raises with the field named, and no field for a price/venue/lineup so none can be invented. `brain/DISCO_DIWALI.md` is its operator doc; self-test `scratchpad/test_discodiwali.py` (26) |
+| A width estimate counted inline MARKUP (a clock `<svg>`) as letters, so a line of type shrank to an illegible size on the first render and every gate stayed CLEAN | Disco Diwali | `Poster.line(plain=)` measures the visible text; asserted in the self-test (assertions 10-11) |
+| A numeral declared at 74% of its drawn height: a real 4px overlap with the label under it was hidden, and the advisory `BBOX UNDER-REPORTS` was the only signal | Disco Diwali | rule: declare a display numeral at its drawn height (0.9 of its font size here), then clear the label by that box, never by the glyphs alone |
+| A 4:5 background plate cropped to 9:16 lost its corner clusters and left a dead black middle on every story | Disco Diwali | stack TWO plates, the second flipped and faded in (`Poster.base`); extra height shared TOP 15 / TITLE 62 / INFO 100 |
+| The red carpet was a hard-edged slab; the user's rule is that it ALWAYS fades into black | Disco Diwali, user directive | mask-gradient fade built into the `tickets_open` kind; asserted |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -775,9 +781,10 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
     gate) · `preview.py` (pixel critique) · `ref_metrics.py` / `metrics.py` (metric targets) ·
     `reconcile.py` (headless DOM measurement) · `rhythm.py` (8px snap) · `tex.py` (textures) · **`dispatch.py`** (the DISPATCH
     internal-roundup series: one WhatsApp poster + one message + N stories from one brief) ·
+    **`discodiwali.py`** (the Disco Diwali poster family: ink-ground format module, 5 kinds x feed/story x 3 directions) ·
     `whitespace.py` · `engine.py` (Workflow A: ARCHETYPES + self-correction) · `archetypes.py`
     (geometry for pending archetypes).
-- `brain/` — the full reasoning: **`TERRATHON.md`** (the TerraThon fest format: skeleton, rules, palette, sticker kit; assets in `engine/assets/terrathon/`, references in `training_samples/terrathon/`), `TASTE.md`, `VISUAL_REVIEW.md` (looking-gate protocol), `ENGINE.md`,
+- `brain/` — the full reasoning: **`DISCO_DIWALI.md`** (the Disco Diwali format: assets, skeleton, rules, directions, quickstart; assets in `engine/assets/disco_diwali/`, references in `training_samples/disco_diwali/`), **`TERRATHON.md`** (the TerraThon fest format: skeleton, rules, palette, sticker kit; assets in `engine/assets/terrathon/`, references in `training_samples/terrathon/`), `TASTE.md`, `VISUAL_REVIEW.md` (looking-gate protocol), `ENGINE.md`,
   `ENGINE_STATE.md`, `DECISIONS.md` (standing rulings + every encoded fix), `INSPIRATION.md`
   (reference teardowns), `RECREATION_AUDIT.md` (per-sample composition descriptions + outcomes),
   `RECREATION_PROGRESS.md` (44-row status table), `AUDIT.md`, **`DISPATCH_PLAYBOOK.md`** (the weekly internal

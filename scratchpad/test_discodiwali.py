@@ -81,4 +81,37 @@ fs, ss = dd.Poster("announce", ANN, "feed"), dd.Poster("announce", ANN, "story")
 ok(fs.dy_info == 0 and ss.dy_info == ss.H - dd.BASE_H, "the info group takes ALL the extra height on a taller canvas, so the CTA stays bottom-anchored")
 ok(ss.dy_top < ss.dy_title < ss.dy_info, "extra height is shared top < title < info")
 
+# --- style and mask options ---------------------------------------------------------------------------------------
+def refused_opt(**kw):
+    try:
+        dd.Poster("announce", ANN, "feed", **kw)
+    except ValueError as e:
+        return True
+    return False
+ok(refused_opt(style="neon"), "an unknown style is refused")
+ok(refused_opt(mask="gold"), "an unknown mask is refused")
+diya = dd.Poster("announce", ANN, "feed", style="diya", mask="copper").build()
+ok("data-tag=\"lights\"" not in diya, "the navy diya direction drops the string lights (the plate carries the light)")
+ok("data-tag=\"lights\"" in feed, "the default direction keeps the string lights")
+ok(diya.count("mask_copper") == 0 and 'data-tag="mask"' in diya, "the copper mask is placed (inlined as a data URI, so no file name in the html)")
+red = dd.Poster("announce", ANN, "feed", style="stroke", mask="red").build()
+ok('data-tag="plate"' not in red, "the stroke style draws no beaded plate: the ground is plain ink")
+ok("image/svg+xml" in red, "the drawn red mask is embedded as svg")
+
+# --- photo teasers ---------------------------------------------------------------------------------------------
+TE = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", line="Save the date", cta="Link in bio")
+ok(not refused("teaser_full", dict(TE, photo="03")), "a teaser with a library photo (unique NN prefix) validates")
+ok(refused("teaser_full", dict(TE, photo="99"), needle="not in"), "a photo that is not in the library is refused by name")
+ok(refused("teaser_trio", dict(TE, photos=["07", "08"]), needle="exactly 3"), "a trio needs exactly three photos")
+ok(refused("teaser_full", {k: v for k, v in TE.items() if k != "line"} | {"photo": "03"}, needle="'line'"), "a teaser without its line is refused")
+th = dd.Poster("teaser_full", dict(TE, photo="03"), "feed").build()
+ok("pointer-events:none" in th, "gradient overlays over a photo never hit-test (else the gate reports the photo buried)")
+ok('data-tag="plate"' not in th, "a full-bleed photo teaser draws no plate under the photo")
+big = dd.photo_uri("02")
+ok(len(big) < 600_000, "a 3024x4032 original is downscaled before it is embedded")
+tr = dd.Poster("teaser_trio", dict(TE, photos=["07", "08", "09"]), "story")
+tr.build()
+fr = {e[0]: e for e in tr.elements}
+ok(fr["f1"][2] > fr["badge"][2] + fr["badge"][4] or fr["f1"][1] > fr["badge"][1] + fr["badge"][3], "trio frames start below the LIVE badge, never under it")
+
 print(f"\nALL {N} ASSERTIONS PASSED")
