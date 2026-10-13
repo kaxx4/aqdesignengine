@@ -58,11 +58,11 @@ REQUIRED = {
     "teaser_full":  ("edition", "date", "line", "photo", "cta"),
     "teaser_arch":  ("edition", "date", "line", "photo", "cta"),
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
-    "story_launch": ("edition", "date", "time", "status", "photo"),
+    "story_launch": ("edition", "status", "photo"),
     "wa_poster":    ("edition", "date", "time", "status", "photo"),
     "wa_dp":        ("edition", "date"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note",), "wa_poster": ("note",), "wa_dp": ()}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ()}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -588,11 +588,27 @@ class Poster:
         """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
         a clear zone is declared at the lower third for Instagram's link sticker, with a small cue above it. The bottom 250px stays empty for
         Instagram's reply bar and the top 200px for its profile bar."""
-        self._announce_editorial()
+        if self.c.get("date"):
+            self._announce_editorial()
+        else:
+            self._story_no_date()
         W = self.W
         self.raw("cue", "↓&nbsp;&nbsp;LINK IN BIO&nbsp;&nbsp;↓", W // 2, 1478, S(520), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(24)}px;letter-spacing:.3em;color:{self.GL};text-shadow:0 2px 14px rgba(0,0,0,.8)")
         self.box("linkzone", (W - 640) // 2, 1505, 640, 165)        # reserved for the link sticker: nothing else may enter
+
+    def _story_no_date(self):
+        """A launch story WITHOUT the date and time (user, 2026-10-13): title and edition lines as usual, then the status becomes the hero line
+        and the note sits under it. Nothing is printed where the date block was, so the lines are re-centred on the space it freed."""
+        c, di, W = self.c, self.dy_info, self.W
+        self.base(); self.top_group(); self._title_for_layout()
+        self._edition_lines()
+        # raw(label, html, cx, cy, w, h, css): the status is the hero line where the date block used to start
+        self.raw("status", c["status"], W // 2, S(1150) + di, S(900), S(70),
+                 f"font-family:var(--e);font-weight:600;font-size:{S(58)}px;letter-spacing:.01em")
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1240) + di, S(520), S(44),
+                     f"font-family:var(--e);font-weight:600;font-size:{S(36)}px")
 
     def _wa_poster(self):
         """The same launch information as a WhatsApp-forwardable 4:5 poster. There is no link to point at, so no CTA pill."""

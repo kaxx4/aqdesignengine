@@ -27,8 +27,9 @@ STORIES = [
 async def main():
     out = os.path.join(ROOT, "out", "discodiwali", "launch")
     async with dd.B.session():
+        STORY_FACTS = {k: v for k, v in FACTS.items() if k not in ("date", "time")}     # stories carry no date or time (user, 2026-10-13)
         for i, (ph, ty, lay, mk) in enumerate(STORIES, 1):
-            await dd.render_poster("story_launch", dict(FACTS, photo=ph), "story", os.path.join(out, f"story_{i:02d}.png"),
+            await dd.render_poster("story_launch", dict(STORY_FACTS, photo=ph), "story", os.path.join(out, f"story_{i:02d}.png"),
                                    style="photo", mask=mk, typo=ty, layout=lay)
         await dd.render_poster("wa_poster", dict(FACTS, photo="05"), "feed", os.path.join(out, "whatsapp_poster.png"),
                                style="photo", mask="copper", typo="foil")

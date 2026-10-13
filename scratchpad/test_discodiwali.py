@@ -166,7 +166,8 @@ def refused_kind(kind, content, canvas, needle=""):
     return refused(kind, content, canvas, needle)
 ok(refused_kind("story_launch", LF, "feed", "canvas"), "a launch story is refused on a feed canvas (it is a story)")
 ok(refused_kind("wa_dp", dict(edition="X", date="d"), "feed", "canvas"), "the WhatsApp DP is refused anywhere but square")
-ok(refused_kind("story_launch", {k: v for k, v in LF.items() if k != "time"}, "story", "'time'"), "a launch story missing the time is refused BY NAME")
+ok(refused_kind("story_launch", {k: v for k, v in LF.items() if k != "status"}, "story", "'status'"), "a launch story missing its status is refused BY NAME")
+ok(not refused_kind("story_launch", {k: v for k, v in LF.items() if k not in ("date", "time")}, "story"), "a launch story needs NO date or time (they are optional)")
 st = dd.Poster("story_launch", LF, "story", typo="foil"); sh = st.build()
 bx2 = {e[0]: e for e in st.elements}
 ok("linkzone" in bx2, "a launch story declares the reserved link-sticker zone as an element")
@@ -203,5 +204,20 @@ for ty in ("foil", "outline", "stack", "editorial"):
 ok(all(f'[data-tag="{t}"]' in dd.Poster.WHITE_BORDER_CSS for t in dd.Poster.TEXT_TAGS), "the override names every text tag the launch kinds use")
 ok("-webkit-text-stroke:4px #000!important" not in dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", typo="foil").build(),
    "the border rule is scoped to the launch pack: the other kinds keep their gold and foil")
+
+# --- stories without the date and time (user, 2026-10-13) ---------------------------------------------------------------------
+NDF = {k: v for k, v in LF.items() if k not in ("date", "time")}
+for lay_, ty_ in (("classic", "foil"), ("mask_hero", "outline"), ("mask_behind", "editorial"), ("classic", "stack")):
+    nd = dd.Poster("story_launch", NDF, "story", typo=ty_, layout=lay_)
+    ndh = nd.build()
+    txt = visible_text(ndh)
+    ok(not any(w in txt for w in ("NOVEMBER", "NOV ", "2026", "4:30", "ONWARDS", "10TH")), f"no-date story ({lay_}/{ty_}): no date or time text anywhere")
+    ok(all(w in txt for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), f"no-date story ({lay_}/{ty_}): status, note, edition and cue remain")
+    nb = {e[0]: e for e in nd.elements}
+    ok("date" not in nb and "time" not in nb and "month" not in nb, f"no-date story ({lay_}/{ty_}): no date/time element is declared")
+    lzb = nb["linkzone"]
+    ok(not any(e[0] != "linkzone" and e[1] < lzb[1] + lzb[3] and lzb[1] < e[1] + e[3] and e[2] < lzb[2] + lzb[4] and lzb[2] < e[2] + e[4]
+               for e in nd.elements if e[0] not in ("plate", "photo", "mask", "title")), f"no-date story ({lay_}/{ty_}): the link-sticker zone is still clear")
+ok("10TH NOVEMBER" in visible_text(dd.Poster("story_launch", LF, "story", typo="foil").build()) or "NOVEMBER" in visible_text(dd.Poster("story_launch", LF, "story", typo="foil").build()), "a story given a date still prints it (the date is optional, not deleted)")
 
 print(f"\nALL {N} ASSERTIONS PASSED")
