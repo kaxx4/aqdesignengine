@@ -245,4 +245,24 @@ def sub1_px(h):
 ok(sub1_px(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", typo="foil").build()) >= 40, "launch-pack 'MASQUERADE SANGEET' is at least 40px (it was 23px)")
 ok(sub1_px(dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", typo="foil").build()) < 30, "the other kinds keep the small caption size (the change is scoped to the launch pack)")
 
+# --- story_ref: the remake of the user's reference story (2026-10-13, "same to same") ----------------------------------------------
+SR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details soon", photo="05")
+sp = dd.Poster("story_ref", SR, "story"); srh = sp.build(); srb = {e[0]: e for e in sp.elements}
+ok(refused("story_ref", SR, "feed", "canvas"), "the remake is a story and is refused on a feed canvas")
+import base64 as _b64
+_dp = _b64.b64encode(open(os.path.join(dd.ASSETS, "bg_diya_portrait.jpg"), "rb").read()).decode()[:200]
+ok(_dp not in srh and _dp in dd.Poster("announce", dict(ANN, photo="05"), "feed", style="diya").build(), "the remake carries no diya plate image (the photo runs to the corners), while the diya direction still does")
+ok(not any(w in visible_text(srh) for w in ("NOVEMBER", "2026", "4:30", "ONWARDS")), "the remake prints no date or time")
+ok(all(w in visible_text(srh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "the remake carries status, note, edition and the LINK IN BIO text")
+ok("var(--e)" not in srh and "var(--s)" not in srh and "var(--m)" not in srh, "remake type is NeutralFace only")
+ok(srb["mask"][1:] == (358, 98, 701, 438), "the mask outline is the measured one: 358,98 701x438")
+ok(srb["title"][1:] == (38, 480, 1013, 538), "the title block is the measured one: 38,480 1013x538")
+ok(srb["linkpill"][1:] == (342, 1314, 382, 82), "the LINK IN BIO pill is the measured one: 342,1314 382x82")
+ok("cue" not in srb and "linkzone" not in srb, "the arrows cue and the empty link zone are replaced by the real pill, as in the reference")
+import base64 as _b64
+_nb = _b64.b64encode(open(os.path.join(dd.ASSETS, "title_lockup_noball.png"), "rb").read()).decode()[:200]
+_wb = _b64.b64encode(open(os.path.join(dd.ASSETS, "title_lockup.png"), "rb").read()).decode()[:200]
+ok(_nb in srh and _wb not in srh, "the remake uses the ball-free title lockup, never the original with the ball")
+ok(_wb in dd.Poster("story_launch", NDF | {"photo": "05"}, "story").build(), "the ordinary launch stories still use the ORIGINAL lockup (the ball stays there)")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

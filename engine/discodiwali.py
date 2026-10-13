@@ -47,8 +47,8 @@ LAYOUTS = {"classic": {},
            "title_hero":  dict(mask=(470, 20, .62, 8),   title=(1.04, 350)),     # the lockup bleeds wide, the mask shrinks to a corner accent
            "mask_behind": dict(mask=(-100, 170, 1.25, -6), title=(.9, 430))}   # the mask sits BEHIND the title: the lockup overprints it
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
-LAUNCH_KINDS = ("story_launch", "wa_poster", "wa_dp")   # the launch pack sets every line of type in NeutralFace
-KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio", "story_launch", "wa_poster", "wa_dp")
+LAUNCH_KINDS = ("story_launch", "wa_poster", "wa_dp", "story_ref")   # the launch pack sets every line of type in NeutralFace
+KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio", "story_launch", "wa_poster", "wa_dp", "story_ref")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
     "countdown":    ("edition", "date", "days", "cta"),
@@ -61,8 +61,9 @@ REQUIRED = {
     "story_launch": ("edition", "status", "photo"),
     "wa_poster":    ("edition", "date", "time", "status", "photo"),
     "wa_dp":        ("edition", "date"),
+    "story_ref":    ("edition", "status", "photo"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ()}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": (), "story_ref": ("note", "link")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -114,7 +115,7 @@ def days_to_go(date_iso, today=None):
 def validate_brief(kind, content, canvas):
     if kind not in KINDS:
         raise ValueError(f"kind must be one of {KINDS}, got {kind!r}")
-    allowed = {"story_launch": ("story",), "wa_poster": ("feed",), "wa_dp": ("square",)}.get(kind, ("feed", "story"))
+    allowed = {"story_launch": ("story",), "wa_poster": ("feed",), "wa_dp": ("square",), "story_ref": ("story",)}.get(kind, ("feed", "story"))
     if canvas not in allowed:
         raise ValueError(f"{kind}: canvas must be one of {allowed}, got {canvas!r}")
     for f in REQUIRED[kind]:
@@ -152,7 +153,7 @@ class Poster:
         if typo not in TYPOS:
             raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
-        if kind in ("story_launch", "wa_poster"):
+        if kind in ("story_launch", "wa_poster", "story_ref"):
             style = self.style = "photo"                      # these kinds ARE the photo direction
         if kind == "story_launch":
             # ONE mask placement for every story (user, 2026-10-13: "use story_01 as the reference"): the classic position, no tilt, no scale.
@@ -160,7 +161,7 @@ class Poster:
             layout, mask_tilt, mask_scale = "classic", 0, 1.0
         self.type_scale = 1.14 if kind == "story_launch" else 1.0      # a story is read at a third of the size: its type is scaled up
         self.neutral_only = kind in LAUNCH_KINDS                      # launch pack: ALL type is NeutralFace (user, 2026-10-13)
-        self.no_pill = kind in ("story_launch", "wa_poster")   # no CTA pill: a link sticker goes there (story) / there is no link (WhatsApp)
+        self.no_pill = kind in ("story_launch", "wa_poster", "story_ref")   # no CTA pill: a link sticker goes there (story) / there is no link (WhatsApp)
         if layout not in LAYOUTS:
             raise ValueError(f"layout must be one of {tuple(LAYOUTS)}, got {layout!r}")
         self.layout = layout
@@ -499,7 +500,7 @@ class Poster:
                 f'<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>')
 
     # ---- kinds ------------------------------------------------------------------------------------
-    TEXT_TAGS = ("sub1", "sub2", "date", "month", "time", "status", "note", "cue", "edition")
+    TEXT_TAGS = ("sub1", "sub2", "date", "month", "time", "status", "note", "cue", "edition", "linkpill")
     # Launch-pack type is WHITE with a thin BLACK border, like the reference launch poster (user, 2026-10-13). One !important override on the
     # text elements and everything inside them, so it beats every treatment's inline colour: gold lines, the foil gradient clip and the hollow
     # numerals all become solid white. paint-order puts the fill over the stroke, so the 4px stroke shows as a 2px border OUTSIDE the glyph
@@ -597,6 +598,42 @@ class Poster:
                           f'object-fit:cover;z-index:{z};filter:{filt};{extra}">')
 
     # ---- launch pack: stories, WhatsApp poster, WhatsApp DP ---------------------------------------------------------
+    def _story_ref(self):
+        """The launch story REMADE FROM THE USER'S REFERENCE IMAGE (2026-10-13, "remake this, same to same"). Every number below was MEASURED off
+        that image after scaling it to 1080x1920 and removing its screenshot frame (about 18px left, 25px top); the lights were fitted by
+        matching six bulb positions at 0.55x, all within 6px. Differences from `story_launch`, all deliberate: no diya plate (the photo runs
+        to the corners), no disco ball on the title (the reference has none; `title_lockup_noball.png` is a derived copy, the original is
+        untouched), a 38px WHITE regular EDITION instead of a small gold one, a larger note, no 'photo dim' ellipse, and 'LINK IN BIO' as
+        real text in a soft gold-edged pill instead of arrows. The PHOTO is the one thing that cannot be reproduced from the reference: it
+        is whichever library photo is passed in `photo`."""
+        c, W, P = self.c, self.W, self.parts
+        ph = c.get("photo", "05")
+        P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{self.H}px;object-fit:cover;z-index:1;'
+                 f'filter:contrast(1.08) saturate(1.0) brightness(.92)">')
+        P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(8,6,30,.55) 0%,'
+                 'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
+        self.img("string_lights.png", 158, -59, 1100, z=5, tag="lights")
+        k = .499                                           # copper mask: visible outline 357..1059 x 98..536 on the canvas
+        self.img("mask_copper.png", round(358 - 157 * k), round(98 - 211 * k), round(1680 * k), z=6, tag="mask",
+                 extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+        self.box("mask", 358, 98, 701, 438)
+        self.img("live_badge.png", 45, 124, 264, z=8, tag="badge"); self.box("badge", 45, 124, 264, 250)
+        t = .59                                            # title lockup, no ball: visible outline 38..1051 x 480..1018
+        self.img("title_lockup_noball.png", round(38 - 265 * t), round(480 - 401 * t), round(2000 * t), z=9, tag="title")
+        self.box("title", 38, 480, 1013, 538)
+        self.raw("sub1", "MASQUERADE SANGEET", 617, 938, 520, 46,
+                 "font-family:var(--e);font-weight:600;font-size:40px")
+        self.raw("sub2", "Edition", 617, 981, 180, 42, "font-family:var(--e);font-weight:400;font-size:38px")
+        self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+        if c.get("note"):
+            self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        link = c.get("link", "Link in bio")
+        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:1314px;width:382px;height:82px;border-radius:22px;'
+                 f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
+                 f'font-family:var(--e);font-weight:600;font-size:44px;line-height:1;text-transform:uppercase">{link}</div>')
+        self.box("linkpill", 342, 1314, 382, 82)
+
     def _story_launch(self):
         """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
         a clear zone is declared at the lower third for Instagram's link sticker, with a small cue above it. The bottom 250px stays empty for
@@ -727,11 +764,11 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
-    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet", "arch") if l in labels),
+    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet", "arch", "linkpill") if l in labels),
                    collision_ignore=ignore, text_pairs=text_pairs,
                    bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain", "carpet", "banner", "photo"),
                    crop_tags=("plate", "sparkles", "grain", "photo", "arch"), page_bg=GROUND)
