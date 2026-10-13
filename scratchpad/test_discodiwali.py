@@ -265,4 +265,15 @@ _wb = _b64.b64encode(open(os.path.join(dd.ASSETS, "title_lockup.png"), "rb").rea
 ok(_nb in srh and _wb not in srh, "the remake uses the ball-free title lockup, never the original with the ball")
 ok(_wb in dd.Poster("story_launch", NDF | {"photo": "05"}, "story").build(), "the ordinary launch stories still use the ORIGINAL lockup (the ball stays there)")
 
+# --- poster_ref: the remake of the user's reference FEED poster (2026-10-13) ---------------------------------------------------------
+PR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details soon")
+pp = dd.Poster("poster_ref", PR, "feed"); prh = pp.build(); prb = {e[0]: e for e in pp.elements}
+ok(refused("poster_ref", PR, "story", "canvas"), "the feed poster remake is refused on a story canvas")
+ok(prb["mask"][1:] == (343, 108, 692, 452) and prb["badge"][1:] == (30, 122, 267, 248), "mask and badge are at the measured positions")
+ok(prb["title"][1:] == (35, 461, 1036, 551) and prb["linkpill"][1:] == (316, 1118, 450, 103), "title and link pill are at the measured positions")
+ok(_dp in prh, "the feed poster sits on the diya plate")
+ok(not any(w in visible_text(prh) for w in ("NOVEMBER", "2026", "4:30", "ONWARDS")), "no date or time on the feed poster")
+ok(all(w in visible_text(prh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "all remaining copy is present")
+ok(_nb in prh and "var(--e)" not in prh and "var(--s)" not in prh, "ball-free title and NeutralFace-only type")
+
 print(f"\nALL {N} ASSERTIONS PASSED")
