@@ -1,4 +1,4 @@
-# REVER x Disco Diwali 2026: the marketing deck (built 2026-10-13)
+# REVER x Disco Diwali 2026: the marketing deck (built 2026-10-13, formal revision same day)
 
 The companion to the 29-slide partnership proposal. Audience: Rever (cafe, our Exclusive Food and Location Partner). Job: show Rever exactly how AquaTerra will market it, before, on and after the event. 14 slides, 1920x1080, PDF.
 
@@ -11,8 +11,15 @@ Run: `python scratchpad/rever_marketing_assets.py` once (crops), then `PYTHONIOE
 - Content plan, verbatim from the user: before (location drop post, sponsor mention post, blueprint post, location showcase reel, menu post, fun menu reels, and many more), on the day (decor going up reel, registration started and a full run through the location, fun reels in general), after (decor dump, favourite menu item reel, location reviews reel, thank-you post, podcast with the owner).
 - Output: PDF from a script, not an editable file.
 
+## Round 2 (user, 2026-10-13)
+- **Formal register.** Applied once in the override block at the top of `gen_rever_marketing_deck.py`, not per slide: no tilted cards, 6px keylines and 20px corners (was 10px and 34px), NeutralFace only (the StretchPro numerals and Sigmar One sub-lines are gone), no stickers inside cards (they stay on the cover, the closing slide's disco ball and the shuriken), headlines as plain statements, square-cornered pills.
+- **"And many more"** now closes the before AND the on-the-day plans.
+- **Approval line**, in the user's words: "every content plan will be approved by Rever first before being shot". It is a pill on all three content-plan slides, a requirement and its own pill on slide 13, a step on the calendar and on the closing slide.
+- **Proof-of-reach screenshots: built conditionally, not shown.** Neither source deck contains an Instagram Insights screenshot (all 65 pages read), so none can be cut from them, and one must never be mocked up (real-assets-only rule). Drop real screenshots into `engine/assets/rever_marketing/proof/` (or set `REVER_PROOF_DIR`; up to 3, file-name order), edit `proof_captions` and `proof_note` in `FACTS`, and rerun: a "Proof of reach" slide appears after the reach slide and the deck becomes 15 slides.
+- Source line on the reach slide reads "Figures supplied by Team AquaTerra", because I cannot say where 1.11M+ originated.
+
 ## Slides
-1 cover · 2 plan in one page (Instagram / WhatsApp / schools) · 3 who sees it · 4 Instagram formats + what we track · 5 reach numbers · 6 WhatsApp · 7 the 18+ school network · 8 photo break · 9 calendar (sign-off to the week after) · 10 before · 11 on the day · 12 after · 13 what we need from Rever · 14 next steps and contact.
+1 cover · 2 plan at a glance (Instagram / WhatsApp / schools) · 3 who sees it · 4 Instagram formats + what we track · 5 reach numbers (6 proof of reach, only with real screenshots) · 6 WhatsApp · 7 the 18+ school network · 8 photo break · 9 calendar (sign-off to the week after) · 10 before · 11 on the day · 12 after · 13 what we need from Rever · 14 next steps and contact.
 
 ## Where the two source decks disagreed, and what this deck uses
 | Figure | Sponsors cold | Rever deck | Used here |
@@ -35,7 +42,7 @@ Open: the two decks still contradict each other on funds, volunteers, schools an
 - The 2025 photo on slide 8 and the 300 to 350 guest cap are from the proposal deck (cap ruled by the user 2026-10-08).
 
 ## Gate notes
-Static gate CLEAN on all 14 slides. Seven advisory `BURIED` lines report a sticker svg sitting inside a card; the stickers are visible in the PNGs (checked by eye), so these are the check misreading a nested sticker. Every slide was read as a PNG after its last change.
+Static gate CLEAN on all 14 slides. Round 2 renders printed no layout issues. Every slide was read as an image after its last change, except that slides 9 to 12 were read before two kicker-text-only edits. Every slide was read as a PNG after its last change.
 
 ## New files
 `scratchpad/gen_rever_marketing_deck.py`, `scratchpad/rever_marketing_assets.py`, `scratchpad/rever_marketing_stickers.py` (six new die-cut stickers: mic, chat, school, eye, plane, follow; no text, no third-party logos).
