@@ -1393,3 +1393,6 @@ through.
 - **Decisions:** the link sticker gets a declared zone (`linkzone`) and the CTA pill is dropped from stories; the DP is built to the circular crop, not the square; the WhatsApp poster has no "link in bio" because there is nothing to link; the engine's NeutralFace file is kept (the user's zip is the same face), the pack just routes every text face through `--d`.
 - **Photos:** last year's photos from `engine/assets/img/events/unsorted-2026-10-07/` (several show what look like minors; no consent record: check before posting).
 - **Not invented:** no price, venue or lineup; "Tickets, soon." appears only in the `foil` treatment when no note is supplied.
+
+## Bulk story design approved (2026-10-13)
+The `story_ref` layout is the approved design for bulk stories; ten were generated (`sample_outputs/disco_diwali_bulk/`). It supersedes `story_launch` for batches. `story_launch` stays for the link-sticker-zone variant.

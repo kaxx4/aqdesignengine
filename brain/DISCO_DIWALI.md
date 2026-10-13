@@ -72,6 +72,9 @@ Real event photos from `engine/assets/img/events/unsorted-2026-10-07/` (by NN pr
 - `stack` abbreviates the month as NOV (10 NOV 2026); every other treatment prints NOVEMBER.
 - JPEG deliverables (1080 wide): `sample_outputs/disco_diwali_launch/`.
 
+### BULK STORIES: the approved design (user, 2026-10-13: "perf, this is the design for bulk stories")
+Use kind `story_ref` (`scratchpad/dd_bulk_stories.py`), never `story_launch`, for any batch of stories. It is the remake of the user's reference story, built from measured positions: LIVE badge top left, copper mask top right, ball-free title lockup (`title_lockup_noball.png`), "MASQUERADE SANGEET" 40px bold with a white regular "EDITION" 38px, "TICKET SALES OPEN SOON" 52px, "MORE DETAILS SOON" 38px, and a soft gold-edged "LINK IN BIO" pill. Photo runs edge to edge (no diya plate), all type NeutralFace white with a thin black border, no date or time. Only the photo changes between stories. Open questions: the reference's own photo is not in the repo (photo 05 stands in), and the pill sits where an Instagram link sticker would go.
+
 ## 6. Conflicts with CLAUDE.md and how they were resolved (precedence ladder, sec 2)
 - Ground, palette and fonts differ from the AQ house style. Resolved as a format exception, like TerraThon. The format wins inside `discodiwali.py` only.
 - Film grain over a dark ground is photographic texture with a job to do, not a faint patterned wash. `wash_scan` did not flag it.
