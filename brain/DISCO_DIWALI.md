@@ -1,6 +1,6 @@
 # DISCO DIWALI FORMAT (v1, 2026-10-13)
 
-The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (53 assertions). Operator quickstart is section 7.
+The poster family for AQ's Disco Diwali charity party. Built as a FORMAT MODULE, `engine/discodiwali.py`, the same shape as `dispatch.py`: one skeleton, a validated content dict, a solved layout. Self-test: `scratchpad/test_discodiwali.py` (69 assertions). Operator quickstart is section 7.
 
 Status: the 2026 announcement was recreated from its reference and accepted by the looking gate (`scratchpad/dd_announce.py`, v2). The module generalises it to five kinds, two canvases and three visual directions. Rules marked PROVEN were each caught by a render and fixed.
 
@@ -60,6 +60,20 @@ Real event photos from `engine/assets/img/events/unsorted-2026-10-07/` (by NN pr
 
 ### Layout presets (`layout=` on `style="photo"` announce)
 `classic` (title centred, mask top right) · `mask_hero` (a huge mask bleeding off the right edge, title lower) · `title_hero` (the lockup bleeds wide, mask shrinks to a corner accent) · `mask_behind` (the mask sits BEHIND the title, which overprints it). The edition lines are placed relative to the lockup's real bottom, so every preset keeps the notch tuck. `mask_tilt=` and `mask_scale=` override a preset. Batches: `scratchpad/dd_variations.py` (12 posters across direction, type, photo, mask) and `scratchpad/dd_layouts.py` (8 posters across layout). JPEG samples are in `sample_outputs/disco_diwali/` (never commit the 2x PNGs: ~8 MB each).
+
+### Launch pack (kinds `story_launch`, `wa_poster`, `wa_dp`) — `scratchpad/dd_launch_pack.py`
+- **Ten stories** (1080x1920), each a different photo, type treatment and layout, ALL carrying the launch post's information (LIVE badge, edition, date, time, ticket-sales status, "more details soon"). **No CTA pill**: a link-sticker zone is declared as the element `linkzone` (640x165 at y=1505), with a small "LINK IN BIO" cue above it. The zone ends 250px above the bottom edge (Instagram's reply bar) and nothing enters it; the top 200px is left clear of Instagram's profile bar.
+- **WhatsApp poster** (1080x1350): the same information as a 4:5, no pill and no "link in bio" (there is no link to point at).
+- **WhatsApp group DP** (1080x1080): WhatsApp crops to a CIRCLE r=540, so every box is asserted to sit inside it (title, a small mask, the date and edition; no LIVE badge, it would be cropped and unreadable at DP size). `whatsapp_dp_circle_preview.*` shows the crop.
+- **All launch-pack type is NeutralFace** (user, 2026-10-13, who supplied `neutral-face.zip`): `Poster.neutralise()` re-sets the serif, mono and Eina lines in `--d`, forces uppercase and maps weights to the two cuts (400 Regular, 700 Bold). The zip's cuts are the same face as `engine/assets/fonts/NeutralFace*.otf` (Bold identical; Regular differs by ~2px a line), so the engine file was NOT replaced: that would shift every existing recreation.
+- **ONE mask placement for every story** (user, 2026-10-13, reference `story_01`): the classic position (left 254 / top 60 / width 832 on the 1080 canvas, untilted). `story_launch` ignores `layout=`, `mask_tilt=` and `mask_scale=`, because the layout presets move the mask and the title together; the silver mask is fitted to the copper mask's measured footprint. Asserted in the self-test.
+- **Stories carry no date or time** (user, 2026-10-13): `date` and `time` are optional on `story_launch`; without them the status is the hero line.
+- Story type is scaled 1.14x (a story is read at a third of a feed's size) and the info lines spread with it, anchored just above the date. Lines tucked under the lockup (`sub1`, `sub2`) and the cue keep their size.
+- `stack` abbreviates the month as NOV (10 NOV 2026); every other treatment prints NOVEMBER.
+- JPEG deliverables (1080 wide): `sample_outputs/disco_diwali_launch/`.
+
+### BULK STORIES: the approved design (user, 2026-10-13: "perf, this is the design for bulk stories")
+Use kind `story_ref` (`scratchpad/dd_bulk_stories.py`), never `story_launch`, for any batch of stories. It is the remake of the user's reference story, built from measured positions: LIVE badge top left, copper mask top right, ball-free title lockup (`title_lockup_noball.png`), "MASQUERADE SANGEET" 40px bold with a white regular "EDITION" 38px, "TICKET SALES OPEN SOON" 52px, "MORE DETAILS SOON" 38px, and a soft gold-edged "LINK IN BIO" pill. Photo runs edge to edge (no diya plate), all type NeutralFace white with a thin black border, no date or time. Only the photo changes between stories. Open questions: the reference's own photo is not in the repo (photo 05 stands in), and the pill sits where an Instagram link sticker would go.
 
 ## 6. Conflicts with CLAUDE.md and how they were resolved (precedence ladder, sec 2)
 - Ground, palette and fonts differ from the AQ house style. Resolved as a format exception, like TerraThon. The format wins inside `discodiwali.py` only.

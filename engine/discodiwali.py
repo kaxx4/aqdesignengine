@@ -47,7 +47,8 @@ LAYOUTS = {"classic": {},
            "title_hero":  dict(mask=(470, 20, .62, 8),   title=(1.04, 350)),     # the lockup bleeds wide, the mask shrinks to a corner accent
            "mask_behind": dict(mask=(-100, 170, 1.25, -6), title=(.9, 430))}   # the mask sits BEHIND the title: the lockup overprints it
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
-KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
+LAUNCH_KINDS = ("story_launch", "wa_poster", "wa_dp", "story_ref", "poster_ref")   # the launch pack sets every line of type in NeutralFace
+KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio", "story_launch", "wa_poster", "wa_dp", "story_ref", "poster_ref")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
     "countdown":    ("edition", "date", "days", "cta"),
@@ -57,8 +58,13 @@ REQUIRED = {
     "teaser_full":  ("edition", "date", "line", "photo", "cta"),
     "teaser_arch":  ("edition", "date", "line", "photo", "cta"),
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
+    "story_launch": ("edition", "status", "photo"),
+    "wa_poster":    ("edition", "date", "time", "status", "photo"),
+    "wa_dp":        ("edition",),
+    "story_ref":    ("edition", "status", "photo"),
+    "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -110,8 +116,9 @@ def days_to_go(date_iso, today=None):
 def validate_brief(kind, content, canvas):
     if kind not in KINDS:
         raise ValueError(f"kind must be one of {KINDS}, got {kind!r}")
-    if canvas not in ("feed", "story"):
-        raise ValueError(f"canvas must be 'feed' or 'story', got {canvas!r}")
+    allowed = {"story_launch": ("story",), "wa_poster": ("feed",), "wa_dp": ("square",), "story_ref": ("story",), "poster_ref": ("feed",)}.get(kind, ("feed", "story"))
+    if canvas not in allowed:
+        raise ValueError(f"{kind}: canvas must be one of {allowed}, got {canvas!r}")
     for f in REQUIRED[kind]:
         if f not in content or content[f] in (None, ""):
             raise ValueError(f"{kind}: required field {f!r} is missing")
@@ -147,6 +154,15 @@ class Poster:
         if typo not in TYPOS:
             raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
+        if kind in ("story_launch", "wa_poster", "story_ref", "poster_ref"):
+            style = self.style = "photo"                      # these kinds ARE the photo direction
+        if kind == "story_launch":
+            # ONE mask placement for every story (user, 2026-10-13: "use story_01 as the reference"): the classic position, no tilt, no scale.
+            # Layout presets and mask_tilt/mask_scale are ignored here, because the presets move the mask and the title together.
+            layout, mask_tilt, mask_scale = "classic", 0, 1.0
+        self.type_scale = 1.14 if kind == "story_launch" else 1.0      # a story is read at a third of the size: its type is scaled up
+        self.neutral_only = kind in LAUNCH_KINDS                      # launch pack: ALL type is NeutralFace (user, 2026-10-13)
+        self.no_pill = kind in ("story_launch", "wa_poster", "story_ref", "poster_ref")   # no CTA pill: a link sticker goes there (story) / there is no link (WhatsApp)
         if layout not in LAYOUTS:
             raise ValueError(f"layout must be one of {tuple(LAYOUTS)}, got {layout!r}")
         self.layout = layout
@@ -155,9 +171,13 @@ class Poster:
         self.mask_tilt = mask_tilt or mt                                  # explicit kwargs win over the preset
         self.mask_scale = mask_scale if mask_scale != 1.0 else ms
         self.title_scale, self.title_yref = L.get("title", (1.0, 390))
-        self.W, self.H = core.SIZES["feed" if canvas == "feed" else "story"]
+        self.W, self.H = core.SIZES[canvas]
         dh = self.H - BASE_H
-        self.dy_top, self.dy_title, self.dy_info = round(dh * .15), round(dh * .62), dh
+        self.dy_top, self.dy_title, self.dy_info = (round(dh * .15), round(dh * .62), dh) if dh > 0 else (0, 0, 0)   # only a TALLER canvas shifts
+        if kind == "story_launch":                             # the feed composition shifted clear of Instagram's top bar; pill zone left for the sticker
+            self.dy_top, self.dy_title, self.dy_info = 130, 150, 150
+        if kind == "wa_poster":
+            self.dy_info = 24
         self.parts, self.elements = [], []
 
     def box(self, label, x, y, w, h):
@@ -183,6 +203,8 @@ class Poster:
         return size
 
     def pill(self, label, text, cy, w=S(498), h=S(112)):
+        if self.no_pill:
+            return
         x = (self.W - w) // 2
         self.parts.append(
             f'<div data-tag="{label}" style="position:absolute;left:{x}px;top:{cy - h // 2}px;width:{w}px;height:{h}px;'
@@ -240,10 +262,11 @@ class Poster:
         ph = self.c.get("photo", "03")
         # TEXT BUDGET RULE (user, 2026-10-13): the more of the canvas a photo owns, the less copy it carries. The sparse typos let more photo through.
         sparse = self.typo in ("minimal", "whisper")
+        light = sparse or self.kind == "story_launch"      # a story keeps more photo: its copy sits in one band, not over the whole frame
         P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
-                 f'filter:contrast(1.12) saturate(.95) brightness({1.1 if sparse else .95})">')
+                 f'filter:contrast(1.12) saturate(.95) brightness({1.1 if sparse else 1.05 if light else .95})">')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#0A1E7A,#050A33);'
-                 f'mix-blend-mode:multiply;opacity:{.42 if sparse else .6}"></div>')
+                 f'mix-blend-mode:multiply;opacity:{.42 if sparse else .45 if light else .6}"></div>')
         plate = "bg_diya_portrait.jpg"
         ex = "mix-blend-mode:screen;"
         if H <= BASE_H:
@@ -255,13 +278,18 @@ class Poster:
         if sparse:   # a bottom shade so the one line of copy that remains still reads on a bright photo
             P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0) 58%,rgba(0,0,0,.72) 100%)"></div>')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(ellipse 66% 40% at 50% 66%,'
-                 f'rgba(0,0,0,{.26 if sparse else .62}),rgba(0,0,0,{.1 if sparse else .3}) 65%,rgba(0,0,0,0) 100%)"></div>')
+                 f'rgba(0,0,0,{.26 if sparse else .55 if light else .62}),rgba(0,0,0,{.1 if sparse else .22 if light else .3}) 65%,rgba(0,0,0,0) 100%)"></div>')
 
     def raw(self, label, html, cx, cy, w, h, css="", z=12):
         """A centred block of arbitrary markup with its declared box. For the editorial type, where one line mixes faces."""
-        self.parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:translate(-50%,-50%);white-space:nowrap;'
+        ts = 1.0 if label in ("sub1", "sub2", "cue") else self.type_scale   # the notch tuck and the cue keep their size
+        if ts != 1 and label in ("date", "month", "time", "status", "note"):
+            mid = S(1105) + self.dy_info                  # just above the date: scaled type spreads its lines DOWN from it,
+            cy = round(mid + (cy - mid) * ts)             # otherwise bigger type simply lands on its neighbours
+        tf = "translate(-50%,-50%)" + (f" scale({ts})" if ts != 1 else "")
+        self.parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:{tf};white-space:nowrap;'
                           f'line-height:1;color:{OFFWHITE};z-index:{z};{css}">{html}</div>')
-        self.box(label, cx - w / 2, cy - h / 2, w, h)
+        self.box(label, cx - w * ts / 2, cy - h * ts / 2, w * ts, h * ts)
 
     # ---- type treatments for style="photo" -----------------------------------------------------------------------
     GL = "#E8C063"                                              # gold lifted for small type on a photo ground
@@ -285,10 +313,18 @@ class Poster:
     def _edition_lines(self):
         cx = self._tcx
         b = self._tbottom
-        self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
-                 "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
-        self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
-                 f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
+        if self.neutral_only:                        # launch pack: the edition name is a real line of type, not a caption (user, 2026-10-13)
+            self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 118) + self.dy_title, S(640), S(52),
+                     "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(46))
+        else:
+            self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
+                     "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
+        if self.neutral_only:                        # NeutralFace is an uppercase face: a small tracked gold EDITION, not a 58px serif word
+            self.raw("sub2", "Edition", cx, S(b - 50) + self.dy_title, S(210), S(34),
+                     f"font-family:var(--e);font-weight:600;font-size:{S(28)}px;letter-spacing:.42em;text-indent:.42em;color:{self.GL}")
+        else:
+            self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
+                     f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
 
     def _day_rest(self):
         day, _, rest = self.c["date"].upper().partition(" ")
@@ -304,10 +340,11 @@ class Poster:
         self.raw("time", f'{rule}<span style="margin:0 {S(26)}px">{c["time"].upper()}</span>{rule}', W // 2, S(1232) + di, S(760), S(36),
                  f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.22em;color:{GL}")
         self.raw("status", c["status"].upper(), W // 2, S(1290) + di, S(700), S(40),
-                 f"font-family:var(--e);font-weight:600;font-size:{S(32)}px;letter-spacing:.2em")
+                 f"font-family:var(--e);font-weight:600;font-size:{S(40) if self.neutral_only else S(32)}px;letter-spacing:.2em")
         if c.get("note"):
-            self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
-        self.pill("cta", c["cta"], S(1412) + di, h=S(80))
+            self.raw("note", c["note"], W // 2, S(1340) + di, S(420), S(46),
+                     f"font-family:var(--s);font-style:italic;font-size:{S(38) if not self.neutral_only else S(28)}px;color:{GL}")
+        self.pill("cta", c.get("cta", ""), S(1412) + di, h=S(80))
 
     def _info_foil(self):
         """A gold-foil italic numeral (a gradient clipped to the glyphs), with the month and year stacked in tracked caps beside it."""
@@ -318,24 +355,40 @@ class Poster:
                          f'<span style="display:inline-block;margin-left:{S(30)}px;text-align:left;line-height:1.3;font-family:var(--e);font-weight:700;'
                          f'font-size:{S(46)}px;letter-spacing:.26em;vertical-align:{S(60)}px">{month}<br><span style="color:{GL}">{year}</span></span>',
                  W // 2, S(1148) + di, S(760), S(210))
+        if self.neutral_only:      # launch pack: time small, STATUS the big line, note smaller (the reference poster's hierarchy)
+            self.raw("time", c["time"].upper(), W // 2, S(1290) + di, S(700), S(34), f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.18em;color:{GL}")
+            self.raw("status", c["status"], W // 2, S(1340) + di, S(900), S(60), f"font-family:var(--e);font-weight:600;font-size:{S(46)}px")
+            if c.get("note"):
+                self.raw("note", c["note"], W // 2, S(1388) + di, S(520), S(40), f"font-family:var(--e);font-weight:600;font-size:{S(28)}px")
+            self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
+            return
         self.raw("time", c["time"].upper() + f'&nbsp;&nbsp;·&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1262) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
-        self.raw("status", "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
-        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
+        self.raw("status", c.get("note") or "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
+        self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
 
     def _info_outline(self):
         """Hollow numerals: transparent fill, a hairline stroke, so the photo reads THROUGH the date. The month is solid beside it."""
         c, di, W, GL = self.c, self.dy_info, self.W, self.GL
         day, rest = self._day_rest()
         month, _, year = rest.partition(", ")
-        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(300)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px {OFFWHITE}">{day}</span>',
-                 S(330), S(1172) + di, S(400), S(250))
-        self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;letter-spacing:.02em">{month}</span><br>'
-                          f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
-                 S(830), S(1172) + di, S(480), S(210), "line-height:1.02;text-align:left")
+        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(262)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px {OFFWHITE}">{day}</span>',
+                 S(282), S(1172) + di, S(400), S(250))
+        self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;letter-spacing:.02em">{month}</span><br>'
+                          f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
+                 S(838), S(1172) + di, S(440), S(200), "line-height:1.02;text-align:left")
+        if self.neutral_only:      # launch pack: time small, STATUS the big line, note smaller
+            self.raw("time", c["time"].upper(), W // 2, S(1290) + di, S(700), S(34), f"font-family:var(--m);font-weight:700;font-size:{S(26)}px;letter-spacing:.18em;color:{GL}")
+            self.raw("status", c["status"], W // 2, S(1338) + di, S(900), S(60), f"font-family:var(--e);font-weight:600;font-size:{S(46)}px")
+            if c.get("note"):
+                self.raw("note", c["note"], W // 2, S(1384) + di, S(520), S(40), f"font-family:var(--e);font-weight:600;font-size:{S(28)}px")
+            self.pill("cta", c.get("cta", ""), S(1414) + di, h=S(76))
+            return
         self.raw("time", f'{c["time"].upper()}&nbsp;&nbsp;/&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1318) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
-        self.pill("cta", c["cta"], S(1414) + di, h=S(76))
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1372) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(40)}px;color:{GL}")
+        self.pill("cta", c.get("cta", ""), S(1414) + di, h=S(76))
 
     def _info_vertical(self):
         """Rail type: the edition and the cause run vertically up both edges; the centre is one italic date line over tracked meta."""
@@ -380,7 +433,9 @@ class Poster:
         self.raw("time", f'{year}&nbsp;&nbsp;·&nbsp;&nbsp;{c["time"].upper()}', W // 2, S(1262) + di, S(700), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(25)}px;letter-spacing:.26em;color:{GL}")
         self.raw("status", c["status"], W // 2, S(1326) + di, S(640), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(54)}px")
-        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1384) + di, S(420), S(44), f"font-family:var(--m);font-weight:700;font-size:{S(22)}px;letter-spacing:.24em;color:{GL}")
+        self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
 
     def _mask_xf(self):
         return f"transform:rotate({self.mask_tilt}deg) scale({self.mask_scale});transform-origin:60% 40%;" if (self.mask_tilt or self.mask_scale != 1.0) else ""
@@ -404,8 +459,13 @@ class Poster:
             self.img("mask_stroked.png", S(415 - 190 * MK) - pad, S(-145) + self.dy_top - pad, round(mw * 2180 / 2000), z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.6));")
         else:
-            self.img("mask.png", S(415 - 190 * MK + self.mask_dx), S(-145 + self.mask_dy) + self.dy_top, mw, z=6, tag="mask",
-                     extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
+            if self.kind == "story_launch":
+                # fitted so the SILVER mask's visible outline lands on the COPPER mask's story_01 footprint (measured from both alpha channels:
+                # copper outline 332,164 to 1028,622 on the 1080 canvas; silver at left 254, top 60, width 832 reproduces it within 3px of height)
+                self.img("mask.png", 254, 60, 832, z=6, tag="mask", extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+            else:
+                self.img("mask.png", S(415 - 190 * MK + self.mask_dx), S(-145 + self.mask_dy) + self.dy_top, mw, z=6, tag="mask",
+                         extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));" + self._mask_xf())
         if self.style != "diya":              # the navy diya direction is quiet: the lotus-diya plate carries the light
             self.img("string_lights.png", S(105), S(-150) + self.dy_top, S(1560), z=5, tag="lights")   # z 5 < mask z 6: the mask is IN FRONT of the lights (user, 2026-10-13)
         self.badge()
@@ -441,10 +501,40 @@ class Poster:
                 f'<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>')
 
     # ---- kinds ------------------------------------------------------------------------------------
+    TEXT_TAGS = ("sub1", "sub2", "date", "month", "time", "status", "note", "cue", "edition", "linkpill")
+    # Launch-pack type is WHITE with a thin BLACK border, like the reference launch poster (user, 2026-10-13). One !important override on the
+    # text elements and everything inside them, so it beats every treatment's inline colour: gold lines, the foil gradient clip and the hollow
+    # numerals all become solid white. paint-order puts the fill over the stroke, so the 4px stroke shows as a 2px border OUTSIDE the glyph
+    # and never thins the letters, at any type size.
+    WHITE_BORDER_CSS = ("".join(f'[data-tag="{t}"],[data-tag="{t}"] *,' for t in TEXT_TAGS).rstrip(",") +
+                        "{color:#fff!important;-webkit-text-fill-color:#fff!important;background:none!important;-webkit-background-clip:border-box!important;"
+                        "background-clip:border-box!important;-webkit-text-stroke:4px #000!important;paint-order:stroke fill!important;"
+                        # NeutralFace ONLY (user, 2026-10-13): forced on every text element so no inline face can survive, the two cuts it ships
+                        # (Bold for everything, Regular for the one 'EDITION' word, as in the reference poster), natural spacing, no italics
+                        "font-family:var(--d)!important;font-weight:700!important;font-style:normal!important;letter-spacing:.01em!important;"
+                        "text-indent:0!important;text-transform:uppercase!important}"
+                        '[data-tag="sub2"],[data-tag="sub2"] *{font-weight:400!important}')
+
+    @staticmethod
+    def neutralise(html):
+        """Re-set every text face in NeutralFace (the brand display face, --d): the serif italic, mono and Eina lines all become NeutralFace.
+        NeutralFace is an uppercase face, so the replacements force uppercase; weights map to its two cuts (400 Regular, 700 Bold).
+        Safe on the whole document: the base64 image payloads cannot contain these CSS strings."""
+        for old, new in (("font-family:var(--s);font-style:italic", "font-family:var(--d);font-style:normal;font-weight:400;text-transform:uppercase"),
+                         ("font-family:var(--m)", "font-family:var(--d);text-transform:uppercase"),
+                         ("font-family:var(--e);font-weight:600", "font-family:var(--d);font-weight:700;text-transform:uppercase"),
+                         ("font-family:var(--e)", "font-family:var(--d);text-transform:uppercase")):
+            html = html.replace(old, new)
+        return html
+
     def build(self):
         getattr(self, "_" + self.kind)()
         self.overlays()
-        return B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
+        page = B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
+        if not self.neutral_only:
+            return page
+        page = self.neutralise(page)                                      # the whole page, so the default .p font rule is NeutralFace too
+        return page.replace("</style>", self.WHITE_BORDER_CSS + "</style>", 1)
 
     def _announce(self):
         if self.style == "photo":
@@ -507,6 +597,130 @@ class Poster:
     def _photo_tag(self, name, ref, x, y, w, h, z, extra="", filt="contrast(1.06) saturate(.92) brightness(.78)"):
         self.parts.append(f'<img data-tag="{name}" src="{photo_uri(ref)}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;'
                           f'object-fit:cover;z-index:{z};filter:{filt};{extra}">')
+
+    # ---- launch pack: stories, WhatsApp poster, WhatsApp DP ---------------------------------------------------------
+    def _poster_ref(self):
+        """The FEED poster REMADE FROM THE USER'S REFERENCE (2026-10-13). Same family as `story_ref`, on the diya plate instead of a photo.
+        Measured off the reference after cropping its screenshot frame (7px left/top, 5px right/bottom) and scaling to 1080x1350: badge
+        30..297 x 122..370, copper mask outline 343..1035 x 108..560, ball-free title 35..1071 x 461..1012, edition lines centred at x 612,
+        status and note at x 540, link pill 316..766 x 1118..1221. The lights are fitted to the reference's bulbs. No disco ball, no date/time."""
+        c, W, P = self.c, self.W, self.parts
+        P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
+        self.img("string_lights.png", 160, -53, 1045, z=5, tag="lights")
+        k = .4925                                         # copper mask: visible outline 343..1035 x 108..560
+        self.img("mask_copper.png", round(343 - 157 * k), round(108 - 211 * k), round(1680 * k), z=6, tag="mask",
+                 extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+        self.box("mask", 343, 108, 692, 452)
+        self.img("live_badge.png", 30, 122, 267, z=8, tag="badge"); self.box("badge", 30, 122, 267, 248)
+        t = .6034                                         # ball-free title lockup: visible outline 35..1071 x 461..1012
+        self.img("title_lockup_noball.png", round(35 - 265 * t), round(461 - 401 * t), round(2000 * t), z=9, tag="title")
+        self.box("title", 35, 461, 1036, 551)
+        self.raw("sub1", "MASQUERADE SANGEET", 612, 917, 520, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        self.raw("sub2", "Edition", 612, 962, 170, 40, "font-family:var(--e);font-weight:400;font-size:37px")
+        link = c.get("link", "Link in bio")
+        nolink = link is False                            # WhatsApp: nothing to link to, so no pill, and the info lines drop into the freed space
+        dy = 62 if nolink else 0
+        self.raw("status", c["status"], 538, 1030 + dy, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
+        if c.get("note"):
+            self.raw("note", c["note"], 540, 1075 + dy, 350, 34, "font-family:var(--e);font-weight:600;font-size:28px")
+        if nolink:
+            return
+        P.append(f'<div data-tag="linkpill" style="position:absolute;left:316px;top:1118px;width:450px;height:103px;border-radius:22px;'
+                 f'border:2px solid rgba(190,150,60,.75);background:rgba(8,6,10,.62);z-index:12;display:flex;align-items:center;justify-content:center;'
+                 f'font-family:var(--e);font-weight:600;font-size:56px;line-height:1;text-transform:uppercase">{link}</div>')
+        self.box("linkpill", 316, 1118, 450, 103)
+
+    def _story_ref(self):
+        """The launch story REMADE FROM THE USER'S REFERENCE IMAGE (2026-10-13, "remake this, same to same"). Every number below was MEASURED off
+        that image after scaling it to 1080x1920 and removing its screenshot frame (about 18px left, 25px top); the lights were fitted by
+        matching six bulb positions at 0.55x, all within 6px. Differences from `story_launch`, all deliberate: no diya plate (the photo runs
+        to the corners), no disco ball on the title (the reference has none; `title_lockup_noball.png` is a derived copy, the original is
+        untouched), a 38px WHITE regular EDITION instead of a small gold one, a larger note, no 'photo dim' ellipse, and 'LINK IN BIO' as
+        real text in a soft gold-edged pill instead of arrows. The PHOTO is the one thing that cannot be reproduced from the reference: it
+        is whichever library photo is passed in `photo`."""
+        c, W, P = self.c, self.W, self.parts
+        ph = c.get("photo", "05")
+        P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{self.H}px;object-fit:cover;z-index:1;'
+                 f'filter:contrast(1.08) saturate(1.0) brightness(.92)">')
+        P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(8,6,30,.55) 0%,'
+                 'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
+        self.img("string_lights.png", 158, -59, 1100, z=5, tag="lights")
+        k = .499                                           # copper mask: visible outline 357..1059 x 98..536 on the canvas
+        self.img("mask_copper.png", round(358 - 157 * k), round(98 - 211 * k), round(1680 * k), z=6, tag="mask",
+                 extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+        self.box("mask", 358, 98, 701, 438)
+        self.img("live_badge.png", 45, 124, 264, z=8, tag="badge"); self.box("badge", 45, 124, 264, 250)
+        t = .59                                            # title lockup, no ball: visible outline 38..1051 x 480..1018
+        self.img("title_lockup_noball.png", round(38 - 265 * t), round(480 - 401 * t), round(2000 * t), z=9, tag="title")
+        self.box("title", 38, 480, 1013, 538)
+        self.raw("sub1", "MASQUERADE SANGEET", 617, 938, 520, 46,
+                 "font-family:var(--e);font-weight:600;font-size:40px")
+        self.raw("sub2", "Edition", 617, 981, 180, 42, "font-family:var(--e);font-weight:400;font-size:38px")
+        self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+        if c.get("note"):
+            self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        link = c.get("link", "Link in bio")
+        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:1314px;width:382px;height:82px;border-radius:22px;'
+                 f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
+                 f'font-family:var(--e);font-weight:600;font-size:44px;line-height:1;text-transform:uppercase">{link}</div>')
+        self.box("linkpill", 342, 1314, 382, 82)
+
+    def _story_launch(self):
+        """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
+        a clear zone is declared at the lower third for Instagram's link sticker, with a small cue above it. The bottom 250px stays empty for
+        Instagram's reply bar and the top 200px for its profile bar."""
+        if self.c.get("date"):
+            self._announce_editorial()
+        else:
+            self._story_no_date()
+        W = self.W
+        self.raw("cue", "↓&nbsp;&nbsp;LINK IN BIO&nbsp;&nbsp;↓", W // 2, 1478, S(520), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(24)}px;letter-spacing:.3em;color:{self.GL};text-shadow:0 2px 14px rgba(0,0,0,.8)")
+        self.box("linkzone", (W - 640) // 2, 1505, 640, 165)        # reserved for the link sticker: nothing else may enter
+
+    def _story_no_date(self):
+        """A launch story WITHOUT the date and time (user, 2026-10-13): title and edition lines as usual, then the status becomes the hero line
+        and the note sits under it. Nothing is printed where the date block was, so the lines are re-centred on the space it freed."""
+        c, di, W = self.c, self.dy_info, self.W
+        self.base(); self.top_group(); self._title_for_layout()
+        self._edition_lines()
+        # raw(label, html, cx, cy, w, h, css): the status is the hero line where the date block used to start
+        self.raw("status", c["status"], W // 2, S(1150) + di, S(900), S(70),
+                 f"font-family:var(--e);font-weight:600;font-size:{S(58)}px;letter-spacing:.01em")
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1240) + di, S(520), S(44),
+                     f"font-family:var(--e);font-weight:600;font-size:{S(36)}px")
+
+    def _wa_poster(self):
+        """The same launch information as a WhatsApp-forwardable 4:5 poster. There is no link to point at, so no CTA pill."""
+        self._announce_editorial()
+
+    def _wa_dp(self):
+        """WhatsApp group DP in the approved design family (user, 2026-10-13: "rebuild the DP to match"). 1080x1080 shown as a CIRCLE r=540, so
+        the poster's elements are scaled down and centred: copper mask, ball-free title (tuck of the edition lines kept), white NeutralFace with
+        the black border, diya plate. No LIVE badge (cropped and unreadable at DP size) and no date unless one is supplied."""
+        W, H, P = self.W, self.H, self.parts
+        P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
+        DY = 50                                           # centres the content's mass on the circle's centre
+        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x)
+        mx, my = 340, 170 + DY
+        self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
+                 extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+        self.box("mask", mx, my, 400, 263)
+        t = .466                                          # ball-free title: visible width 800, left 140
+        tx, ty = 140, 360 + DY
+        self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")
+        self.box("title", tx, ty, 800, 425)
+        r = t / .6034 * 1.15                              # the poster's edition lines at this scale, nudged up for DP-size legibility
+        self.raw("sub1", "MASQUERADE SANGEET", 540 + round(72 * t / .6034), ty + round(456 * t / .6034), round(520 * r), round(44 * r),
+                 f"font-family:var(--e);font-weight:600;font-size:{round(38 * r)}px")
+        self.raw("sub2", "Edition", 540 + round(72 * t / .6034), ty + round(501 * t / .6034), round(170 * r), round(40 * r),
+                 f"font-family:var(--e);font-weight:400;font-size:{round(37 * r)}px")
+        if self.c.get("date"):
+            self.raw("date", self.c["date"], 540, ty + 470, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info
@@ -582,14 +796,15 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     p = Poster(kind, content, canvas, style, mask, typo, **opts)
     html = p.build()
     os.makedirs(os.path.dirname(out_png), exist_ok=True)
+    # ("date","time"): foil's numeral line box is taller than its glyphs; the ink clears the time line (checked by eye)
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("title", "sub1"), ("title", "sub2"), ("sub2", "status"), ("status", "note"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
-    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet", "arch") if l in labels),
+    await B.render(html, out_png, p.W, p.H, elements=p.elements, containers=tuple(l for l in ("cta", "carpet", "arch", "linkpill") if l in labels),
                    collision_ignore=ignore, text_pairs=text_pairs,
                    bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain", "carpet", "banner", "photo"),
                    crop_tags=("plate", "sparkles", "grain", "photo", "arch"), page_bg=GROUND)
