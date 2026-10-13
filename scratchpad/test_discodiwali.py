@@ -160,4 +160,39 @@ bx = lambda q, n: {e[0]: e for e in q.elements}[n]
 ok(bx(layout_poster("mask_behind"), "sub1")[2] != bx(layout_poster("classic"), "sub1")[2], "the edition lines follow the title's real bottom, not fixed coordinates")
 ok(dd.LAYOUTS["title_hero"]["title"][1] >= 340, "title_hero keeps the disco ball clear of the LIVE badge (y_ref >= 340)")
 
+# --- launch pack: stories, WhatsApp poster, WhatsApp DP ---------------------------------------------------------------------
+LF = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards", status="Ticket sales open soon", note="More details soon", photo="05")
+def refused_kind(kind, content, canvas, needle=""):
+    return refused(kind, content, canvas, needle)
+ok(refused_kind("story_launch", LF, "feed", "canvas"), "a launch story is refused on a feed canvas (it is a story)")
+ok(refused_kind("wa_dp", dict(edition="X", date="d"), "feed", "canvas"), "the WhatsApp DP is refused anywhere but square")
+ok(refused_kind("story_launch", {k: v for k, v in LF.items() if k != "time"}, "story", "'time'"), "a launch story missing the time is refused BY NAME")
+st = dd.Poster("story_launch", LF, "story", typo="foil"); sh = st.build()
+bx2 = {e[0]: e for e in st.elements}
+ok("linkzone" in bx2, "a launch story declares the reserved link-sticker zone as an element")
+lz = bx2["linkzone"]
+ok(lz[2] + lz[4] <= st.H - 240, "the link zone (y + h) ends above Instagram's bottom 250px (reply bar) safe line")
+ok(not any(e[0] != "linkzone" and e[1] < lz[1] + lz[3] and lz[1] < e[1] + e[3] and e[2] < lz[2] + lz[4] and lz[2] < e[2] + e[4]
+           for e in st.elements if e[0] not in ("plate", "photo", "mask", "title")), "nothing else is declared inside the link-sticker zone (x,y,w,h compared on the right axes)")
+ok('data-tag="cta"' not in sh, "a launch story carries no CTA pill (the link sticker takes its place)")
+FACT_PARTS = ("10", "NOVEMBER", "2026", "4:30 PM", "ONWARDS", "TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "ALL FOR")
+import re as _re2
+def visible_text(h):                       # text nodes only: drop tags, the style block and base64 payloads
+    h = _re2.sub(r"<style.*?</style>", "", h, flags=_re2.S)
+    return _re2.sub(r"\s+", " ", _re2.sub(r"<[^>]+>", " ", h)).upper()
+for ty in ("foil", "outline", "stack", "editorial"):
+    txt = visible_text(dd.Poster("story_launch", LF, "story", typo=ty).build())
+    parts = [("NOV" if (p == "NOVEMBER" and ty == "stack") else p) for p in FACT_PARTS]      # the stack treatment sets the month as NOV (10 NOV 2026)
+    missing = [p for p in parts if p not in txt and p != "ALL FOR"]
+    ok(not missing, f"story typo={ty}: every launch fact is present as text (missing: {missing})")
+ok("var(--e)" not in sh and "var(--s)" not in sh and "var(--m)" not in sh, "ALL launch-pack type is NeutralFace (no Eina, serif or mono left)")
+ok("text-transform:uppercase" in sh, "NeutralFace is an uppercase face: the replacements force uppercase")
+dp = dd.Poster("wa_dp", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026"), "square"); dp.build()
+import math as _m
+inside = lambda e: all(_m.hypot(cx - dp.W / 2, cy - dp.H / 2) <= 540 for cx in (e[1], e[1] + e[3]) for cy in (e[2], e[2] + e[4]))
+ok(all(inside(e) for e in dp.elements if e[0] in ("date", "edition")), "the DP's text boxes sit wholly inside the circular crop WhatsApp applies")
+ok(dp.dy_info == 0 and dp.dy_title == 0, "a square canvas does not inherit a negative height shift from the 1350 baseline")
+wp = dd.Poster("wa_poster", LF, "feed").build()
+ok('data-tag="cta"' not in wp and "LINK IN BIO" not in wp.upper(), "the WhatsApp poster has no CTA pill and no 'link in bio' (there is no link to point at)")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

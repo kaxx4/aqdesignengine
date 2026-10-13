@@ -47,7 +47,8 @@ LAYOUTS = {"classic": {},
            "title_hero":  dict(mask=(470, 20, .62, 8),   title=(1.04, 350)),     # the lockup bleeds wide, the mask shrinks to a corner accent
            "mask_behind": dict(mask=(-100, 170, 1.25, -6), title=(.9, 430))}   # the mask sits BEHIND the title: the lockup overprints it
 STYLES = ("plate", "diya", "stroke", "blue", "photo")   # plate: beaded celestial corners. diya: navy and gold lotus-diya corners (no string lights). stroke: plain ink ground, red-stroked mask. photo: a real event photo, graded navy, with the soft diya plate SCREEN-blended over it, plus editorial type. blue: full-bleed navy diya pattern under a colour-dodge blue layer and disco beams (blend-mode recipe, scratchpad/dd_blend_lab.py v7)
-KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio")
+LAUNCH_KINDS = ("story_launch", "wa_poster", "wa_dp")   # the launch pack sets every line of type in NeutralFace
+KINDS = ("announce", "countdown", "tickets_open", "sold_out", "save_the_date", "teaser_full", "teaser_arch", "teaser_trio", "story_launch", "wa_poster", "wa_dp")
 REQUIRED = {
     "announce":     ("edition", "date", "time", "status", "cta"),
     "countdown":    ("edition", "date", "days", "cta"),
@@ -57,8 +58,11 @@ REQUIRED = {
     "teaser_full":  ("edition", "date", "line", "photo", "cta"),
     "teaser_arch":  ("edition", "date", "line", "photo", "cta"),
     "teaser_trio":  ("edition", "date", "line", "photos", "cta"),
+    "story_launch": ("edition", "date", "time", "status", "photo"),
+    "wa_poster":    ("edition", "date", "time", "status", "photo"),
+    "wa_dp":        ("edition", "date"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": ()}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note",), "wa_poster": ("note",), "wa_dp": ()}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -110,8 +114,9 @@ def days_to_go(date_iso, today=None):
 def validate_brief(kind, content, canvas):
     if kind not in KINDS:
         raise ValueError(f"kind must be one of {KINDS}, got {kind!r}")
-    if canvas not in ("feed", "story"):
-        raise ValueError(f"canvas must be 'feed' or 'story', got {canvas!r}")
+    allowed = {"story_launch": ("story",), "wa_poster": ("feed",), "wa_dp": ("square",)}.get(kind, ("feed", "story"))
+    if canvas not in allowed:
+        raise ValueError(f"{kind}: canvas must be one of {allowed}, got {canvas!r}")
     for f in REQUIRED[kind]:
         if f not in content or content[f] in (None, ""):
             raise ValueError(f"{kind}: required field {f!r} is missing")
@@ -147,6 +152,11 @@ class Poster:
         if typo not in TYPOS:
             raise ValueError(f"typo must be one of {TYPOS}, got {typo!r}")
         self.kind, self.c, self.canvas, self.style, self.mask, self.typo = kind, content, canvas, style, mask, typo
+        if kind in ("story_launch", "wa_poster"):
+            style = self.style = "photo"                      # these kinds ARE the photo direction
+        self.type_scale = 1.14 if kind == "story_launch" else 1.0      # a story is read at a third of the size: its type is scaled up
+        self.neutral_only = kind in LAUNCH_KINDS                      # launch pack: ALL type is NeutralFace (user, 2026-10-13)
+        self.no_pill = kind in ("story_launch", "wa_poster")   # no CTA pill: a link sticker goes there (story) / there is no link (WhatsApp)
         if layout not in LAYOUTS:
             raise ValueError(f"layout must be one of {tuple(LAYOUTS)}, got {layout!r}")
         self.layout = layout
@@ -155,9 +165,13 @@ class Poster:
         self.mask_tilt = mask_tilt or mt                                  # explicit kwargs win over the preset
         self.mask_scale = mask_scale if mask_scale != 1.0 else ms
         self.title_scale, self.title_yref = L.get("title", (1.0, 390))
-        self.W, self.H = core.SIZES["feed" if canvas == "feed" else "story"]
+        self.W, self.H = core.SIZES[canvas]
         dh = self.H - BASE_H
-        self.dy_top, self.dy_title, self.dy_info = round(dh * .15), round(dh * .62), dh
+        self.dy_top, self.dy_title, self.dy_info = (round(dh * .15), round(dh * .62), dh) if dh > 0 else (0, 0, 0)   # only a TALLER canvas shifts
+        if kind == "story_launch":                             # the feed composition shifted clear of Instagram's top bar; pill zone left for the sticker
+            self.dy_top, self.dy_title, self.dy_info = 130, 150, 150
+        if kind == "wa_poster":
+            self.dy_info = 24
         self.parts, self.elements = [], []
 
     def box(self, label, x, y, w, h):
@@ -183,6 +197,8 @@ class Poster:
         return size
 
     def pill(self, label, text, cy, w=S(498), h=S(112)):
+        if self.no_pill:
+            return
         x = (self.W - w) // 2
         self.parts.append(
             f'<div data-tag="{label}" style="position:absolute;left:{x}px;top:{cy - h // 2}px;width:{w}px;height:{h}px;'
@@ -240,10 +256,11 @@ class Poster:
         ph = self.c.get("photo", "03")
         # TEXT BUDGET RULE (user, 2026-10-13): the more of the canvas a photo owns, the less copy it carries. The sparse typos let more photo through.
         sparse = self.typo in ("minimal", "whisper")
+        light = sparse or self.kind == "story_launch"      # a story keeps more photo: its copy sits in one band, not over the whole frame
         P.append(f'<img data-tag="photo" src="{photo_uri(ph)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
-                 f'filter:contrast(1.12) saturate(.95) brightness({1.1 if sparse else .95})">')
+                 f'filter:contrast(1.12) saturate(.95) brightness({1.1 if sparse else 1.05 if light else .95})">')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#0A1E7A,#050A33);'
-                 f'mix-blend-mode:multiply;opacity:{.42 if sparse else .6}"></div>')
+                 f'mix-blend-mode:multiply;opacity:{.42 if sparse else .45 if light else .6}"></div>')
         plate = "bg_diya_portrait.jpg"
         ex = "mix-blend-mode:screen;"
         if H <= BASE_H:
@@ -255,13 +272,18 @@ class Poster:
         if sparse:   # a bottom shade so the one line of copy that remains still reads on a bright photo
             P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,0) 58%,rgba(0,0,0,.72) 100%)"></div>')
         P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:radial-gradient(ellipse 66% 40% at 50% 66%,'
-                 f'rgba(0,0,0,{.26 if sparse else .62}),rgba(0,0,0,{.1 if sparse else .3}) 65%,rgba(0,0,0,0) 100%)"></div>')
+                 f'rgba(0,0,0,{.26 if sparse else .55 if light else .62}),rgba(0,0,0,{.1 if sparse else .22 if light else .3}) 65%,rgba(0,0,0,0) 100%)"></div>')
 
     def raw(self, label, html, cx, cy, w, h, css="", z=12):
         """A centred block of arbitrary markup with its declared box. For the editorial type, where one line mixes faces."""
-        self.parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:translate(-50%,-50%);white-space:nowrap;'
+        ts = 1.0 if label in ("sub1", "sub2", "cue") else self.type_scale   # the notch tuck and the cue keep their size
+        if ts != 1 and label in ("date", "month", "time", "status", "note"):
+            mid = S(1105) + self.dy_info                  # just above the date: scaled type spreads its lines DOWN from it,
+            cy = round(mid + (cy - mid) * ts)             # otherwise bigger type simply lands on its neighbours
+        tf = "translate(-50%,-50%)" + (f" scale({ts})" if ts != 1 else "")
+        self.parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:{tf};white-space:nowrap;'
                           f'line-height:1;color:{OFFWHITE};z-index:{z};{css}">{html}</div>')
-        self.box(label, cx - w / 2, cy - h / 2, w, h)
+        self.box(label, cx - w * ts / 2, cy - h * ts / 2, w * ts, h * ts)
 
     # ---- type treatments for style="photo" -----------------------------------------------------------------------
     GL = "#E8C063"                                              # gold lifted for small type on a photo ground
@@ -287,8 +309,12 @@ class Poster:
         b = self._tbottom
         self.raw("sub1", "MASQUERADE SANGEET", cx, S(b - 108) + self.dy_title, S(560 * min(self.title_scale, 1.0)), S(40),
                  "font-family:var(--e);font-weight:600;font-size:%dpx;letter-spacing:.34em;text-indent:.34em" % S(26))
-        self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
-                 f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
+        if self.neutral_only:                        # NeutralFace is an uppercase face: a small tracked gold EDITION, not a 58px serif word
+            self.raw("sub2", "Edition", cx, S(b - 58) + self.dy_title, S(210), S(34),
+                     f"font-family:var(--e);font-weight:600;font-size:{S(28)}px;letter-spacing:.42em;text-indent:.42em;color:{self.GL}")
+        else:
+            self.raw("sub2", "Edition", cx, S(b - 52) + self.dy_title, S(260), S(60),
+                     f"font-family:var(--s);font-style:italic;font-size:{S(58)}px;color:{self.GL}")
 
     def _day_rest(self):
         day, _, rest = self.c["date"].upper().partition(" ")
@@ -307,7 +333,7 @@ class Poster:
                  f"font-family:var(--e);font-weight:600;font-size:{S(32)}px;letter-spacing:.2em")
         if c.get("note"):
             self.raw("note", c["note"], W // 2, S(1334) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(38)}px;color:{GL}")
-        self.pill("cta", c["cta"], S(1412) + di, h=S(80))
+        self.pill("cta", c.get("cta", ""), S(1412) + di, h=S(80))
 
     def _info_foil(self):
         """A gold-foil italic numeral (a gradient clipped to the glyphs), with the month and year stacked in tracked caps beside it."""
@@ -320,22 +346,24 @@ class Poster:
                  W // 2, S(1148) + di, S(760), S(210))
         self.raw("time", c["time"].upper() + f'&nbsp;&nbsp;·&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1262) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
-        self.raw("status", "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
-        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
+        self.raw("status", c.get("note") or "Tickets, soon.", W // 2, S(1322) + di, S(480), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(56)}px")
+        self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
 
     def _info_outline(self):
         """Hollow numerals: transparent fill, a hairline stroke, so the photo reads THROUGH the date. The month is solid beside it."""
         c, di, W, GL = self.c, self.dy_info, self.W, self.GL
         day, rest = self._day_rest()
         month, _, year = rest.partition(", ")
-        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(300)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px {OFFWHITE}">{day}</span>',
-                 S(330), S(1172) + di, S(400), S(250))
-        self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;letter-spacing:.02em">{month}</span><br>'
-                          f'<span style="font-family:var(--d);font-weight:900;font-size:{S(92)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
-                 S(830), S(1172) + di, S(480), S(210), "line-height:1.02;text-align:left")
+        self.raw("date", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(262)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px {OFFWHITE}">{day}</span>',
+                 S(282), S(1172) + di, S(400), S(250))
+        self.raw("month", f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;letter-spacing:.02em">{month}</span><br>'
+                          f'<span style="font-family:var(--d);font-weight:900;font-size:{S(84)}px;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px {GL}">{year}</span>',
+                 S(838), S(1172) + di, S(440), S(200), "line-height:1.02;text-align:left")
         self.raw("time", f'{c["time"].upper()}&nbsp;&nbsp;/&nbsp;&nbsp;{c["status"].upper()}', W // 2, S(1318) + di, S(900), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(21)}px;letter-spacing:.18em;color:{GL}")
-        self.pill("cta", c["cta"], S(1414) + di, h=S(76))
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1372) + di, S(420), S(46), f"font-family:var(--s);font-style:italic;font-size:{S(40)}px;color:{GL}")
+        self.pill("cta", c.get("cta", ""), S(1414) + di, h=S(76))
 
     def _info_vertical(self):
         """Rail type: the edition and the cause run vertically up both edges; the centre is one italic date line over tracked meta."""
@@ -380,7 +408,9 @@ class Poster:
         self.raw("time", f'{year}&nbsp;&nbsp;·&nbsp;&nbsp;{c["time"].upper()}', W // 2, S(1262) + di, S(700), S(34),
                  f"font-family:var(--m);font-weight:700;font-size:{S(25)}px;letter-spacing:.26em;color:{GL}")
         self.raw("status", c["status"], W // 2, S(1326) + di, S(640), S(60), f"font-family:var(--s);font-style:italic;font-size:{S(54)}px")
-        self.pill("cta", c["cta"], S(1420) + di, h=S(76))
+        if c.get("note"):
+            self.raw("note", c["note"], W // 2, S(1384) + di, S(420), S(44), f"font-family:var(--m);font-weight:700;font-size:{S(22)}px;letter-spacing:.24em;color:{GL}")
+        self.pill("cta", c.get("cta", ""), S(1420) + di, h=S(76))
 
     def _mask_xf(self):
         return f"transform:rotate({self.mask_tilt}deg) scale({self.mask_scale});transform-origin:60% 40%;" if (self.mask_tilt or self.mask_scale != 1.0) else ""
@@ -441,10 +471,23 @@ class Poster:
                 f'<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>')
 
     # ---- kinds ------------------------------------------------------------------------------------
+    @staticmethod
+    def neutralise(html):
+        """Re-set every text face in NeutralFace (the brand display face, --d): the serif italic, mono and Eina lines all become NeutralFace.
+        NeutralFace is an uppercase face, so the replacements force uppercase; weights map to its two cuts (400 Regular, 700 Bold).
+        Safe on the whole document: the base64 image payloads cannot contain these CSS strings."""
+        for old, new in (("font-family:var(--s);font-style:italic", "font-family:var(--d);font-style:normal;font-weight:400;text-transform:uppercase"),
+                         ("font-family:var(--m)", "font-family:var(--d);text-transform:uppercase"),
+                         ("font-family:var(--e);font-weight:600", "font-family:var(--d);font-weight:700;text-transform:uppercase"),
+                         ("font-family:var(--e)", "font-family:var(--d);text-transform:uppercase")):
+            html = html.replace(old, new)
+        return html
+
     def build(self):
         getattr(self, "_" + self.kind)()
         self.overlays()
-        return B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
+        page = B.page(self.W, self.H, GROUND, "".join(self.parts), grain=False)
+        return self.neutralise(page) if self.neutral_only else page      # the whole page, so the default .p font rule is NeutralFace too
 
     def _announce(self):
         if self.style == "photo":
@@ -507,6 +550,43 @@ class Poster:
     def _photo_tag(self, name, ref, x, y, w, h, z, extra="", filt="contrast(1.06) saturate(.92) brightness(.78)"):
         self.parts.append(f'<img data-tag="{name}" src="{photo_uri(ref)}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;'
                           f'object-fit:cover;z-index:{z};filter:{filt};{extra}">')
+
+    # ---- launch pack: stories, WhatsApp poster, WhatsApp DP ---------------------------------------------------------
+    def _story_launch(self):
+        """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
+        a clear zone is declared at the lower third for Instagram's link sticker, with a small cue above it. The bottom 250px stays empty for
+        Instagram's reply bar and the top 200px for its profile bar."""
+        self._announce_editorial()
+        W = self.W
+        self.raw("cue", "↓&nbsp;&nbsp;LINK IN BIO&nbsp;&nbsp;↓", W // 2, 1478, S(520), S(34),
+                 f"font-family:var(--m);font-weight:700;font-size:{S(24)}px;letter-spacing:.3em;color:{self.GL};text-shadow:0 2px 14px rgba(0,0,0,.8)")
+        self.box("linkzone", (W - 640) // 2, 1505, 640, 165)        # reserved for the link sticker: nothing else may enter
+
+    def _wa_poster(self):
+        """The same launch information as a WhatsApp-forwardable 4:5 poster. There is no link to point at, so no CTA pill."""
+        self._announce_editorial()
+
+    def _wa_dp(self):
+        """A group display picture: 1080x1080, but WhatsApp crops it to a CIRCLE, so everything lives inside r~470 of the centre. Title, a small
+        mask, the date and the edition line. No LIVE badge: it would be cropped and unreadable at DP size."""
+        W, H = self.W, self.H
+        P = self.parts
+        P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
+        self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
+        P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 54%,rgba(0,0,0,.78),rgba(0,0,0,.35) 62%,rgba(0,0,0,0) 100%)"></div>')
+        # mask: content spans x160-1560 / y215-1135 of the 1680x1278 asset; scale .25 puts its content ~350px wide
+        # WhatsApp shows a CIRCLE of r=540 about the centre. Chord half-width at height y: sqrt(540^2 - (y-540)^2). The date, the widest
+        # line, sits at y~740 where the chord is ~1000 wide, so a 56px NeutralFace date (~650px) clears the edge with room.
+        k = .27
+        mc = (540, 251)                                  # mask content centre
+        self.img("mask_copper.png", round(mc[0] - 860 * k), round(mc[1] - 675 * k), round(1680 * k), z=6, tag="mask",
+                 extra="transform:rotate(-6deg);filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+        self.box("mask", round(mc[0] - 700 * k), round(mc[1] - 460 * k), round(1400 * k), round(920 * k))
+        self.title(scale=.66, cx_shift=round((W - 1160 * .66 * .9) / 2 - S(30)), y_ref=412)
+        self.raw("date", self.c["date"], W // 2, 812, 700, 64,
+                 f"font-family:var(--e);font-weight:600;font-size:56px;letter-spacing:.04em;{self.FOIL}filter:drop-shadow(0 2px 1px rgba(0,0,0,.95)) drop-shadow(0 0 20px rgba(0,0,0,.75))")
+        self.raw("edition", self.c["edition"].upper(), W // 2, 884, 640, 30,
+                 f"font-family:var(--e);font-weight:600;font-size:21px;letter-spacing:.3em;text-indent:.3em;color:{self.GL}")
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info
@@ -585,7 +665,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]

@@ -1387,3 +1387,9 @@ through.
 - **No invented facts:** the module has no price, venue or lineup field. Rs. 550 stays unconfirmed (see TerraThon notes).
 - **Caught by looking, fixed as rules:** markup measured as type (clock line shrank), a numeral declared too short, a 4:5 plate cropped to 9:16. See CLAUDE.md sec 10.
 - **Environment:** Python `playwright` was missing; the installed Chromium is build 1194, so the matching pin is `playwright==1.56.0` (a newer wheel wants a browser that is not installed).
+
+## Disco Diwali launch pack (2026-10-13)
+- **Brief (user):** ten bulk stories on last year's photos with ALL the launch-post information and room for the link sticker; a WhatsApp poster; a WhatsApp group DP; all type in NeutralFace.
+- **Decisions:** the link sticker gets a declared zone (`linkzone`) and the CTA pill is dropped from stories; the DP is built to the circular crop, not the square; the WhatsApp poster has no "link in bio" because there is nothing to link; the engine's NeutralFace file is kept (the user's zip is the same face), the pack just routes every text face through `--d`.
+- **Photos:** last year's photos from `engine/assets/img/events/unsorted-2026-10-07/` (several show what look like minors; no consent record: check before posting).
+- **Not invented:** no price, venue or lineup; "Tickets, soon." appears only in the `foil` treatment when no note is supplied.
