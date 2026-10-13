@@ -43,12 +43,12 @@ parts.append(img("bg_beaded_portrait.jpg", 0, 0, W, H, z=1, tag="plate"))
 # 2 mask, top right, bleeds off the right edge ------------------------------------------------------
 MK = 0.48
 mw = S(2000 * MK); mh = round(mw * 1514 / 2000)
-mx, my = S(415 - 190 * MK), S(-95)
+mx, my = S(415 - 190 * MK), S(-145)
 parts.append(img("mask.png", mx, my, mw, z=6, tag="mask", extra="filter:drop-shadow(0 6px 22px rgba(0,0,0,.55));"))
 
 # 3 string lights across the top, drawn over the mask ------------------------------------------------
-lw = S(1400)
-parts.append(img("string_lights.png", S(185), S(-135), lw, z=7, tag="lights"))
+lw = S(1560)
+parts.append(img("string_lights.png", S(105), S(-150), lw, z=7, tag="lights"))
 
 # 4 LIVE badge, top left ----------------------------------------------------------------------------
 bx, by, bw = S(45), S(48), S(293)
@@ -66,14 +66,14 @@ box("title", S(30), S(390), S(1160), S(670))
 def line(label, text, cx, cy, size, weight=700, extra=""):
     parts.append(f'<div data-tag="{label}" style="position:absolute;left:{cx}px;top:{cy}px;transform:translate(-50%,-50%);'
                  f'white-space:nowrap;font-family:var(--e);font-weight:{weight};font-size:{size}px;line-height:1;'
-                 f'color:{OFFWHITE};text-transform:uppercase;letter-spacing:.01em;z-index:12;{extra}">{text}</div>')
+                 f'color:{OFFWHITE};text-transform:uppercase;letter-spacing:.01em;-webkit-text-stroke:{max(1,size//28)}px {OFFWHITE};z-index:12;{extra}">{text}</div>')
 
 line("sub1", "Masquerade Sangeet", S(673), S(950), S(46))
 line("sub2", "Edition", S(673), S(1000), S(44), weight=400)
 line("date", "10th November, 2026", S(600), S(1090), S(76))
-clock = ('<svg width="{s}" height="{s}" viewBox="0 0 40 40" style="display:inline-block;vertical-align:middle;margin-right:{m}px">'
+clock = ('<svg width="{s}" height="{s}" viewBox="0 0 40 40" style="display:inline-block;vertical-align:middle;margin-right:{m}px;-webkit-text-stroke:0">'
          '<circle cx="20" cy="20" r="18" fill="#EEE" stroke="#999" stroke-width="2"/>'
-         '<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>').format(s=S(60), m=S(8))
+         '<path d="M20 9v11l6 5" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></svg>').format(s=S(60), m=S(16))
 line("time", f'{clock}4:30 PM Onwards', S(600), S(1168), S(60))
 line("tickets", "Ticket Sales Open Soon", S(600), S(1232), S(60))
 line("more", "More Details Soon", S(600), S(1302), S(34))
@@ -99,7 +99,7 @@ async def main():
     out_dir = "out/versions/disco_diwali_announce"
     os.makedirs(out_dir, exist_ok=True)
     await B.render(html, f"{out_dir}/{ver}.png", W, H, elements=elements,
-                   containers=("cta",), bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain"),
+                   containers=("cta",), collision_ignore=[("title","sub1"),("title","sub2")], bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain"),
                    crop_tags=("plate", "sparkles", "grain"), page_bg=GROUND)
     print("done")
 asyncio.run(main())
