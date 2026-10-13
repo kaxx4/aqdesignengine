@@ -305,4 +305,11 @@ ok("LINK BELOW" in visible_text(phh) and not any(w in visible_text(phh) for w in
 ok(dd.photo_uri("03") in phh and dd.photo_uri("05") not in phh, "the requested photo, and only it, is embedded")
 ok("var(--e)" not in phh and "var(--s)" not in phh, "NeutralFace-only type on photo posters")
 
+# --- DP: MASQUERADE SANGEET moved out of the notch into a clear centred line (user, 2026-10-13) ---------------------------------------------
+dq2 = dd.Poster("wa_dp", dict(edition="Masquerade Sangeet Edition"), "square"); dh3 = dq2.build(); d3 = {e[0]: e for e in dq2.elements}
+ok(d3["sub1"][2] >= d3["title"][2] + d3["title"][4] - 10, "the DP's MASQUERADE SANGEET sits BELOW the title block, not tucked into it")
+ok(abs((d3["sub1"][1] + d3["sub1"][3] / 2) - 540) <= 1 and abs((d3["sub2"][1] + d3["sub2"][3] / 2) - 540) <= 1, "both edition lines are centred on the circle's vertical axis")
+ok(int(_re4.search(r'data-tag="sub1"[^>]*font-size:(\d+)px', dh3).group(1)) >= 44, "the DP's MASQUERADE SANGEET is at least 44px (it was 33px)")
+ok(d3["sub1"][2] + d3["sub1"][4] < d3["sub2"][2], "EDITION sits below MASQUERADE SANGEET with no overlap")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

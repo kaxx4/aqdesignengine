@@ -711,23 +711,22 @@ class Poster:
         W, H, P = self.W, self.H, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
         self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
-        DY = 50                                           # centres the content's mass on the circle's centre
+        DY = 23                                           # centres the whole stack (mask top to EDITION bottom) on the circle's centre
         k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x)
-        mx, my = 340, 170 + DY
+        mx, my = 340, 140 + DY
         self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
                  extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
         self.box("mask", mx, my, 400, 263)
         t = .466                                          # ball-free title: visible width 800, left 140
-        tx, ty = 140, 360 + DY
+        tx, ty = 140, 330 + DY
         self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")
         self.box("title", tx, ty, 800, 425)
-        r = t / .6034 * 1.15                              # the poster's edition lines at this scale, nudged up for DP-size legibility
-        self.raw("sub1", "MASQUERADE SANGEET", 540 + round(72 * t / .6034), ty + round(456 * t / .6034), round(520 * r), round(44 * r),
-                 f"font-family:var(--e);font-weight:600;font-size:{round(38 * r)}px")
-        self.raw("sub2", "Edition", 540 + round(72 * t / .6034), ty + round(501 * t / .6034), round(170 * r), round(40 * r),
-                 f"font-family:var(--e);font-weight:400;font-size:{round(37 * r)}px")
+        # The edition lines are NOT tucked into the title's notch here (they are on the posters): at DP size a tucked 33px line is unreadable.
+        # They sit as a clear centred pair below the lockup: 46px bold MASQUERADE SANGEET, 40px regular EDITION.
+        self.raw("sub1", "MASQUERADE SANGEET", 540, 820 + DY, 560, 54, "font-family:var(--e);font-weight:600;font-size:46px;letter-spacing:.01em")
+        self.raw("sub2", "Edition", 540, 874 + DY, 190, 46, "font-family:var(--e);font-weight:400;font-size:40px")
         if self.c.get("date"):
-            self.raw("date", self.c["date"], 540, ty + 470, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
+            self.raw("date", self.c["date"], 540, 930 + DY, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info
