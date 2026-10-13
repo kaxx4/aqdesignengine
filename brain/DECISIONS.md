@@ -1378,3 +1378,12 @@ disabled `suppress_handled` and `reconcile_boxes`. Every preflight option now pa
 through.
 
 **Suite: 361 assertions across 13 files.**
+
+
+## Disco Diwali format (2026-10-13)
+- **Decision:** Disco Diwali is a FORMAT MODULE (`engine/discodiwali.py`), not a Workflow A archetype and not a one-off bespoke script. It has its own ground (ink), palette (silver/gold/copper plus the mask's own colour) and a hand-lettered title asset, none of which exist in the AQ house style, so the format wins inside its module only (CLAUDE.md sec 2 precedence ladder). Precedent: TerraThon, DISPATCH.
+- **Direction:** the user chose the copper mask on navy and gold lotus-diya corners, no string lights, as "much classier" than the silver-and-sequins reference. It is `style="diya", mask="copper"`.
+- **User rules encoded:** the red carpet always fades into black; the sequin plate is optional (a plain-ink stroke direction exists); a drawn red mask exists as a fallback and reads flatter than the photographed masks.
+- **No invented facts:** the module has no price, venue or lineup field. Rs. 550 stays unconfirmed (see TerraThon notes).
+- **Caught by looking, fixed as rules:** markup measured as type (clock line shrank), a numeral declared too short, a 4:5 plate cropped to 9:16. See CLAUDE.md sec 10.
+- **Environment:** Python `playwright` was missing; the installed Chromium is build 1194, so the matching pin is `playwright==1.56.0` (a newer wheel wants a browser that is not installed).
