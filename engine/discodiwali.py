@@ -618,10 +618,14 @@ class Poster:
         self.box("title", 35, 461, 1036, 551)
         self.raw("sub1", "MASQUERADE SANGEET", 612, 917, 520, 44, "font-family:var(--e);font-weight:600;font-size:38px")
         self.raw("sub2", "Edition", 612, 962, 170, 40, "font-family:var(--e);font-weight:400;font-size:37px")
-        self.raw("status", c["status"], 538, 1030, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
-        if c.get("note"):
-            self.raw("note", c["note"], 540, 1075, 350, 34, "font-family:var(--e);font-weight:600;font-size:28px")
         link = c.get("link", "Link in bio")
+        nolink = link is False                            # WhatsApp: nothing to link to, so no pill, and the info lines drop into the freed space
+        dy = 62 if nolink else 0
+        self.raw("status", c["status"], 538, 1030 + dy, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
+        if c.get("note"):
+            self.raw("note", c["note"], 540, 1075 + dy, 350, 34, "font-family:var(--e);font-weight:600;font-size:28px")
+        if nolink:
+            return
         P.append(f'<div data-tag="linkpill" style="position:absolute;left:316px;top:1118px;width:450px;height:103px;border-radius:22px;'
                  f'border:2px solid rgba(190,150,60,.75);background:rgba(8,6,10,.62);z-index:12;display:flex;align-items:center;justify-content:center;'
                  f'font-family:var(--e);font-weight:600;font-size:56px;line-height:1;text-transform:uppercase">{link}</div>')

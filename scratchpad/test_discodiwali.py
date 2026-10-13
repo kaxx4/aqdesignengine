@@ -276,4 +276,11 @@ ok(not any(w in visible_text(prh) for w in ("NOVEMBER", "2026", "4:30", "ONWARDS
 ok(all(w in visible_text(prh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "all remaining copy is present")
 ok(_nb in prh and "var(--e)" not in prh and "var(--s)" not in prh, "ball-free title and NeutralFace-only type")
 
+# --- WhatsApp poster = poster_ref with link=False ------------------------------------------------------------------------------------
+wq = dd.Poster("poster_ref", dict(PR, link=False), "feed"); wh = wq.build(); wb = {e[0]: e for e in wq.elements}
+ok("linkpill" not in wb and "LINK IN BIO" not in visible_text(wh), "the WhatsApp poster has no link pill and no 'link in bio' text")
+ok(wb["title"] == prb["title"] and wb["mask"] == prb["mask"] and wb["badge"] == prb["badge"], "title, mask and badge are exactly where they are on the Instagram poster")
+ok(wb["status"][2] > prb["status"][2], "the info lines drop into the freed space")
+ok("LINK IN BIO" in visible_text(prh), "the Instagram poster keeps its link pill")
+
 print(f"\nALL {N} ASSERTIONS PASSED")
