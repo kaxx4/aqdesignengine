@@ -1,9 +1,9 @@
 """DISCO DIWALI carousel, "CAPTCHA" idea (inspo: a 'Choose everything related to...' verification card over a party photo).
 
-Four 1080x1350 slides:
+Four 1080x1350 slides on a BLACK ground lit by the blue-style effects (screened blue light, disco beams, RGB-split title):
   1  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
   2  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
-  3  the reveal: the approved poster_ref design (title lockup, copper mask, LIVE badge) over a real photo
+  3  the reveal: the approved poster_ref design (RGB-split title lockup, copper mask, LIVE badge) on the black + blue ground
   4  ALL FOR CHARITY + date and time + LINK IN BIO pill
 
 Adaptations recorded (CLAUDE.md sec 2 precedence ladder):
@@ -41,12 +41,34 @@ CARD_H = GRID_Y + GRID_H + 12 + FOOT_H + 12
 CARD_Y = 164
 
 
-def bg_layers(photo, dim=.40):
-    """Full-bleed photo, dimmed, with the format's own gold dust and film grain screened over it."""
-    return (f'<img data-tag="plate" src="{dd.photo_uri(photo)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;filter:saturate(1.1)">'
-            f'<div data-tag="plate" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(0,0,0,{dim}),rgba(0,0,0,{dim + .18}))"></div>'
-            f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">'
+def blue_layers(W=W, H=H):
+    """The blue-style recipe (blend-mode lab v7) re-cut for a BLACK ground. Colour-dodge needs something to burn, so on pure ink the blue
+    light is SCREENed instead: a hot glow in the top right corner and the same repeating-conic disco beams
+    (radial-masked so they fade before the type zone). Every layer is tagged plate: deliberate full bleed."""
+    def lay(css, z):
+        return f'<div data-tag="plate" style="position:absolute;inset:0;z-index:{z};pointer-events:none;{css}"></div>'
+    beam_mask = "radial-gradient(circle at 88% -6%,#000 0,rgba(0,0,0,.45) 34%,transparent 66%)"
+    return (lay("background:radial-gradient(circle at 88% 4%,rgba(61,123,255,.62) 0%,rgba(20,60,220,0) 40%);mix-blend-mode:screen", 2)
+            + lay("background:repeating-conic-gradient(from 188deg at 88% -6%,rgba(120,175,255,.95) 0deg 3deg,transparent 3deg 10deg);"
+                  f"-webkit-mask-image:{beam_mask};mask-image:{beam_mask};mix-blend-mode:screen;opacity:.62", 3))
+
+
+def bg_layers(photo=None, dim=0):
+    """Black ground, the blue light and beams, then the format's own gold dust and film grain screened over everything."""
+    return (f'<div data-tag="plate" style="position:absolute;inset:0;z-index:1;background:#000"></div>' + blue_layers()
+            + f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">'
             f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">')
+
+
+class BluePoster(dd.Poster):
+    """poster_ref on the black + blue ground: swaps the diya plate for the blue layers and RGB-splits the title lockup."""
+    def img(self, name, *a, **k):
+        if name == "bg_diya_portrait.jpg":
+            self.parts.append(dd.BLUE_DEFS + '<div data-tag="plate" style="position:absolute;inset:0;z-index:1;background:#000"></div>' + blue_layers(self.W, self.H))
+            return
+        if name == "title_lockup_noball.png":
+            k["extra"] = k.get("extra", "") + "filter:url(#ca);"
+        return super().img(name, *a, **k)
 
 
 def badge(x, y, w):
@@ -87,7 +109,7 @@ def captcha_slide(bg, sub, selected, button):
     cue = (f'<div data-tag="cue" style="position:absolute;left:0;width:{W}px;top:{CARD_Y + CARD_H + 30}px;text-align:center;font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase;{STROKE}z-index:20">Swipe to verify &rarr;</div>')
     cue_box = (W // 2 - 220, CARD_Y + CARD_H + 30, 440, 44)
     els = [("card", CARD_X, CARD_Y, CARD_W, CARD_H), ("badge",) + bd_box, ("cue",) + cue_box]
-    return bg_layers(bg) + card + bd + cue, els
+    return bg_layers() + card + bd + cue, els
 
 
 def charity_slide():
@@ -100,7 +122,7 @@ def charity_slide():
     pill = (f'<div data-tag="pill" style="position:absolute;left:{(W - 560) // 2}px;top:1130px;width:560px;height:104px;border:2px solid rgba(214,170,90,.7);border-radius:26px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:48px;text-transform:uppercase;{STROKE}z-index:20">Link in bio</div>')
     els = [("badge",) + bd_box, ("mask", 435, 108, 585, 384), ("heading", 120, 520, 840, 320), ("date", 120, 860, 840, 70),
            ("time", 220, 950, 640, 52), ("edition", 140, 1030, 800, 44), ("pill", (W - 560) // 2, 1130, 560, 104)]
-    return bg_layers("09", .45) + bd + mask + heading + date + ed + pill, els
+    return bg_layers() + bd + mask + heading + date + ed + pill, els
 
 
 async def main():
@@ -108,12 +130,13 @@ async def main():
     slides = [captcha_slide("08", "Masquerade Sangeet Edition", False, "Verify"),
               captcha_slide("08", "Yes, all nine", True, "Verified"),
               None, charity_slide()]
+    dd.Poster = BluePoster
     async with B.session():
         for n, s in enumerate(slides, 1):
             path = os.path.join(OUT, f"slide_{n}.png")
             if s is None:
                 await dd.render_poster("poster_ref", dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon",
-                                                          note="More details to follow", photo="07", link=False), "feed", path)
+                                                          note="More details to follow", link=False), "feed", path)
                 continue
             html_inner, els = s
             html = B.page(W, H, "#000", html_inner, grain=False)
