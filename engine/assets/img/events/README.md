@@ -46,3 +46,21 @@ The same hall (tinsel pillars, hanging playing cards, silver star balloons, crea
 ## Not stored
 
 Still missing: the string-light courtyard with a girl in a yellow outfit. Re-upload it as a file to add it.
+
+## disco-diwali-hall-2026-10-14/ (logged 2026-10-14)
+
+Supplied by the user for the Disco Diwali carousel. Playing-card and silver-star hall, silver tinsel pillars, stage par lights. Likely the Masquerade/cards-themed edition hall; the exact event and date are not confirmed. Eight are 2000x1333 landscape, one is 1333x2000 portrait.
+
+| File | Content |
+|---|---|
+| 01_dancers-silver-pillar-purple.jpg | Dancers by a silver tinsel pillar, purple light, card garlands overhead. |
+| 02_crowd-teal-kurta-purple.jpg | Dense crowd, teal kurta in the left foreground, girl in profile front centre. |
+| 03_girls-dancing-yellow-top.jpg | Two dancers close up, one in a yellow top, paisley shawl at left, hands raised behind. |
+| 04_pink-ceiling-chandelier-phone.jpg | Magenta wash, chandeliers and hanging cards, two dancers with a raised phone. |
+| 05_boys-crowd-green-light.jpg | Green and pink light, crowd of teenagers close up, a girl filming on a phone. |
+| 06_blue-room-crowd-faces.jpg | Blue-lit hall, silver pillar, a crowd of young faces looking at the camera. |
+| 07_pink-glare-girls-backs-phone.jpg | Washed pink and violet, two dancers seen from behind, one with a phone, tinsel column. |
+| 08_boy-on-shoulders-stage-lights-portrait.jpg | Portrait. A child on shoulders against green and orange par lights, star balloons. |
+| 09_boy-on-shoulders-star-balloon.jpg | A boy in a white kurta reaching for a star balloon, orange par lights left. |
+
+Standing caveat applies: many people in these frames look like minors, and none has a consent record. Check before public use.

@@ -151,13 +151,20 @@ def slide2():
     return s
 
 
+PHOTO3 = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-hall-2026-10-14")
+
+
 def slide3():
+    """A regular cascade: three EQUAL windows, no roll, one tilt, one title, stepping 73px right and 330px down. The earlier pile mixed three
+    widths, three rolls and two titles, which read as misaligned rather than loose."""
     s = Slide(3)
     s.ground()
     s.index_tag()
-    s.window("w1", 90, 150, 690, 540, s.photo("08", "50% 85%"), z=10, tilt=14, roll=-2, bar_text="DISCO DIWALI")
-    s.window("w2", 300, 420, 640, 590, s.photo("09", "50% 55%", bright=1.5), z=11, tilt=14, roll=2, bar_text="DISCO DIWALI")
-    s.window("w3", 100, 720, 840, 570, s.photo("06", "50% 30%", bright=1.7), z=12, tilt=12, roll=-1, bar_text="MASQUERADE SANGEET EDITION")
+    pics = (("07_pink-glare-girls-backs-phone.jpg", "50% 45%"), ("09_boy-on-shoulders-star-balloon.jpg", "50% 40%"),
+            ("03_girls-dancing-yellow-top.jpg", "50% 35%"))
+    for i, (name, focus) in enumerate(pics):
+        s.window(f"w{i + 1}", 102 + 73 * i, 150 + 330 * i, 720, 380 if i < 2 else 470,
+                 s.photo(os.path.join(PHOTO3, name), focus), z=10 + i, tilt=16, bar_text="DISCO DIWALI")
     return s
 
 
