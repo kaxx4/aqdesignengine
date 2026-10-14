@@ -1,7 +1,7 @@
 """DISCO DIWALI carousel, "CAPTCHA" idea (inspo: a 'Choose everything related to...' verification card over a party photo).
 
 Four 1080x1350 slides on the approved diya ground (black, navy and gold lotus-diya corners fading to black, string lights):
-  1  COVER: title lockup, copper mask, LIVE badge, an "I'M NOT A ROBOT" checkbox hook and a swipe cue
+  1  COVER: title lockup, copper mask, LIVE badge, a captcha card hook (verify you're a Disco Diwali human, spinning checkbox, SWIPE button)
   2  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
   3  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
   4  ALL FOR CHARITY + date and time + LINK IN BIO pill
@@ -95,7 +95,7 @@ def captcha_slide(bg, sub, selected, button):
 
 def cover_slide():
     """Cover: the approved title lockup, copper mask and LIVE badge on the diya ground (positions measured for poster_ref), then the hook, a
-    captcha checkbox reading I'M NOT A ROBOT, which the next slide answers. No date, no status line: the cover only has to stop the thumb."""
+    full captcha card (VERIFY YOU'RE A DISCO DIWALI HUMAN, a spinning checkbox, a SWIPE button), which the next slide answers. No date, no status line: the cover only has to stop the thumb."""
     k, t = .4925, .6034
     bd, bd_box = badge(30, 122, 267)
     mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(343 - 157 * k)}px;top:{round(108 - 211 * k)}px;width:{round(1680 * k)}px;z-index:6;'
@@ -103,13 +103,21 @@ def cover_slide():
     title = (f'<img data-tag="title" src="{dd.uri("title_lockup_noball.png")}" style="position:absolute;left:{round(35 - 265 * t)}px;top:{round(461 - 401 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     sub1 = (f'<div data-tag="sub1" style="position:absolute;left:352px;top:917px;width:520px;text-align:center;font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase;{STROKE}z-index:10">Masquerade Sangeet</div>')
     sub2 = (f'<div data-tag="sub2" style="position:absolute;left:452px;top:962px;width:320px;text-align:center;font-family:var(--d);font-weight:400;font-size:37px;text-transform:uppercase;{STROKE}z-index:10">Edition</div>')
-    PW, PH, PY = 640, 104, 1086
-    pill = (f'<div data-tag="check" style="position:absolute;left:{(W - PW) // 2}px;top:{PY}px;width:{PW}px;height:{PH}px;background:#fff;border-radius:14px;z-index:12;box-shadow:0 14px 44px rgba(0,0,0,.55)">'
-            f'<div style="position:absolute;left:26px;top:{(PH - 58) // 2}px;width:58px;height:58px;border:5px solid #b9b9b9;border-radius:8px;background:#fff;box-sizing:border-box"></div>'
-            f'<div style="position:absolute;left:112px;top:0;height:{PH}px;display:flex;align-items:center;font-family:var(--d);font-weight:700;font-size:44px;text-transform:uppercase;color:#0a0a0a;white-space:nowrap">I\'m not a robot</div></div>')
-    cue = (f'<div data-tag="cue" style="position:absolute;left:0;width:{W}px;top:1238px;text-align:center;font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase;{STROKE}z-index:20">Swipe &rarr;</div>')
+    PW, PY, HB, RH = 900, 1066, 76, 112
+    PH = HB + RH
+    spinner = (f'<svg width="58" height="58" viewBox="0 0 58 58"><circle cx="29" cy="29" r="22" fill="none" stroke="#dfe6f3" stroke-width="7"/>'
+               f'<path d="M29 7a22 22 0 0 1 22 22" fill="none" stroke="{BLUE}" stroke-width="7" stroke-linecap="round"/></svg>')
+    pill = (f'<div data-tag="check" style="position:absolute;left:{(W - PW) // 2}px;top:{PY}px;width:{PW}px;height:{PH}px;background:#fff;z-index:12;box-shadow:0 14px 44px rgba(0,0,0,.6)">'
+            f'<div style="position:absolute;left:0;top:0;width:{PW}px;height:{HB}px;background:{BLUE};color:#fff;font-family:var(--d);font-weight:700;font-size:36px;text-transform:uppercase;'
+            f'display:flex;align-items:center;padding-left:28px;box-sizing:border-box;white-space:nowrap">Verify you\'re a Disco Diwali human</div>'
+            f'<div style="position:absolute;left:28px;top:{HB + (RH - 64) // 2}px;width:64px;height:64px;border:5px solid #b9b9b9;border-radius:8px;background:#fff;box-sizing:border-box;display:flex;align-items:center;justify-content:center">'
+            f'<svg width="40" height="40" viewBox="0 0 58 58" style="margin:0"><circle cx="29" cy="29" r="22" fill="none" stroke="#dfe6f3" stroke-width="8"/><path d="M29 7a22 22 0 0 1 22 22" fill="none" stroke="{BLUE}" stroke-width="8" stroke-linecap="round"/></svg></div>'
+            f'<div style="position:absolute;left:118px;top:{HB}px;height:{RH}px;display:flex;align-items:center;font-family:var(--d);font-weight:700;font-size:46px;text-transform:uppercase;color:#0a0a0a;white-space:nowrap">I\'m not a robot</div>'
+            f'<div style="position:absolute;right:24px;top:{HB + (RH - 76) // 2}px;width:250px;height:76px;background:{BLUE};color:#fff;font-family:var(--d);font-weight:700;font-size:40px;text-transform:uppercase;'
+            f'display:flex;align-items:center;justify-content:center">Swipe &rarr;</div></div>')
+    cue = ""
     els = [("mask", 343, 108, 692, 452), ("badge",) + bd_box, ("title", 35, 461, 1036, 551), ("sub1", 352, 917, 520, 44), ("sub2", 452, 962, 320, 40),
-           ("check", (W - PW) // 2, PY, PW, PH), ("cue", W // 2 - 140, 1238, 280, 44)]
+           ("check", (W - PW) // 2, PY, PW, PH)]
     return bg_layers() + mask + bd + title + sub1 + sub2 + pill + cue, els
 
 
