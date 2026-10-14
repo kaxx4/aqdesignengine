@@ -6,7 +6,7 @@ Status: the 2026 announcement was recreated from its reference and accepted by t
 
 ## 1. Facts supplied (the only source for copy)
 - Disco Diwali 2026, "Masquerade Sangeet Edition", 10th November 2026, 4:30 PM onwards.
-- "Ticket sales open soon", "More details soon", CTA "Link in bio". All for charity.
+- "Ticket sales open soon", "More details to follow", CTA "Link in bio". All for charity.
 - No venue, price or lineup has been supplied. The module has no field for them, so it cannot print one. (TerraThon notes carry Rs. 550 as UNCONFIRMED. It stays out until confirmed.)
 - Earlier editions: 1.0 (Oct 2024), 2.0 (Oct 2025, clapperboard 22/10/25). See `AQ_FACTS.md`.
 
@@ -62,7 +62,7 @@ Real event photos from `engine/assets/img/events/unsorted-2026-10-07/` (by NN pr
 `classic` (title centred, mask top right) · `mask_hero` (a huge mask bleeding off the right edge, title lower) · `title_hero` (the lockup bleeds wide, mask shrinks to a corner accent) · `mask_behind` (the mask sits BEHIND the title, which overprints it). The edition lines are placed relative to the lockup's real bottom, so every preset keeps the notch tuck. `mask_tilt=` and `mask_scale=` override a preset. Batches: `scratchpad/dd_variations.py` (12 posters across direction, type, photo, mask) and `scratchpad/dd_layouts.py` (8 posters across layout). JPEG samples are in `sample_outputs/disco_diwali/` (never commit the 2x PNGs: ~8 MB each).
 
 ### Launch pack (kinds `story_launch`, `wa_poster`, `wa_dp`) — `scratchpad/dd_launch_pack.py`
-- **Ten stories** (1080x1920), each a different photo, type treatment and layout, ALL carrying the launch post's information (LIVE badge, edition, date, time, ticket-sales status, "more details soon"). **No CTA pill**: a link-sticker zone is declared as the element `linkzone` (640x165 at y=1505), with a small "LINK IN BIO" cue above it. The zone ends 250px above the bottom edge (Instagram's reply bar) and nothing enters it; the top 200px is left clear of Instagram's profile bar.
+- **Ten stories** (1080x1920), each a different photo, type treatment and layout, ALL carrying the launch post's information (LIVE badge, edition, date, time, ticket-sales status, "more details to follow"). **No CTA pill**: a link-sticker zone is declared as the element `linkzone` (640x165 at y=1505), with a small "LINK IN BIO" cue above it. The zone ends 250px above the bottom edge (Instagram's reply bar) and nothing enters it; the top 200px is left clear of Instagram's profile bar.
 - **WhatsApp poster** (1080x1350): the same information as a 4:5, no pill and no "link in bio" (there is no link to point at).
 - **WhatsApp group DP** (1080x1080): WhatsApp crops to a CIRCLE r=540, so every box is asserted to sit inside it (title, a small mask, the date and edition; no LIVE badge, it would be cropped and unreadable at DP size). `whatsapp_dp_circle_preview.*` shows the crop.
 - **All launch-pack type is NeutralFace** (user, 2026-10-13, who supplied `neutral-face.zip`): `Poster.neutralise()` re-sets the serif, mono and Eina lines in `--d`, forces uppercase and maps weights to the two cuts (400 Regular, 700 Bold). The zip's cuts are the same face as `engine/assets/fonts/NeutralFace*.otf` (Bold identical; Regular differs by ~2px a line), so the engine file was NOT replaced: that would shift every existing recreation.
@@ -73,7 +73,7 @@ Real event photos from `engine/assets/img/events/unsorted-2026-10-07/` (by NN pr
 - JPEG deliverables (1080 wide): `sample_outputs/disco_diwali_launch/`.
 
 ### BULK STORIES: the approved design (user, 2026-10-13: "perf, this is the design for bulk stories")
-Use kind `story_ref` (`scratchpad/dd_bulk_stories.py`), never `story_launch`, for any batch of stories. It is the remake of the user's reference story, built from measured positions: LIVE badge top left, copper mask top right, ball-free title lockup (`title_lockup_noball.png`), "MASQUERADE SANGEET" 40px bold with a white regular "EDITION" 38px, "TICKET SALES OPEN SOON" 52px, "MORE DETAILS SOON" 38px, and a soft gold-edged "LINK IN BIO" pill. Photo runs edge to edge (no diya plate), all type NeutralFace white with a thin black border, no date or time. Only the photo changes between stories. Open questions: the reference's own photo is not in the repo (photo 05 stands in), and the pill sits where an Instagram link sticker would go.
+Use kind `story_ref` (`scratchpad/dd_bulk_stories.py`), never `story_launch`, for any batch of stories. It is the remake of the user's reference story, built from measured positions: LIVE badge top left, copper mask top right, ball-free title lockup (`title_lockup_noball.png`), "MASQUERADE SANGEET" 40px bold with a white regular "EDITION" 38px, "TICKET SALES OPEN SOON" 52px, "MORE DETAILS TO FOLLOW" 38px, and a soft gold-edged "LINK IN BIO" pill. Photo runs edge to edge (no diya plate), all type NeutralFace white with a thin black border, no date or time. Only the photo changes between stories. Open questions: the reference's own photo is not in the repo (photo 05 stands in), and the pill sits where an Instagram link sticker would go.
 
 ## 6. Conflicts with CLAUDE.md and how they were resolved (precedence ladder, sec 2)
 - Ground, palette and fonts differ from the AQ house style. Resolved as a format exception, like TerraThon. The format wins inside `discodiwali.py` only.
