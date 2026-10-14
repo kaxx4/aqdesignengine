@@ -40,6 +40,8 @@ BAR_H, PAD = 58, 22
 # alpha bounding boxes of the assets (measured): the content origin inside each png, so a poster coordinate is the VISIBLE edge
 ASSET_BBOX = {"title_lockup.png": (265, 315, 1983, 1315), "mask_copper.png": (157, 211, 1563, 1135)}
 
+PHOTO3 = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-hall-2026-10-14")
+NEW = lambda name: os.path.join(PHOTO3, name)
 BRIEF = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon")
 
 
@@ -133,8 +135,8 @@ def slide1():
     s.mask(430, 96, 590)                                  # copper mask, top right, visible outline 590 wide
     s.badge(64, 70, 236)
     s.title(64, 340, 952)
-    s.window("w1", 115, 905, 850, 360, s.photo("07", "50% 62%"), z=10, tilt=18)
-    s.window("w2", 115, 1130, 850, 360, s.photo("05", "50% 40%"), z=11, tilt=18)
+    s.window("w1", 115, 905, 850, 360, s.photo(NEW("01_dancers-silver-pillar-purple.jpg"), "50% 62%"), z=10, tilt=18)
+    s.window("w2", 115, 1130, 850, 360, s.photo(NEW("04_pink-ceiling-chandelier-phone.jpg"), "50% 62%"), z=11, tilt=18)
     s.text("cue", "SWIPE&nbsp;&nbsp;&rarr;", W - 64 - 110, 62, 220, 34,
            f"font-weight:700;font-size:26px;letter-spacing:.24em;color:{GL};text-shadow:0 2px 12px rgba(0,0,0,.8)")
     return s
@@ -145,13 +147,10 @@ def slide2():
     s.ground()
     s.index_tag()
     ys = (150, 530, 910)
-    focus = ("50% 45%", "50% 58%", "50% 62%")
-    for i, (y, ph) in enumerate(zip(ys, ("05", "07", "10"))):
-        s.window(f"w{i + 1}", 115, y, 850, 410 if i < 2 else 392, s.photo(ph, focus[i], bright=1.0), z=10 + i, tilt=18)
+    focus = ("50% 62%", "50% 62%", "50% 50%")
+    for i, (y, ph) in enumerate(zip(ys, (NEW("02_crowd-teal-kurta-purple.jpg"), NEW("06_blue-room-crowd-faces.jpg"), NEW("05_boys-crowd-green-light.jpg")))):
+        s.window(f"w{i + 1}", 115, y, 850, 410 if i < 2 else 392, s.photo(ph, focus[i], bright=(1.7, 1.0, 1.0)[i]), z=10 + i, tilt=18)
     return s
-
-
-PHOTO3 = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-hall-2026-10-14")
 
 
 def slide3():
