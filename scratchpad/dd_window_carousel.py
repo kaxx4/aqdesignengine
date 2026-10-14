@@ -131,8 +131,8 @@ def slide1():
     s = Slide(1)
     s.ground()
     s.mask(430, 96, 590)                                  # copper mask, top right, visible outline 590 wide
-    s.badge(48, 70, 236)
-    s.title(54, 330, 972)
+    s.badge(64, 70, 236)
+    s.title(64, 340, 952)
     s.window("w1", 115, 905, 850, 360, s.photo("07", "50% 62%"), z=10, tilt=18)
     s.window("w2", 115, 1130, 850, 360, s.photo("05", "50% 40%"), z=11, tilt=18)
     s.text("cue", "SWIPE&nbsp;&nbsp;&rarr;", W - 64 - 110, 62, 220, 34,
@@ -146,52 +146,53 @@ def slide2():
     s.mask(560, 40, 520, z=6, extra="transform:rotate(8deg);")       # peeks out behind the top window, bleeding off the right edge
     s.index_tag()
     ys = (150, 530, 910)
-    focus = ("50% 45%", "50% 58%", "50% 34%")
-    for i, (y, ph) in enumerate(zip(ys, ("05", "07", "13"))):
-        s.window(f"w{i + 1}", 115, y, 850, 410 if i < 2 else 392, s.photo(ph, focus[i]), z=10 + i, tilt=18)
+    focus = ("50% 45%", "50% 58%", "50% 62%")
+    for i, (y, ph) in enumerate(zip(ys, ("05", "07", "10"))):
+        s.window(f"w{i + 1}", 115, y, 850, 410 if i < 2 else 392, s.photo(ph, focus[i], bright=1.0), z=10 + i, tilt=18)
     return s
 
 
 def slide3():
     s = Slide(3)
     s.ground()
+    s.mask(640, 70, 400, z=6, extra="transform:rotate(10deg);")
     s.index_tag()
-    s.window("w1", 90, 150, 690, 540, s.photo("08", "50% 62%"), z=10, tilt=14, roll=-2, bar_text="DISCO DIWALI")
+    s.window("w1", 90, 150, 690, 540, s.photo("08", "50% 85%"), z=10, tilt=14, roll=-2, bar_text="DISCO DIWALI")
     s.window("w2", 300, 420, 640, 590, s.photo("09", "50% 55%", bright=1.5), z=11, tilt=14, roll=2, bar_text="DISCO DIWALI")
     s.window("w3", 100, 720, 840, 570, s.photo("06", "50% 30%", bright=1.7), z=12, tilt=12, roll=-1, bar_text="MASQUERADE SANGEET EDITION")
     return s
 
 
-INFO = (("10TH NOVEMBER, 2026", 58), ("4:30 PM ONWARDS", 70), ("TICKET SALES OPEN SOON", 46), ("MORE DETAILS SOON", 60))
+INFO = (("ALL FOR CHARITY", 72), ("TICKET SALES OPEN SOON", 48), ("MORE DETAILS SOON", 64))
 
 
 def slide4():
     s = Slide(4)
     s.ground()
     s.index_tag()
-    ys = (130, 420, 710, 1000)
+    ys = (150, 530, 910)
     for i, ((txt, fs), y) in enumerate(zip(INFO, ys)):
         body = (f'<img src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{-120 - i * 40}px;width:100%;height:700px;object-fit:cover;opacity:.9">'
                 f'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 90% at 50% 50%,rgba(0,0,0,.82),rgba(0,0,0,.45))"></div>'
                 f'<div data-tag="wintext{i + 1}" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--d);'
                 f'font-weight:700;font-size:{fs}px;line-height:1;color:{OFFWHITE if i != 0 else "#F6D77A"};white-space:nowrap;letter-spacing:.01em">{txt}</div>')
-        s.window(f"w{i + 1}", 115, y, 850, 340 if i < 3 else 310, body, z=10 + i, tilt=18)
+        s.window(f"w{i + 1}", 115, y, 850, 410 if i < 2 else 392, body, z=10 + i, tilt=18)
     return s
 
 
 def slide5():
     s = Slide(5)
     s.ground()
-    s.mask(430, 96, 590)
-    s.badge(48, 70, 236)
-    s.title(54, 330, 972)
-    s.text("status", "TICKET SALES OPEN SOON", W // 2, 930, 880, 62, f"font-weight:700;font-size:52px;color:{OFFWHITE}")
+    s.mask(450, 96, 566)
+    s.badge(64, 70, 236)
+    s.title(90, 330, 900)
+    s.text("status", "TICKET SALES OPEN SOON", W // 2, 920, 880, 62, f"font-weight:700;font-size:52px;color:{OFFWHITE}")
     glass = ('<svg width="46" height="46" viewBox="0 0 24 24" style="position:absolute;left:44px;top:50%;margin-top:-23px"><circle cx="10" cy="10" r="6.2" fill="none" '
              'stroke="#0A0A0A" stroke-width="2.4"/><path d="M15 15L21 21" stroke="#0A0A0A" stroke-width="2.6" stroke-linecap="round"/></svg>')
     body = (f'<div style="position:absolute;inset:0;background:{BAR_BG}"></div>'
             f'<div data-tag="field" style="position:absolute;left:34px;right:34px;top:34px;bottom:34px;border-radius:999px;background:#fff;border:3px solid #0A0A0A;'
             f'display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:50px;color:#0A0A0A;letter-spacing:.04em">{glass}LINK IN BIO</div>')
-    s.window("w1", 115, 1010, 850, 250, body, z=10, tilt=14)
+    s.window("w1", 115, 1030, 850, 260, body, z=10, tilt=14)
     return s
 
 
