@@ -8,7 +8,7 @@ while each window's photo is cut off by the next. The repetition of the same tit
 
 Slides (1080x1350, feed 4:5):
   01 cover   badge + copper mask + ball title lockup, two windows bleeding off the bottom, swipe cue
-  02 stack   three windows, three dance photos, the mask peeking out behind the top one
+  02 stack   three windows, three photos
   03 pile    a loose diagonal cascade of three windows, one hero photo in front
   04 info    four windows, the SAME title bar on each, one fact per window (date, time, tickets, details)
   05 cta     badge + mask + title again, a search window whose field reads LINK IN BIO
@@ -143,7 +143,6 @@ def slide1():
 def slide2():
     s = Slide(2)
     s.ground()
-    s.mask(560, 40, 520, z=6, extra="transform:rotate(8deg);")       # peeks out behind the top window, bleeding off the right edge
     s.index_tag()
     ys = (150, 530, 910)
     focus = ("50% 45%", "50% 58%", "50% 62%")
@@ -155,7 +154,6 @@ def slide2():
 def slide3():
     s = Slide(3)
     s.ground()
-    s.mask(640, 70, 400, z=6, extra="transform:rotate(10deg);")
     s.index_tag()
     s.window("w1", 90, 150, 690, 540, s.photo("08", "50% 85%"), z=10, tilt=14, roll=-2, bar_text="DISCO DIWALI")
     s.window("w2", 300, 420, 640, 590, s.photo("09", "50% 55%", bright=1.5), z=11, tilt=14, roll=2, bar_text="DISCO DIWALI")
