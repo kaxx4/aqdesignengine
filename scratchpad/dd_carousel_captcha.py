@@ -4,7 +4,7 @@ Four 1080x1350 slides on the approved diya ground (black, navy and gold lotus-di
   1  COVER: title lockup, copper mask, LIVE badge, a captcha card hook (verify you're a Disco Diwali human, spinning checkbox, SWIPE button)
   2  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
   3  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
-  4  ALL FOR CHARITY + date and time + LINK IN BIO pill
+  4  ALL FOR CHARITY + the edition line + LINK IN BIO pill (no date or time, user 2026-10-14)
 (The earlier reveal slide, the poster_ref design with the status lines, was removed by the user, 2026-10-14.)
 
 Adaptations recorded (CLAUDE.md sec 2 precedence ladder):
@@ -122,16 +122,15 @@ def cover_slide():
 
 
 def charity_slide():
+    """ALL FOR CHARITY, the edition line and the LINK IN BIO pill. No date or time (user, 2026-10-14): the type is scaled up and re-spaced to own the frame."""
     bd, bd_box = badge(64, 64, 215)
     mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:370px;top:20px;width:700px;z-index:12">')
-    heading = (f'<div data-tag="heading" style="position:absolute;left:0;width:{W}px;top:520px;text-align:center;font-family:var(--d);font-weight:700;font-size:170px;line-height:.92;text-transform:uppercase;{STROKE}z-index:20">All for<br>charity</div>')
-    date = (f'<div data-tag="date" style="position:absolute;left:0;width:{W}px;top:860px;text-align:center;font-family:var(--d);font-weight:700;font-size:66px;text-transform:uppercase;{STROKE}z-index:20">10th November, 2026</div>'
-            f'<div data-tag="time" style="position:absolute;left:0;width:{W}px;top:950px;text-align:center;font-family:var(--d);font-weight:700;font-size:50px;text-transform:uppercase;{STROKE}z-index:20">4:30 PM onwards</div>')
-    ed = (f'<div data-tag="edition" style="position:absolute;left:0;width:{W}px;top:1030px;text-align:center;font-family:var(--d);font-weight:400;font-size:40px;text-transform:uppercase;{STROKE}z-index:20">Masquerade Sangeet Edition</div>')
-    pill = (f'<div data-tag="pill" style="position:absolute;left:{(W - 560) // 2}px;top:1130px;width:560px;height:104px;border:2px solid rgba(214,170,90,.7);border-radius:26px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:48px;text-transform:uppercase;{STROKE}z-index:20">Link in bio</div>')
-    els = [("badge",) + bd_box, ("mask", 435, 108, 585, 384), ("heading", 120, 520, 840, 320), ("date", 120, 860, 840, 70),
-           ("time", 220, 950, 640, 52), ("edition", 140, 1030, 800, 44), ("pill", (W - 560) // 2, 1130, 560, 104)]
-    return bg_layers() + bd + mask + heading + date + ed + pill, els
+    heading = (f'<div data-tag="heading" style="position:absolute;left:0;width:{W}px;top:560px;text-align:center;font-family:var(--d);font-weight:700;font-size:190px;line-height:.92;text-transform:uppercase;{STROKE}z-index:20">All for<br>charity</div>')
+    ed = (f'<div data-tag="edition" style="position:absolute;left:0;width:{W}px;top:960px;text-align:center;font-family:var(--d);font-weight:400;font-size:44px;text-transform:uppercase;{STROKE}z-index:20">Masquerade Sangeet Edition</div>')
+    pill = (f'<div data-tag="pill" style="position:absolute;left:{(W - 560) // 2}px;top:1090px;width:560px;height:104px;border:2px solid rgba(214,170,90,.7);border-radius:26px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:48px;text-transform:uppercase;{STROKE}z-index:20">Link in bio</div>')
+    els = [("badge",) + bd_box, ("mask", 435, 108, 585, 384), ("heading", 90, 560, 900, 350), ("edition", 120, 960, 840, 48),
+           ("pill", (W - 560) // 2, 1090, 560, 104)]
+    return bg_layers() + bd + mask + heading + ed + pill, els
 
 
 async def main():
