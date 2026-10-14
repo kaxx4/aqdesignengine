@@ -1,10 +1,11 @@
 """DISCO DIWALI carousel, "CAPTCHA" idea (inspo: a 'Choose everything related to...' verification card over a party photo).
 
 Four 1080x1350 slides on the approved diya ground (black, navy and gold lotus-diya corners fading to black, string lights):
-  1  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
-  2  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
-  3  the reveal: the approved poster_ref design (title lockup, copper mask, LIVE badge, diya plate)
+  1  COVER: title lockup, copper mask, LIVE badge, an "I'M NOT A ROBOT" checkbox hook and a swipe cue
+  2  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
+  3  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
   4  ALL FOR CHARITY + date and time + LINK IN BIO pill
+(The earlier reveal slide, the poster_ref design with the status lines, was removed by the user, 2026-10-14.)
 
 Adaptations recorded (CLAUDE.md sec 2 precedence ladder):
   - The captcha card is a DESIGN DEVICE, not a fabricated UI screenshot: no reCAPTCHA marks, every tile is a real AQ photo, the button is ours.
@@ -92,6 +93,26 @@ def captcha_slide(bg, sub, selected, button):
     return bg_layers() + card + bd + cue, els
 
 
+def cover_slide():
+    """Cover: the approved title lockup, copper mask and LIVE badge on the diya ground (positions measured for poster_ref), then the hook, a
+    captcha checkbox reading I'M NOT A ROBOT, which the next slide answers. No date, no status line: the cover only has to stop the thumb."""
+    k, t = .4925, .6034
+    bd, bd_box = badge(30, 122, 267)
+    mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(343 - 157 * k)}px;top:{round(108 - 211 * k)}px;width:{round(1680 * k)}px;z-index:6;'
+            f'filter:drop-shadow(0 8px 26px rgba(0,0,0,.6))">')
+    title = (f'<img data-tag="title" src="{dd.uri("title_lockup_noball.png")}" style="position:absolute;left:{round(35 - 265 * t)}px;top:{round(461 - 401 * t)}px;width:{round(2000 * t)}px;z-index:9">')
+    sub1 = (f'<div data-tag="sub1" style="position:absolute;left:352px;top:917px;width:520px;text-align:center;font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase;{STROKE}z-index:10">Masquerade Sangeet</div>')
+    sub2 = (f'<div data-tag="sub2" style="position:absolute;left:452px;top:962px;width:320px;text-align:center;font-family:var(--d);font-weight:400;font-size:37px;text-transform:uppercase;{STROKE}z-index:10">Edition</div>')
+    PW, PH, PY = 640, 104, 1086
+    pill = (f'<div data-tag="check" style="position:absolute;left:{(W - PW) // 2}px;top:{PY}px;width:{PW}px;height:{PH}px;background:#fff;border-radius:14px;z-index:12;box-shadow:0 14px 44px rgba(0,0,0,.55)">'
+            f'<div style="position:absolute;left:26px;top:{(PH - 58) // 2}px;width:58px;height:58px;border:5px solid #b9b9b9;border-radius:8px;background:#fff;box-sizing:border-box"></div>'
+            f'<div style="position:absolute;left:112px;top:0;height:{PH}px;display:flex;align-items:center;font-family:var(--d);font-weight:700;font-size:44px;text-transform:uppercase;color:#0a0a0a;white-space:nowrap">I\'m not a robot</div></div>')
+    cue = (f'<div data-tag="cue" style="position:absolute;left:0;width:{W}px;top:1238px;text-align:center;font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase;{STROKE}z-index:20">Swipe &rarr;</div>')
+    els = [("mask", 343, 108, 692, 452), ("badge",) + bd_box, ("title", 35, 461, 1036, 551), ("sub1", 352, 917, 520, 44), ("sub2", 452, 962, 320, 40),
+           ("check", (W - PW) // 2, PY, PW, PH), ("cue", W // 2 - 140, 1238, 280, 44)]
+    return bg_layers() + mask + bd + title + sub1 + sub2 + pill + cue, els
+
+
 def charity_slide():
     bd, bd_box = badge(64, 64, 215)
     mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:370px;top:20px;width:700px;z-index:12">')
@@ -107,19 +128,17 @@ def charity_slide():
 
 async def main():
     os.makedirs(OUT, exist_ok=True)
-    slides = [captcha_slide("08", "Masquerade Sangeet Edition", False, "Verify"),
+    slides = [cover_slide(),
+              captcha_slide("08", "Masquerade Sangeet Edition", False, "Verify"),
               captcha_slide("08", "Yes, all nine", True, "Verified"),
-              None, charity_slide()]
+              charity_slide()]
     async with B.session():
         for n, s in enumerate(slides, 1):
             path = os.path.join(OUT, f"slide_{n}.png")
-            if s is None:
-                await dd.render_poster("poster_ref", dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon",
-                                                          note="More details to follow", link=False), "feed", path)
-                continue
             html_inner, els = s
             html = B.page(W, H, "#000", html_inner, grain=False)
-            await B.render(html, path, W, H, elements=els, containers=("card",), bleed_tags=("plate",), crop_tags=("plate",), page_bg="#000")
+            await B.render(html, path, W, H, elements=els, containers=("card",), bleed_tags=("plate",), crop_tags=("plate",), page_bg="#000",
+                           collision_ignore=[("title", "sub1"), ("title", "sub2"), ("mask", "title")])
     from PIL import Image
     ims = [Image.open(os.path.join(OUT, f"slide_{i}.png")).convert("RGB").resize((432, 540)) for i in range(1, 5)]
     sh = Image.new("RGB", (432 * 4 + 30, 540), (40, 40, 40))
