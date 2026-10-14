@@ -161,7 +161,7 @@ ok(bx(layout_poster("mask_behind"), "sub1")[2] != bx(layout_poster("classic"), "
 ok(dd.LAYOUTS["title_hero"]["title"][1] >= 340, "title_hero keeps the disco ball clear of the LIVE badge (y_ref >= 340)")
 
 # --- launch pack: stories, WhatsApp poster, WhatsApp DP ---------------------------------------------------------------------
-LF = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards", status="Ticket sales open soon", note="More details soon", photo="05")
+LF = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards", status="Ticket sales open soon", note="More details to follow", photo="05")
 def refused_kind(kind, content, canvas, needle=""):
     return refused(kind, content, canvas, needle)
 ok(refused_kind("story_launch", LF, "feed", "canvas"), "a launch story is refused on a feed canvas (it is a story)")
@@ -176,7 +176,7 @@ ok(lz[2] + lz[4] <= st.H - 240, "the link zone (y + h) ends above Instagram's bo
 ok(not any(e[0] != "linkzone" and e[1] < lz[1] + lz[3] and lz[1] < e[1] + e[3] and e[2] < lz[2] + lz[4] and lz[2] < e[2] + e[4]
            for e in st.elements if e[0] not in ("plate", "photo", "mask", "title")), "nothing else is declared inside the link-sticker zone (x,y,w,h compared on the right axes)")
 ok('data-tag="cta"' not in sh, "a launch story carries no CTA pill (the link sticker takes its place)")
-FACT_PARTS = ("10", "NOVEMBER", "2026", "4:30 PM", "ONWARDS", "TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "ALL FOR")
+FACT_PARTS = ("10", "NOVEMBER", "2026", "4:30 PM", "ONWARDS", "TICKET SALES OPEN SOON", "MORE DETAILS TO FOLLOW", "MASQUERADE SANGEET", "EDITION", "ALL FOR")
 import re as _re2
 def visible_text(h):                       # text nodes only: drop tags, the style block and base64 payloads
     h = _re2.sub(r"<style.*?</style>", "", h, flags=_re2.S)
@@ -212,7 +212,7 @@ for lay_, ty_ in (("classic", "foil"), ("mask_hero", "outline"), ("mask_behind",
     ndh = nd.build()
     txt = visible_text(ndh)
     ok(not any(w in txt for w in ("NOVEMBER", "NOV ", "2026", "4:30", "ONWARDS", "10TH")), f"no-date story ({lay_}/{ty_}): no date or time text anywhere")
-    ok(all(w in txt for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), f"no-date story ({lay_}/{ty_}): status, note, edition and cue remain")
+    ok(all(w in txt for w in ("TICKET SALES OPEN SOON", "MORE DETAILS TO FOLLOW", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), f"no-date story ({lay_}/{ty_}): status, note, edition and cue remain")
     nb = {e[0]: e for e in nd.elements}
     ok("date" not in nb and "time" not in nb and "month" not in nb, f"no-date story ({lay_}/{ty_}): no date/time element is declared")
     lzb = nb["linkzone"]
@@ -246,14 +246,14 @@ ok(sub1_px(dd.Poster("story_launch", NDF | {"photo": "05"}, "story", typo="foil"
 ok(sub1_px(dd.Poster("announce", dict(ANN, photo="05"), "feed", style="photo", typo="foil").build()) < 30, "the other kinds keep the small caption size (the change is scoped to the launch pack)")
 
 # --- story_ref: the remake of the user's reference story (2026-10-13, "same to same") ----------------------------------------------
-SR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details soon", photo="05")
+SR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details to follow", photo="05")
 sp = dd.Poster("story_ref", SR, "story"); srh = sp.build(); srb = {e[0]: e for e in sp.elements}
 ok(refused("story_ref", SR, "feed", "canvas"), "the remake is a story and is refused on a feed canvas")
 import base64 as _b64
 _dp = _b64.b64encode(open(os.path.join(dd.ASSETS, "bg_diya_portrait.jpg"), "rb").read()).decode()[:200]
 ok(_dp not in srh and _dp in dd.Poster("announce", dict(ANN, photo="05"), "feed", style="diya").build(), "the remake carries no diya plate image (the photo runs to the corners), while the diya direction still does")
 ok(not any(w in visible_text(srh) for w in ("NOVEMBER", "2026", "4:30", "ONWARDS")), "the remake prints no date or time")
-ok(all(w in visible_text(srh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "the remake carries status, note, edition and the LINK IN BIO text")
+ok(all(w in visible_text(srh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS TO FOLLOW", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "the remake carries status, note, edition and the LINK IN BIO text")
 ok("var(--e)" not in srh and "var(--s)" not in srh and "var(--m)" not in srh, "remake type is NeutralFace only")
 ok(srb["mask"][1:] == (358, 98, 701, 438), "the mask outline is the measured one: 358,98 701x438")
 ok(srb["title"][1:] == (38, 480, 1013, 538), "the title block is the measured one: 38,480 1013x538")
@@ -266,14 +266,14 @@ ok(_nb in srh and _wb not in srh, "the remake uses the ball-free title lockup, n
 ok(_wb in dd.Poster("story_launch", NDF | {"photo": "05"}, "story").build(), "the ordinary launch stories still use the ORIGINAL lockup (the ball stays there)")
 
 # --- poster_ref: the remake of the user's reference FEED poster (2026-10-13) ---------------------------------------------------------
-PR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details soon")
+PR = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details to follow")
 pp = dd.Poster("poster_ref", PR, "feed"); prh = pp.build(); prb = {e[0]: e for e in pp.elements}
 ok(refused("poster_ref", PR, "story", "canvas"), "the feed poster remake is refused on a story canvas")
 ok(prb["mask"][1:] == (343, 108, 692, 452) and prb["badge"][1:] == (30, 122, 267, 248), "mask and badge are at the measured positions")
 ok(prb["title"][1:] == (35, 461, 1036, 551) and prb["linkpill"][1:] == (316, 1118, 450, 103), "title and link pill are at the measured positions")
 ok(_dp in prh, "the feed poster sits on the diya plate")
 ok(not any(w in visible_text(prh) for w in ("NOVEMBER", "2026", "4:30", "ONWARDS")), "no date or time on the feed poster")
-ok(all(w in visible_text(prh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS SOON", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "all remaining copy is present")
+ok(all(w in visible_text(prh) for w in ("TICKET SALES OPEN SOON", "MORE DETAILS TO FOLLOW", "MASQUERADE SANGEET", "EDITION", "LINK IN BIO")), "all remaining copy is present")
 ok(_nb in prh and "var(--e)" not in prh and "var(--s)" not in prh, "ball-free title and NeutralFace-only type")
 
 # --- WhatsApp poster = poster_ref with link=False ------------------------------------------------------------------------------------

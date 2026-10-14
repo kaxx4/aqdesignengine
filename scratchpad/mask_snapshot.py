@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
-FACTS = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards", status="Ticket sales open soon", note="More details soon")
+FACTS = dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards", status="Ticket sales open soon", note="More details to follow")
 STORIES = [("03","foil","classic","copper"),("05","outline","mask_hero","copper"),("12","editorial","mask_behind","copper"),("06","stack","classic","copper"),
            ("09","foil","mask_hero","copper"),("11","outline","classic","asset"),("07","editorial","mask_behind","copper"),("13","stack","mask_hero","copper"),
            ("08","foil","mask_behind","copper"),("10","outline","classic","asset" if False else "copper")]

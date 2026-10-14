@@ -824,7 +824,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
 DEMO_DATE = "2026-11-10"
 DEMO = [
     ("announce", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards",
-                      status="Ticket sales open soon", note="More details soon", cta="Link in bio")),
+                      status="Ticket sales open soon", note="More details to follow", cta="Link in bio")),
     ("countdown", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", days=days_to_go(DEMO_DATE), cta="Link in bio")),
     ("tickets_open", dict(edition="Masquerade Sangeet Edition", headline="Tickets are live", date="10th November, 2026", cta="Link in bio")),
     ("sold_out", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", thanks="Thank you for the love")),

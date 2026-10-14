@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
-BRIEF = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details soon", link="Link below")
+BRIEF = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soon", note="More details to follow", link="Link below")
 PHOTOS = ["05", "03", "12", "06", "09", "11", "07", "13", "08", "10"]
 async def main():
     out = os.path.join(ROOT, "out", "discodiwali", "bulk_wa")
