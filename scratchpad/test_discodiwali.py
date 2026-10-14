@@ -295,7 +295,7 @@ ok(all(math.hypot(cx - 540, cy - 540) <= 540 for e in dq.elements for cx in (e[1
 ok("date" not in dbx and not any(w in visible_text(dh2) for w in ("NOVEMBER", "2026")), "the DP prints no date by default")
 ok(_nb in dh2 and _wb not in dh2, "the DP uses the ball-free title lockup")
 ok(_dp in dh2 and "var(--e)" not in dh2 and "var(--s)" not in dh2, "the DP sits on the diya plate with NeutralFace-only type")
-ok("LIVE" not in visible_text(dh2) and "badge" not in dbx, "the DP carries no LIVE badge")
+ok("badge" in dbx and dbx["badge"][3] == 215, "the DP carries the LIVE badge (ALL FOR CHARITY pill, LIVE logo, AQUATERRA logo) at 215px (user, 2026-10-14)")
 
 # --- bulk WhatsApp posters: poster_ref + photo (user, 2026-10-13) -------------------------------------------------------------------------
 phq = dd.Poster("poster_ref", dict(PR, link="Link below", photo="03"), "feed"); phh = phq.build(); phb = {e[0]: e for e in phq.elements}
@@ -311,5 +311,9 @@ ok(d3["sub1"][2] >= d3["title"][2] + d3["title"][4] - 10, "the DP's MASQUERADE S
 ok(abs((d3["sub1"][1] + d3["sub1"][3] / 2) - 540) <= 1 and abs((d3["sub2"][1] + d3["sub2"][3] / 2) - 540) <= 1, "both edition lines are centred on the circle's vertical axis")
 ok(int(_re4.search(r'data-tag="sub1"[^>]*font-size:(\d+)px', dh3).group(1)) >= 44, "the DP's MASQUERADE SANGEET is at least 44px (it was 33px)")
 ok(d3["sub1"][2] + d3["sub1"][4] < d3["sub2"][2], "EDITION sits below MASQUERADE SANGEET with no overlap")
+
+# --- DP badge: placement relative to the other elements -----------------------------------------------------------------------------------------
+ok(dbx["badge"][1] + dbx["badge"][3] <= dbx["mask"][1], "the badge sits left of the mask without overlapping it")
+ok(dbx["badge"][1] < 540 and dbx["mask"][1] > 540 - 200, "badge at top left, mask to its right (mirroring the posters)")
 
 print(f"\nALL {N} ASSERTIONS PASSED")

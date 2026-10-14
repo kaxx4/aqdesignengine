@@ -707,26 +707,30 @@ class Poster:
     def _wa_dp(self):
         """WhatsApp group DP in the approved design family (user, 2026-10-13: "rebuild the DP to match"). 1080x1080 shown as a CIRCLE r=540, so
         the poster's elements are scaled down and centred: copper mask, ball-free title (tuck of the edition lines kept), white NeutralFace with
-        the black border, diya plate. No LIVE badge (cropped and unreadable at DP size) and no date unless one is supplied."""
+        the black border, diya plate. The LIVE badge (ALL FOR CHARITY pill, LIVE logo, AQUATERRA logo) is included at top left (user, 2026-10-14), small enough to sit inside the crop; no date unless one is supplied."""
         W, H, P = self.W, self.H, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
         self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
-        DY = 23                                           # centres the whole stack (mask top to EDITION bottom) on the circle's centre
-        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x)
-        mx, my = 340, 140 + DY
+        DY = 23                                           # base offset; the badge adds a further 24px under the mask (TY) so the stack stays centred
+        TY = 24
+        bw = 215                                          # the LIVE badge = ALL FOR CHARITY pill + LIVE logo + AQUATERRA logo, as on the posters
+        bx, by = 185, 140 + DY
+        self.img("live_badge.png", bx, by, bw, z=8, tag="badge"); self.box("badge", bx, by, bw, round(bw * 1005 / 1061))
+        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x), shifted right of the badge
+        mx, my = 430, 140 + DY
         self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
                  extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
         self.box("mask", mx, my, 400, 263)
         t = .466                                          # ball-free title: visible width 800, left 140
-        tx, ty = 140, 330 + DY
+        tx, ty = 140, 330 + DY + TY
         self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")
         self.box("title", tx, ty, 800, 425)
         # The edition lines are NOT tucked into the title's notch here (they are on the posters): at DP size a tucked 33px line is unreadable.
         # They sit as a clear centred pair below the lockup: 46px bold MASQUERADE SANGEET, 40px regular EDITION.
-        self.raw("sub1", "MASQUERADE SANGEET", 540, 820 + DY, 560, 54, "font-family:var(--e);font-weight:600;font-size:46px;letter-spacing:.01em")
-        self.raw("sub2", "Edition", 540, 874 + DY, 190, 46, "font-family:var(--e);font-weight:400;font-size:40px")
+        self.raw("sub1", "MASQUERADE SANGEET", 540, 820 + DY + TY, 560, 54, "font-family:var(--e);font-weight:600;font-size:46px;letter-spacing:.01em")
+        self.raw("sub2", "Edition", 540, 874 + DY + TY, 190, 46, "font-family:var(--e);font-weight:400;font-size:40px")
         if self.c.get("date"):
-            self.raw("date", self.c["date"], 540, 930 + DY, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
+            self.raw("date", self.c["date"], 540, 972, 400, 40, "font-family:var(--e);font-weight:600;font-size:32px")   # optional; sized so its box stays inside the circle at this height
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info
@@ -806,7 +810,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("title", "sub1"), ("title", "sub2"), ("sub2", "status"), ("status", "note"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("badge", "title"), ("badge", "mask"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("title", "sub1"), ("title", "sub2"), ("sub2", "status"), ("status", "note"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
