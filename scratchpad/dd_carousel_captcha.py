@@ -1,9 +1,9 @@
 """DISCO DIWALI carousel, "CAPTCHA" idea (inspo: a 'Choose everything related to...' verification card over a party photo).
 
-Four 1080x1350 slides on a BLACK ground lit by the blue-style effects (screened blue light, disco beams, RGB-split title):
+Four 1080x1350 slides on the approved diya ground (black, navy and gold lotus-diya corners fading to black, string lights):
   1  the captcha, nine REAL event photos in the 3x3 grid, nothing selected yet
   2  the same card, all nine selected (tiles inset, tick badges), the button now says VERIFIED
-  3  the reveal: the approved poster_ref design (RGB-split title lockup, copper mask, LIVE badge) on the black + blue ground
+  3  the reveal: the approved poster_ref design (title lockup, copper mask, LIVE badge, diya plate)
   4  ALL FOR CHARITY + date and time + LINK IN BIO pill
 
 Adaptations recorded (CLAUDE.md sec 2 precedence ladder):
@@ -41,34 +41,14 @@ CARD_H = GRID_Y + GRID_H + 12 + FOOT_H + 12
 CARD_Y = 164
 
 
-def blue_layers(W=W, H=H):
-    """The blue-style recipe (blend-mode lab v7) re-cut for a BLACK ground. Colour-dodge needs something to burn, so on pure ink the blue
-    light is SCREENed instead: a hot glow in the top right corner and the same repeating-conic disco beams
-    (radial-masked so they fade before the type zone). Every layer is tagged plate: deliberate full bleed."""
-    def lay(css, z):
-        return f'<div data-tag="plate" style="position:absolute;inset:0;z-index:{z};pointer-events:none;{css}"></div>'
-    beam_mask = "radial-gradient(circle at 88% -6%,#000 0,rgba(0,0,0,.45) 34%,transparent 66%)"
-    return (lay("background:radial-gradient(circle at 88% 4%,rgba(61,123,255,.62) 0%,rgba(20,60,220,0) 40%);mix-blend-mode:screen", 2)
-            + lay("background:repeating-conic-gradient(from 188deg at 88% -6%,rgba(120,175,255,.95) 0deg 3deg,transparent 3deg 10deg);"
-                  f"-webkit-mask-image:{beam_mask};mask-image:{beam_mask};mix-blend-mode:screen;opacity:.62", 3))
-
-
 def bg_layers(photo=None, dim=0):
-    """Black ground, the blue light and beams, then the format's own gold dust and film grain screened over everything."""
-    return (f'<div data-tag="plate" style="position:absolute;inset:0;z-index:1;background:#000"></div>' + blue_layers()
-            + f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">'
+    """The approved poster ground (user, 2026-10-14, "i want this blue effect"): black, the navy and gold lotus-diya plate glowing in the
+    corners and fading to black through the middle, the two sagging string lights, then the format's gold dust and film grain screened on top."""
+    return (f'<div data-tag="plate" style="position:absolute;inset:0;z-index:1;background:#000"></div>'
+            f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1">'
+            f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:160px;top:-53px;width:1045px;z-index:5">'
+            f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">'
             f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">')
-
-
-class BluePoster(dd.Poster):
-    """poster_ref on the black + blue ground: swaps the diya plate for the blue layers and RGB-splits the title lockup."""
-    def img(self, name, *a, **k):
-        if name == "bg_diya_portrait.jpg":
-            self.parts.append(dd.BLUE_DEFS + '<div data-tag="plate" style="position:absolute;inset:0;z-index:1;background:#000"></div>' + blue_layers(self.W, self.H))
-            return
-        if name == "title_lockup_noball.png":
-            k["extra"] = k.get("extra", "") + "filter:url(#ca);"
-        return super().img(name, *a, **k)
 
 
 def badge(x, y, w):
@@ -130,7 +110,6 @@ async def main():
     slides = [captcha_slide("08", "Masquerade Sangeet Edition", False, "Verify"),
               captcha_slide("08", "Yes, all nine", True, "Verified"),
               None, charity_slide()]
-    dd.Poster = BluePoster
     async with B.session():
         for n, s in enumerate(slides, 1):
             path = os.path.join(OUT, f"slide_{n}.png")
