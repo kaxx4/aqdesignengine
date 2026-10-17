@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -606,7 +606,14 @@ class Poster:
         status and note at x 540, link pill 316..766 x 1118..1221. The lights are fitted to the reference's bulbs. No disco ball, no date/time."""
         c, W, P = self.c, self.W, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
-        self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
+        if c.get("photo"):
+            # photo variant (bulk WhatsApp posters): a real event photo edge to edge, graded exactly like story_ref, in place of the diya plate
+            P.append(f'<img data-tag="photo" src="{photo_uri(c["photo"])}" style="position:absolute;inset:0;width:{W}px;height:{self.H}px;object-fit:cover;'
+                     f'z-index:1;filter:contrast(1.08) saturate(1.0) brightness(.92)">')
+            P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(8,6,30,.55) 0%,'
+                     'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
+        else:
+            self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
         self.img("string_lights.png", 160, -53, 1045, z=5, tag="lights")
         k = .4925                                         # copper mask: visible outline 343..1035 x 108..560
         self.img("mask_copper.png", round(343 - 157 * k), round(108 - 211 * k), round(1680 * k), z=6, tag="mask",
@@ -700,27 +707,30 @@ class Poster:
     def _wa_dp(self):
         """WhatsApp group DP in the approved design family (user, 2026-10-13: "rebuild the DP to match"). 1080x1080 shown as a CIRCLE r=540, so
         the poster's elements are scaled down and centred: copper mask, ball-free title (tuck of the edition lines kept), white NeutralFace with
-        the black border, diya plate. No LIVE badge (cropped and unreadable at DP size) and no date unless one is supplied."""
+        the black border, diya plate. The LIVE badge (ALL FOR CHARITY pill, LIVE logo, AQUATERRA logo) is included at top left (user, 2026-10-14), small enough to sit inside the crop; no date unless one is supplied."""
         W, H, P = self.W, self.H, self.parts
         P.append(f'<div style="position:absolute;inset:0;background:{GROUND}"></div>')
         self.img("bg_diya_portrait.jpg", 0, -(1350 - W) // 2, W, 1350, z=1, tag="plate")
-        DY = 50                                           # centres the content's mass on the circle's centre
-        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x)
-        mx, my = 340, 170 + DY
+        DY = 23                                           # base offset; the badge adds a further 24px under the mask (TY) so the stack stays centred
+        TY = 24
+        bw = 215                                          # the LIVE badge = ALL FOR CHARITY pill + LIVE logo + AQUATERRA logo, as on the posters
+        bx, by = 185, 140 + DY
+        self.img("live_badge.png", bx, by, bw, z=8, tag="badge"); self.box("badge", bx, by, bw, round(bw * 1005 / 1061))
+        k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x), shifted right of the badge
+        mx, my = 430, 140 + DY
         self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
                  extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
         self.box("mask", mx, my, 400, 263)
         t = .466                                          # ball-free title: visible width 800, left 140
-        tx, ty = 140, 360 + DY
+        tx, ty = 140, 330 + DY + TY
         self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")
         self.box("title", tx, ty, 800, 425)
-        r = t / .6034 * 1.15                              # the poster's edition lines at this scale, nudged up for DP-size legibility
-        self.raw("sub1", "MASQUERADE SANGEET", 540 + round(72 * t / .6034), ty + round(456 * t / .6034), round(520 * r), round(44 * r),
-                 f"font-family:var(--e);font-weight:600;font-size:{round(38 * r)}px")
-        self.raw("sub2", "Edition", 540 + round(72 * t / .6034), ty + round(501 * t / .6034), round(170 * r), round(40 * r),
-                 f"font-family:var(--e);font-weight:400;font-size:{round(37 * r)}px")
+        # The edition lines are NOT tucked into the title's notch here (they are on the posters): at DP size a tucked 33px line is unreadable.
+        # They sit as a clear centred pair below the lockup: 46px bold MASQUERADE SANGEET, 40px regular EDITION.
+        self.raw("sub1", "MASQUERADE SANGEET", 540, 820 + DY + TY, 560, 54, "font-family:var(--e);font-weight:600;font-size:46px;letter-spacing:.01em")
+        self.raw("sub2", "Edition", 540, 874 + DY + TY, 190, 46, "font-family:var(--e);font-weight:400;font-size:40px")
         if self.c.get("date"):
-            self.raw("date", self.c["date"], 540, ty + 470, 600, 50, "font-family:var(--e);font-weight:600;font-size:40px")
+            self.raw("date", self.c["date"], 540, 972, 400, 40, "font-family:var(--e);font-weight:600;font-size:32px")   # optional; sized so its box stays inside the circle at this height
 
     def _teaser_full(self):
         c, di = self.c, self.dy_info
@@ -800,7 +810,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
     ignore_all = [("title", "sub1"), ("title", "sub2"), ("title", "count"), ("title", "headline"),
               ("carpet", "headline"), ("carpet", "detail"), ("carpet", "date"), ("carpet", "cta"), ("carpet", "title"),
               ("carpet", "sub1"), ("carpet", "sub2"), ("banner", "sub2"), ("day", "title"), ("arch", "title"), ("arch", "tagline"), ("arch", "badge"),
-              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("title", "sub1"), ("title", "sub2"), ("sub2", "status"), ("status", "note"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
+              ("title", "tagline"), ("title", "edition"), ("title", "railL"), ("title", "railR"), ("badge", "title"), ("badge", "mask"), ("title", "mask"), ("mask", "badge"), ("mask", "sub1"), ("mask", "sub2"), ("mask", "date"), ("mask", "edition"), ("title", "date"), ("title", "edition"), ("date", "edition"), ("title", "month"), ("title", "time"), ("mask", "title"), ("lights", "mask"), ("title", "sub1"), ("title", "sub2"), ("sub2", "status"), ("status", "note"), ("date", "time"), ("title", "date"), ("f1", "f2"), ("f2", "f3"), ("f1", "f3"), ("f1", "badge"), ("banner", "date"), ("banner", "title")]
     labels = {e[0] for e in p.elements}
     ignore = [pr for pr in ignore_all if pr[0] in labels and pr[1] in labels]
     text_pairs = [(lab, OFFWHITE, GROUND, 40, True) for lab in ("date", "status", "headline", "unit")]
@@ -814,7 +824,7 @@ async def render_poster(kind, content, canvas, out_png, style="plate", mask="ass
 DEMO_DATE = "2026-11-10"
 DEMO = [
     ("announce", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", time="4:30 PM Onwards",
-                      status="Ticket sales open soon", note="More details soon", cta="Link in bio")),
+                      status="Ticket sales open soon", note="More details to follow", cta="Link in bio")),
     ("countdown", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", days=days_to_go(DEMO_DATE), cta="Link in bio")),
     ("tickets_open", dict(edition="Masquerade Sangeet Edition", headline="Tickets are live", date="10th November, 2026", cta="Link in bio")),
     ("sold_out", dict(edition="Masquerade Sangeet Edition", date="10th November, 2026", thanks="Thank you for the love")),
