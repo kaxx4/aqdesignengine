@@ -80,13 +80,13 @@ class Slide:
         self.p.img("live_badge.png", M, 70, w, z=8, tag="badge")
         self.p.box("badge", M, 70, w, round(w * 1005 / 1061))
 
-    def mask(self, w=400):
+    def mask(self, w=520):
         x0, y0, x1, y1 = 157, 211, 1563, 1135                      # copper mask's visible box inside mask_copper.png
         k = w / (x1 - x0); vx, vy = W - M - w, 62
         self.p.img("mask_copper.png", round(vx - x0 * k), round(vy - y0 * k), round(1680 * k), z=6, tag="mask", extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
         self.p.box("mask", vx, vy, w, round((y1 - y0) * k))
 
-    def chat(self, y0=350):
+    def chat(self, y0=420):
         y = y0
         for k, (side, text) in enumerate(self.spec["chat"], 1):
             tw = self.widths[text]
