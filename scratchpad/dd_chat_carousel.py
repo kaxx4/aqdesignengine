@@ -8,7 +8,9 @@ Slides (1080x1350, feed 4:5):
   01 cover   "disco diwali? / masquerade sangeet edition, / say less."   lockup large
   02         "tickets? / open soon, / how soon? / more details to follow."
   03         "what's it for? / all for charity. / okay, i'm in."
-  04 cta     "where do i book? / link in bio. / on it."                lockup large
+  04 cta     "how do i join? / whatsapp group, link in bio. / joining now."   lockup large
+  Every slide carries an ALL FOR CHARITY pill above the lockup (user, 2026-10-18).
+  LINK IN BIO means JOINING THE WHATSAPP GROUP; it is NOT a booking link. Ticket-sales details and everything else follow in that group (user, 2026-10-18).
 
 COPY (CLAUDE.md sec 9, R12 "nothing is invented"): every fact in a blue bubble is supplied copy (edition name, ticket sales open soon, more details to
 follow, all for charity, link in bio). The grey questions and the "say less / okay, i'm in / on it" beats are voice, not facts. No date, time or location
@@ -43,11 +45,11 @@ SLIDES = [
     dict(photo=HALLP("04_pink-ceiling-chandelier-phone.jpg"), focus="50% 50%", lock=(560, "title_lockup.png"),
          chat=[("l", "disco diwali?"), ("r", "masquerade sangeet edition,"), ("l", "say less.")]),
     dict(photo=HALLP("01_dancers-silver-pillar-purple.jpg"), focus="45% 50%", lock=(430, "title_lockup_noball.png"),
-         chat=[("l", "tickets?"), ("r", "open soon,"), ("l", "how soon?"), ("r", "more details to follow.")]),
+         chat=[("l", "tickets?"), ("r", "sales open soon,"), ("l", "where's the info?"), ("r", "in the whatsapp group.")]),
     dict(photo=HALLP("09_boy-on-shoulders-star-balloon.jpg"), focus="70% 50%", lock=(430, "title_lockup_noball.png"),
          chat=[("l", "what's it for?"), ("r", "all for charity."), ("l", "okay, i'm in.")]),
     dict(photo=HALLP("08_boy-on-shoulders-stage-lights-portrait.jpg"), focus="50% 0%", lock=(560, "title_lockup.png"),
-         chat=[("l", "where do i book?"), ("r", "link in bio."), ("l", "on it.")]),
+         chat=[("l", "how do i join?"), ("r", "whatsapp group, link in bio."), ("l", "joining now.")]),
 ]
 
 CSS = (f".bub{{position:absolute;box-sizing:border-box;border-radius:{(FS + 2 * PADY) // 2 + 6}px;font-family:var(--e);font-weight:400;font-size:{FS}px;"
@@ -92,6 +94,12 @@ class Slide:
         vx, vy = (W - w) // 2, H - 70 - vh                             # centred, 70px above the foot
         self.p.img(name, round(vx - x0 * k), round(vy - y0 * k), round(2000 * k), z=9, tag="title")
         self.p.box("title", vx, vy, w, vh)
+        ph, pw = 64, 400                                               # the ALL FOR CHARITY pill, centred 28px above the lockup
+        py = vy - 28 - ph
+        self.P.append(f'<div data-tag="pill" style="position:absolute;left:{(W - pw) // 2}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;border-radius:{ph // 2}px;'
+                      f'border:2px solid #E8C063;background:rgba(8,6,10,.72);z-index:12;display:flex;align-items:center;justify-content:center;font-family:var(--d);'
+                      f'font-weight:700;font-size:30px;letter-spacing:.08em;color:{OFFWHITE};text-transform:uppercase;line-height:1">ALL FOR CHARITY</div>')
+        self.p.box("pill", (W - pw) // 2, py, pw, ph)
 
     def finish(self):
         self.p.overlays()
