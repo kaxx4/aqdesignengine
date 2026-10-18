@@ -9,7 +9,7 @@ Slides (1080x1350, feed 4:5):
   02         "tickets? / open soon, / how soon? / link in the bio."
   03         "what's it for? / all for charity. / okay, i'm in."
   04 cta     "how do i join? / link in the bio. / joining now."
-  Every slide carries the LIVE / ALL FOR CHARITY badge top left (as on every earlier story and poster) and the SAME lockup footer, same size and place.
+  Every slide carries the LIVE / ALL FOR CHARITY badge top left (as on every earlier story and poster), the copper-red mask top right, and the SAME lockup footer, same size and place.
   The copy says "link in the bio" and never "whatsapp group" (user, 2026-10-18). The link is for joining the group; it is not a booking link.
 
 COPY (CLAUDE.md sec 9, R12 "nothing is invented"): every fact in a blue bubble is supplied copy (edition name, ticket sales open soon, more details to
@@ -80,7 +80,13 @@ class Slide:
         self.p.img("live_badge.png", M, 70, w, z=8, tag="badge")
         self.p.box("badge", M, 70, w, round(w * 1005 / 1061))
 
-    def chat(self, y0=330):
+    def mask(self, w=400):
+        x0, y0, x1, y1 = 157, 211, 1563, 1135                      # copper mask's visible box inside mask_copper.png
+        k = w / (x1 - x0); vx, vy = W - M - w, 62
+        self.p.img("mask_copper.png", round(vx - x0 * k), round(vy - y0 * k), round(1680 * k), z=6, tag="mask", extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
+        self.p.box("mask", vx, vy, w, round((y1 - y0) * k))
+
+    def chat(self, y0=350):
         y = y0
         for k, (side, text) in enumerate(self.spec["chat"], 1):
             tw = self.widths[text]
@@ -113,7 +119,7 @@ async def main():
         widths = {t: r["text_w"] for t, r in zip(texts, res)}
         for i, spec in enumerate(SLIDES, 1):
             s = Slide(i, spec, widths)
-            s.ground(); s.badge(); s.chat(); s.lockup()
+            s.ground(); s.badge(); s.mask(); s.chat(); s.lockup()
             html = s.finish()
             labels = {e[0] for e in s.p.elements}
             text_pairs = [("bubble_grey", "#000000", GREY, FS, False), ("bubble_blue", "#FFFFFF", BLUE, FS, False)]
