@@ -6,11 +6,11 @@ the blue side answers, and the answer is the information. The brand lockup signs
 
 Slides (1080x1350, feed 4:5):
   01 cover   "disco diwali? / masquerade sangeet edition, / say less."   lockup large
-  02         "tickets? / open soon, / how soon? / more details to follow."
+  02         "tickets? / open soon, / how soon? / link in the bio."
   03         "what's it for? / all for charity. / okay, i'm in."
-  04 cta     "how do i join? / whatsapp group, link in bio. / joining now."   lockup large
-  Every slide carries an ALL FOR CHARITY pill above the lockup (user, 2026-10-18).
-  LINK IN BIO means JOINING THE WHATSAPP GROUP; it is NOT a booking link. Ticket-sales details and everything else follow in that group (user, 2026-10-18).
+  04 cta     "how do i join? / link in the bio. / joining now."
+  Every slide carries the LIVE / ALL FOR CHARITY badge top left (as on every earlier story and poster) and the SAME lockup footer, same size and place.
+  The copy says "link in the bio" and never "whatsapp group" (user, 2026-10-18). The link is for joining the group; it is not a booking link.
 
 COPY (CLAUDE.md sec 9, R12 "nothing is invented"): every fact in a blue bubble is supplied copy (edition name, ticket sales open soon, more details to
 follow, all for charity, link in bio). The grey questions and the "say less / okay, i'm in / on it" beats are voice, not facts. No date, time or location
@@ -42,14 +42,14 @@ BRIEF = dict(edition="Masquerade Sangeet Edition", status="Ticket sales open soo
 
 # each slide: photo, object-position, [(side, text)], lockup width, lockup name
 SLIDES = [
-    dict(photo=HALLP("04_pink-ceiling-chandelier-phone.jpg"), focus="50% 50%", lock=(560, "title_lockup.png"),
+    dict(photo=HALLP("04_pink-ceiling-chandelier-phone.jpg"), focus="50% 50%", lock=(480, "title_lockup.png"),
          chat=[("l", "disco diwali?"), ("r", "masquerade sangeet edition,"), ("l", "say less.")]),
-    dict(photo=HALLP("01_dancers-silver-pillar-purple.jpg"), focus="45% 50%", lock=(430, "title_lockup_noball.png"),
-         chat=[("l", "tickets?"), ("r", "sales open soon,"), ("l", "where's the info?"), ("r", "in the whatsapp group.")]),
-    dict(photo=HALLP("09_boy-on-shoulders-star-balloon.jpg"), focus="70% 50%", lock=(430, "title_lockup_noball.png"),
+    dict(photo=HALLP("01_dancers-silver-pillar-purple.jpg"), focus="45% 50%", lock=(480, "title_lockup.png"),
+         chat=[("l", "tickets?"), ("r", "sales open soon,"), ("l", "where's the info?"), ("r", "link in the bio.")]),
+    dict(photo=HALLP("09_boy-on-shoulders-star-balloon.jpg"), focus="70% 50%", lock=(480, "title_lockup.png"),
          chat=[("l", "what's it for?"), ("r", "all for charity."), ("l", "okay, i'm in.")]),
-    dict(photo=HALLP("08_boy-on-shoulders-stage-lights-portrait.jpg"), focus="50% 0%", lock=(560, "title_lockup.png"),
-         chat=[("l", "how do i join?"), ("r", "whatsapp group, link in bio."), ("l", "joining now.")]),
+    dict(photo=HALLP("08_boy-on-shoulders-stage-lights-portrait.jpg"), focus="50% 0%", lock=(480, "title_lockup.png"),
+         chat=[("l", "how do i join?"), ("r", "link in the bio."), ("l", "joining now.")]),
 ]
 
 CSS = (f".bub{{position:absolute;box-sizing:border-box;border-radius:{(FS + 2 * PADY) // 2 + 6}px;font-family:var(--e);font-weight:400;font-size:{FS}px;"
@@ -76,7 +76,11 @@ class Slide:
         self.P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 30%,'
                       'rgba(0,0,0,0) 52%,rgba(0,0,0,.82) 100%)"></div>')
 
-    def chat(self, y0=96):
+    def badge(self, w=236):
+        self.p.img("live_badge.png", M, 70, w, z=8, tag="badge")
+        self.p.box("badge", M, 70, w, round(w * 1005 / 1061))
+
+    def chat(self, y0=330):
         y = y0
         for k, (side, text) in enumerate(self.spec["chat"], 1):
             tw = self.widths[text]
@@ -94,12 +98,6 @@ class Slide:
         vx, vy = (W - w) // 2, H - 70 - vh                             # centred, 70px above the foot
         self.p.img(name, round(vx - x0 * k), round(vy - y0 * k), round(2000 * k), z=9, tag="title")
         self.p.box("title", vx, vy, w, vh)
-        ph, pw = 64, 400                                               # the ALL FOR CHARITY pill, centred 28px above the lockup
-        py = vy - 28 - ph
-        self.P.append(f'<div data-tag="pill" style="position:absolute;left:{(W - pw) // 2}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;border-radius:{ph // 2}px;'
-                      f'border:2px solid #E8C063;background:rgba(8,6,10,.72);z-index:12;display:flex;align-items:center;justify-content:center;font-family:var(--d);'
-                      f'font-weight:700;font-size:30px;letter-spacing:.08em;color:{OFFWHITE};text-transform:uppercase;line-height:1">ALL FOR CHARITY</div>')
-        self.p.box("pill", (W - pw) // 2, py, pw, ph)
 
     def finish(self):
         self.p.overlays()
@@ -115,7 +113,7 @@ async def main():
         widths = {t: r["text_w"] for t, r in zip(texts, res)}
         for i, spec in enumerate(SLIDES, 1):
             s = Slide(i, spec, widths)
-            s.ground(); s.chat(); s.lockup()
+            s.ground(); s.badge(); s.chat(); s.lockup()
             html = s.finish()
             labels = {e[0] for e in s.p.elements}
             text_pairs = [("bubble_grey", "#000000", GREY, FS, False), ("bubble_blue", "#FFFFFF", BLUE, FS, False)]
