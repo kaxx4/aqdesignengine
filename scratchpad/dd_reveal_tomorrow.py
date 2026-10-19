@@ -19,7 +19,8 @@ B = dd.B
 W, H = 1080, 1350
 BLUE = "#1A73E8"
 VER = sys.argv[1] if len(sys.argv) > 1 else "v1"
-OUT = os.path.join(ROOT, "out", "discodiwali", f"reveal_tomorrow_{VER}.png")
+MASK = sys.argv[2] if len(sys.argv) > 2 else "ref"       # ref | centre | behind | corner
+OUT = os.path.join(ROOT, "out", "discodiwali", f"reveal_tomorrow_{VER}_{MASK}.png")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 D = "font-family:var(--d);text-transform:uppercase;"
 
@@ -37,25 +38,38 @@ def build():
     # badge and mask: the approved classic placements (measured for poster_ref)
     bw = 210
     badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:30px;top:84px;width:{bw}px;z-index:20">'
-    # TOP BLOCK = the approved classic composition (user reference crop, 2026-10-19): a big mask up and to the RIGHT of centre, the lockup
-    # nearly full width with the mask's lower edge tucked behind "DISCO", the edition lines in the lockup's notch. Geometry is the measured
-    # poster_ref placement (mask ink 343,108 693x456 / lockup ink 35,461 1038x553), scaled uniformly by SC so the dialog card still fits below.
-    SC = .85
-    X = lambda x: round((x - 554) * SC + 545)
-    Y = lambda y: round((y - 108) * SC + 90)
-    k, t = .4925 * SC, .6034 * SC
-    m_x, m_y, m_w, m_h = X(343), Y(108) + 24, round(693 * SC), round(456 * SC)
-    mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(m_x - 156 * k)}px;top:{round(m_y - 210 * k)}px;width:{round(1680 * k)}px;z-index:6;'
-            f'filter:drop-shadow(0 8px 26px rgba(0,0,0,.6))">')
+    # TOP BLOCK, three mask placements (argv[2]): ref = the approved classic (mask up-right), centre = mask centred over the lockup,
+    # behind = a big tilted mask that the lockup overprints, corner = a small mask accent with a bigger title.
+    # All three keep the lockup's notch tuck for the edition lines, positioned relative to the lockup's own ink box.
+    P = dict(ref=dict(k=.4186, mcx=None, mx=None, my=None, tilt=0, t=.5129, ix=None, iy=None),
+             centre=dict(k=.5, mcx=585, my=70, tilt=0, t=.5, iy="mask-130"),
+             behind=dict(k=.58, mcx=645, my=104, tilt=7, t=.55, iy=350),
+             corner=dict(k=.36, mcx=800, my=64, tilt=0, t=.58, iy=330))[MASK]
+    k, t = P["k"], P["t"]
     ink_w, ink_h = round(1720 * t), round(916 * t)
-    ix, iy = X(35), Y(461)
+    m_w, m_h = round(1408 * k), round(926 * k)
+    if MASK == "ref":
+        SC = .85
+        X = lambda x: round((x - 554) * SC + 545); Y = lambda y: round((y - 108) * SC + 90)
+        m_x, m_y, ix, iy = X(343), Y(108) + 24, X(35), Y(461)
+    else:
+        m_x, m_y = P["mcx"] - m_w // 2, P["my"]
+        ix = (W - ink_w) // 2 + 14
+        iy = m_y + m_h - 130 if P["iy"] == "mask-130" else P["iy"]
+    tilt = P["tilt"]
+    mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(m_x - 156 * k)}px;top:{round(m_y - 210 * k)}px;width:{round(1680 * k)}px;z-index:6;'
+            f'transform:rotate({tilt}deg);transform-origin:{round((156 + 704) * k)}px {round((210 + 463) * k)}px;filter:drop-shadow(0 8px 26px rgba(0,0,0,.6))">')
+    if tilt:    # a tilted mask draws a bigger footprint than its ink box
+        import math
+        r = math.radians(abs(tilt)); bw2, bh2 = m_w * math.cos(r) + m_h * math.sin(r), m_h * math.cos(r) + m_w * math.sin(r)
+        m_x, m_y, m_w, m_h = round(m_x - (bw2 - m_w) / 2), round(m_y - (bh2 - m_h) / 2), round(bw2), round(bh2)
     title = f'<img data-tag="title" src="{dd.uri("title_lockup_noball.png")}" style="position:absolute;left:{round(ix - 264 * t)}px;top:{round(iy - 400 * t)}px;width:{round(2000 * t)}px;z-index:9">'
     bottom = iy + ink_h
-    s1w, s2w = round(520 * SC), round(320 * SC)
-    s1x, s1, s2x, s2 = X(352), Y(917), X(452), Y(962)
-    ncx = s1x + s1w // 2
-    sub1 = f'<div data-tag="sub1" style="position:absolute;left:{s1x}px;top:{s1}px;width:{s1w}px;text-align:center;{D}font-weight:700;font-size:{round(38 * SC)}px;{STROKE}z-index:10">Masquerade Sangeet</div>'
-    sub2 = f'<div data-tag="sub2" style="position:absolute;left:{s2x}px;top:{s2}px;width:{s2w}px;text-align:center;{D}font-weight:400;font-size:{round(37 * SC)}px;{STROKE}z-index:10">Edition</div>'
+    f = ink_w / 1038                                 # the notch tuck, scaled from the reference lockup
+    s1w, s2w = round(520 * f), round(320 * f)
+    s1x, s1, s2x, s2 = round(ix + 317 * f), round(iy + 456 * f), round(ix + 417 * f), round(iy + 501 * f)
+    sub1 = f'<div data-tag="sub1" style="position:absolute;left:{s1x}px;top:{s1}px;width:{s1w}px;text-align:center;{D}font-weight:700;font-size:{round(38 * f)}px;{STROKE}z-index:10">Masquerade Sangeet</div>'
+    sub2 = f'<div data-tag="sub2" style="position:absolute;left:{s2x}px;top:{s2}px;width:{s2w}px;text-align:center;{D}font-weight:400;font-size:{round(37 * f)}px;{STROKE}z-index:10">Edition</div>'
 
     # hype eyebrow
     ey_y = bottom + 34
@@ -90,6 +104,6 @@ async def main():
     html = B.page(W, H, "#000", inner, grain=False)
     async with B.session():
         await B.render(html, OUT, W, H, elements=els, containers=("card",), bleed_tags=("plate",), crop_tags=("plate", "card"), page_bg="#000",
-                       text_pairs=text_pairs, collision_ignore=[("title", "sub1"), ("title", "sub2"), ("mask", "title")])
+                       text_pairs=text_pairs, collision_ignore=[("title", "sub1"), ("title", "sub2"), ("mask", "title"), ("badge", "mask")])
     print("done ->", OUT)
 asyncio.run(main())
