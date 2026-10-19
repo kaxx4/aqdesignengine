@@ -22,6 +22,7 @@ VENUE = ("60, Chowringhee", "Banquets")
 ADDR = ("60, Chowringhee Road, Bishop Lefroy Rd,", "Kolkata, West Bengal 700020")
 TILT = -5                                   # the screenshot is 1080x508: any card width w keeps its aspect at h = w * 508 / 1080
 BLUE = "#1A73E8"
+VARIANT = os.environ.get("ROOFTOP", "tag")      # how the rooftop is mentioned: tag | plain_above | below | callout
 
 
 def rot_box(cx, cy, w, h, deg):
@@ -42,7 +43,7 @@ def ground(H):
     return p
 
 
-def map_card(cx, cy, MAP_W):
+def map_card(cx, cy, MAP_W, callout=False):
     MAP_H = round(MAP_W * 508 / 1080)
     left, top = cx - MAP_W // 2, cy - MAP_H // 2
     three_d = (f'<div style="position:absolute;left:30px;top:30px;width:92px;height:92px;border-radius:50%;background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.35);'
@@ -51,9 +52,14 @@ def map_card(cx, cy, MAP_W):
            f'display:flex;flex-direction:column;align-items:center;justify-content:space-evenly">'
            f'<svg width="46" height="46" viewBox="0 0 46 46"><path d="M5 12l12-4 12 4 12-4v26l-12 4-12-4-12 4z" fill="#0a0a0a"/><path d="M17 8v26M29 12v26" stroke="#fff" stroke-width="3"/></svg>'
            f'<svg width="46" height="46" viewBox="0 0 46 46"><path d="M40 6L6 20l14 4 4 14z" fill="{BLUE}"/></svg></div>')
+    call = ""
+    if callout:                       # a black map-annotation pill sitting just above the red venue pin of the screenshot (pin head at ~525,198 of 1080x508)
+        k = MAP_W / 1080
+        call = (f'<div style="position:absolute;left:{round(525 * k - 95)}px;top:{round(190 * k - 62)}px;width:190px;height:56px;border-radius:28px;background:#0a0a0a;border:2px solid rgba(214,170,90,.85);'
+                f'display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:30px;letter-spacing:5px;text-indent:5px;color:#fff;text-transform:uppercase">Rooftop</div>')
     card = (f'<div data-tag="card" style="position:absolute;left:{left}px;top:{top}px;width:{MAP_W}px;height:{MAP_H}px;border-radius:44px;overflow:hidden;z-index:10;'
             f'transform:rotate({TILT}deg);box-shadow:0 40px 70px rgba(0,0,0,.65),0 0 0 3px rgba(255,255,255,.55)">'
-            f'<img src="{dd.uri("map_60_chowringhee.jpg")}" style="width:{MAP_W}px;height:{MAP_H}px;object-fit:cover;display:block">{three_d}{nav}</div>')
+            f'<img src="{dd.uri("map_60_chowringhee.jpg")}" style="width:{MAP_W}px;height:{MAP_H}px;object-fit:cover;display:block">{three_d}{nav}{call}</div>')
     return card, rot_box(cx, cy, MAP_W, MAP_H, TILT)
 
 
@@ -71,7 +77,7 @@ def poster(H):
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     # map card, then the copper mask lying across its top-right corner (the placement the user preferred)
-    card, box = map_card(540, cy, card_w); parts.append(card); els.append(("card",) + box)
+    card, box = map_card(540, cy, card_w, callout=(VARIANT == "callout")); parts.append(card); els.append(("card",) + box)
     mw = 330
     mx, my = 730, box[1] - 62
     parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
@@ -81,15 +87,22 @@ def poster(H):
     def line(tag, txt, top, size, weight, h, extra=""):
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{size}px;line-height:1;'
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 70, top, 940, h))
-    tag_w, tag_h = 300, 58                                    # ROOFTOP tag: a gold-edged pill, reads as a category label above the venue
-    parts.append(f'<div data-tag="rooftop" style="position:absolute;left:{(W - tag_w) // 2}px;top:{y}px;width:{tag_w}px;height:{tag_h}px;box-sizing:border-box;border:2px solid rgba(214,170,90,.8);'
-                 f'border-radius:29px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:32px;'
-                 f'letter-spacing:8px;text-indent:8px;text-transform:uppercase;{STROKE}z-index:20">Rooftop</div>'); els.append(("rooftop", (W - tag_w) // 2, y, tag_w, tag_h))
-    y += tag_h + 14
+    if VARIANT == "tag":
+        tag_w, tag_h = 300, 58                                # ROOFTOP tag: a gold-edged pill above the venue
+        parts.append(f'<div data-tag="rooftop" style="position:absolute;left:{(W - tag_w) // 2}px;top:{y}px;width:{tag_w}px;height:{tag_h}px;box-sizing:border-box;border:2px solid rgba(214,170,90,.8);'
+                     f'border-radius:29px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:32px;'
+                     f'letter-spacing:8px;text-indent:8px;text-transform:uppercase;{STROKE}z-index:20">Rooftop</div>'); els.append(("rooftop", (W - tag_w) // 2, y, tag_w, tag_h))
+        y += tag_h + 14
+    elif VARIANT == "plain_above":
+        line("rooftop", "Rooftop", y, 36, 400, 38, "letter-spacing:9px;"); y += 52
+    else:
+        y += 6
     line("venue1", VENUE[0], y, vsize, 700, vsize); y += vsize - 4
     line("venue2", VENUE[1], y, vsize, 700, vsize); y += vsize + 14
     line("addr1", ADDR[0], y, 30, 400, 32); y += 38
     line("addr2", ADDR[1], y, 30, 400, 32)
+    if VARIANT == "below":
+        y += 52; line("rooftop", "On the rooftop", y, 38, 700, 40)
     # footer mark: the lockup with its ball, centred, visible box 265..1982 x 320..1311 of the 2000x1382 asset
     vw = 400 if story else 300
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
@@ -106,7 +119,7 @@ async def main():
         for name, H in (("feed", 1350), ("story", 1920)):
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
-            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
+            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, (f"{name}.png" if VARIANT == "tag" else f"var_{VARIANT}_{name}.png")), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
                            page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
     print("location reveal done ->", OUT)
 asyncio.run(main())
