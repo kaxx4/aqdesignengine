@@ -85,7 +85,7 @@ def build():
             f'transform:rotate(-2deg);box-shadow:0 22px 64px rgba(0,0,0,.7),0 0 90px rgba(214,170,90,.28);overflow:hidden">'
             f'<div style="position:absolute;left:0;top:0;width:{CW}px;height:{top_h}px;display:flex;flex-direction:column;align-items:center;justify-content:center;'
             f'{D}font-weight:900;font-size:66px;line-height:1.04;color:#0a0a0a;text-align:center;white-space:nowrap">'
-            f'<span>Location + date</span><span>revealed tomorrow</span></div>'
+            f'<span>Location + date</span><span>reveal tomorrow</span></div>'
             f'<div style="position:absolute;left:0;top:{top_h}px;width:{CW}px;height:2px;background:#C9C9CE"></div>'
             f'<div style="position:absolute;left:0;top:{top_h + 2}px;width:{CW}px;height:{CH - top_h - 2}px;display:flex;align-items:center;justify-content:center;'
             f'{D}font-weight:700;font-size:48px;color:{BLUE}">{bell}Remind me</div></div>')
