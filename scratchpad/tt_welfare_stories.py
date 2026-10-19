@@ -29,6 +29,8 @@ ELD = "engine/assets/terrathon/carousel_photos/elderly_welfare.jpg"      # user-
 if os.path.exists(ELD): PHOTOS["elderly"] = [(uri(ELD, w=1200), "50% 40%")]
 ANI = "engine/assets/terrathon/carousel_photos/animals_welfare.jpg"      # user-supplied feeding-drive photo (a minor's face; git-ignored); sticker fallback if absent
 if os.path.exists(ANI): PHOTOS["animals"] = [(uri(ANI, w=1200), "50% 50%")]
+ENV = "engine/assets/terrathon/carousel_photos/environment_welfare.jpg"  # user-supplied plantation photo (face hidden by a cap; git-ignored); sticker fallback if absent
+if os.path.exists(ENV): PHOTOS["environment"] = [(uri(ENV, w=1200), "50% 50%")]
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
 P = {p: st.pstat(p) for p in st.PILLARS}
