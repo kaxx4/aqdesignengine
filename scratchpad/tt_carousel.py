@@ -248,15 +248,16 @@ async def slide(kind, canvas, out, idx=None):
         import re
         HEAD_MAX, TAG_PX = (92, 36) if DECK.get("compact") else (104, 40)      # compact box: smaller type so 2 headline lines + 2 tagline lines still fit
         tag = re.sub(r"(\S+-\S+)", r'<span style="white-space:nowrap">\1</span>', DECK["items"][idx][2])   # a hyphenated word never splits across lines ("MINI-" / "GAMES")
-        words = head.split(); two = m[0]["text_w"] * 1.04 > 840 and len(words) > 2   # wider than the slab at full size: two lines
+        HW = DECK.get("head_w", 840)      # headline max width; a deck with long one-line names can ask for more air around them
+        words = head.split(); two = m[0]["text_w"] * 1.04 > HW and len(words) > 2   # wider than the slab at full size: two lines
         if two:
             cut = min(range(1, len(words)), key=lambda i: abs(len(" ".join(words[:i])) - len(" ".join(words[i:]))))
             hl = [" ".join(words[:cut]), " ".join(words[cut:])]
             mm = await B.measure_text([dict(text=t, font="d", size=100, weight=900) for t in hl])
-            head_px = min(HEAD_MAX, 100 * 840 / max(r["text_w"] for r in mm))
+            head_px = min(HEAD_MAX, 100 * HW / max(r["text_w"] for r in mm))
             head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
         else:
-            head_px = min(HEAD_MAX, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
+            head_px = min(HEAD_MAX, 100 * HW / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
         body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
                 f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
