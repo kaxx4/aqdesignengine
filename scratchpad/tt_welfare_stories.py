@@ -31,6 +31,12 @@ ANI = "engine/assets/terrathon/carousel_photos/animals_welfare.jpg"      # user-
 if os.path.exists(ANI): PHOTOS["animals"] = [(uri(ANI, w=1200), "50% 50%")]
 ENV = "engine/assets/terrathon/carousel_photos/environment_welfare.jpg"  # user-supplied plantation photo (face hidden by a cap; git-ignored); sticker fallback if absent
 if os.path.exists(ENV): PHOTOS["environment"] = [(uri(ENV, w=1200), "50% 50%")]
+HLT = "engine/assets/terrathon/carousel_photos/health_welfare.jpg"       # user-supplied health camp photo (git-ignored); the banner phone number behind them is blurred; sticker fallback if absent
+if os.path.exists(HLT): PHOTOS["health"] = [(uri(HLT, w=1200), "50% 40%")]
+COM = "engine/assets/terrathon/carousel_photos/community_welfare.jpg"    # user-supplied donation-drive photo (minors; git-ignored); sticker fallback if absent
+if os.path.exists(COM): PHOTOS["community"] = [(uri(COM, w=1200), "50% 50%")]
+WOM = "engine/assets/terrathon/carousel_photos/women_welfare.jpg"        # user-supplied menstrual hygiene workshop photo (git-ignored); sticker fallback if absent
+if os.path.exists(WOM): PHOTOS["women"] = [(uri(WOM, w=1200), "50% 45%")]
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
 P = {p: st.pstat(p) for p in st.PILLARS}
