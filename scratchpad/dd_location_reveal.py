@@ -22,7 +22,8 @@ VENUE = ("60, Chowringhee", "Banquets")
 ADDR = ("60, Chowringhee Road, Bishop Lefroy Rd,", "Kolkata, West Bengal 700020")
 TILT = -5                                   # the screenshot is 1080x508: any card width w keeps its aspect at h = w * 508 / 1080
 BLUE = "#1A73E8"
-VARIANT = os.environ.get("ROOFTOP", "tag")      # how the rooftop is mentioned: tag | plain_above | below | callout
+DEFAULT_VARIANT = "below"                             # chosen by the user, 2026-10-19: "ON THE ROOFTOP" below the address
+VARIANT = os.environ.get("ROOFTOP", DEFAULT_VARIANT)   # how the rooftop is mentioned: below | tag | plain_above | callout
 
 
 def rot_box(cx, cy, w, h, deg):
@@ -119,7 +120,7 @@ async def main():
         for name, H in (("feed", 1350), ("story", 1920)):
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
-            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, (f"{name}.png" if VARIANT == "tag" else f"var_{VARIANT}_{name}.png")), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
+            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, (f"{name}.png" if VARIANT == DEFAULT_VARIANT else f"var_{VARIANT}_{name}.png")), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
                            page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
     print("location reveal done ->", OUT)
 asyncio.run(main())
