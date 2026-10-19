@@ -27,6 +27,8 @@ def uri(path, w=900, crop=None):
 PHOTOS = {"children": [(uri("engine/assets/img/education-sundarban.jpeg", crop=(0, 0, ew, int(eh * 0.72))), "50% 30%")]}
 ELD = "engine/assets/terrathon/carousel_photos/elderly_welfare.jpg"      # user-supplied old age home photo (git-ignored: people, public repo); the pillar keeps its sticker if the file is absent
 if os.path.exists(ELD): PHOTOS["elderly"] = [(uri(ELD, w=1200), "50% 40%")]
+ANI = "engine/assets/terrathon/carousel_photos/animals_welfare.jpg"      # user-supplied feeding-drive photo (a minor's face; git-ignored); sticker fallback if absent
+if os.path.exists(ANI): PHOTOS["animals"] = [(uri(ANI, w=1200), "50% 50%")]
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
 P = {p: st.pstat(p) for p in st.PILLARS}
