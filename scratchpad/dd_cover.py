@@ -13,7 +13,7 @@ OUT = os.path.join(ROOT, "out", "discodiwali", "cover")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 
 
-SLIDES = [("sample_outputs/disco_diwali_captcha/slide_4.jpg", -9, False), ("sample_outputs/disco_diwali_date/feed.jpg", 0, True), ("sample_outputs/disco_diwali_location/feed.jpg", 9, True)]
+SLIDES = [("sample_outputs/disco_diwali_charity/feed.jpg", -9, False), ("sample_outputs/disco_diwali_date/feed.jpg", 0, True), ("sample_outputs/disco_diwali_location/feed.jpg", 9, True)]
 CW, CH = 330, 412                                            # card size, 4:5
 
 
