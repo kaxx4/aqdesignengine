@@ -3,9 +3,9 @@ with round white map buttons and a Memoji pin bubble.
 
 Composition, back to front: black ground, the approved navy diya plate with string lights, a map card (the user's own map screenshot, rounded, tilted
 -5 degrees, hard shadow and hairline edge) carrying a "3D" button and a compass pill like the inspo, the copper mask lying across its top-right corner, the LIVE
-badge top left, then LOCATION REVEAL, the venue and its address, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill and no edition line (user).
+badge top left, then THE ROOFTOP AT, the venue and its address, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill and no edition line (user).
 
-Facts (all supplied by the user, 2026-10-19): venue "60, Chowringhee Banquets"; address "60, Chowringhee Road, Bishop Lefroy Rd, Kolkata, West Bengal 700020".
+Facts (all supplied by the user, 2026-10-19): the event is on a ROOFTOP; venue "60, Chowringhee Banquets"; address "60, Chowringhee Road, Bishop Lefroy Rd, Kolkata, West Bengal 700020".
 NO date or time (user choice). No price or lineup. The map is the user's real screenshot, never redrawn, so no street label is mine.
 Adaptations: the inspo's Memoji pin avatar is dropped (the red venue pin in the screenshot carries the pointing); the map buttons are drawn here with no Apple or Google marks; type is NeutralFace, white with a thin black border.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_location_reveal.py"""
@@ -61,8 +61,8 @@ def poster(H):
     """Top: the LIVE badge. Middle: the map card with the copper mask on its top-right corner, then the reveal copy. Footer: the DISCO DIWALI lockup
     (with its ball) as a small mark, like the reference chat slide. No pill and no edition line (user, 2026-10-19)."""
     story = H > 1350
-    card_w = 880 if story else 840
-    card_top = 500 if story else 240                          # top of the card's tilted bounding box
+    card_w = 960                                              # 960 wide: the card is the hero, its tilted box spans ~995px
+    card_top = 470 if story else 200                          # top of the card's tilted bounding box
     card_h = round(card_w * 508 / 1080)
     cy = card_top + (rot_box(0, 0, card_w, card_h, TILT)[3] + 1) // 2
     vsize = 90 if story else 84
@@ -81,14 +81,14 @@ def poster(H):
     def line(tag, txt, top, size, weight, h, extra=""):
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{size}px;line-height:1;'
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 70, top, 940, h))
-    line("label", "Location reveal", y, 36, 400, 38, "letter-spacing:7px;")
+    line("label", "The rooftop at", y, 36, 400, 38, "letter-spacing:7px;")
     y += 52
     line("venue1", VENUE[0], y, vsize, 700, vsize); y += vsize - 4
     line("venue2", VENUE[1], y, vsize, 700, vsize); y += vsize + 14
     line("addr1", ADDR[0], y, 30, 400, 32); y += 38
     line("addr2", ADDR[1], y, 30, 400, 32)
     # footer mark: the lockup with its ball, centred, visible box 265..1982 x 320..1311 of the 2000x1382 asset
-    vw = 400 if story else 360
+    vw = 400 if story else 320
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = (1420 if story else H - 64 - vh)
     vy = max(vy, y + 32 + 40)
