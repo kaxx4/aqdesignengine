@@ -3,7 +3,7 @@ with round white map buttons and a Memoji pin bubble.
 
 Composition, back to front: black ground, the approved navy diya plate with string lights, a map card (the user's own map screenshot, rounded, tilted
 -5 degrees, hard shadow and hairline edge) carrying a "3D" button and a compass pill like the inspo, the copper mask lying across its top-right corner, the LIVE
-badge top left, then THE ROOFTOP AT, the venue and its address, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill and no edition line (user).
+badge top left, then a ROOFTOP tag, the venue and its address, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill and no edition line (user).
 
 Facts (all supplied by the user, 2026-10-19): the event is on a ROOFTOP; venue "60, Chowringhee Banquets"; address "60, Chowringhee Road, Bishop Lefroy Rd, Kolkata, West Bengal 700020".
 NO date or time (user choice). No price or lineup. The map is the user's real screenshot, never redrawn, so no street label is mine.
@@ -81,14 +81,17 @@ def poster(H):
     def line(tag, txt, top, size, weight, h, extra=""):
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{size}px;line-height:1;'
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 70, top, 940, h))
-    line("label", "The rooftop at", y, 36, 400, 38, "letter-spacing:7px;")
-    y += 52
+    tag_w, tag_h = 300, 58                                    # ROOFTOP tag: a gold-edged pill, reads as a category label above the venue
+    parts.append(f'<div data-tag="rooftop" style="position:absolute;left:{(W - tag_w) // 2}px;top:{y}px;width:{tag_w}px;height:{tag_h}px;box-sizing:border-box;border:2px solid rgba(214,170,90,.8);'
+                 f'border-radius:29px;background:rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:32px;'
+                 f'letter-spacing:8px;text-indent:8px;text-transform:uppercase;{STROKE}z-index:20">Rooftop</div>'); els.append(("rooftop", (W - tag_w) // 2, y, tag_w, tag_h))
+    y += tag_h + 14
     line("venue1", VENUE[0], y, vsize, 700, vsize); y += vsize - 4
     line("venue2", VENUE[1], y, vsize, 700, vsize); y += vsize + 14
     line("addr1", ADDR[0], y, 30, 400, 32); y += 38
     line("addr2", ADDR[1], y, 30, 400, 32)
     # footer mark: the lockup with its ball, centred, visible box 265..1982 x 320..1311 of the 2000x1382 asset
-    vw = 400 if story else 320
+    vw = 400 if story else 300
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = (1420 if story else H - 64 - vh)
     vy = max(vy, y + 32 + 40)
