@@ -37,26 +37,28 @@ def build():
     # badge and mask: the approved classic placements (measured for poster_ref)
     bw = 210
     badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:30px;top:84px;width:{bw}px;z-index:20">'
-    # mask and title share ONE centre line (CX): the first build had the mask 150px right of the lockup, so the pair read as misaligned
-    CX = 570
-    k = .46
-    m_w, m_h = round(1408 * k), round(926 * k)           # ink box of mask_copper.png is (156..1564, 210..1136)
-    m_x, m_y = CX - m_w // 2, 96
+    # TOP BLOCK = the approved classic composition (user reference crop, 2026-10-19): a big mask up and to the RIGHT of centre, the lockup
+    # nearly full width with the mask's lower edge tucked behind "DISCO", the edition lines in the lockup's notch. Geometry is the measured
+    # poster_ref placement (mask ink 343,108 693x456 / lockup ink 35,461 1038x553), scaled uniformly by SC so the dialog card still fits below.
+    SC = .85
+    X = lambda x: round((x - 554) * SC + 545)
+    Y = lambda y: round((y - 108) * SC + 90)
+    k, t = .4925 * SC, .6034 * SC
+    m_x, m_y, m_w, m_h = X(343), Y(108) + 24, round(693 * SC), round(456 * SC)
     mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(m_x - 156 * k)}px;top:{round(m_y - 210 * k)}px;width:{round(1680 * k)}px;z-index:6;'
             f'filter:drop-shadow(0 8px 26px rgba(0,0,0,.6))">')
-    # title lockup: ink bbox is (264..1984, 400..1316) of 2000x1382, so at scale t the ink is 1720t x 916t
-    t = .54
     ink_w, ink_h = round(1720 * t), round(916 * t)
-    ix, iy = CX - ink_w // 2, m_y + m_h - 150
+    ix, iy = X(35), Y(461)
     title = f'<img data-tag="title" src="{dd.uri("title_lockup_noball.png")}" style="position:absolute;left:{round(ix - 264 * t)}px;top:{round(iy - 400 * t)}px;width:{round(2000 * t)}px;z-index:9">'
     bottom = iy + ink_h
-    ncx = round(ix + .556 * ink_w)                  # the lockup's notch, where the edition lines tuck
-    s1, s2 = round(bottom - 80), round(bottom - 43)
-    sub1 = f'<div data-tag="sub1" style="position:absolute;left:{ncx - 215}px;top:{s1}px;width:430px;text-align:center;{D}font-weight:700;font-size:32px;{STROKE}z-index:10">Masquerade Sangeet</div>'
-    sub2 = f'<div data-tag="sub2" style="position:absolute;left:{ncx - 135}px;top:{s2}px;width:270px;text-align:center;{D}font-weight:400;font-size:31px;{STROKE}z-index:10">Edition</div>'
+    s1w, s2w = round(520 * SC), round(320 * SC)
+    s1x, s1, s2x, s2 = X(352), Y(917), X(452), Y(962)
+    ncx = s1x + s1w // 2
+    sub1 = f'<div data-tag="sub1" style="position:absolute;left:{s1x}px;top:{s1}px;width:{s1w}px;text-align:center;{D}font-weight:700;font-size:{round(38 * SC)}px;{STROKE}z-index:10">Masquerade Sangeet</div>'
+    sub2 = f'<div data-tag="sub2" style="position:absolute;left:{s2x}px;top:{s2}px;width:{s2w}px;text-align:center;{D}font-weight:400;font-size:{round(37 * SC)}px;{STROKE}z-index:10">Edition</div>'
 
     # hype eyebrow
-    ey_y = bottom + 40
+    ey_y = bottom + 34
     eyebrow = f'<div data-tag="eyebrow" style="position:absolute;left:0;width:{W}px;top:{ey_y}px;text-align:center;{D}font-weight:700;font-size:40px;letter-spacing:.14em;{STROKE}z-index:20">The wait is almost over</div>'
 
     # the dialog card
@@ -76,7 +78,7 @@ def build():
     # rotated bbox: a 900x330 card at 2 degrees draws ~ 900*cos+330*sin wide, 330*cos+900*sin tall
     rw, rh = 900 + 12, 300 + 32
     els = [("badge", 30, 84, bw, round(bw * 1005 / 1061)), ("mask", m_x, m_y, m_w, m_h), ("title", ix, iy, ink_w, ink_h),
-           ("sub1", ncx - 215, s1, 430, 38), ("sub2", ncx - 135, s2, 270, 36), ("eyebrow", 90, ey_y, 900, 46),
+           ("sub1", s1x, s1, s1w, 38), ("sub2", s2x, s2, s2w, 36), ("eyebrow", 90, ey_y, 900, 46),
            ("card", cx0 - 6, cy0 - 16, rw, rh)]
     text_pairs = [("card_head", "#0a0a0a", "#F7F7F7", 66, True), ("card_cta", BLUE, "#F7F7F7", 48, True)]
     return ground() + mask + badge + title + sub1 + sub2 + eyebrow + card, els, text_pairs
