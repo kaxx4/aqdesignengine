@@ -1,7 +1,8 @@
 """DISCO DIWALI date + time reveal poster, feed (1080x1350) and story (1080x1920). Inspo: a headline over a photo, with a calendar-event card floating
 under it (hour lines, one event block).
 
-The headline teases and the card reveals: BLOCK YOUR CALENDAR, then a white calendar card whose event block starts at 4:30 and runs off the card's
+The headline teases and the card reveals: BLOCK YOUR CALENDAR, then two lines placing the date in the festival week (TWO DAYS AFTER DIWALI / ONE DAY BEFORE BHAI DOOJ, supplied by the user
+2026-10-19; Diwali 2026 is Sunday 8 November, but several sources list Bhai Dooj on the 10th, so CONFIRM it against a Kolkata panchang before posting), then a white calendar card whose event block starts at 4:30 and runs off the card's
 bottom edge, because the supplied time is "4:30 PM onwards" (no end time exists, so none is drawn). Same family as the location reveal poster
 (scratchpad/dd_location_reveal.py): diya ground, string lights, LIVE badge top left, copper mask lying across the card's top-right corner, the
 DISCO DIWALI lockup (with its ball) as a footer mark. No pill, no link.
@@ -64,17 +65,18 @@ def poster(H):
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     # headline (teases) + the edition line under it
-    size = 112 if story else 100
-    hy = 430 if story else 215
+    size = 112 if story else 92
+    hy = 430 if story else 205
     def line(tag, txt, top, fsize, weight, h, extra=""):
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{fsize}px;line-height:1;'
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 70, top, 940, h))
     line("head1", "Block your", hy, size, 700, size)
     line("head2", "calendar", hy + round(size * .96), size, 700, size)
     sy = hy + round(size * .96) * 2 + 20
-    line("sub", "Masquerade Sangeet Edition", sy, 38, 400, 40)
+    line("sub1", "Two days after Diwali", sy, 40, 400, 42)
+    line("sub2", "One day before Bhai Dooj", sy + 48, 40, 400, 42)
     # the card, with the copper mask lying across its top-right corner (the placement used on the location poster)
-    ctop = (800 if story else 505)
+    ctop = (800 if story else 520)
     cleft = (W - CARD_W) // 2
     parts.append(calendar_card(cleft, ctop)); els.append(("card", cleft, ctop, CARD_W, CARD_H))
     mw = 330; mx, my = 730, ctop - 62
