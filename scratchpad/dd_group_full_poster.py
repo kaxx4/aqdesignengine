@@ -3,7 +3,7 @@
 1080x1350 (4:5), the WhatsApp poster geometry: no link pill (there is no link to point at inside WhatsApp). Built from the approved poster_ref skeleton
 (copper-red mask top right, LIVE / ALL FOR CHARITY badge top left, diya plate, string lights) with the ball-free lockup scaled down so the news can be the hero.
 
-COPY (R12, nothing invented): "GROUP 1 IS FULL" is the supplied fact. It does NOT say a second group exists, because none was reported. "THAT WAS FAST. YOU DID THIS."
+COPY (R12, nothing invented): "GROUP 1/2 IS FULL" is the supplied fact (user, 2026-10-19: written "1/2"); all type is white, no gold (user, same day). It does NOT say a second group exists, because none was reported. "THAT WAS FAST. YOU DID THIS."
 is voice and the credit-transfer line (the audience made it what it was). "MORE DETAILS TO FOLLOW" is supplied. No date, time or location (user, 2026-10-14).
 The poster says "GROUP 1", not "whatsapp group" (user, 2026-10-18).
 
@@ -36,11 +36,11 @@ async def main():
     p.img("title_lockup_noball.png", round(vx - x0 * t), round(vy - y0 * t), round(2000 * t), z=9, tag="title")
     p.box("title", vx, vy, w, vh)
     cy = vy + vh + 70                                           # first text line, clear of the lockup
-    p.raw("g1", "GROUP 1", W // 2, cy, 520, 64, "font-family:var(--d);font-weight:700;font-size:64px;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase")
+    p.raw("g1", "GROUP 1/2", W // 2, cy, 520, 64, "font-family:var(--d);font-weight:700;font-size:64px;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase")
     p.raw("full", "IS FULL", W // 2, cy + 130, 900, 190,
-          f"font-family:var(--d);font-weight:900;font-size:200px;letter-spacing:.01em;text-transform:uppercase;{FOIL}filter:drop-shadow(0 4px 22px rgba(0,0,0,.6))")
+          f"font-family:var(--d);font-weight:900;font-size:200px;letter-spacing:.01em;text-transform:uppercase;color:{OFFWHITE};filter:drop-shadow(0 4px 22px rgba(0,0,0,.6))")
     p.raw("fast", "THAT WAS FAST. YOU DID THIS.", W // 2, cy + 275, 900, 48, "font-family:var(--d);font-weight:700;font-size:46px;text-transform:uppercase")
-    p.raw("more", "MORE DETAILS TO FOLLOW", W // 2, cy + 340, 600, 38, f"font-family:var(--d);font-weight:700;font-size:32px;letter-spacing:.2em;text-indent:.2em;color:{GL};text-transform:uppercase")
+    p.raw("more", "MORE DETAILS TO FOLLOW", W // 2, cy + 340, 600, 38, f"font-family:var(--d);font-weight:700;font-size:32px;letter-spacing:.2em;text-indent:.2em;color:{OFFWHITE};text-transform:uppercase")
     p.overlays()
     html = B.page(W, H, GROUND, "".join(P), grain=False)
     html = p.neutralise(html)
