@@ -25,6 +25,8 @@ def uri(path, w=900, crop=None):
     if im.width > w: im = im.resize((w, round(im.height * w / im.width)))
     b = io.BytesIO(); im.save(b, "JPEG", quality=86); return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
 PHOTOS = {"children": [(uri("engine/assets/img/education-sundarban.jpeg", crop=(0, 0, ew, int(eh * 0.72))), "50% 30%")]}
+ELD = "engine/assets/terrathon/carousel_photos/elderly_welfare.jpg"      # user-supplied old age home photo (git-ignored: people, public repo); the pillar keeps its sticker if the file is absent
+if os.path.exists(ELD): PHOTOS["elderly"] = [(uri(ELD, w=1200), "50% 40%")]
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
 P = {p: st.pstat(p) for p in st.PILLARS}
