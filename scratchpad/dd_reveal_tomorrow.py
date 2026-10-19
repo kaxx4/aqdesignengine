@@ -79,17 +79,28 @@ def build():
     sub1 = f'<div data-tag="sub1" style="position:absolute;left:{s1x}px;top:{s1}px;width:{s1w}px;text-align:center;{D}font-weight:700;font-size:{round(38 * f)}px;{STROKE}z-index:10">Masquerade Sangeet</div>'
     sub2 = f'<div data-tag="sub2" style="position:absolute;left:{s2x}px;top:{s2}px;width:{s2w}px;text-align:center;{D}font-weight:400;font-size:{round(37 * f)}px;{STROKE}z-index:10">Edition</div>'
 
-    # ONE line of copy (user, 2026-10-19: "just write THE REVEAL IS TOMORROW"): no card, no eyebrow, no button. It is set big, white with the
-    # format's thin black border, and centred in the room between the lockup and the bottom margin (story: the bottom 250px reply-bar zone).
-    fs = 112
+    # The dialog card is the ONLY copy (user, 2026-10-19: "just write THE REVEAL IS TOMORROW", then "use the card"): no eyebrow line. It is centred in
+    # the room between the lockup and the bottom margin (story: the bottom 250px reply-bar zone). The blue action row is what makes it read as the dialog.
+    CW, CH, CR = (940, 430, 48) if STORY else (900, 340, 44)
+    top_h = 300 if STORY else 232
+    hs, bs = (104, 56) if STORY else (88, 48)       # card headline / action-row type sizes
     lo, hi = bottom + 20, (H - 250 if STORY else H - 64)
-    lh = round(fs * 1.02)
-    my0 = round((lo + hi) / 2 - lh)                   # two lines, so the block is 2*lh tall
-    msg = (f'<div data-tag="msg" style="position:absolute;left:0;width:{W}px;top:{my0}px;text-align:center;{D}font-weight:700;font-size:{fs}px;line-height:{lh}px;'
-           f'letter-spacing:.02em;white-space:nowrap;{STROKE}z-index:20">The reveal<br>is tomorrow</div>')
+    cx0, cy0 = (W - CW) // 2, round((lo + hi) / 2 - CH / 2)
+    bell = (f'<svg width="46" height="46" viewBox="0 0 46 46" style="margin-right:16px"><path d="M23 5c-7 0-11 5-11 12v8l-4 6h30l-4-6v-8c0-7-4-12-11-12z" fill="{BLUE}"/>'
+            f'<path d="M18 36a5 5 0 0 0 10 0z" fill="{BLUE}"/></svg>')
+    card = (f'<div data-tag="card" style="position:absolute;left:{cx0}px;top:{cy0}px;width:{CW}px;height:{CH}px;background:#F7F7F7;border-radius:{CR}px;z-index:12;'
+            f'transform:rotate(-2deg);box-shadow:0 22px 64px rgba(0,0,0,.7),0 0 90px rgba(214,170,90,.28);overflow:hidden">'
+            f'<div style="position:absolute;left:0;top:0;width:{CW}px;height:{top_h}px;display:flex;flex-direction:column;align-items:center;justify-content:center;'
+            f'{D}font-weight:900;font-size:{hs}px;line-height:1.04;color:#0a0a0a;text-align:center;white-space:nowrap">'
+            f'<span>The reveal</span><span>is tomorrow</span></div>'
+            f'<div style="position:absolute;left:0;top:{top_h}px;width:{CW}px;height:2px;background:#C9C9CE"></div>'
+            f'<div style="position:absolute;left:0;top:{top_h + 2}px;width:{CW}px;height:{CH - top_h - 2}px;display:flex;align-items:center;justify-content:center;'
+            f'{D}font-weight:700;font-size:{bs}px;color:{BLUE}">{bell}Remind me</div></div>')
+    rw, rh = CW + 12, CH + 32                       # a 2-degree tilt draws a slightly bigger footprint than the card's CSS box
     els = [("badge", 30, 84 + DT, bw, round(bw * 1005 / 1061)), ("mask", m_x, m_y, m_w, m_h), ("title", ix, iy, ink_w, ink_h),
-           ("sub1", s1x, s1, s1w, 38), ("sub2", s2x, s2, s2w, 36), ("msg1", 60, my0, W - 120, lh), ("msg2", 60, my0 + lh, W - 120, lh)]
-    return ground() + mask + badge + title + sub1 + sub2 + msg, els, []
+           ("sub1", s1x, s1, s1w, 38), ("sub2", s2x, s2, s2w, 36), ("card", cx0 - 6, cy0 - 16, rw, rh)]
+    text_pairs = [("card_head", "#0a0a0a", "#F7F7F7", hs, True), ("card_cta", BLUE, "#F7F7F7", bs, True)]
+    return ground() + mask + badge + title + sub1 + sub2 + card, els, text_pairs
 
 
 async def main():
@@ -97,7 +108,7 @@ async def main():
     inner, els, text_pairs = build()
     html = B.page(W, H, "#000", inner, grain=False)
     async with B.session():
-        await B.render(html, OUT, W, H, elements=els, bleed_tags=("plate",), crop_tags=("plate",), page_bg="#000",
+        await B.render(html, OUT, W, H, elements=els, containers=("card",), bleed_tags=("plate",), crop_tags=("plate", "card"), page_bg="#000",
                        text_pairs=text_pairs, collision_ignore=[("title", "sub1"), ("title", "sub2"), ("mask", "title"), ("badge", "mask")])
     print("done ->", OUT)
 asyncio.run(main())
