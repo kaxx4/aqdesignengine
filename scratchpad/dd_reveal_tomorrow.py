@@ -35,15 +35,19 @@ def ground():
 
 def build():
     # badge and mask: the approved classic placements (measured for poster_ref)
-    bw = 230
-    badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:30px;top:96px;width:{bw}px;z-index:20">'
-    k = .4925
-    mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(343 - 157 * k)}px;top:{round(108 - 211 * k)}px;width:{round(1680 * k)}px;z-index:6;'
+    bw = 210
+    badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:30px;top:84px;width:{bw}px;z-index:20">'
+    # mask and title share ONE centre line (CX): the first build had the mask 150px right of the lockup, so the pair read as misaligned
+    CX = 570
+    k = .46
+    m_w, m_h = round(1408 * k), round(926 * k)           # ink box of mask_copper.png is (156..1564, 210..1136)
+    m_x, m_y = CX - m_w // 2, 96
+    mask = (f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(m_x - 156 * k)}px;top:{round(m_y - 210 * k)}px;width:{round(1680 * k)}px;z-index:6;'
             f'filter:drop-shadow(0 8px 26px rgba(0,0,0,.6))">')
     # title lockup: ink bbox is (264..1984, 400..1316) of 2000x1382, so at scale t the ink is 1720t x 916t
-    t = .52
+    t = .54
     ink_w, ink_h = round(1720 * t), round(916 * t)
-    ix, iy = (W - ink_w) // 2, 372
+    ix, iy = CX - ink_w // 2, m_y + m_h - 150
     title = f'<img data-tag="title" src="{dd.uri("title_lockup_noball.png")}" style="position:absolute;left:{round(ix - 264 * t)}px;top:{round(iy - 400 * t)}px;width:{round(2000 * t)}px;z-index:9">'
     bottom = iy + ink_h
     ncx = round(ix + .556 * ink_w)                  # the lockup's notch, where the edition lines tuck
@@ -52,12 +56,12 @@ def build():
     sub2 = f'<div data-tag="sub2" style="position:absolute;left:{ncx - 135}px;top:{s2}px;width:270px;text-align:center;{D}font-weight:400;font-size:31px;{STROKE}z-index:10">Edition</div>'
 
     # hype eyebrow
-    ey_y = bottom + 48
+    ey_y = bottom + 40
     eyebrow = f'<div data-tag="eyebrow" style="position:absolute;left:0;width:{W}px;top:{ey_y}px;text-align:center;{D}font-weight:700;font-size:40px;letter-spacing:.14em;{STROKE}z-index:20">The wait is almost over</div>'
 
     # the dialog card
     CW, CH, CR = 900, 300, 44
-    cx0, cy0 = (W - CW) // 2, ey_y + 70
+    cx0, cy0 = (W - CW) // 2, ey_y + 64
     top_h = 196
     bell = (f'<svg width="46" height="46" viewBox="0 0 46 46" style="margin-right:16px"><path d="M23 5c-7 0-11 5-11 12v8l-4 6h30l-4-6v-8c0-7-4-12-11-12z" fill="{BLUE}"/>'
             f'<path d="M18 36a5 5 0 0 0 10 0z" fill="{BLUE}"/></svg>')
@@ -71,7 +75,7 @@ def build():
             f'{D}font-weight:700;font-size:48px;color:{BLUE}">{bell}Remind me</div></div>')
     # rotated bbox: a 900x330 card at 2 degrees draws ~ 900*cos+330*sin wide, 330*cos+900*sin tall
     rw, rh = 900 + 12, 300 + 32
-    els = [("badge", 30, 96, bw, round(bw * 1005 / 1061)), ("mask", 266, 4, 827, 629), ("title", ix, iy, ink_w, ink_h),
+    els = [("badge", 30, 84, bw, round(bw * 1005 / 1061)), ("mask", m_x, m_y, m_w, m_h), ("title", ix, iy, ink_w, ink_h),
            ("sub1", ncx - 215, s1, 430, 38), ("sub2", ncx - 135, s2, 270, 36), ("eyebrow", 90, ey_y, 900, 46),
            ("card", cx0 - 6, cy0 - 16, rw, rh)]
     text_pairs = [("card_head", "#0a0a0a", "#F7F7F7", 66, True), ("card_cta", BLUE, "#F7F7F7", 48, True)]
