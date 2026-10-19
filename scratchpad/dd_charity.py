@@ -37,21 +37,22 @@ def poster(H):
     parts, els = [ground(H)], []
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
-    size = 112 if story else 92
-    hy = 430 if story else 205
+    # ALL FOR CHARITY is the hero (user, 2026-10-19): set at 205px, ~960px wide; the mask supports from the top-right corner at the poster_ref position, smaller
+    size = 205
+    hy = 760 if story else 470
     def line(tag, txt, top, fsize, weight, h, extra=""):
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{fsize}px;line-height:1;'
-                     f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 70, top, 940, h))
+                     f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     line("head1", "All for", hy, size, 700, size)
     line("head2", "charity", hy + round(size * .96), size, 700, size)
-    sy = hy + round(size * .96) * 2 + 20
-    line("sub", "Masquerade Sangeet Edition", sy, 38, 400, 40)
-    # no card (user, 2026-10-19: "no cards in this slide"): the copper mask is the hero, large and centred under the headline
-    ctop = 850 if story else 545                              # top of the mask's visible box
-    k = .498                                                  # visible width 1405k = 700, visible height 923k = 460 (asset 157..1562 x 211..1134)
-    mw = round(1680 * k); mx = (W - round(1405 * k)) // 2 - round(157 * k); my = ctop - round(211 * k)
+    sy = hy + round(size * .96) * 2 + 24
+    line("sub", "Masquerade Sangeet Edition", sy, 42, 400, 44)
+    k = .37                                                   # visible width 1405k = 520, visible height 923k = 342 (asset 157..1562 x 211..1134)
+    ctop = 270 if story else 70
+    vwid, vhei = round(1405 * k), round(923 * k)
+    mw = round(1680 * k); mx = 1040 - vwid - round(157 * k); my = ctop - round(211 * k)
     parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;'
-                 f'filter:drop-shadow(0 14px 32px rgba(0,0,0,.7))">'); els.append(("mask", (W - round(1405 * k)) // 2, ctop, round(1405 * k), round(923 * k)))
+                 f'filter:drop-shadow(0 12px 28px rgba(0,0,0,.7))">'); els.append(("mask", 1040 - vwid, ctop, vwid, vhei))
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = 1420 if story else H - 64 - vh
