@@ -36,9 +36,9 @@ async def main():
     p.img("title_lockup.png", round(vx - x0 * t), round(vy - y0 * t), round(2000 * t), z=9, tag="title")
     p.box("title", vx, vy, w, vh)
     ey = vy + vh + 38                                           # "MASQUERADE SANGEET" / "EDITION", centred under the lockup
-    p.raw("sub1", "MASQUERADE SANGEET", W // 2, ey, 640, 40, "font-family:var(--d);font-weight:700;font-size:38px;letter-spacing:.2em;text-indent:.2em;text-transform:uppercase")
-    p.raw("sub2", "EDITION", W // 2, ey + 44, 300, 36, "font-family:var(--d);font-weight:400;font-size:34px;letter-spacing:.3em;text-indent:.3em;text-transform:uppercase")
-    cy = ey + 130
+    p.raw("sub1", "MASQUERADE SANGEET", W // 2, ey, 640, 40, "font-family:var(--d);font-weight:700;font-size:28px;letter-spacing:.2em;text-indent:.2em;text-transform:uppercase")
+    p.raw("sub2", "EDITION", W // 2, ey + 36, 300, 30, "font-family:var(--d);font-weight:400;font-size:25px;letter-spacing:.3em;text-indent:.3em;text-transform:uppercase")
+    cy = ey + 112
     p.raw("g1", "GROUP 1/2", W // 2, cy, 520, 56, "font-family:var(--d);font-weight:700;font-size:56px;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase")
     p.raw("full", "IS FULL", W // 2, cy + 112, 800, 170,
           f"font-family:var(--d);font-weight:900;font-size:176px;letter-spacing:.01em;text-transform:uppercase;color:{OFFWHITE};filter:drop-shadow(0 4px 22px rgba(0,0,0,.6))")
