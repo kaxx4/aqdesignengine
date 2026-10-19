@@ -30,20 +30,20 @@ async def main():
     p.img("mask_copper.png", round(343 - 157 * k), round(108 - 211 * k), round(1680 * k), z=6, tag="mask", extra="filter:drop-shadow(0 8px 26px rgba(0,0,0,.6));")
     p.box("mask", 343, 108, 692, 452)
     p.img("live_badge.png", 30, 122, 267, z=8, tag="badge"); p.box("badge", 30, 122, 267, 248)
-    # the lockup WITH its disco ball (user, 2026-10-19), visible 640 wide, then the edition lines, then the news
+    # the lockup WITH its disco ball, big (visible 900 wide), the edition lines TUCKED INTO ITS NOTCH like the approved posters (user's crop, 2026-10-19)
     x0, y0, x1, y1 = 265, 315, 1983, 1315
-    w = 640; t = w / (x1 - x0); vh = round((y1 - y0) * t); vx, vy = (W - w) // 2, 470
+    w = 900; t = w / (x1 - x0); vh = round((y1 - y0) * t); vx, vy = (W - w) // 2, 430
     p.img("title_lockup.png", round(vx - x0 * t), round(vy - y0 * t), round(2000 * t), z=9, tag="title")
     p.box("title", vx, vy, w, vh)
-    ey = vy + vh + 38                                           # "MASQUERADE SANGEET" / "EDITION", centred under the lockup
-    p.raw("sub1", "MASQUERADE SANGEET", W // 2, ey, 640, 40, "font-family:var(--d);font-weight:700;font-size:28px;letter-spacing:.2em;text-indent:.2em;text-transform:uppercase")
-    p.raw("sub2", "EDITION", W // 2, ey + 36, 300, 30, "font-family:var(--d);font-weight:400;font-size:25px;letter-spacing:.3em;text-indent:.3em;text-transform:uppercase")
-    cy = ey + 112
-    p.raw("g1", "GROUP 1/2", W // 2, cy, 520, 56, "font-family:var(--d);font-weight:700;font-size:56px;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase")
-    p.raw("full", "IS FULL", W // 2, cy + 112, 800, 170,
-          f"font-family:var(--d);font-weight:900;font-size:176px;letter-spacing:.01em;text-transform:uppercase;color:{OFFWHITE};filter:drop-shadow(0 4px 22px rgba(0,0,0,.6))")
-    p.raw("fast", "THAT WAS FAST. YOU DID THIS.", W // 2, cy + 232, 900, 44, "font-family:var(--d);font-weight:700;font-size:42px;text-transform:uppercase")
-    p.raw("more", "MORE DETAILS TO FOLLOW", W // 2, cy + 290, 600, 34, f"font-family:var(--d);font-weight:700;font-size:30px;letter-spacing:.2em;text-indent:.2em;color:{OFFWHITE};text-transform:uppercase")
+    bottom = vy + vh; ecx = vx + round(.557 * w)                # the approved notch: centre 55.7% across the lockup, lines 88px and 42px above its bottom
+    p.raw("sub1", "MASQUERADE SANGEET", ecx, bottom - 86, 460, 36, "font-family:var(--d);font-weight:700;font-size:33px;text-transform:uppercase")
+    p.raw("sub2", "EDITION", ecx, bottom - 42, 160, 34, "font-family:var(--d);font-weight:400;font-size:32px;text-transform:uppercase")
+    cy = bottom + 56
+    p.raw("g1", "GROUP 1/2", W // 2, cy, 520, 50, "font-family:var(--d);font-weight:700;font-size:50px;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase")
+    p.raw("full", "IS FULL", W // 2, cy + 98, 800, 140,
+          f"font-family:var(--d);font-weight:900;font-size:150px;letter-spacing:.01em;text-transform:uppercase;color:{OFFWHITE};filter:drop-shadow(0 4px 22px rgba(0,0,0,.6))")
+    p.raw("fast", "THAT WAS FAST. YOU DID THIS.", W // 2, cy + 200, 900, 40, "font-family:var(--d);font-weight:700;font-size:38px;text-transform:uppercase")
+    p.raw("more", "MORE DETAILS TO FOLLOW", W // 2, cy + 252, 600, 30, f"font-family:var(--d);font-weight:700;font-size:28px;letter-spacing:.2em;text-indent:.2em;color:{OFFWHITE};text-transform:uppercase")
     p.overlays()
     html = B.page(W, H, GROUND, "".join(P), grain=False)
     html = p.neutralise(html)
@@ -51,7 +51,7 @@ async def main():
     labels = {e[0] for e in p.elements}
     ign = [pr for pr in [("title", "mask"), ("mask", "badge"), ("lights", "mask"), ("title", "badge"), ("title", "sub1"), ("title", "sub2"), ("sub1", "sub2")] if pr[0] in labels and pr[1] in labels]
     async with B.session():
-        await B.render(html, OUT, W, H, elements=p.elements, collision_ignore=ign, text_pairs=[("g1", OFFWHITE, GROUND, 56, True), ("fast", OFFWHITE, GROUND, 42, True)],
+        await B.render(html, OUT, W, H, elements=p.elements, collision_ignore=ign, text_pairs=[("g1", OFFWHITE, GROUND, 50, True), ("fast", OFFWHITE, GROUND, 38, True)],
                        bleed_tags=("mask", "title", "lights", "plate", "sparkles", "grain"), crop_tags=("plate", "sparkles", "grain"), page_bg=GROUND)
     print("group-full poster done ->", OUT)
 
