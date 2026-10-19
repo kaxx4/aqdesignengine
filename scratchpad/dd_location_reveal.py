@@ -2,8 +2,8 @@
 with round white map buttons and a Memoji pin bubble.
 
 Composition, back to front: black ground, the approved navy diya plate with string lights, a map card (the user's own map screenshot, rounded, tilted
--5 degrees, hard shadow and hairline edge) carrying a "3D" button and a compass pill like the inspo, the LIVE badge top left and copper mask top right,
-then LOCATION REVEAL, the venue, its address and the edition line, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill (user).
+-5 degrees, hard shadow and hairline edge) carrying a "3D" button and a compass pill like the inspo, the copper mask lying across its top-right corner, the LIVE
+badge top left, then LOCATION REVEAL, the venue and its address, and the DISCO DIWALI lockup (with its ball) as a small footer mark. No pill and no edition line (user).
 
 Facts (all supplied by the user, 2026-10-19): venue "60, Chowringhee Banquets"; address "60, Chowringhee Road, Bishop Lefroy Rd, Kolkata, West Bengal 700020".
 NO date or time (user choice). No price or lineup. The map is the user's real screenshot, never redrawn, so no street label is mine.
@@ -58,26 +58,24 @@ def map_card(cx, cy, MAP_W):
 
 
 def poster(H):
-    """Top: LIVE badge left, copper mask right. Middle: the map card, then the reveal copy. Footer: the DISCO DIWALI lockup (with its ball) as a small
-    mark, like the reference chat slide. No pill (user, 2026-10-19)."""
+    """Top: the LIVE badge. Middle: the map card with the copper mask on its top-right corner, then the reveal copy. Footer: the DISCO DIWALI lockup
+    (with its ball) as a small mark, like the reference chat slide. No pill and no edition line (user, 2026-10-19)."""
     story = H > 1350
-    card_w = 880 if story else 760
-    card_top = 520 if story else 290                          # top of the card's tilted bounding box
+    card_w = 880 if story else 840
+    card_top = 500 if story else 240                          # top of the card's tilted bounding box
     card_h = round(card_w * 508 / 1080)
-    cy = card_top + rot_box(0, 0, card_w, card_h, TILT)[3] // 2 + (0 if False else 0)
     cy = card_top + (rot_box(0, 0, card_w, card_h, TILT)[3] + 1) // 2
     vsize = 90 if story else 84
     parts, els = [ground(H)], []
     # LIVE badge top left (story keeps the top 200px clear of the profile bar)
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
-    # copper mask top right: visible box = asset 157..1562 x 211..1134 of 1680x1278 (measured)
-    mw = 400; k = mw / 1680
-    mx = 640; my = (170 if story else -20)
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">')
-    els.append(("mask", round(mx + 157 * k), round(my + 211 * k), round(1405 * k), round(923 * k)))
-    # map card
+    # map card, then the copper mask lying across its top-right corner (the placement the user preferred)
     card, box = map_card(540, cy, card_w); parts.append(card); els.append(("card",) + box)
+    mw = 330
+    mx, my = 730, box[1] - 62
+    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
+                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
     # reveal copy
     y = box[1] + box[3] + (34 if story else 24)
     def line(tag, txt, top, size, weight, h, extra=""):
@@ -88,13 +86,12 @@ def poster(H):
     line("venue1", VENUE[0], y, vsize, 700, vsize); y += vsize - 4
     line("venue2", VENUE[1], y, vsize, 700, vsize); y += vsize + 14
     line("addr1", ADDR[0], y, 30, 400, 32); y += 38
-    line("addr2", ADDR[1], y, 30, 400, 32); y += 48
-    line("edition", "Masquerade Sangeet Edition", y, 38, 400, 40)
+    line("addr2", ADDR[1], y, 30, 400, 32)
     # footer mark: the lockup with its ball, centred, visible box 265..1982 x 320..1311 of the 2000x1382 asset
-    vw = 400 if story else 330
+    vw = 400 if story else 360
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
-    vy = (1440 if story else H - 64 - vh)
-    vy = max(vy, y + 40 + 14)
+    vy = (1420 if story else H - 64 - vh)
+    vy = max(vy, y + 32 + 40)
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     els.append(("title", vx, vy, vw, vh))
     return "".join(parts), els, vy + vh
