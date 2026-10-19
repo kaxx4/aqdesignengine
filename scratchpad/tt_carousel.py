@@ -150,6 +150,7 @@ def collage_html(photos, gap=8):
 async def slide(kind, canvas, out, idx=None):
     L = dict(LAYOUT[canvas]); W, H = L["W"], L["H"]
     if DECK.get("compact") and kind != "cover": L.update(COMPACT[canvas])
+    if DECK.get("layout") and kind != "cover": L.update(DECK["layout"][canvas])      # a deck with stat rows needs a taller slab: its own per-canvas geometry
     els = []
     def el(label, x, y, w, h): els.append((label, x, y, w, h))
 
@@ -205,12 +206,14 @@ async def slide(kind, canvas, out, idx=None):
         parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
 
     # ---- reason number badge (decks with num=True): white disc, orchid ring, "n/N" ----
-    if kind == "point" and DECK.get("num"):
+    skip = DECK.get("num_skip", 0)       # leading items (an overview) carry no n/N badge; the rest count from 1
+    if kind == "point" and DECK.get("num") and idx >= skip:
         nb, nx, ny = 112, 200, (150 if canvas == "feed" else 470)
+        if DECK.get("layout"): ny = int(slab_top - 0.86 * L.get("D", 560) - 9)       # follow the circle's top edge when the layout moves it
         el("num_badge", nx, ny, nb, nb)
         parts.append(f'<div class="measure" data-tag="num_badge" style="position:absolute;left:{nx}px;top:{ny}px;width:{nb}px;height:{nb}px;border-radius:50%;'
                      f'background:#fff;border:8px solid {ORCHID};display:flex;align-items:center;justify-content:center;z-index:10;font-family:var(--d);'
-                     f'font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg)">{idx + 1}/{len(DECK["items"])}</div>')
+                     f'font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg)">{idx - skip + 1}/{len(DECK["items"]) - skip}</div>')
 
     # ---- stars (constant furniture) + fest pill ----
     def star(label, x, y, z):
@@ -258,8 +261,17 @@ async def slide(kind, canvas, out, idx=None):
             head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
         else:
             head_px = min(HEAD_MAX, 100 * HW / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
-        body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
-                f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
+        stats = DECK.get("stats", {}).get(key)
+        if stats:     # data-first slab: headline, a row of up to three big-number blocks, one short line under them
+            cells = "".join(
+                f'<div style="flex:1;min-width:0;text-align:center"><div style="font-weight:900;font-size:{min(76, 250 / (max(len(n), 1) * 0.62)):.0f}px;line-height:1">{n}</div>'
+                f'<div style="font-weight:400;font-size:26px;line-height:1.08;margin-top:8px;white-space:normal;text-wrap:balance">{lab}</div></div>' for n, lab in stats)
+            body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
+                    f'<div style="display:flex;gap:8px;width:100%;margin-top:22px;padding:0 4px">{cells}</div>'
+                    f'<div style="font-weight:400;font-size:30px;line-height:1.1;margin-top:18px">{tag}</div>')
+        else:
+            body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
+                    f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
         c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
         cf = 96 * min(1.0, 800 / m[0]["text_w"])
