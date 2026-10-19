@@ -1,10 +1,8 @@
-"""DISCO DIWALI ALL FOR CHARITY poster, feed (1080x1350) and story (1080x1920), rebuilt to MATCH the carousel's date and location posters.
+"""DISCO DIWALI ALL FOR CHARITY poster, feed (1080x1350) and story (1080x1920), matching the carousel's date and location posters WITHOUT their cards.
 
-Shared skeleton (same numbers as scratchpad/dd_date_reveal.py and dd_location_reveal.py): diya ground with string lights, a small LIVE badge top left, a headline
-block, a big white rounded card tilted -5 degrees with the copper mask lying across its top-right corner, the DISCO DIWALI lockup (with its ball) as a footer mark,
-no pill, no link. Here the headline is ALL FOR CHARITY, the line under it is the edition, and the card holds the LIVE badge art (ALL FOR CHARITY / LIVE / AQUATERRA)
-large, as the visual. Facts: only "All for charity" (the badge) and "Masquerade Sangeet Edition". No date, venue, price or figure (the cover and slides own the rest).
-Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_charity.py"""
+Same skeleton minus the card (user, 2026-10-19: "no cards in this slide"): diya ground with string lights, a small LIVE badge top left, the ALL FOR CHARITY headline with the
+edition line under it, the copper mask large and centred as the hero, the DISCO DIWALI lockup (with its ball) as a footer mark, no pill, no link.
+Facts: only "All for charity" and "Masquerade Sangeet Edition". Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_charity.py"""
 import asyncio, importlib.util, math, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
@@ -48,18 +46,12 @@ def poster(H):
     line("head2", "charity", hy + round(size * .96), size, 700, size)
     sy = hy + round(size * .96) * 2 + 20
     line("sub", "Masquerade Sangeet Edition", sy, 38, 400, 40)
-    # the card: white, tilted, holding the LIVE badge art large and centred
-    ctop = 800 if story else 520
-    cleft = (W - CARD_W) // 2
-    bw2 = 460; bh2 = round(bw2 * 1005 / 1061)                # the badge art is semi-transparent over black: on a white card it washes to grey, so it sits on an OPAQUE black tile
-    inner = (f'<div style="position:absolute;left:{(CARD_W - bw2) // 2}px;top:{(CARD_H - bh2) // 2}px;width:{bw2}px;height:{bh2}px;background:#0a0a0a;border-radius:44px;overflow:hidden">'
-             f'<img src="{dd.uri("live_badge.png")}" style="width:{bw2}px;display:block"></div>')
-    parts.append(f'<div data-tag="card" style="position:absolute;left:{cleft}px;top:{ctop}px;width:{CARD_W}px;height:{CARD_H}px;border-radius:30px;overflow:hidden;background:#fff;z-index:10;'
-                 f'transform:rotate({TILT}deg);box-shadow:0 36px 70px rgba(0,0,0,.6),0 0 0 3px rgba(255,255,255,.55)">{inner}</div>')
-    els.append(("card",) + rot_box(cleft + CARD_W / 2, ctop + CARD_H / 2, CARD_W, CARD_H, TILT))
-    mw = 330; mx, my = 730, ctop - 62
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
-                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
+    # no card (user, 2026-10-19: "no cards in this slide"): the copper mask is the hero, large and centred under the headline
+    ctop = 850 if story else 545                              # top of the mask's visible box
+    k = .498                                                  # visible width 1405k = 700, visible height 923k = 460 (asset 157..1562 x 211..1134)
+    mw = round(1680 * k); mx = (W - round(1405 * k)) // 2 - round(157 * k); my = ctop - round(211 * k)
+    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;'
+                 f'filter:drop-shadow(0 14px 32px rgba(0,0,0,.7))">'); els.append(("mask", (W - round(1405 * k)) // 2, ctop, round(1405 * k), round(923 * k)))
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = 1420 if story else H - 64 - vh
@@ -74,7 +66,7 @@ async def main():
         for name, H in (("feed", 1350), ("story", 1920)):
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
-            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
-                           page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
+            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
+                           page_bg="#000", collision_ignore=[])
     print("charity done ->", OUT)
 asyncio.run(main())
