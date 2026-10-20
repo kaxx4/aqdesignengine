@@ -264,8 +264,8 @@ async def slide(kind, canvas, out, idx=None):
         stats = DECK.get("stats", {}).get(key)
         if stats:     # data-first slab: headline, a row of up to three big-number blocks, one short line under them
             cells = "".join(
-                f'<div style="flex:1;min-width:0;text-align:center"><div style="font-weight:900;font-size:{min(76, 250 / (max(len(n), 1) * 0.62)):.0f}px;line-height:1">{n}</div>'
-                f'<div style="font-weight:400;font-size:26px;line-height:1.08;margin-top:8px;white-space:normal;text-wrap:balance">{lab}</div></div>' for n, lab in stats)
+                f'<div style="flex:1;min-width:0;text-align:center"><div style="font-weight:900;font-size:{min(76 if len(stats) > 1 else 92, (250 if len(stats) > 1 else 700) / (max(len(n), 1) * 0.62)):.0f}px;line-height:1">{n}</div>'
+                f'<div style="font-weight:400;font-size:{26 if len(stats) > 1 else 32}px;line-height:1.08;margin-top:8px;white-space:normal;text-wrap:balance">{lab}</div></div>' for n, lab in stats)
             body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
                     f'<div style="display:flex;gap:8px;width:100%;margin-top:22px;padding:0 4px">{cells}</div>'
                     f'<div style="font-weight:400;font-size:30px;line-height:1.1;margin-top:18px">{tag}</div>')
