@@ -92,8 +92,8 @@ def poster(H):
     # map card, then the copper mask lying across its top-right corner (the placement the user preferred)
     card, box = map_card(540, cy, card_w, callout=(VARIANT == "callout")); parts.append(card); els.append(("card",) + box)
     import dd_copper as _cp
-    ds = 400; sx, sy_ = 660, box[1] - 118                       # drawn red-copper diya lamp (rooftop) on the card's top-right corner (replaces the mask, user 2026-10-20)
-    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.diya(ds, -6)}</div>'); els.append(("sticker", sx, sy_, ds, round(ds * .72)))
+    ds = 290; sx, sy_ = 770, box[1] - 112                       # red-copper location PIN sticker (mask texture) on the card's top-right corner (user, 2026-10-20: "make a sticker for ... location pin")
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.pin(ds, 8)}</div>'); els.append(("sticker", sx, sy_, ds, ds))
     # reveal copy
     y = box[1] + box[3] + (34 if story else 24)
     def line(tag, txt, top, size, weight, h, extra=""):

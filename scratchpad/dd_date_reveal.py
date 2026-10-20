@@ -92,8 +92,8 @@ def poster(H):
     cleft = (W - CARD_W) // 2
     parts.append(calendar_card(cleft, ctop)); els.append(("card", cleft, ctop, CARD_W, CARD_H))
     import dd_copper as _cp
-    ss = 270; sx, sy_ = 800, ctop - 100                        # drawn red-copper sparkle star on the card's top-right corner (replaces the mask, user 2026-10-20)
-    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.star(ss, 12)}</div>'); els.append(("sticker", sx, sy_, ss, ss))
+    ss = 225; sx, sy_ = 842, ctop - 55                        # red-copper CALENDAR sticker (mask texture) on the card's top-right corner (user, 2026-10-20: "make a sticker for calendar")
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.calendar(ss, 10)}</div>'); els.append(("sticker", sx, sy_, ss, ss))
     # footer mark: the lockup with its ball, visible box 265..1982 x 320..1311 of the 2000x1382 asset
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
