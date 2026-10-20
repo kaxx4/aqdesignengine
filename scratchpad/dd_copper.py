@@ -88,3 +88,50 @@ def pin(size=340, rot=0, u="p", shadow=True):
             f'<circle cx="200" cy="150" r="66" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="8"/>'
             f'<circle cx="200" cy="150" r="66" fill="none" stroke="#FFEBDD" stroke-width="9" stroke-dasharray="0 14" stroke-linecap="round" transform="translate(200 150) scale(.84) translate(-200 -150)"/>'
             f'<circle cx="200" cy="150" r="34" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/></g></svg>')
+
+
+def _wrap(u, vb, body, size, rot=0, shadow=True, h=None):
+    h = size if h is None else h
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{h}" viewBox="0 0 {vb[0]} {vb[1]}" style="display:block;overflow:visible">{_defs(u)}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#FF7A5A"/><stop offset="1" stop-color="#6A1208"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} {vb[0] / 2} {vb[1] / 2})"{_sh(u, shadow)}>{body}</g></svg>')
+
+
+def _hole(u, cx, cy, r, gem=True):
+    """A dark socket with a pearl ring and (optionally) a gem: speaker cones, pin hole."""
+    g = f'<circle cx="{cx}" cy="{cy}" r="{r * .45}" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="5"/>' if gem else ""
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="7"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#FFEBDD" stroke-width="8" stroke-dasharray="0 13" stroke-linecap="round" transform="translate({cx} {cy}) scale(.82) translate({-cx} {-cy})"/>{g}')
+
+
+def vinyl(size=420, rot=0, u="v", shadow=True):
+    d = "M10 200 A190 190 0 1 0 390 200 A190 190 0 1 0 10 200 Z"
+    grooves = "".join(f'<circle cx="200" cy="200" r="{r}" fill="none" stroke="#2E0C05" stroke-opacity=".55" stroke-width="3.5"/>' for r in (166, 146, 126, 106))
+    label = (f'<circle cx="200" cy="200" r="72" fill="url(#tr{u})" stroke="#5A180B" stroke-width="5"/><circle cx="200" cy="200" r="60" fill="#3A0F06"/>'
+             f'<circle cx="200" cy="200" r="30" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="5"/><circle cx="200" cy="200" r="8" fill="#1A0603"/>')
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .93) + grooves + label, size, rot, shadow)
+
+
+def headphones(size=420, rot=0, u="hp", shadow=True):
+    band = "M56 244 C56 84 138 24 200 24 C262 24 344 84 344 244 L300 244 C300 112 254 70 200 70 C146 70 100 112 100 244 Z"
+    cup = "M24 222 H128 Q148 222 148 242 V348 Q148 372 124 372 H48 Q24 372 24 348 Z"
+    d = band + " " + cup + " " + cup.replace("M24 222 H128 Q148 222 148 242 V348 Q148 372 124 372 H48 Q24 372 24 348 Z", "M376 222 H272 Q252 222 252 242 V348 Q252 372 276 372 H352 Q376 372 376 348 Z")
+    pads = (f'<rect x="44" y="246" width="74" height="104" rx="22" fill="#2E0C05" opacity=".7"/><rect x="282" y="246" width="74" height="104" rx="22" fill="#2E0C05" opacity=".7"/>'
+            f'<circle cx="81" cy="298" r="16" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="4"/><circle cx="319" cy="298" r="16" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="4"/>')
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .93, 200, 200) + pads, size, rot, shadow)
+
+
+def note(size=300, rot=0, u="n", shadow=True):
+    d = ("M60 300 A48 36 -20 1 0 156 280 A48 36 -20 1 0 60 300 Z M148 290 H174 V70 H148 Z "
+         "M232 272 A48 36 -20 1 0 328 252 A48 36 -20 1 0 232 272 Z M320 262 H346 V50 H320 Z M148 70 L346 38 V96 L148 128 Z")
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .96, 200, 200), size, rot, shadow)
+
+
+def speaker(size=420, rot=0, u="sp", shadow=True):
+    d = "M60 20 H340 Q370 20 370 50 V350 Q370 380 340 380 H60 Q30 380 30 350 V50 Q30 20 60 20 Z"
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .93) + _hole(u, 200, 112, 40) + _hole(u, 200, 270, 90), size, rot, shadow)
+
+
+def bolt(size=300, rot=0, u="b", shadow=True):
+    d = "M240 8 L66 226 H166 L126 392 L334 150 H230 Z"
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .9, 200, 200), size, rot, shadow)
