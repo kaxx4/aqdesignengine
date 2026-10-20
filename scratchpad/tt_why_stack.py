@@ -1,7 +1,7 @@
 """TerraThon-look stories: WHY WE DO EVENTS AT AQ (2026-10-20). User brief: "you might be wondering where all the money goes... all profits to AQ that fuels our welfare campaigns,
 public accounts, campaigns ka brief". Same STACK layout as the welfare deck (tt_welfare_stack.py, reused as a module): photo circle, a card sized from its measured content,
 header (caption, shuriken, pill) and footer (AQ logo, AQ LIVE logo, ALL FOR CHARITY), NeutralFace only, a photo-collage backdrop.
-Arc: where does the money go? -> why events (no donations, so the parties ARE the funding) -> who pays (events + Crftd) -> where the profit goes (back into welfare) -> what it
+Arc: where does the money go? -> why events (no donations, so the parties ARE the funding) -> who pays (events) -> where the profit goes (back into welfare) -> what it
 funds (the campaigns, one line each) -> the books are open -> come to the next one.
 
 FACTS, and where each comes from (nothing else is claimed):
@@ -41,11 +41,10 @@ PHOTO = {
 SLIDES = [
     dict(kind="cover", key="cover", lines=["WHERE DOES", "THE MONEY GO?"], base=104, tag="THE HONEST ANSWER, IN A FEW SWIPES.", cap="SWIPE TO SEE", photo=PHOTO["cover"], pill="THE WHY"),
     dict(kind="pillar", key="why", n=1, of=5, lines=["WHY WE", "THROW EVENTS"], base=92, tag="WE TAKE ZERO DONATIONS. SO THE PARTIES ARE THE FUNDING.", photo=PHOTO["why"], pill="THE WHY"),
-    dict(kind="pillar", key="who", n=2, of=5, lines=["WHO PAYS", "FOR IT?"], base=92, tag="OUR EVENTS AND CRFTD. NOT DONATIONS. NOT EXTERNAL FUNDING.", photo=PHOTO["who"], pill="THE WHY"),
+    dict(kind="pillar", key="who", n=2, of=5, lines=["WHO PAYS", "FOR IT?"], base=92, tag="OUR EVENTS. NOT DONATIONS. NOT EXTERNAL FUNDING.", photo=PHOTO["who"], pill="THE WHY"),
     dict(kind="pillar", key="profit", n=3, of=5, lines=["WHERE THE", "PROFIT GOES"], base=92, tag="ALL OF IT BACK INTO OUR WELFARE CAMPAIGNS.", photo=PHOTO["profit"], pill="THE WHY"),
-    dict(kind="pillar", key="funds", n=4, of=5, lines=["WHAT IT FUNDS"], base=92, photo=PHOTO["funds"], pill="THE WHY",
-         rows=[("TAILS AND TREATS", "FEEDING STRAYS"), ("GROW GREEN", "PLANTATION DRIVES"), ("FOOD FOR ALL", "FOOD DISTRIBUTION"), ("SHARBAT SEVA", "SHARBAT DRIVES"),
-               ("WEAR AND SHARE", "CLOTHES DRIVES"), ("BOOK BASKET", "BOOK DRIVES"), ("RESPECT AND REACH", "OLD AGE HOME VISITS"), ("SUNDARBANS", "RELIEF TRIPS")]),
+    dict(kind="pillar", key="funds", n=4, of=5, lines=["WHAT IT", "FUNDS"], base=92, photo=PHOTO["funds"], pill="THE WHY",
+         chips=["CHILDREN + EDUCATION", "HEALTHCARE", "WOMEN EMPOWERMENT", "ELDERLY", "COMMUNITY WELFARE", "ENVIRONMENT", "ANIMAL WELFARE", "AND MANY MORE"]),   # the seven sectors (user's pillars) + the closing pill
     dict(kind="pillar", key="books", n=5, of=5, lines=["THE BOOKS", "ARE OPEN"], base=92, tag="OUR ACCOUNTS ARE PUBLIC. YOU CAN SEE EVERY RUPEE.", photo=PHOTO["books"], pill="THE WHY",
          chips=["DARPAN CERTIFIED NGO", "ZERO DONATIONS"]),
     dict(kind="close", key="close", lines=["COME TO", "THE NEXT ONE"], base=92, tag="EVERY EVENT FUNDS THE WORK. @NGO.AQUATERRA", photo=PHOTO["close"], pill="THE WHY"),
