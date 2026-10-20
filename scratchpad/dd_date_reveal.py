@@ -28,7 +28,19 @@ HOURS = ("4 PM", "5 PM", "6 PM")
 INK, PERI_BG, PERI_BAR, PERI_TX = "#1f2430", "#dde2fb", "#5b69d6", "#3a4590"   # the calendar's own colours
 
 
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dd_photo_bg as _pb
+PHOTO, PHOTO_POS = "14_07", "50% 45%"             # carousel background photo (user, 2026-10-20: "use a photo in the bg of the carousel"); BG=diya restores the plate-only ground
+
+
 def ground(H):
+    if os.environ.get("BG") == "diya":
+        return ground_diya(H)
+    return _pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)
+
+
+def ground_diya(H):
     plate = lambda top, extra="": (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{top}px;width:{W}px;height:1350px;'
                                    f'object-fit:cover;z-index:1;{extra}">')
     p = '<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>' + plate(0)

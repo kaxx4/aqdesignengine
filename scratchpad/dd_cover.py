@@ -5,6 +5,7 @@ cover reveals neither the date nor the place: the blur is checked by eye at full
 import asyncio, base64, importlib.util, math, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
+sys.path.insert(0, os.path.join(ROOT, "scratchpad"))
 spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
 B = dd.B
@@ -35,11 +36,8 @@ def build(H=1350):
     story = H > 1350
     CW, CH = (370, 462) if story else (330, 412)
     parts, els = [], []
-    plate2 = (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{H - 1350}px;width:{W}px;height:1350px;object-fit:cover;z-index:1;transform:scaleY(-1);'
-              '-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);mask-image:linear-gradient(to top,transparent 0%,#000 45%);">') if story else ""
-    parts.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>'
-                 f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:1350px;object-fit:cover;z-index:1">' + plate2 +
-                 f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:160px;top:-53px;width:1045px;z-index:5">')
+    import dd_photo_bg as _pb
+    parts.append(_pb.photo_ground(dd, W, H, "14_04", "50% 35%", dim=.74, plate_opacity=.35, bright=.85))   # user, 2026-10-20: photo background (hall, purple chandelier ceiling)
     by = 245 if story else 40                                 # a story keeps the top 200px clear of Instagram's profile bar
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{by}px;width:150px;z-index:20">'); els.append(("badge", 40, by, 150, round(150 * 1005 / 1061)))
     # lockup with ball, top centre, visible box 265..1982 x 320..1311, drawn 560 wide
@@ -72,8 +70,6 @@ def build(H=1350):
     parts.append(f'<div data-tag="swipe" style="position:absolute;left:{(W - sw) // 2}px;top:{sy}px;width:{sw}px;height:{sh}px;border:2px solid rgba(214,170,90,.85);border-radius:39px;background:rgba(0,0,0,.4);'
                  f'display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:36px;white-space:nowrap;text-transform:uppercase;letter-spacing:2px;{STROKE}z-index:20">Swipe for the reveal &rarr;</div>')
     els.append(("swipe", (W - sw) // 2, sy, sw, sh))
-    parts.append(f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">'
-                 f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">')
     return "".join(parts), els, sy + sh
 
 

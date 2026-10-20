@@ -20,7 +20,19 @@ def rot_box(cx, cy, w, h, deg):
     return (round(cx - bw / 2), round(cy - bh / 2), round(bw), round(bh))
 
 
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dd_photo_bg as _pb
+PHOTO, PHOTO_POS = "07_03", "50% 55%"             # carousel background photo (user, 2026-10-20: "use a photo in the bg of the carousel"); BG=diya restores the plate-only ground
+
+
 def ground(H):
+    if os.environ.get("BG") == "diya":
+        return ground_diya(H)
+    return _pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)
+
+
+def ground_diya(H):
     plate = lambda top, extra="": (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{top}px;width:{W}px;height:1350px;'
                                    f'object-fit:cover;z-index:1;{extra}">')
     p = '<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>' + plate(0)
