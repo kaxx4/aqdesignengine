@@ -20,7 +20,7 @@ GROUND, ORCHID, CREAM_HALO, SLAB, INK, WHITE, CTA_FILL = tt.GROUND, tt.ORCHID, t
 
 CANV = {   # hy = header row top, foot_y = footer row top; R0..R1 = the band the circle + card live in, clear of both rows (story keeps Instagram's top ~250 / bottom ~270 free)
     "feed":  dict(W=1080, H=1350, hy=44, foot_y=1235, R0=134, R1=1208, Dmax=760, Dmin=440),
-    "story": dict(W=1080, H=1920, hy=252, foot_y=1585, R0=344, R1=1556, Dmax=800, Dmin=460),
+    "story": dict(W=1080, H=1920, hy=104, foot_y=1736, R0=216, R1=1708, Dmax=880, Dmin=460),    # v7b: header/footer pushed toward the edges (user: too much empty space top and bottom); trades away Instagram's UI safe zones on purpose
 }
 SX, SW, BORDER, PADY, PADX = 90, 900, 19, 28, 36
 INNER = SW - 2 * BORDER - 2 * PADX          # 790: the width the card's text may use
