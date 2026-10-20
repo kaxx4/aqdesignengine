@@ -28,7 +28,8 @@ G1 = 40                                     # circle->card gap (the card tilts, 
 CARD_GAP = 30                               # headline card -> the stat cards under it (impact slide)
 PILL_H = 81
 CHIP_PADX, CHIP_PADY, CHIP_GAP = 20, 9, 10
-MORE_GAP = 40                               # air between the stat cards (they tilt) and the AND MANY MORE chip under them
+OUT = "welfare10"                           # render folder under out/versions/terrathon_carousel/ (another deck, e.g. tt_why_stack.py, sets its own)
+MORE_GAP = 40                              # air between the stat cards (they tilt) and the AND MANY MORE chip under them
 MORE = "AND MANY MORE"                     # closes every sector's activity list (outlined chip) and the impact slide's figures
 
 PH = lambda k: (ws.PHOTOS.get(k) or [(None,)])[0][0]
@@ -95,6 +96,13 @@ async def size_card(s, K, KS=1.0):
         rows_.append(cur)
         out.update(chip_px=chip_px, chip_h=chip_h, chip_rows=rows_, chips_h=len(rows_) * chip_h + (len(rows_) - 1) * CHIP_GAP)
         content += mg + out["chips_h"]
+    if s.get("rows"):                                # a brief: one "NAME + what it is" line per row, all one size, fitted to the card width
+        mi = []
+        for a, b in s["rows"]: mi += [dict(text=a, font="d", size=100, weight=900), dict(text=b, font="d", size=100, weight=400)]
+        mr = await B.measure_text(mi)
+        names_w = max(mr[2 * i]["text_w"] for i in range(len(s["rows"]))); descs_w = max(mr[2 * i + 1]["text_w"] for i in range(len(s["rows"])))
+        row_px = min(34 * K, 100 * INNER / (names_w + descs_w + 110)); rgap_r = round(row_px * 0.42)      # 110 = the dot column and its two gaps at 100px (a 3-column grid)
+        out.update(row_px=row_px, rgap_r=rgap_r, rows_h=len(s["rows"]) * row_px + (len(s["rows"]) - 1) * rgap_r); content += mg + out["rows_h"]
     if s.get("tag"):
         tag_px = round(38 * K)
         tm = await B.measure_text([dict(text=s["tag"], font="d", size=tag_px, weight=400, line_height=1.15, max_width=INNER)])
@@ -120,6 +128,10 @@ def card_html(s, c, y):
                 f'<div style="height:{c["chip_h"]}px;width:{w:.0f}px;box-sizing:border-box;border-radius:999px;background:{"#fff" if t == MORE else ORCHID};{"border:4px solid " + ORCHID + ";" if t == MORE else ""}color:{INK};display:flex;align-items:center;justify-content:center;'
                 f'font-weight:900;font-size:{c["chip_px"]}px;line-height:1;white-space:nowrap">{t}</div>' for t, w in row) + '</div>'
         rows += '</div>'
+    if s.get("rows"):
+        rows += (f'<div style="margin-top:{c["mg"]}px;display:grid;grid-template-columns:auto auto auto;justify-content:center;align-items:baseline;column-gap:0.4em;row-gap:{c["rgap_r"]}px;'
+                 f'font-size:{c["row_px"]:.1f}px;line-height:1;white-space:nowrap">' + "".join(
+            f'<div style="font-weight:900;text-align:right">{a}</div><div style="font-weight:400">·</div><div style="font-weight:400;text-align:left">{b}</div>' for a, b in s["rows"]) + '</div>')
     if s.get("tag"):
         rows += (f'<div style="font-weight:400;font-size:{c["tag_px"]}px;line-height:1.15;margin-top:{c["mg"] if s["kind"] != "close" else round(c["mg"] * 0.7)}px;white-space:normal;'
                  f'text-wrap:balance;max-width:{INNER}px">{s["tag"]}</div>')      # balance: no stranded last word
@@ -153,7 +165,7 @@ async def render_canvas(cv, sizes):
         if s["kind"] == "pillar":      # beside the photo: parked off the circle's bbox corner (its nearest point to the centre is outside the circle)
             nb = 108; nx, ny = cx - D / 2 - 34, top - 34; el("num_badge", nx, ny, nb, nb)
             parts.append(f'<div class="measure" data-tag="num_badge" style="position:absolute;left:{nx:.0f}px;top:{ny:.0f}px;width:{nb}px;height:{nb}px;border-radius:50%;background:#fff;border:8px solid {ORCHID};'
-                         f'display:flex;align-items:center;justify-content:center;z-index:10;font-family:var(--d);font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg);box-sizing:border-box">{s["n"]}/7</div>')
+                         f'display:flex;align-items:center;justify-content:center;z-index:10;font-family:var(--d);font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg);box-sizing:border-box">{s["n"]}/{s.get("of", 7)}</div>')
         parts.append(card_html(s, c, slab_y)); el("slab", SX - 6, slab_y - 12, SW + 12, c["slab_h"] + 24)
         if "sc" in c:                  # impact slide: the four figures, each in its own card (2x2), tilted a touch the way the headline card is
             sc = c["sc"]; y0 = slab_y + c["slab_h"] + CARD_GAP
@@ -189,7 +201,7 @@ async def render_canvas(cv, sizes):
         parts.append(f'<div class="measure" data-tag="cta" style="position:absolute;left:720px;top:{fy}px;width:337px;height:67px;border:6px solid {ORCHID};border-radius:999px;background:{CTA_FILL};display:flex;'
                      f'align-items:center;justify-content:center;z-index:9;font-family:var(--d);font-weight:900;font-size:26px;color:{INK};box-sizing:border-box">ALL FOR CHARITY</div>')
         html = B.page(W, H, GROUND, "".join(parts), grain=False)
-        d = f"out/versions/terrathon_carousel/welfare10/{cv}"; os.makedirs(d, exist_ok=True)
+        d = f"out/versions/terrathon_carousel/{OUT}/{cv}"; os.makedirs(d, exist_ok=True)
         text_pairs = [("slab", INK, SLAB, 40, False), ("cta", INK, CTA_FILL, 26, True), ("pill", INK, "#FFFFFF", 32, True), ("caption", WHITE, GROUND, 27, False), ("chip", INK, ORCHID, 24, True)]
         await B.render(html, f"{d}/{i:02d}_{s['key']}.png", W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True, margin=12,
                        crop_tags=("bgc", "bgt", "hero"), bleed_tags=("bgc", "bgt"), collision_ignore={("num_badge", "hero")})
