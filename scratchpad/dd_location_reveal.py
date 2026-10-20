@@ -31,7 +31,19 @@ def rot_box(cx, cy, w, h, deg):
     return (round(cx - bw / 2), round(cy - bh / 2), round(bw), round(bh))
 
 
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dd_photo_bg as _pb
+PHOTO, PHOTO_POS = "07_12", "50% 20%"             # carousel background photo (user, 2026-10-20: "use a photo in the bg of the carousel"); BG=diya restores the plate-only ground
+
+
 def ground(H):
+    if os.environ.get("BG") == "diya":
+        return ground_diya(H)
+    return _pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)
+
+
+def ground_diya(H):
     """Black, the diya plate (two plates on a tall canvas, the second flipped and faded in, format rule 8), string lights, gold dust, grain."""
     plate = lambda top, extra="": (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{top}px;width:{W}px;height:1350px;'
                                    f'object-fit:cover;z-index:1;{extra}">')
@@ -79,10 +91,9 @@ def poster(H):
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     # map card, then the copper mask lying across its top-right corner (the placement the user preferred)
     card, box = map_card(540, cy, card_w, callout=(VARIANT == "callout")); parts.append(card); els.append(("card",) + box)
-    mw = 330
-    mx, my = 730, box[1] - 62
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
-                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
+    import dd_copper as _cp
+    ds = 290; sx, sy_ = 770, box[1] - 112                       # red-copper location PIN sticker (mask texture) on the card's top-right corner (user, 2026-10-20: "make a sticker for ... location pin")
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.pin(ds, 8)}</div>'); els.append(("sticker", sx, sy_, ds, ds))
     # reveal copy
     y = box[1] + box[3] + (34 if story else 24)
     def line(tag, txt, top, size, weight, h, extra=""):
@@ -121,6 +132,6 @@ async def main():
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, (f"{name}.png" if VARIANT == DEFAULT_VARIANT else f"var_{VARIANT}_{name}.png")), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
-                           page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
+                           page_bg="#000", collision_ignore=[("sticker", "card"), ("card", "badge")])
     print("location reveal done ->", OUT)
 asyncio.run(main())

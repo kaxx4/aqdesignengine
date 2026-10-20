@@ -20,7 +20,19 @@ def rot_box(cx, cy, w, h, deg):
     return (round(cx - bw / 2), round(cy - bh / 2), round(bw), round(bh))
 
 
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dd_photo_bg as _pb
+PHOTO, PHOTO_POS = "07_03", "50% 55%"             # carousel background photo (user, 2026-10-20: "use a photo in the bg of the carousel"); BG=diya restores the plate-only ground
+
+
 def ground(H):
+    if os.environ.get("BG") == "diya":
+        return ground_diya(H)
+    return _pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)
+
+
+def ground_diya(H):
     plate = lambda top, extra="": (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{top}px;width:{W}px;height:1350px;'
                                    f'object-fit:cover;z-index:1;{extra}">')
     p = '<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>' + plate(0)
@@ -47,12 +59,11 @@ def poster(H):
     line("head2", "charity", hy + round(size * .96), size, 700, size)
     sy = hy + round(size * .96) * 2 + 24
     line("sub", "Masquerade Sangeet Edition", sy, 42, 400, 44)
-    k = .37                                                   # visible width 1405k = 520, visible height 923k = 342 (asset 157..1562 x 211..1134)
-    ctop = 270 if story else 70
-    vwid, vhei = round(1405 * k), round(923 * k)
-    mw = round(1680 * k); mx = 1040 - vwid - round(157 * k); my = ctop - round(211 * k)
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;'
-                 f'filter:drop-shadow(0 12px 28px rgba(0,0,0,.7))">'); els.append(("mask", 1040 - vwid, ctop, vwid, vhei))
+    # sticker (user, 2026-10-20: "use different stickers instead of the mask again and again"): a drawn red-copper HEART in the corner where the mask sat
+    import dd_copper as _cp
+    hs = 340                                                   # heart width; height is 0.9 of it
+    sx, sy_ = 1040 - hs, (270 if story else 70)
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.heart(hs, 10)}</div>'); els.append(("sticker", sx, sy_, hs, round(hs * .9)))
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = 1420 if story else H - 64 - vh

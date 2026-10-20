@@ -28,7 +28,19 @@ HOURS = ("4 PM", "5 PM", "6 PM")
 INK, PERI_BG, PERI_BAR, PERI_TX = "#1f2430", "#dde2fb", "#5b69d6", "#3a4590"   # the calendar's own colours
 
 
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import dd_photo_bg as _pb
+PHOTO, PHOTO_POS = "14_07", "50% 45%"             # carousel background photo (user, 2026-10-20: "use a photo in the bg of the carousel"); BG=diya restores the plate-only ground
+
+
 def ground(H):
+    if os.environ.get("BG") == "diya":
+        return ground_diya(H)
+    return _pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)
+
+
+def ground_diya(H):
     plate = lambda top, extra="": (f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{top}px;width:{W}px;height:1350px;'
                                    f'object-fit:cover;z-index:1;{extra}">')
     p = '<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>' + plate(0)
@@ -79,9 +91,9 @@ def poster(H):
     ctop = (800 if story else 520)
     cleft = (W - CARD_W) // 2
     parts.append(calendar_card(cleft, ctop)); els.append(("card", cleft, ctop, CARD_W, CARD_H))
-    mw = 330; mx, my = 730, ctop - 62
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
-                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
+    import dd_copper as _cp
+    ss = 225; sx, sy_ = 842, ctop - 55                        # red-copper CALENDAR sticker (mask texture) on the card's top-right corner (user, 2026-10-20: "make a sticker for calendar")
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.calendar(ss, 10)}</div>'); els.append(("sticker", sx, sy_, ss, ss))
     # footer mark: the lockup with its ball, visible box 265..1982 x 320..1311 of the 2000x1382 asset
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
@@ -98,6 +110,6 @@ async def main():
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card", "event"),
-                           page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
+                           page_bg="#000", collision_ignore=[("sticker", "card"), ("card", "badge"), ("head2", "sticker"), ("sub1", "sticker"), ("sub2", "sticker")])
     print("date reveal done ->", OUT)
 asyncio.run(main())
