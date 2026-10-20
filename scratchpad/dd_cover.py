@@ -37,7 +37,7 @@ def build(H=1350):
     CW, CH = (370, 462) if story else (330, 412)
     parts, els = [], []
     import dd_photo_bg as _pb
-    parts.append(_pb.photo_ground(dd, W, H, "14_04", "50% 35%", dim=.74, plate_opacity=.35, bright=.85))   # user, 2026-10-20: photo background (hall, purple chandelier ceiling)
+    parts.append(_pb.photo_ground(dd, W, H, "14_04", "50% 35%", dim=.74, plate_opacity=0, bright=.85))   # user, 2026-10-20: photo background (hall, purple chandelier ceiling)
     by = 245 if story else 40                                 # a story keeps the top 200px clear of Instagram's profile bar
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{by}px;width:150px;z-index:20">'); els.append(("badge", 40, by, 150, round(150 * 1005 / 1061)))
     # lockup with ball, top centre, visible box 265..1982 x 320..1311, drawn 560 wide
