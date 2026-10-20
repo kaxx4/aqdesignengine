@@ -26,12 +26,14 @@ def uri(path, w=900, crop=None):
     b = io.BytesIO(); im.save(b, "JPEG", quality=86); return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
 PD = "engine/assets/terrathon/carousel_photos/"
 PHOTOS = {"children": [(uri("engine/assets/img/education-sundarban.jpeg", crop=(0, 0, ew, int(eh * 0.72))), "50% 30%")]}
-for key in ("health", "women", "elderly", "community", "environment", "animals"):
+for key in ("all", "health", "women", "elderly", "community", "environment", "animals"):      # "all" = the overview slide's photo (kids at an art workshop)
     if os.path.exists(f"{PD}{key}_welfare.jpg"): PHOTOS[key] = [(uri(f"{PD}{key}_welfare.jpg", w=1200), "50% 50%")]
+COVER = uri(f"{PD}cover_welfare.jpg", w=1200) if os.path.exists(f"{PD}cover_welfare.jpg") else None     # team at the Sundarbans village gate
+CLOSE = uri(f"{PD}close_welfare.jpg", w=1200) if os.path.exists(f"{PD}close_welfare.jpg") else None     # banana distribution
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
 BG = {k: uri(src, w=640, crop=(0, 0, ew, int(eh * 0.72))) if k == "children" else uri(src, w=640)       # small copies for the backdrop collage (the circle keeps the 1200px one)
-      for k, src in (("children", "engine/assets/img/education-sundarban.jpeg"), *((k, f"{PD}{k}_welfare.jpg") for k in ("health", "women", "elderly", "community", "environment", "animals")))
+      for k, src in (("children", "engine/assets/img/education-sundarban.jpeg"), *((k, f"{PD}{k}_welfare.jpg") for k in ("cover", "all", "close", "health", "women", "elderly", "community", "environment", "animals")))
       if os.path.exists(src)}
 tc.DATE, tc.VENUE = "SINCE 2021", "KOLKATA + THE SUNDARBANS"
 ITEMS = [   # key, headline, one short line (DRAFT copy), sticker (only where no photo), recolour
@@ -54,9 +56,9 @@ LAYOUT = {   # lighter slab, bigger circle: less text, more picture
     "feed": dict(hero_max=(760, 640), slab_top=700, slab_h=440, D=620, SX=90, SW=900, strip_y=1162),
     "story": dict(hero_max=(840, 760), slab_top=980, slab_h=470, D=760, SX=90, SW=900, strip_y=1486),
 }
-tc.DECKS["welfare4"] = dict(items=ITEMS, stats=STATS, layout=LAYOUT, bg_photos=BG, num_skip=1, head=("WHAT WE DO", "SEVEN WAYS WE SHOW UP"), swipe="SWIPE TO SEE", head_w=770,
+tc.DECKS["welfare5"] = dict(items=ITEMS, stats=STATS, layout=LAYOUT, bg_photos=BG, cover_photo=COVER, close_photo=CLOSE, num_skip=1, head=("WHAT WE DO", "SEVEN WAYS WE SHOW UP"), swipe="SWIPE TO SEE", head_w=770,
                            num=True, free_sub=True, compact=True, pill="AQUATERRA", cover_titles=("AQUATERRA", "IMPAACT"),
                            cover_sub="SINCE 2021. STILL SHOWING UP.", close=("COME TO", "THE NEXT ONE", "@NGO.AQUATERRA"))
 if __name__ == "__main__":
     cvs = [a for a in sys.argv[1:] if a in ("feed", "story")] or ["feed", "story"]
-    asyncio.run(tc.main(cvs, ("welfare4",)))        # renders to out/versions/terrathon_carousel/welfare4/ (v4 = v3 content + photo-collage backdrop)
+    asyncio.run(tc.main(cvs, ("welfare5",)))        # renders to out/versions/terrathon_carousel/welfare5/ (v5 = v4 + real photos on the cover, overview and close)

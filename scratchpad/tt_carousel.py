@@ -186,7 +186,7 @@ async def slide(kind, canvas, out, idx=None):
                      f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * H / 1350)))
     parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>']
     if DECK.get("bg_photos"):     # optional collage backdrop (a deck opts in); the slide's own photo is left out of it
-        parts.append(bg_collage(W, H, DECK["bg_photos"], exclude=DECK["items"][idx][0] if kind == "point" else None))
+        parts.append(bg_collage(W, H, DECK["bg_photos"], exclude=DECK["items"][idx][0] if kind == "point" else kind))     # cover/close exclude their own key (a deck may name a photo "cover"/"close")
     parts.append(f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
 
     slab_top, slab_h = (L["cover_slab_top"], L["cover_slab_h"]) if kind == "cover" else (L["slab_top"], L["slab_h"])
@@ -221,9 +221,19 @@ async def slide(kind, canvas, out, idx=None):
             im, src = sticker_src(sfile, rc); mw, mh = L["hero_max"]
             k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
             parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
+    elif kind == "cover" and DECK.get("cover_photo"):      # opt-in: a real photo in the circle instead of the carnival sticker
+        D = L["cover_hero_h"]; x, y = (W - D) / 2, L["cover_hero_top"]
+        parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{x}px;top:{y}px;width:{D}px;height:{D}px;border-radius:50%;border:14px solid {CREAM_HALO};'
+                     f'background:{CREAM_HALO};z-index:3;overflow:hidden">{collage_html([(DECK["cover_photo"], "50% 50%")])}</div>')
+        el("hero", x, y, D, D)
     elif kind == "cover":
         im, src = sticker_src(DECK.get("cover_hero", "carnival.png")); ch = L["cover_hero_h"]; w = ch * im.width / im.height
         parts.append(put(src, "hero", (W - w) / 2, L["cover_hero_top"], w, ch, 3))
+    elif DECK.get("close_photo"):                          # opt-in: closing slide shows a photo circle too
+        D = L.get("D", 560); x, y = (W - D) / 2, slab_top - 0.86 * D
+        parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{x}px;top:{y}px;width:{D}px;height:{D}px;border-radius:50%;border:14px solid {CREAM_HALO};'
+                     f'background:{CREAM_HALO};z-index:3;overflow:hidden">{collage_html([(DECK["close_photo"], "50% 50%")])}</div>')
+        el("hero", x, y, D, D)
     else:
         im, src = sticker_src("smiley.png"); mw, mh = L["hero_max"]
         k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
