@@ -91,10 +91,9 @@ def poster(H):
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     # map card, then the copper mask lying across its top-right corner (the placement the user preferred)
     card, box = map_card(540, cy, card_w, callout=(VARIANT == "callout")); parts.append(card); els.append(("card",) + box)
-    mw = 330
-    mx, my = 730, box[1] - 62
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
-                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
+    import dd_copper as _cp
+    ds = 400; sx, sy_ = 660, box[1] - 118                       # drawn red-copper diya lamp (rooftop) on the card's top-right corner (replaces the mask, user 2026-10-20)
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.diya(ds, -6)}</div>'); els.append(("sticker", sx, sy_, ds, round(ds * .72)))
     # reveal copy
     y = box[1] + box[3] + (34 if story else 24)
     def line(tag, txt, top, size, weight, h, extra=""):
@@ -133,6 +132,6 @@ async def main():
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, (f"{name}.png" if VARIANT == DEFAULT_VARIANT else f"var_{VARIANT}_{name}.png")), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card"),
-                           page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
+                           page_bg="#000", collision_ignore=[("sticker", "card"), ("card", "badge")])
     print("location reveal done ->", OUT)
 asyncio.run(main())

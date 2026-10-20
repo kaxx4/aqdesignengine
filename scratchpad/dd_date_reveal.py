@@ -91,9 +91,9 @@ def poster(H):
     ctop = (800 if story else 520)
     cleft = (W - CARD_W) // 2
     parts.append(calendar_card(cleft, ctop)); els.append(("card", cleft, ctop, CARD_W, CARD_H))
-    mw = 330; mx, my = 730, ctop - 62
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{mx}px;top:{my}px;width:{mw}px;z-index:12;transform:rotate(10deg);'
-                 f'filter:drop-shadow(0 12px 26px rgba(0,0,0,.65))">'); els.append(("mask", mx + 30, my + 40, 276, 196))
+    import dd_copper as _cp
+    ss = 270; sx, sy_ = 800, ctop - 100                        # drawn red-copper sparkle star on the card's top-right corner (replaces the mask, user 2026-10-20)
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.star(ss, 12)}</div>'); els.append(("sticker", sx, sy_, ss, ss))
     # footer mark: the lockup with its ball, visible box 265..1982 x 320..1311 of the 2000x1382 asset
     vw = 400 if story else 330
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
@@ -110,6 +110,6 @@ async def main():
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate", "card", "event"),
-                           page_bg="#000", collision_ignore=[("mask", "card"), ("card", "badge")])
+                           page_bg="#000", collision_ignore=[("sticker", "card"), ("card", "badge"), ("head2", "sticker"), ("sub1", "sticker"), ("sub2", "sticker")])
     print("date reveal done ->", OUT)
 asyncio.run(main())
