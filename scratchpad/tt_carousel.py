@@ -147,9 +147,32 @@ def collage_html(photos, gap=8):
     return f'<div style="display:grid;grid-template-columns:{cols};grid-template-rows:{rows};gap:{gap}px;width:100%;height:100%">{"".join(cells)}</div>'
 
 
+def bg_collage(W, H, photos, exclude=None, scrim=0.7):
+    """Full-bleed backdrop of tilted, cream-bordered photo tiles in a staggered grid, under a black scrim so white type on the ground stays legible.
+    photos = {key: data-uri}; `exclude` drops the slide's own photo so its hero circle is not repeated behind it. Deterministic (seeded)."""
+    import random
+    rnd = random.Random(21)
+    keys = [k for k in photos if k != exclude]
+    cols, rows = 3, (4 if H > 1500 else 3)
+    cw, ch = W / cols, H / rows
+    tw, th = cw * 1.2, ch * 1.2
+    tiles, n = [], 0
+    for r in range(rows):
+        for c in range(-1, cols + 1):
+            x = c * cw + (cw / 2 if r % 2 else 0) - (tw - cw) / 2 + rnd.uniform(-16, 16)
+            y = r * ch - (th - ch) / 2 + rnd.uniform(-16, 16)
+            if x + tw < 0 or x > W: continue
+            k = keys[(n + (r % 2) * 2) % len(keys)]; n += 1             # stagger so neighbours differ
+            tiles.append(f'<div data-tag="bgt" style="position:absolute;left:{x:.0f}px;top:{y:.0f}px;width:{tw:.0f}px;height:{th:.0f}px;transform:rotate({rnd.uniform(-7, 7):.1f}deg);'
+                         f'border:10px solid {CREAM_HALO};border-radius:22px;overflow:hidden;box-sizing:border-box"><img data-tag="bgt" src="{photos[k]}" style="width:100%;height:100%;object-fit:cover;display:block"></div>')
+    return (f'<div data-tag="bgc" style="position:absolute;inset:0;overflow:hidden;z-index:0">{"".join(tiles)}'
+            f'<div style="position:absolute;inset:0;background:rgba(0,0,0,{scrim})"></div></div>')
+
+
 async def slide(kind, canvas, out, idx=None):
     L = dict(LAYOUT[canvas]); W, H = L["W"], L["H"]
     if DECK.get("compact") and kind != "cover": L.update(COMPACT[canvas])
+    if DECK.get("layout") and kind != "cover": L.update(DECK["layout"][canvas])      # a deck with stat rows needs a taller slab: its own per-canvas geometry
     els = []
     def el(label, x, y, w, h): els.append((label, x, y, w, h))
 
@@ -161,8 +184,10 @@ async def slide(kind, canvas, out, idx=None):
     rnd = random.Random(7)
     specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
                      f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * H / 1350)))
-    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>',
-             f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
+    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>']
+    if DECK.get("bg_photos"):     # optional collage backdrop (a deck opts in); the slide's own photo is left out of it
+        parts.append(bg_collage(W, H, DECK["bg_photos"], exclude=DECK["items"][idx][0] if kind == "point" else kind))     # cover/close exclude their own key (a deck may name a photo "cover"/"close")
+    parts.append(f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
 
     slab_top, slab_h = (L["cover_slab_top"], L["cover_slab_h"]) if kind == "cover" else (L["slab_top"], L["slab_h"])
     SX, SW = L.get("SX", 47), L.get("SW", 986)
@@ -196,21 +221,33 @@ async def slide(kind, canvas, out, idx=None):
             im, src = sticker_src(sfile, rc); mw, mh = L["hero_max"]
             k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
             parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
+    elif kind == "cover" and DECK.get("cover_photo"):      # opt-in: a real photo in the circle instead of the carnival sticker
+        D = L["cover_hero_h"]; x, y = (W - D) / 2, L["cover_hero_top"]
+        parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{x}px;top:{y}px;width:{D}px;height:{D}px;border-radius:50%;border:14px solid {CREAM_HALO};'
+                     f'background:{CREAM_HALO};z-index:3;overflow:hidden">{collage_html([(DECK["cover_photo"], "50% 50%")])}</div>')
+        el("hero", x, y, D, D)
     elif kind == "cover":
         im, src = sticker_src(DECK.get("cover_hero", "carnival.png")); ch = L["cover_hero_h"]; w = ch * im.width / im.height
         parts.append(put(src, "hero", (W - w) / 2, L["cover_hero_top"], w, ch, 3))
+    elif DECK.get("close_photo"):                          # opt-in: closing slide shows a photo circle too
+        D = L.get("D", 560); x, y = (W - D) / 2, slab_top - 0.86 * D
+        parts.append(f'<div class="measure" data-tag="hero" style="position:absolute;left:{x}px;top:{y}px;width:{D}px;height:{D}px;border-radius:50%;border:14px solid {CREAM_HALO};'
+                     f'background:{CREAM_HALO};z-index:3;overflow:hidden">{collage_html([(DECK["close_photo"], "50% 50%")])}</div>')
+        el("hero", x, y, D, D)
     else:
         im, src = sticker_src("smiley.png"); mw, mh = L["hero_max"]
         k = min(mw / im.width, mh / im.height); w, h = im.width * k, im.height * k
         parts.append(put(src, "hero", (W - w) / 2, slab_top - 0.86 * h, w, h, 3))
 
     # ---- reason number badge (decks with num=True): white disc, orchid ring, "n/N" ----
-    if kind == "point" and DECK.get("num"):
+    skip = DECK.get("num_skip", 0)       # leading items (an overview) carry no n/N badge; the rest count from 1
+    if kind == "point" and DECK.get("num") and idx >= skip:
         nb, nx, ny = 112, 200, (150 if canvas == "feed" else 470)
+        if DECK.get("layout"): ny = int(slab_top - 0.86 * L.get("D", 560) - 9)       # follow the circle's top edge when the layout moves it
         el("num_badge", nx, ny, nb, nb)
         parts.append(f'<div class="measure" data-tag="num_badge" style="position:absolute;left:{nx}px;top:{ny}px;width:{nb}px;height:{nb}px;border-radius:50%;'
                      f'background:#fff;border:8px solid {ORCHID};display:flex;align-items:center;justify-content:center;z-index:10;font-family:var(--d);'
-                     f'font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg)">{idx + 1}/{len(DECK["items"])}</div>')
+                     f'font-weight:900;font-size:40px;color:{INK};line-height:1;transform:rotate(-8deg)">{idx - skip + 1}/{len(DECK["items"]) - skip}</div>')
 
     # ---- stars (constant furniture) + fest pill ----
     def star(label, x, y, z):
@@ -248,17 +285,27 @@ async def slide(kind, canvas, out, idx=None):
         import re
         HEAD_MAX, TAG_PX = (92, 36) if DECK.get("compact") else (104, 40)      # compact box: smaller type so 2 headline lines + 2 tagline lines still fit
         tag = re.sub(r"(\S+-\S+)", r'<span style="white-space:nowrap">\1</span>', DECK["items"][idx][2])   # a hyphenated word never splits across lines ("MINI-" / "GAMES")
-        words = head.split(); two = m[0]["text_w"] * 1.04 > 840 and len(words) > 2   # wider than the slab at full size: two lines
+        HW = DECK.get("head_w", 840)      # headline max width; a deck with long one-line names can ask for more air around them
+        words = head.split(); two = m[0]["text_w"] * 1.04 > HW and len(words) > 2   # wider than the slab at full size: two lines
         if two:
             cut = min(range(1, len(words)), key=lambda i: abs(len(" ".join(words[:i])) - len(" ".join(words[i:]))))
             hl = [" ".join(words[:cut]), " ".join(words[cut:])]
             mm = await B.measure_text([dict(text=t, font="d", size=100, weight=900) for t in hl])
-            head_px = min(HEAD_MAX, 100 * 840 / max(r["text_w"] for r in mm))
+            head_px = min(HEAD_MAX, 100 * HW / max(r["text_w"] for r in mm))
             head_html = f'<div>{hl[0]}</div><div>{hl[1]}</div>'
         else:
-            head_px = min(HEAD_MAX, 100 * 840 / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
-        body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
-                f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
+            head_px = min(HEAD_MAX, 100 * HW / m[0]["text_w"]); head_html = head.replace("&", "&amp;")
+        stats = DECK.get("stats", {}).get(key)
+        if stats:     # data-first slab: headline, a row of up to three big-number blocks, one short line under them
+            cells = "".join(
+                f'<div style="flex:1;min-width:0;text-align:center"><div style="font-weight:900;font-size:{min(76 if len(stats) > 1 else 92, (250 if len(stats) > 1 else 700) / (max(len(n), 1) * 0.62)):.0f}px;line-height:1">{n}</div>'
+                f'<div style="font-weight:400;font-size:{26 if len(stats) > 1 else 32}px;line-height:1.08;margin-top:8px;white-space:normal;text-wrap:balance">{lab}</div></div>' for n, lab in stats)
+            body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
+                    f'<div style="display:flex;gap:8px;width:100%;margin-top:22px;padding:0 4px">{cells}</div>'
+                    f'<div style="font-weight:400;font-size:30px;line-height:1.1;margin-top:18px">{tag}</div>')
+        else:
+            body = (f'<div style="font-weight:900;font-size:{head_px}px;line-height:1">{head_html}</div>'
+                    f'<div style="font-weight:400;font-size:{TAG_PX}px;line-height:1.15;margin-top:16px;max-width:800px;text-wrap:balance">{tag}</div>')
     else:
         c1, c2, c3 = DECK.get("close", ("JOIN THE", "WHATSAPP GROUP", "LINK IN BIO"))
         cf = 96 * min(1.0, 800 / m[0]["text_w"])
@@ -294,7 +341,7 @@ async def slide(kind, canvas, out, idx=None):
     html = B.page(W, H, GROUND, "".join(parts), grain=False)
     text_pairs = [("head", WHITE, GROUND, 96, True), ("strip", WHITE, GROUND, 34, False), ("slab", INK, SLAB, 40, False),
                   ("cta", INK, CTA_FILL, 26, True), ("pill", INK, "#FFFFFF", 31, True)]
-    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True,
+    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True, crop_tags=("bgc", "bgt"), bleed_tags=("bgc", "bgt"),
                    collision_ignore={("hero", "slab"), ("star_ml", "slab"), ("star_br", "slab"), ("star_tr", "hero"), ("star_tl", "hero"), ("num_badge", "hero")}, margin=12)
 
 
