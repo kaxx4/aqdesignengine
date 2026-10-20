@@ -73,9 +73,8 @@ async def size_card(s, K, KS=1.0):
         num_px = min(80 * KS, 100 * inner * 0.94 / max(r["text_w"] for r in m[len(lines):])); lab_px = round(27 * KS)
         lm = await B.measure_text([dict(text=l, font="d", size=lab_px, weight=400, line_height=1.08, max_width=inner) for _, l in stats])
         card_h = math.ceil(num_px + 8 + max(r["h"] for r in lm) + 2 * (py2 + sb))
-        mpx = round(27 * max(K * 0.8, 1.0)); mm = await B.measure_text([dict(text=MORE, font="d", size=mpx, weight=900)]); mh = mpx + 2 * CHIP_PADY      # the closing "AND MANY MORE" chip under the cards
-        stats_h = 2 * card_h + gapy + MORE_GAP + mh
-        out.update(sc=dict(gapx=gapx, gapy=gapy, sb=sb, cardw=cardw, card_h=card_h, num_px=num_px, lab_px=lab_px, mpx=mpx, mw=mm[0]["text_w"] + 2 * CHIP_PADX, mh=mh), stats_h=stats_h)
+        stats_h = 2 * card_h + gapy                  # (no AND MANY MORE chip on the impact slide: the user removed it; it stays on the sector slides)
+        out.update(sc=dict(gapx=gapx, gapy=gapy, sb=sb, cardw=cardw, card_h=card_h, num_px=num_px, lab_px=lab_px), stats_h=stats_h)
         stats = []                                   # nothing of it goes inside the headline card
     if stats:                                        # 4 stats go in a 2x2 grid so the numbers stay big; 1-3 stay in one row
         k = len(stats); cols = 2 if k == 4 else k; rows = math.ceil(k / cols); gap = 16
@@ -165,10 +164,6 @@ async def render_canvas(cv, sizes):
                              f'font-family:var(--d);color:{INK};padding:0 18px"><div style="font-weight:900;font-size:{sc["num_px"]:.1f}px;line-height:1;white-space:nowrap">{n}</div>'
                              f'<div style="font-weight:400;font-size:{sc["lab_px"]}px;line-height:1.08;margin-top:8px;text-wrap:balance">{lab}</div></div>')
                 el(f"stat{j}", x - 6, y - 8, sc["cardw"] + 12, sc["card_h"] + 16)
-            my = y0 + 2 * sc["card_h"] + sc["gapy"] + MORE_GAP; mx = cx - sc["mw"] / 2      # "AND MANY MORE", outlined, centred under the four cards
-            parts.append(f'<div class="measure" data-tag="more" style="position:absolute;left:{mx:.0f}px;top:{my:.0f}px;width:{sc["mw"]:.0f}px;height:{sc["mh"]}px;box-sizing:border-box;border-radius:999px;background:#fff;'
-                         f'border:4px solid {ORCHID};color:{INK};display:flex;align-items:center;justify-content:center;z-index:8;font-family:var(--d);font-weight:900;font-size:{sc["mpx"]}px;line-height:1;white-space:nowrap">{MORE}</div>')
-            el("more", mx, my, sc["mw"], sc["mh"])
         # ---- more sparkle stickers: shuriken in the free gaps either side of the photo (never on a card, never on the badge; unrotated, as the kit rule says) ----
         gl = cx - D / 2
         for tag, side, fy_, sz in (("star_a", "L", 0.58, 96), ("star_b", "R", 0.14, 104), ("star_c", "R", 0.70, 74)):
