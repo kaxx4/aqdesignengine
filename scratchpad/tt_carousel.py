@@ -147,6 +147,28 @@ def collage_html(photos, gap=8):
     return f'<div style="display:grid;grid-template-columns:{cols};grid-template-rows:{rows};gap:{gap}px;width:100%;height:100%">{"".join(cells)}</div>'
 
 
+def bg_collage(W, H, photos, exclude=None, scrim=0.7):
+    """Full-bleed backdrop of tilted, cream-bordered photo tiles in a staggered grid, under a black scrim so white type on the ground stays legible.
+    photos = {key: data-uri}; `exclude` drops the slide's own photo so its hero circle is not repeated behind it. Deterministic (seeded)."""
+    import random
+    rnd = random.Random(21)
+    keys = [k for k in photos if k != exclude]
+    cols, rows = 3, (4 if H > 1500 else 3)
+    cw, ch = W / cols, H / rows
+    tw, th = cw * 1.2, ch * 1.2
+    tiles, n = [], 0
+    for r in range(rows):
+        for c in range(-1, cols + 1):
+            x = c * cw + (cw / 2 if r % 2 else 0) - (tw - cw) / 2 + rnd.uniform(-16, 16)
+            y = r * ch - (th - ch) / 2 + rnd.uniform(-16, 16)
+            if x + tw < 0 or x > W: continue
+            k = keys[(n + (r % 2) * 2) % len(keys)]; n += 1             # stagger so neighbours differ
+            tiles.append(f'<div data-tag="bgt" style="position:absolute;left:{x:.0f}px;top:{y:.0f}px;width:{tw:.0f}px;height:{th:.0f}px;transform:rotate({rnd.uniform(-7, 7):.1f}deg);'
+                         f'border:10px solid {CREAM_HALO};border-radius:22px;overflow:hidden;box-sizing:border-box"><img data-tag="bgt" src="{photos[k]}" style="width:100%;height:100%;object-fit:cover;display:block"></div>')
+    return (f'<div data-tag="bgc" style="position:absolute;inset:0;overflow:hidden;z-index:0">{"".join(tiles)}'
+            f'<div style="position:absolute;inset:0;background:rgba(0,0,0,{scrim})"></div></div>')
+
+
 async def slide(kind, canvas, out, idx=None):
     L = dict(LAYOUT[canvas]); W, H = L["W"], L["H"]
     if DECK.get("compact") and kind != "cover": L.update(COMPACT[canvas])
@@ -162,8 +184,10 @@ async def slide(kind, canvas, out, idx=None):
     rnd = random.Random(7)
     specks = "".join(f'<circle cx="{rnd.uniform(0, W):.0f}" cy="{rnd.uniform(0, H):.0f}" r="{rnd.choice([.6, .8, 1, 1.3, 1.9]):.1f}" '
                      f'fill="#fff" opacity="{rnd.uniform(.25, .8):.2f}"/>' for _ in range(int(520 * H / 1350)))
-    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>',
-             f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>']
+    parts = [f'<style>{tt.FONT_CSS}</style>', f'<div style="position:absolute;inset:0;background:{GROUND}"></div>']
+    if DECK.get("bg_photos"):     # optional collage backdrop (a deck opts in); the slide's own photo is left out of it
+        parts.append(bg_collage(W, H, DECK["bg_photos"], exclude=DECK["items"][idx][0] if kind == "point" else None))
+    parts.append(f'<svg style="position:absolute;inset:0;z-index:1" width="{W}" height="{H}">{specks}</svg>')
 
     slab_top, slab_h = (L["cover_slab_top"], L["cover_slab_h"]) if kind == "cover" else (L["slab_top"], L["slab_h"])
     SX, SW = L.get("SX", 47), L.get("SW", 986)
@@ -307,7 +331,7 @@ async def slide(kind, canvas, out, idx=None):
     html = B.page(W, H, GROUND, "".join(parts), grain=False)
     text_pairs = [("head", WHITE, GROUND, 96, True), ("strip", WHITE, GROUND, 34, False), ("slab", INK, SLAB, 40, False),
                   ("cta", INK, CTA_FILL, 26, True), ("pill", INK, "#FFFFFF", 31, True)]
-    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True,
+    await B.render(html, out, W, H, elements=els, text_pairs=text_pairs, containers=("slab",), page_bg=GROUND, expect_hero=True, crop_tags=("bgc", "bgt"), bleed_tags=("bgc", "bgt"),
                    collision_ignore={("hero", "slab"), ("star_ml", "slab"), ("star_br", "slab"), ("star_tr", "hero"), ("star_tl", "hero"), ("num_badge", "hero")}, margin=12)
 
 

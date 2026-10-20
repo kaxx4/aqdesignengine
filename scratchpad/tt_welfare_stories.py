@@ -30,6 +30,9 @@ for key in ("health", "women", "elderly", "community", "environment", "animals")
     if os.path.exists(f"{PD}{key}_welfare.jpg"): PHOTOS[key] = [(uri(f"{PD}{key}_welfare.jpg", w=1200), "50% 50%")]
 tc.photo_list = lambda key: PHOTOS.get(key, [])
 
+BG = {k: uri(src, w=640, crop=(0, 0, ew, int(eh * 0.72))) if k == "children" else uri(src, w=640)       # small copies for the backdrop collage (the circle keeps the 1200px one)
+      for k, src in (("children", "engine/assets/img/education-sundarban.jpeg"), *((k, f"{PD}{k}_welfare.jpg") for k in ("health", "women", "elderly", "community", "environment", "animals")))
+      if os.path.exists(src)}
 tc.DATE, tc.VENUE = "SINCE 2021", "KOLKATA + THE SUNDARBANS"
 ITEMS = [   # key, headline, one short line (DRAFT copy), sticker (only where no photo), recolour
     ("all", "THE IMPACT SO FAR", "SINCE 2021. STILL SHOWING UP.", "carnival.png", False),
@@ -51,9 +54,9 @@ LAYOUT = {   # lighter slab, bigger circle: less text, more picture
     "feed": dict(hero_max=(760, 640), slab_top=700, slab_h=440, D=620, SX=90, SW=900, strip_y=1162),
     "story": dict(hero_max=(840, 760), slab_top=980, slab_h=470, D=760, SX=90, SW=900, strip_y=1486),
 }
-tc.DECKS["welfare3"] = dict(items=ITEMS, stats=STATS, layout=LAYOUT, num_skip=1, head=("WHAT WE DO", "SEVEN WAYS WE SHOW UP"), swipe="SWIPE TO SEE", head_w=770,
+tc.DECKS["welfare4"] = dict(items=ITEMS, stats=STATS, layout=LAYOUT, bg_photos=BG, num_skip=1, head=("WHAT WE DO", "SEVEN WAYS WE SHOW UP"), swipe="SWIPE TO SEE", head_w=770,
                            num=True, free_sub=True, compact=True, pill="AQUATERRA", cover_titles=("AQUATERRA", "IMPAACT"),
                            cover_sub="SINCE 2021. STILL SHOWING UP.", close=("COME TO", "THE NEXT ONE", "@NGO.AQUATERRA"))
 if __name__ == "__main__":
     cvs = [a for a in sys.argv[1:] if a in ("feed", "story")] or ["feed", "story"]
-    asyncio.run(tc.main(cvs, ("welfare3",)))        # renders to out/versions/terrathon_carousel/welfare3/
+    asyncio.run(tc.main(cvs, ("welfare4",)))        # renders to out/versions/terrathon_carousel/welfare4/ (v4 = v3 content + photo-collage backdrop)
