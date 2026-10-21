@@ -1,7 +1,7 @@
 """DISCO DIWALI WhatsApp PAYMENT QR poster, 1080x1350 (the WhatsApp poster size, see dd_launch_pack wa_poster).
 
 The QR encodes the UPI ID the user supplied (2026-10-21: "9073455396@hdfc is UPI ID", "use the new qr code") as a standard UPI link,
-upi://pay?pa=<id>&pn=TERRAROOTS&cu=INR, with NO amount. The user's own QR image was never saved to disk, so this is regenerated from the ID, not
+upi://pay?pa=<id>&cu=INR (no payee name; user 2026-10-21: "remove terraroots"), with NO amount. The user's own QR image was never saved to disk, so this is regenerated from the ID, not
 copied from their picture. UNVERIFIED: that "@hdfc" is a live handle (HDFC handles are usually @hdfcbank / @okhdfcbank). TEST-SCAN with a payment app.
 The previous build used the old merchant QR (engine/assets/terrathon/qr_terrathon_upi.png, Vyapar.174068471103@hdfcbank). The build re-decodes the
 QR out of the RENDERED poster and refuses to report success unless it equals PAYLOAD.
@@ -9,7 +9,7 @@ QR out of the RENDERED poster and refuses to report success unless it equals PAY
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
 (WhatsApp has nothing to point at). The QR sits on a paper plate with a 4-module quiet zone (a QR on black does not scan) and a gold keyline.
-Hero: SCAN TO PAY. Copy is only supplied facts: ALL FOR CHARITY and the payee name TERRAROOTS that the code itself carries.
+Hero: SCAN TO PAY. Copy is only supplied facts: ALL FOR CHARITY and the UPI ID the user supplied.
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
@@ -26,7 +26,7 @@ B = dd.B
 W, H = 1080, 1350
 OUT = os.path.join(ROOT, "out", "discodiwali", "wa_payment_qr")
 UPI_ID = "9073455396@hdfc"
-PAYLOAD = f"upi://pay?pa={UPI_ID}&pn=TERRAROOTS&cu=INR"
+PAYLOAD = f"upi://pay?pa={UPI_ID}&cu=INR"
 Q = segno.make(PAYLOAD, error="m", micro=False)
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
@@ -67,9 +67,8 @@ def poster():
                  f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{MODULES * MOD}px;height:{MODULES * MOD}px;shape-rendering:crispEdges"></div>')
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
-    # payee line: the name the code itself carries, so a buyer can match it on their payment app
-    line("payee", "Terraroots", PY + PLATE + 28, 56, 700, 56, w=500)
-    line("upi", UPI_ID, PY + PLATE + 100, 34, 700, 36, w=360, upper=False, font="--m")
+    # UPI ID under the plate, so a buyer can type it if the scan fails
+    line("upi", UPI_ID, PY + PLATE + 48, 46, 700, 48, w=480, upper=False, font="--m")
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
@@ -107,7 +106,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("payee", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 34, False)]
+        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("upi", "#fff", "#000", 46, True)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
