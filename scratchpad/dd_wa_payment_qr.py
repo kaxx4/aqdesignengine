@@ -1,8 +1,10 @@
 """DISCO DIWALI WhatsApp PAYMENT QR poster, 1080x1350 (the WhatsApp poster size, see dd_launch_pack wa_poster).
 
-The QR is the user's REAL static UPI merchant code (payee TERRAROOTS, Kolkata, no amount embedded), the same asset as tt_dd_qr.py:
-engine/assets/terrathon/qr_terrathon_upi.png, regenerated crisp from the decoded payload. The build re-decodes the QR out of the
-RENDERED poster and refuses to report success unless it equals the asset's payload. The payload is never edited.
+The QR encodes the UPI ID the user supplied (2026-10-21: "9073455396@hdfc is UPI ID", "use the new qr code") as a standard UPI link,
+upi://pay?pa=<id>&pn=TERRAROOTS&cu=INR, with NO amount. The user's own QR image was never saved to disk, so this is regenerated from the ID, not
+copied from their picture. UNVERIFIED: that "@hdfc" is a live handle (HDFC handles are usually @hdfcbank / @okhdfcbank). TEST-SCAN with a payment app.
+The previous build used the old merchant QR (engine/assets/terrathon/qr_terrathon_upi.png, Vyapar.174068471103@hdfcbank). The build re-decodes the
+QR out of the RENDERED poster and refuses to report success unless it equals PAYLOAD.
 
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
@@ -13,7 +15,8 @@ Adaptation: the diya ground rather than the photo ground, so the plate is the on
 
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_wa_payment_qr.py   ->  out/discodiwali/wa_payment_qr/poster.png
 """
-import asyncio, base64, importlib.util, os, sys
+import asyncio, base64, importlib.util, io, os, sys
+import segno
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 os.chdir(ROOT)
@@ -22,13 +25,15 @@ dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
 B = dd.B
 W, H = 1080, 1350
 OUT = os.path.join(ROOT, "out", "discodiwali", "wa_payment_qr")
-QR_PNG = os.path.join(ROOT, "engine", "assets", "terrathon", "qr_terrathon_upi.png")
+UPI_ID = "9073455396@hdfc"
+PAYLOAD = f"upi://pay?pa={UPI_ID}&pn=TERRAROOTS&cu=INR"
+Q = segno.make(PAYLOAD, error="m", micro=False)
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
-MODULES = 57
-MOD = 8                                   # css px per module -> 456px code, whole pixels per module
-PLATE = 540                               # plate leaves (540-456)/2 = 42px >= 4 modules (32px) of quiet zone
-PX, PY = (W - PLATE) // 2, 430
+MODULES = Q.symbol_size(border=0)[0]
+MOD = 13                                  # css px per module, whole pixels
+PLATE = (MODULES + 8) * MOD               # a 4-module quiet zone on every side
+PX, PY = (W - PLATE) // 2, 425
 
 
 def ground():
@@ -44,28 +49,39 @@ def poster():
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:40px;width:150px;z-index:20">')
     els.append(("badge", 40, 40, 150, round(150 * 1005 / 1061)))
 
-    def line(tag, txt, top, fsize, weight, h):
-        parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{fsize}px;'
-                     f'line-height:1;text-transform:uppercase;white-space:nowrap;{STROKE}z-index:20">{txt}</div>')
-        els.append((tag, 40, top, 1000, h))
+    def line(tag, txt, top, fsize, weight, h, w=1000, upper=True, font="--d"):
+        parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var({font});font-weight:{weight};font-size:{fsize}px;'
+                     f'line-height:1;text-transform:{"uppercase" if upper else "none"};white-space:nowrap;{STROKE}z-index:20">{txt}</div>')
+        els.append((tag, (W - w) // 2, top, w, h))
     # SCAN TO PAY is the hero, set across the frame; ALL FOR CHARITY sits under it
     line("head", "Scan to pay", 215, 128, 700, 128)
-    line("sub", "All for charity", 365, 40, 400, 42)
+    line("sub", "All for charity", 365, 40, 400, 42, w=560)
 
     # the QR plate: paper, rounded, gold keyline, hard shadow; the code keeps a 4-module quiet zone
     qz = (PLATE - MODULES * MOD) / 2
     assert qz >= 4 * MOD, "quiet zone under 4 modules: the code will not scan reliably"
-    src = "data:image/png;base64," + base64.b64encode(open(QR_PNG, "rb").read()).decode()
+    buf = io.BytesIO(); Q.save(buf, kind="svg", scale=1, border=0, dark="#0A0A0A", light=None)
+    src = "data:image/svg+xml;base64," + base64.b64encode(buf.getvalue()).decode()
     parts.append(f'<div data-tag="qr" style="position:absolute;left:{PX}px;top:{PY}px;width:{PLATE}px;height:{PLATE}px;background:#fff;border-radius:36px;'
                  f'box-shadow:0 0 0 8px {GL},0 22px 50px rgba(0,0,0,.7);z-index:12">'
-                 f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{MODULES * MOD}px;height:{MODULES * MOD}px;image-rendering:pixelated"></div>')
+                 f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{MODULES * MOD}px;height:{MODULES * MOD}px;shape-rendering:crispEdges"></div>')
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
     # payee line: the name the code itself carries, so a buyer can match it on their payment app
-    line("payee", "Terraroots", PY + PLATE + 36, 64, 700, 64)
+    line("payee", "Terraroots", PY + PLATE + 28, 56, 700, 56, w=500)
+    line("upi", UPI_ID, PY + PLATE + 100, 34, 700, 36, w=360, upper=False, font="--m")
+
+    # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
+    stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
+    for tag, fn, x, y, w, h in (("st_heart", "copper_heart.png", 836, 32, 204, round(204 * 1324 / 1496)),
+                                ("st_diya", "copper_diya.png", 36, 1120, 300, round(300 * 1146 / 1870)),
+                                ("st_star", "copper_star.png", 800, 1086, 236, 236)):
+        uri = "data:image/png;base64," + base64.b64encode(open(os.path.join(stk, fn), "rb").read()).decode()
+        parts.append(f'<img data-tag="{tag}" src="{uri}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:14;filter:drop-shadow(0 8px 14px rgba(0,0,0,.65))">')
+        els.append((tag, x, y, w, h))
 
     # footer mark: the lockup with its ball, as on the date and location posters
-    vw = 300; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
+    vw = 270; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     els.append(("title", round(vx - 265 * t + 0), round(vy - 320 * t + 0), round(2000 * t), round(1382 * t)))
     return "".join(parts), els, vy
@@ -74,16 +90,15 @@ def poster():
 def verify(path):
     import cv2
     det = cv2.QRCodeDetector()
-    want = det.detectAndDecode(cv2.copyMakeBorder(cv2.imread(QR_PNG), 80, 80, 80, 80, cv2.BORDER_CONSTANT, value=(255, 255, 255)))[0]
     img = cv2.imread(path); s = img.shape[1] / W
     crop = img[int((PY - 24) * s):int((PY + PLATE + 24) * s), int((PX - 24) * s):int((PX + PLATE + 24) * s)]
     hits = []
     for f in (1.0, .75, .5, .35):
         c = crop if f == 1 else cv2.resize(crop, None, fx=f, fy=f, interpolation=cv2.INTER_AREA)
-        if want and det.detectAndDecode(c)[0] == want:
+        if det.detectAndDecode(c)[0] == PAYLOAD:
             hits.append(f)
-    print("ASSET PAYLOAD DECODED:", bool(want), "| POSTER QR decodes to the exact payload at scales", hits)
-    assert want and len(hits) >= 3, "QR on the poster does not decode to the asset payload at enough scales: DO NOT SHIP"
+    print("PAYLOAD:", PAYLOAD, "| decoded from the poster at scales", hits)
+    assert len(hits) >= 3, "QR on the poster does not decode to PAYLOAD at enough scales: DO NOT SHIP"
 
 
 async def main():
@@ -92,7 +107,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("payee", "#fff", "#000", 64, True)]
+        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("payee", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 34, False)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
