@@ -135,3 +135,11 @@ def speaker(size=420, rot=0, u="sp", shadow=True):
 def bolt(size=300, rot=0, u="b", shadow=True):
     d = "M240 8 L66 226 H166 L126 392 L334 150 H230 Z"
     return _wrap(u, (400, 400), _metal(u, d, 400, 400, .9, 200, 200), size, rot, shadow)
+
+
+def ticket(size=420, rot=0, u="t", shadow=True):
+    """Copper admit-one ticket: mask-texture body with a half-circle bite out of each short side, a perforation line and a gem stub."""
+    d = "M30 90 H370 V160 A40 40 0 0 0 370 240 V310 H30 V240 A40 40 0 0 0 30 160 Z"
+    perf = '<path d="M262 100 V300" stroke="#2E0C05" stroke-width="5" stroke-dasharray="4 14" stroke-linecap="round" opacity=".75"/>'
+    gem = f'<circle cx="316" cy="200" r="30" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/>'
+    return _wrap(u, (400, 400), _metal(u, d, 400, 400, .93, 200, 200) + perf + gem, size, rot, shadow)

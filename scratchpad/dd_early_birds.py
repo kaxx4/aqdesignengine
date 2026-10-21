@@ -1,0 +1,61 @@
+"""DISCO DIWALI EARLY BIRDS poster, feed 1080x1350 (WhatsApp and Instagram feed) and story 1080x1920 (user, 2026-10-21):
+"create a WhatsApp and Instagram poster saying that early birds is tomorrow and it is for 450 rupees per spot. It is at 6 p.m."
+
+Facts printed, all supplied: EARLY BIRDS, TOMORROW, 6 PM, RS. 450 PER SPOT, ALL FOR CHARITY (the badge), the edition. NOT printed because not supplied: a slot count (the
+phased-scarcity rule forbids inventing one), a calendar date for "tomorrow" (the poster is only true the day before), a ticket link (so no LINK IN BIO pill; add one the moment a link
+exists). Photo ground (event photo 14_05), hero = the price, a copper ticket sticker plus bolt and note, the lockup as a footer mark.
+Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_early_birds.py
+"""
+import asyncio, importlib.util, os, sys
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "engine")); sys.path.insert(0, os.path.join(ROOT, "scratchpad"))
+spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
+dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
+import dd_copper as cp
+import dd_photo_bg as pb
+B = dd.B
+W = 1080
+OUT = os.path.join(ROOT, "out", "discodiwali", "early_birds")
+STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
+
+
+def build(H):
+    dy = (H - 1350) // 2
+    parts, els = [pb.photo_ground(dd, W, H, "14_05", "50% 40%", dim=.70, bright=.9)], []
+
+    def text(tag, txt, y, size, weight=700, x=0, w=W, align="center", extra="", rot=0):
+        rt = f";transform:rotate({rot}deg)" if rot else ""
+        parts.append(f'<div data-tag="{tag}" style="position:absolute;left:{x}px;width:{w}px;top:{y + dy}px;text-align:{align};font-family:var(--d);font-weight:{weight};font-size:{size}px;'
+                     f'line-height:1;text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20{rt}">{txt}</div>'); els.append((tag, x, y + dy, w, round(size * .88)))
+
+    def sticker(tag, svg, x, y, w, h, z=12):
+        parts.append(f'<div data-tag="{tag}" style="position:absolute;left:{x}px;top:{y + dy}px;z-index:{z}">{svg}</div>'); els.append((tag, x, y + dy, w, h))
+
+    by = 215 if H > 1350 else 40                              # absolute: a story keeps the top 200px clear and the badge above the headline
+    parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{by}px;width:150px;z-index:20">')
+    els.append(("badge", 40, by, 150, round(150 * 1005 / 1061)))
+    text("h1", "Early", 190, 175, x=60, w=560, align="left", rot=-4)
+    text("h2", "birds", 360, 175, x=60, w=560, align="left", rot=-4)
+    text("when", "Tomorrow &middot; 6 PM", 575, 76, x=0, w=W)
+    text("price", "RS. 450", 690, 250, x=0, w=W)
+    text("per", "per spot", 925, 74, 400, x=250, w=580, extra="letter-spacing:6px;")
+    sticker("ticket", cp.ticket(380, -10, "e2"), 640, 120, 380, 380, 13)
+    sticker("bolt", cp.bolt(190, 12, "e3"), 40, 960, 190, 190, 13)
+    sticker("note", cp.note(150, -10, "e4"), 905, 975, 150, 150, 13)
+    text("sub", "Masquerade Sangeet Edition", 1050, 38, 400, x=250, w=580)
+    vw = 270; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = 1350 - 62 - vh
+    parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy + dy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
+    els.append(("title", vx, vy + dy, vw, vh))
+    return "".join(parts), els, vy
+
+
+async def main():
+    os.makedirs(OUT, exist_ok=True)
+    async with B.session():
+        for name, H in (("feed", 1350), ("story", 1920)):
+            inner, els, vy = build(H)
+            print(f"[{name}] lockup top y={vy}")
+            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
+                           page_bg="#000")
+    print("early birds done ->", OUT)
+asyncio.run(main())
