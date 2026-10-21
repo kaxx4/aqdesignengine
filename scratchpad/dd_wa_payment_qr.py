@@ -8,7 +8,7 @@ report success unless it equals PAYLOAD. TEST-SCAN with a payment app before pos
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
 (WhatsApp has nothing to point at). The QR sits on a paper plate with a 4-module quiet zone (a QR on black does not scan) and a gold keyline.
-Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves) and the UPI ID. ALL FOR CHARITY lives in the LIVE badge.
+Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves), ALL FOR CHARITY, the date (10 Nov 2026, 4:30 PM onwards) and the venue (60, Chowringhee Banquets), all supplied. The UPI ID line was dropped for room; the code carries it.
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
@@ -30,9 +30,9 @@ PAYLOAD = "upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali&"
 QR_SRC = os.path.join(ROOT, "engine", "assets", "disco_diwali", "qr_payment_user.png")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
-CODE = 450                                # css px of the cropped code
-PLATE = 610                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
-PX, PY = (W - PLATE) // 2, 440
+CODE = 400                                # css px of the cropped code
+PLATE = 560                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
+PX, PY = (W - PLATE) // 2, 462
 
 
 def ground():
@@ -53,8 +53,10 @@ def poster():
                      f'line-height:1;text-transform:{"uppercase" if upper else "none"};white-space:nowrap;{STROKE}z-index:20">{txt}</div>')
         els.append((tag, (W - w) // 2, top, w, h))
     # SCAN TO PAY is the hero, set across the frame; ALL FOR CHARITY sits under it
-    line("head", "Scan to pay", 215, 128, 700, 128)
-    line("sub", f'Early bird <span style="color:{GL}">Rs. 450</span>', 358, 54, 700, 56, w=700)
+    line("head", "Scan to pay", 196, 120, 700, 120)
+    # the price is the second voice (user, 2026-10-21: "450 needs to be more highlighted"): EARLY BIRD small, RS. 450 at 118px in gold with a glow
+    glow = "text-shadow:0 0 34px rgba(240,198,90,.6);"
+    line("price", f'Early bird <span style="font-size:118px;color:#F0C65A;{glow}">Rs. 450</span>', 330, 56, 700, 118, w=900)
 
     # the QR plate: paper, rounded, gold keyline, hard shadow; the code keeps a 4-module quiet zone
     qz = (PLATE - CODE) / 2
@@ -66,20 +68,23 @@ def poster():
                  f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{CODE}px;height:{CODE}px"></div>')
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
-    # UPI ID under the plate, so a buyer can type it if the scan fails
-    line("upi", UPI_ID, PY + PLATE + 22, 40, 700, 42, w=420, upper=False, font="--m")
+    # info block, small (user, 2026-10-21): ALL FOR CHARITY, then the supplied date and venue (DISCO_DIWALI.md sec 1 and the location poster)
+    iy = PY + PLATE + 20
+    line("charity", "All for charity", iy, 34, 700, 36, w=420)
+    line("date", "10 Nov 2026, 4:30 PM onwards", iy + 44, 26, 400, 28, w=520)
+    line("venue", "60, Chowringhee Banquets, Kolkata", iy + 78, 26, 400, 28, w=560)
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
-    for tag, fn, x, y, w, h in (("st_heart", "copper_heart.png", 836, 32, 204, round(204 * 1324 / 1496)),
-                                ("st_diya", "copper_diya.png", 36, 1120, 300, round(300 * 1146 / 1870)),
-                                ("st_star", "copper_star.png", 800, 1086, 236, 236)):
+    for tag, fn, x, y, w, h in (("st_heart", "copper_heart.png", 858, 26, 182, round(182 * 1324 / 1496)),
+                                ("st_diya", "copper_diya.png", 30, 1168, 262, round(262 * 1146 / 1870)),
+                                ("st_star", "copper_star.png", 810, 1100, 220, 220)):
         uri = "data:image/png;base64," + base64.b64encode(open(os.path.join(stk, fn), "rb").read()).decode()
         parts.append(f'<img data-tag="{tag}" src="{uri}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:14;filter:drop-shadow(0 8px 14px rgba(0,0,0,.65))">')
         els.append((tag, x, y, w, h))
 
     # footer mark: the lockup with its ball, as on the date and location posters
-    vw = 240; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
+    vw = 200; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     els.append(("title", round(vx - 265 * t + 0), round(vy - 320 * t + 0), round(2000 * t), round(1382 * t)))
     return "".join(parts), els, vy
@@ -104,7 +109,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 54, True), ("upi", "#fff", "#000", 40, True)]
+        text_pairs = [("head", "#fff", "#000", 120, True), ("price", "#fff", "#000", 56, True), ("charity", "#fff", "#000", 34, True), ("date", "#fff", "#000", 26, False), ("venue", "#fff", "#000", 26, False)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
