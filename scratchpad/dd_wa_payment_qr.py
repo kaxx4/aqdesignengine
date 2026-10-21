@@ -8,7 +8,7 @@ report success unless it equals PAYLOAD. TEST-SCAN with a payment app before pos
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
 (WhatsApp has nothing to point at). The QR sits on a paper plate with a 4-module quiet zone (a QR on black does not scan) and a gold keyline.
-Hero: SCAN TO PAY. Copy is only supplied facts: ALL FOR CHARITY and the UPI ID the user supplied.
+Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves) and the UPI ID. ALL FOR CHARITY lives in the LIVE badge.
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
@@ -30,9 +30,9 @@ PAYLOAD = "upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali&"
 QR_SRC = os.path.join(ROOT, "engine", "assets", "disco_diwali", "qr_payment_user.png")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
-CODE = 481                                # css px of the cropped code
-PLATE = 645                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
-PX, PY = (W - PLATE) // 2, 425
+CODE = 450                                # css px of the cropped code
+PLATE = 610                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
+PX, PY = (W - PLATE) // 2, 440
 
 
 def ground():
@@ -54,7 +54,7 @@ def poster():
         els.append((tag, (W - w) // 2, top, w, h))
     # SCAN TO PAY is the hero, set across the frame; ALL FOR CHARITY sits under it
     line("head", "Scan to pay", 215, 128, 700, 128)
-    line("sub", "All for charity", 365, 40, 400, 42, w=560)
+    line("sub", f'Early bird <span style="color:{GL}">Rs. 450</span>', 358, 54, 700, 56, w=700)
 
     # the QR plate: paper, rounded, gold keyline, hard shadow; the code keeps a 4-module quiet zone
     qz = (PLATE - CODE) / 2
@@ -67,7 +67,7 @@ def poster():
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
     # UPI ID under the plate, so a buyer can type it if the scan fails
-    line("upi", UPI_ID, PY + PLATE + 26, 40, 700, 42, w=420, upper=False, font="--m")
+    line("upi", UPI_ID, PY + PLATE + 22, 40, 700, 42, w=420, upper=False, font="--m")
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
@@ -104,7 +104,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("upi", "#fff", "#000", 40, True)]
+        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 54, True), ("upi", "#fff", "#000", 40, True)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
