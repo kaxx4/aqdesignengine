@@ -31,7 +31,7 @@ Q = segno.make(PAYLOAD, error="m", micro=False)
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
 MODULES = Q.symbol_size(border=0)[0]
-MOD = 13                                  # css px per module, whole pixels
+MOD = 17                                  # css px per module, whole pixels
 PLATE = (MODULES + 8) * MOD               # a 4-module quiet zone on every side
 PX, PY = (W - PLATE) // 2, 425
 
@@ -68,7 +68,7 @@ def poster():
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
     # UPI ID under the plate, so a buyer can type it if the scan fails
-    line("upi", UPI_ID, PY + PLATE + 48, 46, 700, 48, w=480, upper=False, font="--m")
+    line("upi", UPI_ID, PY + PLATE + 26, 40, 700, 42, w=420, upper=False, font="--m")
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
@@ -80,7 +80,7 @@ def poster():
         els.append((tag, x, y, w, h))
 
     # footer mark: the lockup with its ball, as on the date and location posters
-    vw = 270; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
+    vw = 240; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = H - 40 - vh
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     els.append(("title", round(vx - 265 * t + 0), round(vy - 320 * t + 0), round(2000 * t), round(1382 * t)))
     return "".join(parts), els, vy
@@ -106,7 +106,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("upi", "#fff", "#000", 46, True)]
+        text_pairs = [("head", "#fff", "#000", 128, True), ("sub", "#fff", "#000", 40, False), ("upi", "#fff", "#000", 40, True)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
