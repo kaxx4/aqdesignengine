@@ -12,7 +12,7 @@ Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-1
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
-Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_wa_payment_qr.py [phase1]   ->  out/discodiwali/wa_payment_qr/poster.png
+Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_wa_payment_qr.py [phase1|community]   ->  out/discodiwali/wa_payment_qr/poster.png
 """
 import asyncio, base64, importlib.util, io, os, sys
 import numpy as np
@@ -26,9 +26,9 @@ B = dd.B
 W, H = 1080, 1350
 OUT = os.path.join(ROOT, "out", "discodiwali", "wa_payment_qr")
 # variant (user, 2026-10-21: "make for phase 1 Rs.550"): default is the Early Bird Rs. 450 poster; arg `phase1` makes the PHASE 1 Rs. 550 one
-VARIANT = "phase1" if "phase1" in sys.argv else "earlybird"
-LABEL, PRICE = ("Phase 1", "Rs. 550") if VARIANT == "phase1" else ("Early bird", "Rs. 450")
-SLUG = "poster_phase1" if VARIANT == "phase1" else "poster"
+VARIANT = "community" if "community" in sys.argv else "phase1" if "phase1" in sys.argv else "earlybird"   # "Community AQ Rs.550" (user, 2026-10-21)
+LABEL, PRICE = {"community": ("Community AQ", "Rs. 550"), "phase1": ("Phase 1", "Rs. 550"), "earlybird": ("Early bird", "Rs. 450")}[VARIANT]
+SLUG = {"community": "poster_community", "phase1": "poster_phase1", "earlybird": "poster"}[VARIANT]
 UPI_ID = "9073455396@hdfc"
 PAYLOAD = "upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali&"
 QR_SRC = os.path.join(ROOT, "engine", "assets", "disco_diwali", "qr_payment_user.png")
@@ -59,8 +59,9 @@ def poster():
     # SCAN TO PAY is the hero, set across the frame; ALL FOR CHARITY sits under it
     line("head", "Scan to pay", 196, 120, 700, 120)
     # the price is the second voice (user, 2026-10-21: "450 needs to be more highlighted"): EARLY BIRD small, RS. 450 at 118px in gold with a glow
+    LS, PS = (50, 104) if VARIANT == "community" else (56, 118)          # the longer COMMUNITY AQ label needs smaller type to keep ~90px margins
     glow = "text-shadow:0 0 34px rgba(240,198,90,.6);"
-    line("price", f'{LABEL} <span style="font-size:118px;color:#F0C65A;{glow}">{PRICE}</span>', 330, 56, 700, 118, w=900)
+    line("price", f'{LABEL} <span style="font-size:{PS}px;color:#F0C65A;{glow}">{PRICE}</span>', 330 + (118 - PS) // 2, LS, 700, PS, w=900)
 
     # the QR plate: paper, rounded, gold keyline, hard shadow; the code keeps a 4-module quiet zone
     qz = (PLATE - CODE) / 2
