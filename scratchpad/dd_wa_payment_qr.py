@@ -8,7 +8,7 @@ report success unless it equals PAYLOAD. TEST-SCAN with a payment app before pos
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
 (WhatsApp has nothing to point at). The QR sits on a paper plate with a 4-module quiet zone (a QR on black does not scan) and a gold keyline.
-Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves), the UPI ID (user, 2026-10-21, replaces the ALL FOR CHARITY line; the LIVE badge still says it), the date (10 Nov 2026, 4:30 PM onwards) and the venue (60, Chowringhee Banquets), all supplied. 
+Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves), the UPI ID (user, 2026-10-21, replaces the ALL FOR CHARITY line; the LIVE badge still says it), the date and time (Tuesday, 10th November. 4:30 PM onwards., user wording 2026-10-21, no year) and the venue (60, Chowringhee Banquets), all supplied. 
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
@@ -30,8 +30,8 @@ PAYLOAD = "upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali&"
 QR_SRC = os.path.join(ROOT, "engine", "assets", "disco_diwali", "qr_payment_user.png")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
-CODE = 400                                # css px of the cropped code
-PLATE = 560                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
+CODE = 385                                # css px of the cropped code
+PLATE = 540                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
 PX, PY = (W - PLATE) // 2, 462
 
 
@@ -69,10 +69,11 @@ def poster():
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
     # info block, small (user, 2026-10-21): the UPI ID, then the supplied date and venue (DISCO_DIWALI.md sec 1 and the location poster)
-    iy = PY + PLATE + 20
-    line("upi", UPI_ID, iy, 34, 700, 36, w=420, upper=False, font="--m")
-    line("date", "10 Nov 2026, 4:30 PM onwards", iy + 44, 26, 400, 28, w=520)
-    line("venue", "60, Chowringhee Banquets, Kolkata", iy + 78, 26, 400, 28, w=560)
+    iy = PY + PLATE + 16
+    line("upi", UPI_ID, iy, 32, 700, 34, w=400, upper=False, font="--m")
+    line("date", "Tuesday, 10th November.", iy + 40, 24, 400, 26, w=420)
+    line("time", "4:30 PM onwards.", iy + 70, 24, 400, 26, w=300)
+    line("venue", "60, Chowringhee Banquets, Kolkata.", iy + 100, 24, 400, 26, w=560)
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
@@ -109,7 +110,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 120, True), ("price", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 34, True), ("date", "#fff", "#000", 26, False), ("venue", "#fff", "#000", 26, False)]
+        text_pairs = [("head", "#fff", "#000", 120, True), ("price", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 32, True), ("date", "#fff", "#000", 24, False), ("time", "#fff", "#000", 24, False), ("venue", "#fff", "#000", 24, False)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
