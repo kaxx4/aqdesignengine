@@ -1,10 +1,10 @@
 """DISCO DIWALI reel covers, STICKERS + PHOTO ONLY (2026-10-21; user: "dont write disco diwali, i just want stickers and photo").
 
 Fifteen 1080x1920 covers: one real event photo each (same crops as dd_reel_covers.py), lightly graded, and copper stickers as the only
-foreground, ONE IN EACH OF THE FOUR CORNERS of the grid-safe frame (user: "place them on the 4 corners", not scattered), rotating by one step per cover.
+foreground, ONE IN EACH OF THE FOUR CORNERS of the grid-safe frame (user: "place them on the 4 corners", not scattered), rotating by one step per cover; the corners are the EXTREME canvas corners.
 No lockup, hook, badge or text. Stickers: the copper mask, heart, star and diya (calendar and pin
 are left out: they imply a date and a venue that covers do not state). Gold dust and film grain stay on as the format's texture.
-Everything sits inside y 285..1635, the 4:5 profile-grid crop of a 1080x1920 cover (the 3:4 crop is wider).
+Stickers sit on the extreme canvas corners, outside the profile-grid crop.
 CONSENT: many people in these photos look like minors and no consent record exists. Check before posting.
 
 Outputs out/discodiwali/reels_stickers/reel_NN.png (+ sheet.png, grid_preview.png).   Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_reel_stickers.py
@@ -33,11 +33,13 @@ PHOTOS = [(f"{HALL}/04_pink-ceiling-chandelier-phone.jpg", .55), (f"{HALL}/05_bo
 # sticker files and the aspect (h/w) of the VISIBLE art; the mask asset has transparent padding, handled in place()
 FILES = {"mask": (os.path.join(ASSET, "mask_copper.png"), 920 / 1400), "heart": (os.path.join(STK, "copper_heart.png"), 1324 / 1496),
          "star": (os.path.join(STK, "copper_star.png"), 1.0), "diya": (os.path.join(STK, "copper_diya.png"), 1146 / 1870)}
-# FOUR CORNERS (user, 2026-10-21: "place them on the 4 corners"): one sticker per corner of the grid-safe frame, same visible width per kind on
-# every cover, a small fixed tilt per corner. Which sticker takes which corner rotates by one step each cover. Safe zone y 285..1635.
-CORNERS = [(245, 480, -8), (835, 480, 8), (245, 1440, 7), (835, 1440, -7)]       # TL, TR, BL, BR: centre x, centre y, tilt
+# EXTREME CORNERS (user, 2026-10-21: "i want the stickers to be on the extreme corners"): one sticker hugging each corner of the CANVAS, 26px
+# from both edges, one of each kind per cover, rotating by one corner per cover. This puts them OUTSIDE Instagram's profile-grid crop (3:4 centre,
+# y 240..1680), so the grid thumbnail shows the photo alone; the full reel cover shows all four. The user chose this knowingly.
+CORNERS = [(0, 0, -8), (1, 0, 8), (0, 1, 7), (1, 1, -7)]       # TL, TR, BL, BR: right?, bottom?, tilt
+MARGIN = 26
 KINDS = ["mask", "heart", "star", "diya"]
-WIDTH = {"mask": 380, "heart": 300, "star": 290, "diya": 340}
+WIDTH = {"mask": 440, "heart": 340, "star": 330, "diya": 400}
 SAFE_TOP, SAFE_BOT = 285, 1635
 
 def photo169(path, fx):
@@ -71,7 +73,13 @@ def place(kind, vw, cx, cy, rot):
     return html, (round(cx - bw / 2), round(cy - bh / 2), round(bw), round(bh))
 
 def build(i, photo, fx):
-    arr = [(KINDS[(c + i) % 4], WIDTH[KINDS[(c + i) % 4]], cx, cy, rot) for c, (cx, cy, rot) in enumerate(CORNERS)]
+    arr = []
+    for c, (right, bottom, rot) in enumerate(CORNERS):
+        kind = KINDS[(c + i) % 4]; vw = WIDTH[kind]; vh = vw * FILES[kind][1]
+        r = math.radians(abs(rot)); bw = vw * math.cos(r) + vh * math.sin(r); bh = vw * math.sin(r) + vh * math.cos(r)   # rotated footprint
+        cx = W - MARGIN - bw / 2 if right else MARGIN + bw / 2
+        cy = H - MARGIN - bh / 2 if bottom else MARGIN + bh / 2
+        arr.append((kind, vw, round(cx), round(cy), rot))
     P, E = [f'<div style="position:absolute;inset:0;background:{GROUND}"></div>',
             f'<img data-tag="photo" src="{photo169(photo, fx)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
             f'filter:contrast(1.08) saturate(1.05) brightness(1.0)">',
@@ -90,10 +98,10 @@ async def main():
         for i, (photo, fx) in enumerate(PHOTOS, 1):
             P, E = build(i, photo, fx)
             for lab, x, y, w, h in E:
-                assert x >= 0 and x + w <= W and y >= SAFE_TOP and y + h <= SAFE_BOT, f"cover {i}: {lab} leaves the safe zone ({x},{y},{w},{h})"
+                assert x >= 0 and x + w <= W and y >= 0 and y + h <= H, f"cover {i}: {lab} leaves the canvas ({x},{y},{w},{h})"
             html = B.page(W, H, GROUND, "".join(P), grain=False)
             await B.render(html, os.path.join(out, f"reel_{i:02d}.png"), W, H, elements=E,
-                           bleed_tags=("plate", "sparkles", "grain", "photo"), crop_tags=("plate", "sparkles", "grain", "photo"), page_bg=GROUND)
+                           bleed_tags=("plate", "sparkles", "grain", "photo", "sticker"), crop_tags=("plate", "sparkles", "grain", "photo"), page_bg=GROUND)
     ims = [Image.open(os.path.join(out, f"reel_{i:02d}.png")).convert("RGB") for i in range(1, len(PHOTOS) + 1)]
     sh = Image.new("RGB", (324 * 5 + 40, 576 * 3 + 20), (40, 40, 40)); gp = Image.new("RGB", (360 * 5 + 40, 480 * 3 + 20), (20, 20, 20))
     for i, im in enumerate(ims):
