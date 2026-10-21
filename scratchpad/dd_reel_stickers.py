@@ -30,6 +30,14 @@ PHOTOS = [(f"{HALL}/04_pink-ceiling-chandelier-phone.jpg", .55), (f"{HALL}/05_bo
           (f"{LIB}/10_disco-diwali-photo-booth.jpg", .55), (f"{LIB}/11_dance-green-light-portrait.jpg", .50),
           (f"{LIB}/13_IMG_1500_dance-pink-light-phone.jpg", .50), (f"{HALL}/02_crowd-teal-kurta-purple.jpg", .52),
           (f"{LIB}/02_IMG_7028_group-pink-balloons.jpg", .50)]
+# SET 2 (2026-10-21, "create 5 more"): the five remaining stills, numbered 16..20 so the corner rotation continues. Run with SET=2.
+PHOTOS2 = [(f"{LIB}/05_cards-hall-dance-green-light.jpg", .50), (f"{LIB}/07_dance-blur-blue-light.jpg", .50),
+           (f"{LIB}/08_cards-hall-crowd-purple.jpg", .50), (f"{LIB}/09_night-courtyard-string-lights-crowd.jpg", .50),
+           (f"{LIB}/01_IMG_7180_group-aquaterra-banner.jpg", .50)]
+SET2 = os.environ.get("SET") == "2"
+START = 16 if SET2 else 1
+if SET2:
+    PHOTOS = PHOTOS2
 # sticker files and the aspect (h/w) of the VISIBLE art; the mask asset has transparent padding, handled in place()
 FILES = {"mask": (os.path.join(ASSET, "mask_copper.png"), 920 / 1400), "heart": (os.path.join(STK, "copper_heart.png"), 1324 / 1496),
          "star": (os.path.join(STK, "copper_star.png"), 1.0), "diya": (os.path.join(STK, "copper_diya.png"), 1146 / 1870)}
@@ -93,16 +101,16 @@ def build(i, photo, fx):
     return P, E
 
 async def main():
-    out = os.path.join(ROOT, "out", "discodiwali", "reels_stickers"); os.makedirs(out, exist_ok=True)
+    out = os.path.join(ROOT, "out", "discodiwali", "reels_stickers_2" if SET2 else "reels_stickers"); os.makedirs(out, exist_ok=True)
     async with B.session():
-        for i, (photo, fx) in enumerate(PHOTOS, 1):
+        for i, (photo, fx) in enumerate(PHOTOS, START):
             P, E = build(i, photo, fx)
             for lab, x, y, w, h in E:
                 assert x >= 0 and x + w <= W and y >= 0 and y + h <= H, f"cover {i}: {lab} leaves the canvas ({x},{y},{w},{h})"
             html = B.page(W, H, GROUND, "".join(P), grain=False)
             await B.render(html, os.path.join(out, f"reel_{i:02d}.png"), W, H, elements=E,
                            bleed_tags=("plate", "sparkles", "grain", "photo", "sticker"), crop_tags=("plate", "sparkles", "grain", "photo"), page_bg=GROUND)
-    ims = [Image.open(os.path.join(out, f"reel_{i:02d}.png")).convert("RGB") for i in range(1, len(PHOTOS) + 1)]
+    ims = [Image.open(os.path.join(out, f"reel_{i:02d}.png")).convert("RGB") for i in range(START, START + len(PHOTOS))]
     sh = Image.new("RGB", (324 * 5 + 40, 576 * 3 + 20), (40, 40, 40)); gp = Image.new("RGB", (360 * 5 + 40, 480 * 3 + 20), (20, 20, 20))
     for i, im in enumerate(ims):
         s = im.width / W
