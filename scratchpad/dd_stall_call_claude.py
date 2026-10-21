@@ -48,9 +48,9 @@ def card(tag, x, y, w, h, fill, rot, title, sub, icon, icon_fill, isz):
                  f'<div data-tag="{tag}_t" style="position:absolute;left:26px;bottom:24px;color:{fg}"><div style="font-family:var(--d);font-weight:900;font-size:40px;line-height:1;text-transform:uppercase;letter-spacing:-.01em">{title}</div>'
                  f'<div style="font-family:var(--e);font-weight:500;font-size:25px;line-height:1.2;margin-top:6px;text-transform:lowercase">{sub}</div></div>'
                  f'<div data-tag="{tag}_i" style="position:absolute;right:26px;top:22px;width:{isz}px;height:{isz}px">{dd.stamp(icon, icon_fill)}</div></div>')
-    els.extend([(tag, x, y, w + 10, h + 10), (tag + "_t", x + 26, y + h - 90, 380, 70), (tag + "_i", x + w - isz - 26, y + 22, isz, isz)])
+    els.extend([(tag, x, y, w + 10, h + 10), (tag + "_t", x + 26, y + h - 124, 400, 104), (tag + "_i", x + w - isz - 26, y + 22, isz, isz)])
 card("c1", 64, 1092, 468, 257, A[5], -1.5, "Games", "make people compete", "lightning", INK, 84)
-card("c2", 552, 1131, 466, 254, A[2], 1.5, "Merch &amp; crafts", "diyas, jewellery, thrift", "heart", INK, 84)
+card("c2", 552, 1131, 466, 254, A[2], 1.5, "Merch &amp; crafts", "diyas, jewellery, thrift,<br>charm bracelets", "heart", INK, 84)
 card("c3", 67, 1413, 951, 254, A[0], .6, "Something else", "surprise us", "burst", INK, 96)
 # CTA pill
 px, py, pw, ph = 64, 1695, 950, 94
