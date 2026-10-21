@@ -1,7 +1,7 @@
 """DISCO DIWALI EARLY BIRDS poster, feed 1080x1350 (WhatsApp and Instagram feed) and story 1080x1920 (user, 2026-10-21):
-"create a WhatsApp and Instagram poster saying that early birds is tomorrow and it is for 450 rupees per spot. It is at 6 p.m."
+"create a WhatsApp and Instagram poster saying that early birds is tomorrow and it is for 450 rupees (corrected by the user to 550) per spot. It is at 6 p.m."
 
-Facts printed, all supplied: EARLY BIRDS, TOMORROW, 6 PM, RS. 450 PER SPOT, ALL FOR CHARITY (the badge), the edition. NOT printed because not supplied: a slot count (the
+Facts printed, all supplied: EARLY BIRDS, TOMORROW, 6 PM, RS. 550 PER SPOT, ALL FOR CHARITY (the badge), the edition. NOT printed because not supplied: a slot count (the
 phased-scarcity rule forbids inventing one), a calendar date for "tomorrow" (the poster is only true the day before), a ticket link (so no LINK IN BIO pill; add one the moment a link
 exists). Photo ground (event photo 14_05), hero = the price, a copper ticket sticker plus bolt and note, the lockup as a footer mark.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_early_birds.py
@@ -37,7 +37,7 @@ def build(H):
     text("h1", "Early", 190, 175, x=60, w=560, align="left", rot=-4)
     text("h2", "birds", 360, 175, x=60, w=560, align="left", rot=-4)
     text("when", "Tomorrow &middot; 6 PM", 575, 76, x=0, w=W)
-    text("price", "RS. 450", 690, 250, x=0, w=W)
+    text("price", "RS. 550", 690, 250, x=0, w=W)
     text("per", "per spot", 925, 74, 400, x=250, w=580, extra="letter-spacing:6px;")
     sticker("ticket", cp.ticket(380, -10, "e2"), 640, 120, 380, 380, 13)
     sticker("bolt", cp.bolt(190, 12, "e3"), 40, 960, 190, 190, 13)
