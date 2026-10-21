@@ -8,7 +8,7 @@ report success unless it equals PAYLOAD. TEST-SCAN with a payment app before pos
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
 (WhatsApp has nothing to point at). The QR sits on a paper plate with a 4-module quiet zone (a QR on black does not scan) and a gold keyline.
-Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves), the UPI ID (user, 2026-10-21, replaces the ALL FOR CHARITY line; the LIVE badge still says it), the date and time (Tuesday, 10th November. 4:30 PM onwards., user wording 2026-10-21, no year) and the venue (60, Chowringhee Banquets), all supplied. 
+Hero: SCAN TO PAY. Copy is only supplied facts: EARLY BIRD RS. 450 (user, 2026-10-21; the code carries NO amount, so buyers type 450 themselves), the UPI ID (user, 2026-10-21, replaces the ALL FOR CHARITY line; the LIVE badge still says it), the date, venue and time in the user's wording (Tuesday, 10th November / 60, Chowringhee Banquets (on the rooftop) / 4:30 PM onwards; no year; drawn gold icons stand in for the emoji) and the venue (60, Chowringhee Banquets), all supplied. 
 No price (unconfirmed, DISCO_DIWALI.md sec 1), no date, no venue.
 Adaptation: the diya ground rather than the photo ground, so the plate is the only bright object and the code is the first thing the eye lands on.
 
@@ -71,15 +71,20 @@ def poster():
     # info block, small (user, 2026-10-21): the UPI ID, then the supplied date and venue (DISCO_DIWALI.md sec 1 and the location poster)
     iy = PY + PLATE + 16
     line("upi", UPI_ID, iy, 32, 700, 34, w=400, upper=False, font="--m")
-    line("date", "Tuesday, 10th November.", iy + 40, 24, 400, 26, w=420)
-    line("time", "4:30 PM onwards.", iy + 70, 24, 400, 26, w=300)
-    line("venue", "60, Chowringhee Banquets, Kolkata.", iy + 100, 24, 400, 26, w=560)
+    ico = lambda d: (f'<svg viewBox="0 0 24 24" width="26" height="26" style="vertical-align:-4px;margin-right:10px"><path fill="{GL}" fill-rule="evenodd" d="{d}"/></svg>')
+    CAL = "M7 2h2v3H7zM15 2h2v3h-2zM4 5h16a2 2 0 012 2v13a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 6v9h16v-9z"
+    PIN = "M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z"
+    CLK = "M12 2a10 10 0 100 20 10 10 0 000-20zm1 5h-2v6l5 3 1-1.6-4-2.4z"
+    # wording and order as supplied (user, 2026-10-21): date, venue (on the rooftop), time
+    line("date", ico(CAL) + "Tuesday, 10th November", iy + 40, 24, 400, 26, w=470)
+    line("venue", ico(PIN) + "60, Chowringhee Banquets (on the rooftop)", iy + 70, 24, 400, 26, w=760)
+    line("time", ico(CLK) + "4:30 PM onwards", iy + 100, 24, 400, 26, w=340)
 
     # copper stickers (user, 2026-10-21: "add stickers as well"): the transparent PNGs from dd_sticker_export.py, one per free zone, none touching the code or type
     stk = os.path.join(ROOT, "sample_outputs", "disco_diwali_stickers")
     for tag, fn, x, y, w, h in (("st_heart", "copper_heart.png", 858, 26, 182, round(182 * 1324 / 1496)),
                                 ("st_diya", "copper_diya.png", 30, 1168, 262, round(262 * 1146 / 1870)),
-                                ("st_star", "copper_star.png", 810, 1100, 220, 220)):
+                                ("st_star", "copper_star.png", 850, 1140, 190, 190)):
         uri = "data:image/png;base64," + base64.b64encode(open(os.path.join(stk, fn), "rb").read()).decode()
         parts.append(f'<img data-tag="{tag}" src="{uri}" style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;z-index:14;filter:drop-shadow(0 8px 14px rgba(0,0,0,.65))">')
         els.append((tag, x, y, w, h))
@@ -110,7 +115,7 @@ async def main():
     print(f"footer mark starts at y={top} of {H}")
     out = os.path.join(OUT, "poster.png")
     async with B.session():
-        text_pairs = [("head", "#fff", "#000", 120, True), ("price", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 32, True), ("date", "#fff", "#000", 24, False), ("time", "#fff", "#000", 24, False), ("venue", "#fff", "#000", 24, False)]
+        text_pairs = [("head", "#fff", "#000", 120, True), ("price", "#fff", "#000", 56, True), ("upi", "#fff", "#000", 32, True), ("date", "#fff", "#000", 24, False), ("venue", "#fff", "#000", 24, False), ("time", "#fff", "#000", 24, False)]
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=(), bleed_tags=("plate",), crop_tags=("plate",),
                        text_pairs=text_pairs, page_bg="#000", collision_ignore=[])
     verify(out)
