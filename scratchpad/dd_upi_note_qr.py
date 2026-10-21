@@ -9,7 +9,7 @@ Outputs: out/collaterals/dd_upi_note_qr.png (dark on white, 4-module quiet zone)
 TEST-SCAN WITH A REAL PAYMENT APP before printing: apps differ in whether they honour tn on a merchant VPA.
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/dd_upi_note_qr.py
 """
-import os, urllib.parse
+import os, sys, urllib.parse
 import cv2, segno
 
 os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,19 +26,23 @@ def tlv(s):
     return out
 
 
-top = tlv(EMV)
-vpa = next(v for v in tlv(top["26"]).values() if "@" in v)       # tag 26 sub-field holding the payee VPA
-name, mcc = top["59"], top["52"]
-q = lambda v: urllib.parse.quote(v, safe="@.")
-link = f"upi://pay?pa={q(vpa)}&pn={q(name)}&tn={q(NOTE)}&mc={mcc}&cu=INR"
+q = lambda v: urllib.parse.quote(v, safe="@.-")
+if "personal" in sys.argv:
+    # user's own GPay QR (2026-10-21), decoded: upi://pay?pa=kanishk.ag2468-2@okhdfcbank&pn=Kanishk%20Agarwal&aid=...
+    # A personal VPA has no merchant code, so apps keep the note. aid (a GPay-only id) is dropped to stay app-neutral.
+    SLUG, link = "dd_upi_note_qr_personal", f"upi://pay?pa={q('kanishk.ag2468-2@okhdfcbank')}&pn={q('Kanishk Agarwal')}&tn={q(NOTE)}&cu=INR"
+else:
+    top = tlv(EMV)
+    vpa = next(v for v in tlv(top["26"]).values() if "@" in v)       # tag 26 sub-field holding the payee VPA
+    SLUG, link = "dd_upi_note_qr", f"upi://pay?pa={q(vpa)}&pn={q(top['59'])}&tn={q(NOTE)}&mc={top['52']}&cu=INR"
 print("LINK", link)
 
 code = segno.make(link, error="m")
 os.makedirs("out/collaterals", exist_ok=True)
-code.save("out/collaterals/dd_upi_note_qr.svg", scale=10, border=4, dark="#0A0A0A", light="#FFFFFF")
-code.save("out/collaterals/dd_upi_note_qr.png", scale=16, border=4, dark="#0A0A0A", light="#FFFFFF")
+code.save(f"out/collaterals/{SLUG}.svg", scale=10, border=4, dark="#0A0A0A", light="#FFFFFF")
+code.save(f"out/collaterals/{SLUG}.png", scale=16, border=4, dark="#0A0A0A", light="#FFFFFF")
 
-img = cv2.imread("out/collaterals/dd_upi_note_qr.png")
+img = cv2.imread(f"out/collaterals/{SLUG}.png")
 hits = []
 for f in (1.0, .5, .35, .25):
     got = cv2.QRCodeDetector().detectAndDecode(img if f == 1 else cv2.resize(img, None, fx=f, fy=f, interpolation=cv2.INTER_AREA))[0]
