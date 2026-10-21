@@ -1,8 +1,8 @@
 """DISCO DIWALI reel covers, STICKERS + PHOTO ONLY (2026-10-21; user: "dont write disco diwali, i just want stickers and photo").
 
 Fifteen 1080x1920 covers: one real event photo each (same crops as dd_reel_covers.py), lightly graded, and copper stickers as the only
-foreground. No lockup, no hook, no badge, no text at all. Each cover has one large hero sticker and two small ones; four arrangements cycle
-and every other block of four is mirrored so neighbours in the grid differ. Stickers: the copper mask, heart, star and diya (calendar and pin
+foreground, ONE IN EACH OF THE FOUR CORNERS of the grid-safe frame (user: "place them on the 4 corners", not scattered), rotating by one step per cover.
+No lockup, hook, badge or text. Stickers: the copper mask, heart, star and diya (calendar and pin
 are left out: they imply a date and a venue that covers do not state). Gold dust and film grain stay on as the format's texture.
 Everything sits inside y 285..1635, the 4:5 profile-grid crop of a 1080x1920 cover (the 3:4 crop is wider).
 CONSENT: many people in these photos look like minors and no consent record exists. Check before posting.
@@ -33,23 +33,12 @@ PHOTOS = [(f"{HALL}/04_pink-ceiling-chandelier-phone.jpg", .55), (f"{HALL}/05_bo
 # sticker files and the aspect (h/w) of the VISIBLE art; the mask asset has transparent padding, handled in place()
 FILES = {"mask": (os.path.join(ASSET, "mask_copper.png"), 920 / 1400), "heart": (os.path.join(STK, "copper_heart.png"), 1324 / 1496),
          "star": (os.path.join(STK, "copper_star.png"), 1.0), "diya": (os.path.join(STK, "copper_diya.png"), 1146 / 1870)}
-# arrangements: (kind, visible width, centre x, centre y, rotation). First entry is the hero. Safe zone y 330..1590.
-ARR = [[("mask", 640, 540, 930, -8), ("star", 230, 175, 520, 10), ("heart", 250, 900, 1370, -10)],
-       [("heart", 540, 540, 900, 7), ("diya", 330, 215, 1380, -8), ("star", 220, 890, 500, 12)],
-       [("star", 560, 540, 960, 0), ("mask", 400, 285, 520, -12), ("diya", 320, 850, 1400, 6)],
-       [("diya", 660, 540, 980, -5), ("heart", 260, 880, 520, 9), ("star", 210, 190, 1380, -6)]]
+# FOUR CORNERS (user, 2026-10-21: "place them on the 4 corners"): one sticker per corner of the grid-safe frame, same visible width per kind on
+# every cover, a small fixed tilt per corner. Which sticker takes which corner rotates by one step each cover. Safe zone y 285..1635.
+CORNERS = [(245, 480, -8), (835, 480, 8), (245, 1440, 7), (835, 1440, -7)]       # TL, TR, BL, BR: centre x, centre y, tilt
+KINDS = ["mask", "heart", "star", "diya"]
+WIDTH = {"mask": 380, "heart": 300, "star": 290, "diya": 340}
 SAFE_TOP, SAFE_BOT = 285, 1635
-# Covers whose cycle arrangement would land on faces (found by looking at the sheet): literal arrangements, never mirrored. Hero goes to a
-# ceiling or to clothing, smalls to dark or empty corners.
-OVR = {2: [("heart", 440, 540, 545, 7), ("diya", 300, 870, 1420, -8), ("star", 200, 880, 1160, 12)],
-       5: [("mask", 560, 540, 1400, -6), ("star", 230, 175, 520, 10), ("heart", 250, 900, 560, -10)],
-       6: [("heart", 420, 540, 540, 7), ("diya", 300, 860, 1430, -8), ("star", 200, 880, 1190, 12)],
-       8: [("diya", 540, 540, 500, -5), ("heart", 240, 200, 1420, 9), ("star", 210, 880, 1400, -6)],
-       10: [("heart", 440, 540, 545, 7), ("diya", 330, 215, 1420, -8), ("star", 200, 540, 1480, 12)],
-       11: [("star", 380, 540, 520, 0), ("mask", 280, 205, 560, -12), ("diya", 280, 910, 540, 6)],
-       12: [("diya", 520, 540, 520, -5), ("heart", 260, 880, 1380, 9), ("star", 210, 190, 1380, -6)],
-       14: [("heart", 420, 820, 600, -7), ("diya", 300, 190, 1420, 8), ("star", 210, 190, 520, -12)],
-       15: [("star", 380, 540, 520, 0), ("mask", 300, 215, 560, -12), ("diya", 280, 900, 540, 6)]}
 
 def photo169(path, fx):
     im = Image.open(path).convert("RGB"); w, h = im.size
@@ -82,15 +71,13 @@ def place(kind, vw, cx, cy, rot):
     return html, (round(cx - bw / 2), round(cy - bh / 2), round(bw), round(bh))
 
 def build(i, photo, fx):
-    arr = OVR.get(i) or ARR[(i - 1) % 4]; mirror = i not in OVR and ((i - 1) // 4) % 2 == 1
+    arr = [(KINDS[(c + i) % 4], WIDTH[KINDS[(c + i) % 4]], cx, cy, rot) for c, (cx, cy, rot) in enumerate(CORNERS)]
     P, E = [f'<div style="position:absolute;inset:0;background:{GROUND}"></div>',
             f'<img data-tag="photo" src="{photo169(photo, fx)}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1;'
             f'filter:contrast(1.08) saturate(1.05) brightness(1.0)">',
             '<div data-tag="plate" style="position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(8,6,30,.30) 0%,rgba(8,6,30,0) 22%,'
             'rgba(0,0,0,0) 70%,rgba(0,0,0,.34) 100%)"></div>'], []
     for n, (kind, vw, cx, cy, rot) in enumerate(arr):
-        if mirror:
-            cx, rot = W - cx, -rot
         html, box = place(kind, vw, cx, cy, rot)
         P.append(html); E.append((f"s{n}_{kind}",) + box)
     P.append(f'<img src="{dd.uri("sparkles.png")}" data-tag="sparkles" style="position:absolute;inset:0;width:{W}px;height:{H}px;z-index:14;mix-blend-mode:screen;object-fit:cover">')
