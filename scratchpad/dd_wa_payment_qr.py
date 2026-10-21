@@ -1,10 +1,9 @@
 """DISCO DIWALI WhatsApp PAYMENT QR poster, 1080x1350 (the WhatsApp poster size, see dd_launch_pack wa_poster).
 
-The QR encodes the UPI ID the user supplied (2026-10-21: "9073455396@hdfc is UPI ID", "use the new qr code") as a standard UPI link,
-upi://pay?pa=<id>&cu=INR (no payee name; user 2026-10-21: "remove terraroots"), with NO amount. The user's own QR image was never saved to disk, so this is regenerated from the ID, not
-copied from their picture. UNVERIFIED: that "@hdfc" is a live handle (HDFC handles are usually @hdfcbank / @okhdfcbank). TEST-SCAN with a payment app.
-The previous build used the old merchant QR (engine/assets/terrathon/qr_terrathon_upi.png, Vyapar.174068471103@hdfcbank). The build re-decodes the
-QR out of the RENDERED poster and refuses to report success unless it equals PAYLOAD.
+The QR is the user's OWN supplied image, placed copy-paste (user, 2026-10-21: "use this qr, copy paste"): engine/assets/disco_diwali/qr_payment_user.png,
+cropped to its content box and scaled, never redrawn. It decodes (zxing-cpp; OpenCV cannot read its rounded finders) to
+upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali& , no amount. The build re-decodes the QR out of the RENDERED poster and refuses to
+report success unless it equals PAYLOAD. TEST-SCAN with a payment app before posting.
 
 Branding: the approved diya ground (black, navy and gold lotus corners fading to black, string lights, gold dust, film grain), the small
 LIVE badge top left, off-white bold uppercase NeutralFace with a black stroke, the lockup (with its ball) as a footer mark. No pill, no link
@@ -16,7 +15,8 @@ Adaptation: the diya ground rather than the photo ground, so the plate is the on
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_wa_payment_qr.py   ->  out/discodiwali/wa_payment_qr/poster.png
 """
 import asyncio, base64, importlib.util, io, os, sys
-import segno
+import numpy as np
+from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 os.chdir(ROOT)
@@ -26,13 +26,12 @@ B = dd.B
 W, H = 1080, 1350
 OUT = os.path.join(ROOT, "out", "discodiwali", "wa_payment_qr")
 UPI_ID = "9073455396@hdfc"
-PAYLOAD = f"upi://pay?pa={UPI_ID}&cu=INR"
-Q = segno.make(PAYLOAD, error="m", micro=False)
+PAYLOAD = "upi://pay?pa=9073455396@hdfc&pn=AquaTerra&cu=INR&tn=Disco Diwali&"
+QR_SRC = os.path.join(ROOT, "engine", "assets", "disco_diwali", "qr_payment_user.png")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 GL = "#E8C063"
-MODULES = Q.symbol_size(border=0)[0]
-MOD = 17                                  # css px per module, whole pixels
-PLATE = (MODULES + 8) * MOD               # a 4-module quiet zone on every side
+CODE = 481                                # css px of the cropped code
+PLATE = 645                               # quiet zone (645-481)/2 = 82px, ~5.5 modules
 PX, PY = (W - PLATE) // 2, 425
 
 
@@ -58,13 +57,13 @@ def poster():
     line("sub", "All for charity", 365, 40, 400, 42, w=560)
 
     # the QR plate: paper, rounded, gold keyline, hard shadow; the code keeps a 4-module quiet zone
-    qz = (PLATE - MODULES * MOD) / 2
-    assert qz >= 4 * MOD, "quiet zone under 4 modules: the code will not scan reliably"
-    buf = io.BytesIO(); Q.save(buf, kind="svg", scale=1, border=0, dark="#0A0A0A", light=None)
-    src = "data:image/svg+xml;base64," + base64.b64encode(buf.getvalue()).decode()
+    qz = (PLATE - CODE) / 2
+    g = np.array(Image.open(QR_SRC).convert("L")); ys, xs = np.where(g < 128)
+    buf = io.BytesIO(); Image.open(QR_SRC).convert("RGB").crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)).save(buf, "PNG")
+    src = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
     parts.append(f'<div data-tag="qr" style="position:absolute;left:{PX}px;top:{PY}px;width:{PLATE}px;height:{PLATE}px;background:#fff;border-radius:36px;'
                  f'box-shadow:0 0 0 8px {GL},0 22px 50px rgba(0,0,0,.7);z-index:12">'
-                 f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{MODULES * MOD}px;height:{MODULES * MOD}px;shape-rendering:crispEdges"></div>')
+                 f'<img src="{src}" style="position:absolute;left:{qz}px;top:{qz}px;width:{CODE}px;height:{CODE}px"></div>')
     els.append(("qr", PX - 8, PY - 8, PLATE + 16, PLATE + 16))
 
     # UPI ID under the plate, so a buyer can type it if the scan fails
@@ -87,14 +86,13 @@ def poster():
 
 
 def verify(path):
-    import cv2
-    det = cv2.QRCodeDetector()
+    import cv2, zxingcpp
     img = cv2.imread(path); s = img.shape[1] / W
     crop = img[int((PY - 24) * s):int((PY + PLATE + 24) * s), int((PX - 24) * s):int((PX + PLATE + 24) * s)]
     hits = []
     for f in (1.0, .75, .5, .35):
         c = crop if f == 1 else cv2.resize(crop, None, fx=f, fy=f, interpolation=cv2.INTER_AREA)
-        if det.detectAndDecode(c)[0] == PAYLOAD:
+        if any(r.text == PAYLOAD for r in zxingcpp.read_barcodes(c)):
             hits.append(f)
     print("PAYLOAD:", PAYLOAD, "| decoded from the poster at scales", hits)
     assert len(hits) >= 3, "QR on the poster does not decode to PAYLOAD at enough scales: DO NOT SHIP"
