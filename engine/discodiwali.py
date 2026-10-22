@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue", "stamp"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -669,18 +669,38 @@ class Poster:
         if info:
             P.append('<div data-tag="infoshade" style="position:absolute;left:0;top:1000px;width:1080px;height:920px;z-index:3;pointer-events:none;'
                      'background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.62) 22%,rgba(0,0,0,.72) 100%)"></div>')
-            self.raw("status", c["status"], 543, 1092, 960, 62, "font-family:var(--e);font-weight:600;font-size:52px")
-            if c.get("note"):
-                self.raw("note", c["note"], 543, 1156, 800, 50, "font-family:var(--e);font-weight:600;font-size:44px")
-            y = 1244 if c.get("note") else 1190          # no note line: close the gap it would have filled
+            stamp = bool(c.get("stamp"))
+            if stamp:
+                # STAMP variant (2026-10-22, user): the diagonal EARLY BIRD SOLD OUT band is laid on top (z 30) of the poster. It carries the
+                # message, so the status/note lines and the link pill are dropped (nothing to sell yet). Placement was SOLVED against the
+                # band's geometry (it rises 0.2925 px per px to the right; vertical thickness 768 px at scale 1), not eyeballed:
+                #   * 0.52 centred at y 990 covered the Hindi title, the poster's hero (tried, rejected by eye);
+                #   * 0.52 centred at y 1191 sliced MASQUERADE SANGEET in half, because the band's right end sits 99px higher than its left;
+                #   * 0.40 centred at y 1480 keeps the title and edition lines whole: its top edge is y 1208 at x 943 and 1177 at x 1051, so the
+                #     date, time and venue fit in the gap above it (y 1049..1198), and its small line stays above the reply-bar zone (y 1670).
+                # The asset is 2800 px long (lengthened by make_early_bird_banner.py) so 0.40 still bleeds off both canvas edges.
+                kb, y0b = .40, 1480
+                bx, by = round(540 - 1400 * kb), round(y0b - 771 * kb)
+                self.img("early_bird_sold_out_banner.png", bx, by, round(2800 * kb), z=30, tag="banner",
+                         extra="filter:drop-shadow(0 10px 28px rgba(0,0,0,.55));")
+                self.box("banner", bx, by, round(2800 * kb), round(1547 * kb))
+                stack_y = {"date": 1072, "time": 1128, "venue": 1178}; y = 0
+            else:
+                self.raw("status", c["status"], 543, 1092, 960, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+                if c.get("note"):
+                    self.raw("note", c["note"], 543, 1156, 800, 50, "font-family:var(--e);font-weight:600;font-size:44px")
+                y = 1244 if c.get("note") else 1190      # no note line: close the gap it would have filled
             for key, label, size, h in (("date", "date", 42, 46), ("time", "time", 42, 46), ("venue", "venue", 36, 40)):
                 if c.get(key):
-                    self.raw(label, c[key], 543, y, 960, h, f"font-family:var(--e);font-weight:{400 if key == 'time' else 600};font-size:{size}px")
+                    self.raw(label, c[key], 543, stack_y[key] if c.get("stamp") else y, 960, h,
+                             f"font-family:var(--e);font-weight:{400 if key == 'time' else 600};font-size:{size}px")
                     y += h + 12
         else:
             self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
             if c.get("note"):
                 self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        if info and c.get("stamp"):
+            return                                       # no pill under the stamp
         link = c.get("link", "Link in bio")
         PY = 1470 if info else 1314
         P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{PY}px;width:382px;height:82px;border-radius:22px;'

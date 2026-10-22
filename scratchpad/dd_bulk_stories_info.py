@@ -15,6 +15,8 @@ SOLD = os.environ.get("VARIANT") == "soldout"      # VARIANT=soldout: the "Early
 BRIEF = dict(edition="Masquerade Sangeet Edition", status="Early bird sold out" if SOLD else "Early bird tickets open",
              date="Tue, 10 Nov 2026", time="4:30 PM onwards", venue="60, Chowringhee Banquets, Rooftop")
 if not SOLD: BRIEF["note"] = "Today at 6PM @Rs450"
+STAMP = os.environ.get("VARIANT") == "stamp"     # VARIANT=stamp: the sold-out set with the EARLY BIRD SOLD OUT band on top (2026-10-22)
+if STAMP: BRIEF.update(status="Early bird sold out", stamp=True); BRIEF.pop("note", None)
 LIB = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-2026-10-21")
 # (NN prefix, x-centre fraction, top fraction, height fraction, brightness lift). hf < 1 zooms into the lower part of the frame:
 # the approved design lays the DISCO lockup over y 480..1018, so a face there is cut through by the lettering. 02, 03, 06, 07 and 10
@@ -31,7 +33,7 @@ def crop916(nn, fx, y0f, hf, lift, tmp):
     if lift != 1.0: im = ImageEnhance.Brightness(im).enhance(lift)
     out = os.path.join(tmp, f"{nn}.jpg"); im.save(out, quality=92); return out
 async def main():
-    out = os.path.join(ROOT, "out", "discodiwali", "bulk_soldout" if SOLD else "bulk_info")
+    out = os.path.join(ROOT, "out", "discodiwali", "bulk_stamp" if STAMP else "bulk_soldout" if SOLD else "bulk_info")
     with tempfile.TemporaryDirectory() as tmp:
         crops = [crop916(*s, tmp) for s in SET]
         async with dd.B.session():

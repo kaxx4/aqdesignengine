@@ -1,7 +1,7 @@
 """Companion art for bulk stories set 4 ("Early Bird"): ten ticket stubs in a row, each coloured from the mean of its real story render
 (top sky, bottom shade), a perforation notch on both sides and a gold rule where the price line sits. Out: out/discodiwali/bulk_info/companion/early_bird.png"""
 import os, glob
-SOLD = os.environ.get("VARIANT") == "soldout"; D = "bulk_soldout" if SOLD else "bulk_info"   # VARIANT=soldout renders the "Sold Out" strip
+V = os.environ.get("VARIANT"); SOLD = V in ("soldout", "stamp"); D = "bulk_stamp" if V == "stamp" else "bulk_soldout" if SOLD else "bulk_info"   # VARIANT=soldout renders the "Sold Out" strip
 from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, f"out/discodiwali/{D}/companion"); os.makedirs(OUT, exist_ok=True)
