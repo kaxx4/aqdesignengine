@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -665,14 +665,28 @@ class Poster:
         self.raw("sub1", "MASQUERADE SANGEET", 617, 938, 520, 46,
                  "font-family:var(--e);font-weight:600;font-size:40px")
         self.raw("sub2", "Edition", 617, 981, 180, 42, "font-family:var(--e);font-weight:400;font-size:38px")
-        self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
-        if c.get("note"):
-            self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        info = any(c.get(k) for k in ("date", "time", "venue"))     # EVENT-INFO variant (2026-10-21): early bird, date, time, venue; pill drops to the link zone
+        if info:
+            P.append('<div data-tag="infoshade" style="position:absolute;left:0;top:1000px;width:1080px;height:920px;z-index:3;pointer-events:none;'
+                     'background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,.62) 22%,rgba(0,0,0,.72) 100%)"></div>')
+            self.raw("status", c["status"], 543, 1092, 960, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+            if c.get("note"):
+                self.raw("note", c["note"], 543, 1156, 800, 50, "font-family:var(--e);font-weight:600;font-size:44px")
+            y = 1244
+            for key, label, size, h in (("date", "date", 42, 46), ("time", "time", 42, 46), ("venue", "venue", 36, 40)):
+                if c.get(key):
+                    self.raw(label, c[key], 543, y, 960, h, f"font-family:var(--e);font-weight:{400 if key == 'time' else 600};font-size:{size}px")
+                    y += h + 12
+        else:
+            self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+            if c.get("note"):
+                self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
         link = c.get("link", "Link in bio")
-        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:1314px;width:382px;height:82px;border-radius:22px;'
+        PY = 1470 if info else 1314
+        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{PY}px;width:382px;height:82px;border-radius:22px;'
                  f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
                  f'font-family:var(--e);font-weight:600;font-size:44px;line-height:1;text-transform:uppercase">{link}</div>')
-        self.box("linkpill", 342, 1314, 382, 82)
+        self.box("linkpill", 342, PY, 382, 82)
 
     def _story_launch(self):
         """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
