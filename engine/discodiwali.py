@@ -672,7 +672,7 @@ class Poster:
             self.raw("status", c["status"], 543, 1092, 960, 62, "font-family:var(--e);font-weight:600;font-size:52px")
             if c.get("note"):
                 self.raw("note", c["note"], 543, 1156, 800, 50, "font-family:var(--e);font-weight:600;font-size:44px")
-            y = 1244
+            y = 1244 if c.get("note") else 1190          # no note line: close the gap it would have filled
             for key, label, size, h in (("date", "date", 42, 46), ("time", "time", 42, 46), ("venue", "venue", 36, 40)):
                 if c.get(key):
                     self.raw(label, c[key], 543, y, 960, h, f"font-family:var(--e);font-weight:{400 if key == 'time' else 600};font-size:{size}px")

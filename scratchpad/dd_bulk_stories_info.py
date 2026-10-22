@@ -11,8 +11,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine"))
 spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
-BRIEF = dict(edition="Masquerade Sangeet Edition", status="Early bird tickets open", note="Today at 6PM @Rs450",
+SOLD = os.environ.get("VARIANT") == "soldout"      # VARIANT=soldout: the "Early bird sold out" set (2026-10-22), no price line, same photos and crops
+BRIEF = dict(edition="Masquerade Sangeet Edition", status="Early bird sold out" if SOLD else "Early bird tickets open",
              date="Tue, 10 Nov 2026", time="4:30 PM onwards", venue="60, Chowringhee Banquets, Rooftop")
+if not SOLD: BRIEF["note"] = "Today at 6PM @Rs450"
 LIB = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-2026-10-21")
 # (NN prefix, x-centre fraction, top fraction, height fraction, brightness lift). hf < 1 zooms into the lower part of the frame:
 # the approved design lays the DISCO lockup over y 480..1018, so a face there is cut through by the lettering. 02, 03, 06, 07 and 10
@@ -29,7 +31,7 @@ def crop916(nn, fx, y0f, hf, lift, tmp):
     if lift != 1.0: im = ImageEnhance.Brightness(im).enhance(lift)
     out = os.path.join(tmp, f"{nn}.jpg"); im.save(out, quality=92); return out
 async def main():
-    out = os.path.join(ROOT, "out", "discodiwali", "bulk_info")
+    out = os.path.join(ROOT, "out", "discodiwali", "bulk_soldout" if SOLD else "bulk_info")
     with tempfile.TemporaryDirectory() as tmp:
         crops = [crop916(*s, tmp) for s in SET]
         async with dd.B.session():
