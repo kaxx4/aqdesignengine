@@ -103,7 +103,7 @@ def footer():
 async def main():
     os.makedirs(OUT, exist_ok=True)
     items = [dict(text=c["name"].upper(), font="d", size=100, weight=900) for c in COUNTRIES]
-    SIZES_TRY = (24, 26, 28, 30, 32)
+    SIZES_TRY = (24, 26, 28, 30, 32, 34, 36, 38, 40)
     for sz in SIZES_TRY:
         for c in COUNTRIES:
             for k in ("cause", "demands", "response"):
@@ -114,7 +114,7 @@ async def main():
         meas = await B.measure_text(items, W, H)
         hero_m = meas[:7]
         body_by = {sz: meas[7 + n * 21: 7 + (n + 1) * 21] for n, sz in enumerate(SIZES_TRY)}
-        title_m = meas[7 + 5 * 21:]
+        title_m = meas[7 + len(SIZES_TRY) * 21:]
         jobs = []
 
         # ---------------- country slides ----------------
@@ -145,13 +145,13 @@ async def main():
             room = (H - 112 - 30) - y0          # stop 30px above the sources line
             def stack(sz):
                 hs = [BORDER * 2 + 22 + LABEL_H + 12 + round(body_by[sz][i * 3 + j]["lines"] * sz * LH_BODY) + 24
-                      for j in range(3)]
+                      for j in range(2)]
                 return hs, sum(hs)
-            fs = max([sz for sz in SIZES_TRY if stack(sz)[1] + 2 * 22 <= room] or [24])
+            fs = max([sz for sz in SIZES_TRY if stack(sz)[1] + 40 <= room] or [24])
             heights, tot = stack(fs)
-            gap = min(40, (room - tot) // 2)
+            gap = min(48, room - tot)
             y = y0
-            for j, lab in enumerate(("cause", "demands", "response")):
+            for j, lab in enumerate(("cause", "demands")):
                 ch = heights[j]
                 inner += (f'<div style="position:absolute;top:{y}px;left:{M}px;width:{CARD_W}px;height:{ch}px;'
                           f'background:{PAPER};border:{BORDER}px solid var(--ink);border-radius:22px;'
@@ -204,7 +204,7 @@ async def main():
         els.append(("chips", 64, 668, 900, 300))
         inner += (f'<div style="position:absolute;top:1096px;left:{M}px;right:{M+80}px;z-index:6;'
                   f'font-family:var(--e);font-weight:500;font-size:30px;line-height:1.35;color:var(--ink)">'
-                  f'what sparked it, what they want, and how governments answered. one slide each.</div>')
+                  f'what sparked it and what they want. one slide each.</div>')
         els.append(("sub", M, 1096, W - 2 * M - 80, 84))
         inner += (f'<div style="position:absolute;top:1218px;left:{M}px;z-index:6;font-family:var(--m);'
                   f'font-weight:700;font-size:17px;letter-spacing:.14em;text-transform:uppercase">swipe &rarr;</div>')
@@ -216,7 +216,7 @@ async def main():
         for html, out, els, last in jobs:
             print(out, "content ends y=", last)
             await B.render(html, out, W, H, elements=els, page_bg="var(--bg)",
-                           containers=("band", "card0", "card1", "card2", "chips"),
+                           containers=("band", "card0", "card1", "chips"),
                            collision_ignore={("band", "kicker"), ("band", "hero"),
                                              ("band", "title0"), ("band", "title1"), ("band", "title2")})
     print("done")
