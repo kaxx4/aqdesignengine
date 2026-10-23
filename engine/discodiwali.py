@@ -65,7 +65,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date", "group", "sticker"), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date", "group", "sticker", "role"), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -735,8 +735,13 @@ class Poster:
         # The edition lines are NOT tucked into the title's notch here (they are on the posters): at DP size a tucked 33px line is unreadable.
         # They sit as a clear centred pair below the lockup: 46px bold MASQUERADE SANGEET, 40px regular EDITION.
         if self.c.get("group"):                           # a named group (e.g. "Stalls"): the group is the hero line, the edition drops to one small line under it
-            self.raw("sub1", self.c["group"].upper(), 540, 812 + DY + TY, 560, 76, "font-family:var(--e);font-weight:600;font-size:68px;letter-spacing:.04em")
-            self.raw("sub2", self.c["edition"], 540, 888 + DY + TY, 560, 40, "font-family:var(--e);font-weight:400;font-size:32px")
+            if self.c.get("role"):                        # group + a role line (e.g. "Dessert stall") + the edition as a third, smaller line
+                self.raw("sub1", self.c["group"].upper(), 540, 850, 700, 76, "font-family:var(--e);font-weight:600;font-size:68px;letter-spacing:.04em")
+                self.raw("role", self.c["role"].upper(), 540, 912, 560, 44, "font-family:var(--e);font-weight:600;font-size:36px;letter-spacing:.08em")
+                self.raw("sub2", self.c["edition"], 540, 962, 560, 36, "font-family:var(--e);font-weight:400;font-size:28px")
+            else:
+                self.raw("sub1", self.c["group"].upper(), 540, 812 + DY + TY, 560, 76, "font-family:var(--e);font-weight:600;font-size:68px;letter-spacing:.04em")
+                self.raw("sub2", self.c["edition"], 540, 888 + DY + TY, 560, 40, "font-family:var(--e);font-weight:400;font-size:32px")
         else:
             self.raw("sub1", "MASQUERADE SANGEET", 540, 820 + DY + TY, 560, 54, "font-family:var(--e);font-weight:600;font-size:46px;letter-spacing:.01em")
             self.raw("sub2", "Edition", 540, 874 + DY + TY, 190, 46, "font-family:var(--e);font-weight:400;font-size:40px")

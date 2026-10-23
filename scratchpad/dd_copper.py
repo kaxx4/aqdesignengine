@@ -105,3 +105,16 @@ def stall(size=420, rot=0, u="t", shadow=True):
             f'<g transform="rotate({rot} 250 205)"{_sh(u, shadow)}>{post(52, 1)}{post(424, 2)}'
             f'{_metal(u + "c", counter, 500, 410, .93, 250, 344)}{beads}{jars}'
             f'{_metal(u, awn, 500, 410, .93, 250, 90)}<clipPath id="ab{u}"><path d="{awn}"/></clipPath><g clip-path="url(#ab{u})">{bands}</g></g></svg>')
+
+
+def cupcake(size=380, rot=0, u="k", shadow=True):
+    """Copper cupcake (a dessert stall): pleated wrapper, a swirled frosting blob and a gem cherry, all in the mask's copper texture."""
+    wrap = "M104 226 H296 L266 372 Q263 388 247 388 H153 Q137 388 134 372 Z"
+    frost = "M62 232 C42 194 84 172 120 180 C106 136 154 108 192 128 C208 84 270 88 278 134 C322 126 346 172 314 198 C346 210 340 232 312 232 Z"
+    pleats = "".join(f'<path d="M{x1} 236 L{x2} 380" stroke="#3A0F06" stroke-opacity=".55" stroke-width="6" stroke-linecap="round"/>' for x1, x2 in ((140, 156), (176, 183), (212, 217), (248, 241)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#FF7A5A"/><stop offset="1" stop-color="#6A1208"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u + "w", wrap, 400, 400, .92, 200, 310)}<path d="{wrap}" fill="#3A0F06" opacity=".38"/>{pleats}'
+            f'{_metal(u, frost, 400, 400, .9, 190, 170)}'
+            f'<path d="M200 70 C206 48 220 36 236 34" fill="none" stroke="url(#tr{u})" stroke-width="7" stroke-linecap="round"/>'
+            f'<circle cx="200" cy="82" r="30" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/></g></svg>')
