@@ -92,10 +92,19 @@ def build():
             'line-height:1;text-transform:uppercase;color:#fff">Link in bio</div>')
     P.append(pill); els.append(("linkpill", cx, 1206, 300, 60))
     if FUN:
-        import dd_copper as cp
-        # copper stickers, NO drop shadow (user, 2026-10-23: "remove the shadow and shade"), tilted, in the free wall either side of his head
-        for tag, fn, x, y, size, rot, h in (("star1", cp.star, 70, 300, 170, -12, 170), ("heart", cp.heart, 836, 396, 196, 12, 176), ("star2", cp.star, 930, 770, 92, 16, 92)):
-            P.append(f'<div data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;z-index:15">{fn(size, rot, u=tag, shadow=False)}</div>'); els.append((tag, x, y, size, h))
+        # stickers, NO drop shadow (user, 2026-10-23: "remove the shadow and shade"), tilted, in the free wall either side of his head.
+        # Default: the DJ set drawn for this poster (dd_dj_stickers.py, user: "make your own stickers and use them"). STICKERS=copper restores the earlier copper stars and heart.
+        if os.environ.get("STICKERS", "own") == "copper":
+            import dd_copper as cp
+            spec = (("star1", cp.star, 70, 300, 170, -12, 170), ("heart", cp.heart, 836, 396, 196, 12, 176), ("star2", cp.star, 930, 770, 92, 16, 92))
+            mk = lambda fn, size, rot, tag: fn(size, rot, u=tag, shadow=False)
+        else:
+            import dd_dj_stickers as st
+            spec = (("headphones", st.headphones, 52, 292, 210, -12, 210), ("bolt", st.bolt, 262, 520, 128, 10, 128),
+                    ("vinyl", st.vinyl, 826, 372, 214, 12, 214), ("notes", st.notes, 922, 750, 98, 14, 98))
+            mk = lambda fn, size, rot, tag: fn(size, rot, u=tag)
+        for tag, fn, x, y, size, rot, h in spec:
+            P.append(f'<div data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;z-index:15">{mk(fn, size, rot, tag)}</div>'); els.append((tag, x, y, size, h))
         # two lowercase chips (VOICE.md: events recap, general followers, loud and playful, 2 chips). Only claims already supplied: it is for charity, it is a dance floor
         chip = ("font-family:var(--e);font-weight:600;font-size:30px;line-height:1;white-space:nowrap;color:#0A0A0A;padding:15px 26px;border-radius:999px;z-index:16;")
         P.append(f'<div data-tag="chip1" style="position:absolute;left:64px;top:722px;{chip}background:#F2F2F2;transform:rotate(-5deg)">the dance floor has been warned</div>'); els.append(("chip1", 64, 700, 526, 105))
