@@ -97,8 +97,15 @@ def build():
         if os.environ.get("STICKERS", "copper") == "copper":
             # user, 2026-10-23: "i want the red textured branded stickers like the mask, sparkle and heart": the copper set is the default again, now WITH the photographed copper mask as a sticker
             import dd_copper as cp
-            spec = (("heart", cp.heart, 60, 296, 206, -12, 186), ("star1", cp.star, 262, 540, 112, 12, 112), ("star2", cp.star, 932, 752, 92, 16, 92))
-            mk = lambda fn, size, rot, tag: fn(size, rot, u=tag, shadow=False)
+            if os.environ.get("COPPER_SET", "dj") == "dj":
+                # "make mew stickers" (user, 2026-10-23): NEW copper silhouettes on the same mask surface, DJ themed (dd_dj_copper.py). COPPER_SET=classic restores heart and stars.
+                import dd_dj_copper as cd
+                spec = (("headphones", cd.headphones, 56, 290, 214, -12, 214), ("discoball", cd.discoball, 250, 528, 118, 8, 118),
+                        ("bolt", cd.bolt, 926, 232, 124, 12, 124), ("notes", cd.notes, 916, 744, 110, 14, 110))
+                mk = lambda fn, size, rot, tag: fn(size, rot, u=tag)
+            else:
+                spec = (("heart", cp.heart, 60, 296, 206, -12, 186), ("star1", cp.star, 262, 540, 112, 12, 112), ("star2", cp.star, 932, 752, 92, 16, 92))
+                mk = lambda fn, size, rot, tag: fn(size, rot, u=tag, shadow=False)
             k = .19                                    # the asset is 1680x1278 with a transparent margin: visible outline starts at (157,211) and spans 1405x918
             vx, vy = 756, 388                          # where its VISIBLE top-left lands (right wall, clear of his ear at x~720)
             P.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(vx - 157 * k)}px;top:{round(vy - 211 * k)}px;width:{round(1680 * k)}px;'
