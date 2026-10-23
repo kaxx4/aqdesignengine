@@ -26,7 +26,10 @@ OUT = os.path.join(ROOT, "out", "discodiwali", "dj_rajiv")
 VER = os.environ.get("VER", "v1")
 STROKE = "color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;"
 GOLD_LIT = "#E8C063"
-LIGHTS = os.environ.get("LIGHTS", "0") == "1"
+FUN = os.environ.get("FUN", "1") == "1"                # v4 (user, 2026-10-23: "make the poster fun and engaging"): FUN=0 reproduces v3
+LIGHTS = os.environ.get("LIGHTS", "1" if FUN else "0") == "1"
+FOIL = ("linear-gradient(180deg,#FFF6CF 0%,#F0C65A 34%,#A8721A 60%,#F7DC86 82%,#C48A22 100%)")   # same gold as Poster.FOIL
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 PHOTO = os.path.join(ROOT, "engine", "assets", "disco_diwali", "dj_rajiv", "photo_collar.jpg")
 
@@ -44,7 +47,10 @@ def build():
     P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 56%,'
              'rgba(0,0,0,.78) 68%,#000 80%)"></div>')
     if LIGHTS:
-        P.append(f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:160px;top:-53px;width:1045px;z-index:5">')
+        # the string sags straight across a centred head (v4 first pass put bulbs on his sunglasses), so clear a transparent ellipse over the head: lights hang either side of him
+        # mask coordinates are in the LIGHTS IMAGE's own box (1045x346 at canvas 160,-53), not the canvas: head centre canvas (562,247) -> image (402,300)
+        lm = "radial-gradient(ellipse 300px 215px at 402px 300px,transparent 0%,transparent 92%,#000 100%)"
+        P.append(f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:160px;top:-53px;width:1045px;z-index:5;-webkit-mask-image:{lm};mask-image:{lm}">')
     P.append(f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.5;pointer-events:none">'
              f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">')
 
@@ -70,7 +76,13 @@ def build():
                  f'line-height:1;text-transform:uppercase;{STROKE}{css}z-index:20">{txt}</div>')
         els.append((tag, cx, top, cw, h))
     line("eyebrow", "On the decks", 858, 30, 600, 32, f"letter-spacing:.32em;color:{GOLD_LIT};-webkit-text-stroke:0;")
-    line("name", "DJ Rajiv", 898, 100, 700, 100)
+    if FUN:   # v4: DJ in white, RAJIV in gold foil, the whole name tilted up to the right (rotate about the left baseline, so only the right end lifts)
+        P.append(f'<div data-tag="name" style="position:absolute;left:{cx}px;top:908px;width:{cw}px;white-space:nowrap;font-family:var(--d);font-weight:700;font-size:100px;line-height:1;'
+                 f'text-transform:uppercase;color:#fff;transform:rotate(-3deg);transform-origin:0 100%;z-index:20">DJ <span style="background:{FOIL};-webkit-background-clip:text;background-clip:text;'
+                 f'-webkit-text-fill-color:transparent;color:transparent">Rajiv</span></div>')
+        els.append(("name", cx, 880, cw, 128))
+    else:
+        line("name", "DJ Rajiv", 898, 100, 700, 100)
     line("stat", "500+ shows &middot; 100+ nightclubs", 1012, 28, 600, 30, f"color:{GOLD_LIT};-webkit-text-stroke:0;")
     line("edition", "Masquerade Sangeet Edition", 1060, 31, 600, 34)
     line("date", "10th November, 2026", 1104, 44, 700, 46)
@@ -79,6 +91,15 @@ def build():
             'background:rgba(236,200,150,.16);z-index:20;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:600;font-size:28px;'
             'line-height:1;text-transform:uppercase;color:#fff">Link in bio</div>')
     P.append(pill); els.append(("linkpill", cx, 1206, 300, 60))
+    if FUN:
+        import dd_copper as cp
+        # copper stickers, NO drop shadow (user, 2026-10-23: "remove the shadow and shade"), tilted, in the free wall either side of his head
+        for tag, fn, x, y, size, rot, h in (("star1", cp.star, 70, 300, 170, -12, 170), ("heart", cp.heart, 836, 396, 196, 12, 176), ("star2", cp.star, 930, 770, 92, 16, 92)):
+            P.append(f'<div data-tag="{tag}" style="position:absolute;left:{x}px;top:{y}px;z-index:15">{fn(size, rot, u=tag, shadow=False)}</div>'); els.append((tag, x, y, size, h))
+        # two lowercase chips (VOICE.md: events recap, general followers, loud and playful, 2 chips). Only claims already supplied: it is for charity, it is a dance floor
+        chip = ("font-family:var(--e);font-weight:600;font-size:30px;line-height:1;white-space:nowrap;color:#0A0A0A;padding:15px 26px;border-radius:999px;z-index:16;")
+        P.append(f'<div data-tag="chip1" style="position:absolute;left:64px;top:722px;{chip}background:#F2F2F2;transform:rotate(-5deg)">the dance floor has been warned</div>'); els.append(("chip1", 64, 700, 526, 105))
+        P.append(f'<div data-tag="chip2" style="position:absolute;left:730px;top:668px;{chip}background:{FOIL};transform:rotate(5deg)">dance for a cause</div>'); els.append(("chip2", 730, 654, 310, 90))
     return "".join(P), els, 1266
 
 
