@@ -94,10 +94,16 @@ def build():
     if FUN:
         # stickers, NO drop shadow (user, 2026-10-23: "remove the shadow and shade"), tilted, in the free wall either side of his head.
         # Default: the DJ set drawn for this poster (dd_dj_stickers.py, user: "make your own stickers and use them"). STICKERS=copper restores the earlier copper stars and heart.
-        if os.environ.get("STICKERS", "own") == "copper":
+        if os.environ.get("STICKERS", "copper") == "copper":
+            # user, 2026-10-23: "i want the red textured branded stickers like the mask, sparkle and heart": the copper set is the default again, now WITH the photographed copper mask as a sticker
             import dd_copper as cp
-            spec = (("star1", cp.star, 70, 300, 170, -12, 170), ("heart", cp.heart, 836, 396, 196, 12, 176), ("star2", cp.star, 930, 770, 92, 16, 92))
+            spec = (("heart", cp.heart, 60, 296, 206, -12, 186), ("star1", cp.star, 262, 540, 112, 12, 112), ("star2", cp.star, 932, 752, 92, 16, 92))
             mk = lambda fn, size, rot, tag: fn(size, rot, u=tag, shadow=False)
+            k = .19                                    # the asset is 1680x1278 with a transparent margin: visible outline starts at (157,211) and spans 1405x918
+            vx, vy = 756, 388                          # where its VISIBLE top-left lands (right wall, clear of his ear at x~720)
+            P.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(vx - 157 * k)}px;top:{round(vy - 211 * k)}px;width:{round(1680 * k)}px;'
+                     f'z-index:15;transform:rotate(8deg)">')
+            els.append(("mask", vx - 8, vy - 20, 308, 224))                                   # visible 267x174 at 8 degrees (layout.rotated_bbox), with a little air
         else:
             import dd_dj_stickers as st
             spec = (("headphones", st.headphones, 52, 292, 210, -12, 210), ("bolt", st.bolt, 262, 520, 128, 10, 128),
