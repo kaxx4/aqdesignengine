@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -653,6 +653,9 @@ class Poster:
                  f'filter:contrast(1.08) saturate(1.0) brightness(.92)">')
         P.append('<div data-tag="plate" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(8,6,30,.55) 0%,'
                  'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
+        if c.get("venue") or c.get("date"):               # logistics block: sink the lower third so the info reads on bright photos
+            P.append('<div data-tag="infoshade" style="position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,'
+                     'rgba(0,0,0,0) 56%,rgba(0,0,0,.5) 72%,rgba(0,0,0,.68) 100%)"></div>')
         self.img("string_lights.png", 158, -59, 1100, z=5, tag="lights")
         k = .499                                           # copper mask: visible outline 357..1059 x 98..536 on the canvas
         self.img("mask_copper.png", round(358 - 157 * k), round(98 - 211 * k), round(1680 * k), z=6, tag="mask",
@@ -668,11 +671,23 @@ class Poster:
         self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
         if c.get("note"):
             self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
+        # Optional logistics block (user, 2026-10-23: bulk stories mention date, time, location). Supplied facts only. The pill drops below it.
+        py = 1314
+        if c.get("date") or c.get("venue"):
+            if c.get("date"):
+                self.raw("when", c["date"], 541, 1316, 960, 54, "font-family:var(--e);font-weight:700;font-size:46px")
+            if c.get("time"):
+                self.raw("clock", c["time"], 541, 1370, 960, 50, "font-family:var(--e);font-weight:700;font-size:42px")
+            if c.get("venue"):
+                self.raw("venue", c["venue"], 541, 1436, 960, 50, "font-family:var(--e);font-weight:700;font-size:40px")
+            if c.get("address"):
+                self.raw("address", c["address"], 541, 1484, 960, 40, "font-family:var(--e);font-weight:400;font-size:32px")
+            py = 1546
         link = c.get("link", "Link in bio")
-        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:1314px;width:382px;height:82px;border-radius:22px;'
+        P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{py}px;width:382px;height:82px;border-radius:22px;'
                  f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
                  f'font-family:var(--e);font-weight:600;font-size:44px;line-height:1;text-transform:uppercase">{link}</div>')
-        self.box("linkpill", 342, 1314, 382, 82)
+        self.box("linkpill", 342, py, 382, 82)
 
     def _story_launch(self):
         """The launch announcement as a story. All the launch information (badge, edition, date, time, status, note) with the CTA pill REMOVED:
