@@ -47,15 +47,11 @@ def build(H):
     P.append(f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:{1350 if story else H}px;object-fit:cover;z-index:3;mix-blend-mode:screen;opacity:.8;pointer-events:none;'
              f'-webkit-mask-image:{face_mask};mask-image:{face_mask}">')
     # a story's fade is longer so the jacket does not meet the black in a hard line (v13 showed a seam across the right shoulder), but it still reaches near-solid by the stack's top (y 1040 = 54%)
-    fade = ("linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 40%,rgba(0,0,0,.5) 48%,rgba(0,0,0,.9) 55%,#000 61%)" if story
+    # STORY (user, 2026-10-23: "i dont like the bottom of the story"): v13 faded to solid ink (a black block under the stack) and v14 filled it with a flipped diya plate (a busy navy pattern). Now the photo
+    # CONTINUES to the bottom edge under a scrim that holds ~.8 dark behind the type and the link zone: the jacket and the wall stay visible, and nothing but a link sticker is expected down there.
+    fade = ("linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 38%,rgba(0,0,0,.5) 48%,rgba(0,0,0,.78) 57%,rgba(0,0,0,.82) 100%)" if story
             else "linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0) 56%,rgba(0,0,0,.78) 68%,#000 80%)")
     P.append(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:4;pointer-events:none;background:{fade}"></div>')
-    if story:
-        # format rule 8 (brain/DISCO_DIWALI.md): a taller canvas stacks a SECOND diya plate, flipped and faded in from the bottom edge, so the lower corners carry the pattern instead of a dead black block.
-        # It sits ABOVE the fade (z 5; the fade is solid black down there and would hide it) and below all type; its centre is black, so the link zone stays clear.
-        flip = "-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);mask-image:linear-gradient(to top,transparent 0%,#000 45%);"
-        P.append(f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{H - 1350}px;width:{W}px;height:1350px;object-fit:cover;z-index:5;'
-                 f'mix-blend-mode:screen;opacity:.75;pointer-events:none;transform:scaleY(-1);{flip}">')
     P.append(f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.5;pointer-events:none">'
              f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">')
 
