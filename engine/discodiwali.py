@@ -61,10 +61,10 @@ REQUIRED = {
     "story_launch": ("edition", "status", "photo"),
     "wa_poster":    ("edition", "date", "time", "status", "photo"),
     "wa_dp":        ("edition",),
-    "story_ref":    ("edition", "status", "photo"),
+    "story_ref":    ("edition", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -668,21 +668,23 @@ class Poster:
         self.raw("sub1", "MASQUERADE SANGEET", 617, 938, 520, 46,
                  "font-family:var(--e);font-weight:600;font-size:40px")
         self.raw("sub2", "Edition", 617, 981, 180, 42, "font-family:var(--e);font-weight:400;font-size:38px")
-        self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
+        if c.get("status"):
+            self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
         if c.get("note"):
             self.raw("note", c["note"], 541, 1215, 500, 44, "font-family:var(--e);font-weight:600;font-size:38px")
         # Optional logistics block (user, 2026-10-23: bulk stories mention date, time, location). Supplied facts only. The pill drops below it.
         py = 1314
+        sh = 0 if (c.get("status") or c.get("note")) else -90      # status and note dropped: pull the block up under the edition lines
         if c.get("date") or c.get("venue"):
             if c.get("date"):
-                self.raw("when", c["date"], 541, 1316, 960, 54, "font-family:var(--e);font-weight:700;font-size:46px")
+                self.raw("when", c["date"], 541, 1316 + sh, 960, 54, "font-family:var(--e);font-weight:700;font-size:46px")
             if c.get("time"):
-                self.raw("clock", c["time"], 541, 1370, 960, 50, "font-family:var(--e);font-weight:700;font-size:42px")
+                self.raw("clock", c["time"], 541, 1370 + sh, 960, 50, "font-family:var(--e);font-weight:700;font-size:42px")
             if c.get("venue"):
-                self.raw("venue", c["venue"], 541, 1436, 960, 50, "font-family:var(--e);font-weight:700;font-size:40px")
+                self.raw("venue", c["venue"], 541, 1436 + sh, 960, 50, "font-family:var(--e);font-weight:700;font-size:40px")
             if c.get("address"):
-                self.raw("address", c["address"], 541, 1484, 960, 40, "font-family:var(--e);font-weight:400;font-size:32px")
-            py = 1546
+                self.raw("address", c["address"], 541, 1484 + sh, 960, 40, "font-family:var(--e);font-weight:400;font-size:32px")
+            py = 1546 + sh
         link = c.get("link", "Link in bio")
         P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{py}px;width:382px;height:82px;border-radius:22px;'
                  f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
