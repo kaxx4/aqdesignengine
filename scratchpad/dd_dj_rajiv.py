@@ -27,7 +27,7 @@ VER = os.environ.get("VER", "v1")
 STROKE = "color:#fff;-webkit-text-stroke:3px #000;paint-order:stroke fill;"
 GOLD_LIT = "#E8C063"
 FUN = os.environ.get("FUN", "1") == "1"                # v4 (user, 2026-10-23: "make the poster fun and engaging"): FUN=0 reproduces v3
-LIGHTS = os.environ.get("LIGHTS", "1" if FUN else "0") == "1"
+LIGHTS = os.environ.get("LIGHTS", "0") == "1"          # off by default: masked away from his face they were a few stray bulbs, which read as scatter (user: "too many stickers randomly placed")
 FOIL = ("linear-gradient(180deg,#FFF6CF 0%,#F0C65A 34%,#A8721A 60%,#F7DC86 82%,#C48A22 100%)")   # same gold as Poster.FOIL
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -100,8 +100,11 @@ def build():
             if os.environ.get("COPPER_SET", "dj") == "dj":
                 # "make mew stickers" (user, 2026-10-23): NEW copper silhouettes on the same mask surface, DJ themed (dd_dj_copper.py). COPPER_SET=classic restores heart and stars.
                 import dd_dj_copper as cd
-                spec = (("headphones", cd.headphones, 56, 290, 214, -12, 214), ("discoball", cd.discoball, 250, 528, 118, 8, 118),
-                        ("bolt", cd.bolt, 926, 232, 124, 12, 124), ("notes", cd.notes, 916, 744, 110, 14, 110))
+                # user, 2026-10-23: "too many stickers randomly placed". Two, as a deliberate MIRRORED PAIR either side of his head: same size, same height, opposite tilts, centres equidistant from the
+                # canvas axis (162 and 918 around 540). Ball, bolt and notes stay in the module and the PNG set, off the poster. DJ_EXTRAS=1 puts them back.
+                spec = (("headphones", cd.headphones, 52, 330, 220, -10, 220), ("vinyl", cd.vinyl, 808, 330, 220, 10, 220))
+                if os.environ.get("DJ_EXTRAS", "0") == "1":
+                    spec += (("discoball", cd.discoball, 250, 560, 118, 8, 118), ("bolt", cd.bolt, 926, 232, 124, 12, 124), ("notes", cd.notes, 916, 744, 110, 14, 110))
                 mk = lambda fn, size, rot, tag: fn(size, rot, u=tag)
             else:
                 spec = (("heart", cp.heart, 60, 296, 206, -12, 186), ("star1", cp.star, 262, 540, 112, 12, 112), ("star2", cp.star, 932, 752, 92, 16, 92))
@@ -112,8 +115,6 @@ def build():
                 P.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(vx - 157 * k)}px;top:{round(vy - 211 * k)}px;width:{round(1680 * k)}px;'
                          f'z-index:15;transform:rotate(8deg)">')
                 els.append(("mask", vx - 8, vy - 20, 308, 224))                               # visible 267x174 at 8 degrees (layout.rotated_bbox), with a little air
-            elif os.environ.get("COPPER_SET", "dj") == "dj":
-                spec += (("vinyl", cd.vinyl, 826, 388, 200, 12, 200),)                      # fills the right wall the mask left
         else:
             import dd_dj_stickers as st
             spec = (("headphones", st.headphones, 52, 292, 210, -12, 210), ("bolt", st.bolt, 262, 520, 128, 10, 128),
