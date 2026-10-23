@@ -684,7 +684,7 @@ class Poster:
                 self.raw("venue", c["venue"], 541, 1436 + sh, 960, 50, "font-family:var(--e);font-weight:700;font-size:40px")
             if c.get("address"):
                 self.raw("address", c["address"], 541, 1484 + sh, 960, 40, "font-family:var(--e);font-weight:400;font-size:32px")
-            py = 1546 + sh
+            py = (1546 if c.get("address") else 1500) + sh
         link = c.get("link", "Link in bio")
         P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{py}px;width:382px;height:82px;border-radius:22px;'
                  f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
