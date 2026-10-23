@@ -106,11 +106,14 @@ def build():
             else:
                 spec = (("heart", cp.heart, 60, 296, 206, -12, 186), ("star1", cp.star, 262, 540, 112, 12, 112), ("star2", cp.star, 932, 752, 92, 16, 92))
                 mk = lambda fn, size, rot, tag: fn(size, rot, u=tag, shadow=False)
-            k = .19                                    # the asset is 1680x1278 with a transparent margin: visible outline starts at (157,211) and spans 1405x918
-            vx, vy = 756, 388                          # where its VISIBLE top-left lands (right wall, clear of his ear at x~720)
-            P.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(vx - 157 * k)}px;top:{round(vy - 211 * k)}px;width:{round(1680 * k)}px;'
-                     f'z-index:15;transform:rotate(8deg)">')
-            els.append(("mask", vx - 8, vy - 20, 308, 224))                                   # visible 267x174 at 8 degrees (layout.rotated_bbox), with a little air
+            if os.environ.get("MASK", "0") == "1":     # user, 2026-10-23: "remove the mask". MASK=1 brings it back; the right wall then has no vinyl
+                k = .19                                # the asset is 1680x1278 with a transparent margin: visible outline starts at (157,211) and spans 1405x918
+                vx, vy = 756, 388                      # where its VISIBLE top-left lands (right wall, clear of his ear at x~720)
+                P.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(vx - 157 * k)}px;top:{round(vy - 211 * k)}px;width:{round(1680 * k)}px;'
+                         f'z-index:15;transform:rotate(8deg)">')
+                els.append(("mask", vx - 8, vy - 20, 308, 224))                               # visible 267x174 at 8 degrees (layout.rotated_bbox), with a little air
+            elif os.environ.get("COPPER_SET", "dj") == "dj":
+                spec += (("vinyl", cd.vinyl, 826, 388, 200, 12, 200),)                      # fills the right wall the mask left
         else:
             import dd_dj_stickers as st
             spec = (("headphones", st.headphones, 52, 292, 210, -12, 210), ("bolt", st.bolt, 262, 520, 128, 10, 128),
