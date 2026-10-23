@@ -720,10 +720,10 @@ class Poster:
         k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x), shifted right of the badge
         mx, my = 430, 140 + DY
         if self.c.get("sticker"):                         # a copper sticker (assets sticker_<name>.png) in the mask's slot, centred on the mask's footprint
-            im = Image.open(ASSETS + f"sticker_{self.c['sticker']}.png"); sw = 400; sh = round(sw * im.height / im.width)
+            im = Image.open(ASSETS + f"sticker_{self.c['sticker']}.png"); sw = min(400, round(270 * im.width / im.height)); sh = round(sw * im.height / im.width)
             sy = my + (263 - sh) // 2
-            self.img(f"sticker_{self.c['sticker']}.png", mx, sy, sw, z=6, tag="mask", extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
-            self.box("mask", mx, sy, sw, sh)
+            self.img(f"sticker_{self.c['sticker']}.png", mx + (400 - sw) // 2, sy, sw, z=6, tag="mask", extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+            self.box("mask", mx + (400 - sw) // 2, sy, sw, sh)
         else:
             self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
                      extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")

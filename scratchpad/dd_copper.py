@@ -88,3 +88,20 @@ def pin(size=340, rot=0, u="p", shadow=True):
             f'<circle cx="200" cy="150" r="66" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="8"/>'
             f'<circle cx="200" cy="150" r="66" fill="none" stroke="#FFEBDD" stroke-width="9" stroke-dasharray="0 14" stroke-linecap="round" transform="translate(200 150) scale(.84) translate(-200 -150)"/>'
             f'<circle cx="200" cy="150" r="34" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/></g></svg>')
+
+
+def stall(size=420, rot=0, u="t", shadow=True):
+    """Copper market stall (for the stalls group): a scalloped awning with dark stripes, two posts, a beaded counter and three gem jars on it. Surface is the mask's own copper texture."""
+    n, w0 = 5, 92.8
+    awn = "M70 30 H430 L482 150 " + "".join(f"A{w0 / 2} 40 0 0 1 {482 - w0 * (i + 1):.1f} 150 " for i in range(n)) + "L70 30 Z"
+    bands = "".join(f'<rect x="{18 + w0 * i:.1f}" y="20" width="{w0 / 2:.1f}" height="190" fill="#3A0F06" opacity=".62"/>' for i in range(n))
+    post = lambda x, k: (f'<rect x="{x}" y="170" width="24" height="190" rx="6" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+                         f'<rect x="{x + 8}" y="180" width="8" height="165" rx="4" fill="#2E0C05" opacity=".6"/>')
+    counter = "M16 300 H484 Q500 300 500 316 V372 Q500 388 484 388 H16 Q0 388 0 372 V316 Q0 300 16 300 Z"
+    beads = "".join(f'<circle cx="{40 + i * 52}" cy="346" r="9" fill="#FFEBDD" stroke="#7A2A12" stroke-width="3"/>' for i in range(9))
+    jars = "".join(f'<g transform="translate({x} 0)"><rect x="-22" y="250" width="44" height="50" rx="12" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="5"/><circle cx="0" cy="274" r="13" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="3"/></g>' for x in (170, 250, 330))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{round(size * .82)}" viewBox="0 0 500 410" style="display:block;overflow:visible">{_defs(u)}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#FF7A5A"/><stop offset="1" stop-color="#6A1208"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} 250 205)"{_sh(u, shadow)}>{post(52, 1)}{post(424, 2)}'
+            f'{_metal(u + "c", counter, 500, 410, .93, 250, 344)}{beads}{jars}'
+            f'{_metal(u, awn, 500, 410, .93, 250, 90)}<clipPath id="ab{u}"><path d="{awn}"/></clipPath><g clip-path="url(#ab{u})">{bands}</g></g></svg>')
