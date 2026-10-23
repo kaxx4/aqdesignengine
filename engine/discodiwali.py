@@ -22,6 +22,7 @@ Kinds: announce | countdown | tickets_open | sold_out | save_the_date | teaser_f
 
 CLI:   PYTHONIOENCODING=utf-8 python engine/discodiwali.py            -> renders the demo set to out/discodiwali/
 """
+from PIL import Image
 import asyncio, base64, datetime, os, sys, importlib.util
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,7 +65,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date", "group"), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date", "group", "sticker"), "story_ref": ("note", "link"), "poster_ref": ("note", "link", "photo")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -718,9 +719,15 @@ class Poster:
         self.img("live_badge.png", bx, by, bw, z=8, tag="badge"); self.box("badge", bx, by, bw, round(bw * 1005 / 1061))
         k = .2847                                         # copper mask: visible width 400 (the poster's 692 at 0.58x), shifted right of the badge
         mx, my = 430, 140 + DY
-        self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
-                 extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
-        self.box("mask", mx, my, 400, 263)
+        if self.c.get("sticker"):                         # a copper sticker (assets sticker_<name>.png) in the mask's slot, centred on the mask's footprint
+            im = Image.open(ASSETS + f"sticker_{self.c['sticker']}.png"); sw = 400; sh = round(sw * im.height / im.width)
+            sy = my + (263 - sh) // 2
+            self.img(f"sticker_{self.c['sticker']}.png", mx, sy, sw, z=6, tag="mask", extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+            self.box("mask", mx, sy, sw, sh)
+        else:
+            self.img("mask_copper.png", round(mx - 157 * k), round(my - 211 * k), round(1680 * k), z=6, tag="mask",
+                     extra="filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));")
+            self.box("mask", mx, my, 400, 263)
         t = .466                                          # ball-free title: visible width 800, left 140
         tx, ty = 140, 330 + DY + TY
         self.img("title_lockup_noball.png", round(tx - 265 * t), round(ty - 401 * t), round(2000 * t), z=9, tag="title")

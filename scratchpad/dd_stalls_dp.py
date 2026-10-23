@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw
 out = os.path.join(ROOT, "out", "discodiwali", "stalls")
 async def main():
     async with dd.B.session():
-        await dd.render_poster("wa_dp", dict(edition="Masquerade Sangeet Edition", group="Stalls"), "square",
+        await dd.render_poster("wa_dp", dict(edition="Masquerade Sangeet Edition", group="Stalls", sticker="diya"), "square",
                                os.path.join(out, "stalls_dp.png"), style="plate", mask="copper")
     dp = Image.open(os.path.join(out, "stalls_dp.png")).convert("RGB")
     m = Image.new("L", dp.size, 0); ImageDraw.Draw(m).ellipse((0, 0, dp.size[0]-1, dp.size[1]-1), fill=255)
