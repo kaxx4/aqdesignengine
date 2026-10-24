@@ -19,7 +19,7 @@ import dd_photo_bg as PB, dd_copper as CP   # noqa: E402  (photo ground and copp
 
 def poster(H):
     story = H > 1350
-    parts, els = [PB.photo_ground(dd, W, H, "14_04", "50% 20%", dim=.6)], []
+    parts, els = [PB.photo_ground(dd, W, H, "14_01", "50% 40%", dim=.62)], []
     # LIVE badge, top left
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
