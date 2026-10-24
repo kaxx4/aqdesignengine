@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo", "date", "time", "venue")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("dim", "status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("dim", "note", "link", "photo", "date", "time", "venue")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -614,6 +614,8 @@ class Poster:
                      'rgba(8,6,30,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.35) 100%)"></div>')
         else:
             self.img("bg_diya_portrait.jpg", 0, 0, W, self.H, z=1, tag="plate", extra="object-fit:cover;")
+        if c.get("dim"):
+            P.append(f'<div data-tag="dim" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:rgba(0,0,0,{c["dim"]})"></div>')
         self.img("string_lights.png", 160, -53, 1045, z=5, tag="lights")
         k = .4925                                         # copper mask: visible outline 343..1035 x 108..560
         self.img("mask_copper.png", round(343 - 157 * k), round(108 - 211 * k), round(1680 * k), z=6, tag="mask",
@@ -669,6 +671,8 @@ class Poster:
         if c.get("venue") or c.get("date"):               # logistics block: sink the lower third so the info reads on bright photos
             P.append('<div data-tag="infoshade" style="position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,'
                      'rgba(0,0,0,0) 56%,rgba(0,0,0,.5) 72%,rgba(0,0,0,.68) 100%)"></div>')
+        if c.get("dim"):                                   # bright photo (neon pink / purple): sink it so the lockup and type keep their contrast
+            P.append(f'<div data-tag="dim" style="position:absolute;inset:0;z-index:2;pointer-events:none;background:rgba(0,0,0,{c["dim"]})"></div>')
         self.img("string_lights.png", 158, -59, 1100, z=5, tag="lights")
         k = .499                                           # copper mask: visible outline 357..1059 x 98..536 on the canvas
         self.img("mask_copper.png", round(358 - 157 * k), round(98 - 211 * k), round(1680 * k), z=6, tag="mask",
