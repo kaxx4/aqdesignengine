@@ -3,7 +3,7 @@ From the user's Paradox reference (circular photo, big red NANDU JEE, two-part t
 (real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper mask tucked on the
 circle's corner, the lockup (with ball) as the footer mark. Adaptations: the Realmark title-sponsor mark, the Paradox logo and the beach palms are NOT Disco Diwali's, so they
 are dropped; the JOIN NOW / LIMITED SPOTS button becomes the story's LINK IN BIO pill (the feed, for WhatsApp, has none: nothing to link to). Copy is the user's own
-reference copy: NANDU JEE / SERVING CHAOS AND CRAVINGS (ON THE HOUSE). No date, price or venue. Photo: user-supplied portrait, consent unconfirmed.
+reference copy: NANDU JEE / SERVING CHAOS AND CRAVINGS ('on the house' dropped 2026-10-24, user). No date, price or venue. Photo: user-supplied portrait, consent unconfirmed.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_nandu.py  -> out/discodiwali/nandu/{feed,story}.png"""
 import asyncio, importlib.util, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,8 +24,8 @@ def poster(H):
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     # the circle photo
-    d = 680 if story else 560
-    cx, cy0 = (W - d) // 2, (300 if story else 130)
+    d = 700 if story else 600
+    cx, cy0 = (W - d) // 2, (320 if story else 150)
     parts.append(f'<div data-tag="circle" style="position:absolute;left:{cx}px;top:{cy0}px;width:{d}px;height:{d}px;border-radius:50%;overflow:hidden;border:8px solid {dd.GOLD};'
                  f'box-sizing:border-box;z-index:10;box-shadow:0 14px 40px rgba(0,0,0,.6)">'
                  f'<img src="{dd.photo_uri(PHOTO)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 38%;filter:contrast(1.06) saturate(1.05)"></div>')
@@ -45,8 +45,7 @@ def poster(H):
     line("head", "Nandu Jee", hy, hs, 700, hs)
     t1 = hy + hs + 14
     line("tag1", "Serving chaos and cravings", t1, 50, 700, 54, stroke=False)
-    line("tag2", "(on the house)", t1 + 58, 50, 400, 54, stroke=False)
-    y = t1 + 58 + 54 + (26 if story else 22)
+    y = t1 + 54 + (30 if story else 26)
     # footer lockup, with ball
     vw = 260 if story else 300
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
