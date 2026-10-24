@@ -19,7 +19,8 @@ W, H = 2100, 90                       # CSS px; 6 px/mm, so 350 x 15 mm
 END, GAP, FS = 90, 54, 21             # clasp zone each end (15 mm), gap round the lockup, type size
 GROUND, INK, ACCENT = "#000000", dd.OFFWHITE, dd.GOLD
 LEFT = ("ALL FOR CHARITY", "MASQUERADE SANGEET EDITION")
-RIGHT = ("10 NOV 2026", "@BADGE")      # the LIVE badge (ALL FOR CHARITY / LIVE / AQUATERRA card) takes the slot the time line held (user, 2026-10-24)
+RIGHT = ("10 NOV 2026", "@BADGE")      # the LIVE mark (LIVE + AQUATERRA, cropped from the badge: no ALL FOR CHARITY block, user 2026-10-24) takes the time line's slot
+G = 59                                  # ONE gap between every item on both sides of the lockup (user: "gap is uneven")
 LH = 70                               # lockup height; its ball must clear the rule at y=7
 _cache = {}
 
@@ -51,7 +52,7 @@ def diamond():
 
 def band(layout, forbid=()):
     src, (lw, lh) = lockup_uri(); LW = round(LH * lw / lh)
-    lg = Image.open(os.path.join(ROOT, "engine", "assets", "logo.png")); LGH = 30; LGW = round(LGH * lg.width / lg.height)
+    lg = Image.open(os.path.join(ROOT, "engine", "assets", "logo.png")); LGH = 36; LGW = round(LGH * lg.width / lg.height)
     logo = f'<img data-tag="logo" src="{core.LOGO}" style="flex:none;height:{LGH}px;width:{LGW}px">'
     S = lambda *a, **k: sticker(*a, **k)[0]
     lead_l = tail_r = ""; lead_w = tail_w = 0
@@ -99,8 +100,9 @@ def band(layout, forbid=()):
             if put(KINDS[i % len(KINDS)], h, rng.randint(-14, 14), x, i % 2 == 0, f"sc{len(extras)}"): x += 70
             else: x += 15
             i += 1
-    BH = 66; BW = round(BH * 1061 / 1005)
-    badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="flex:none;height:{BH}px;width:{BW}px">'
+    _bi = Image.open(dd.ASSETS + "live_badge.png").convert("RGBA").crop((70, 330, 990, 935)); _bb = io.BytesIO(); _bi.save(_bb, "PNG")
+    BH = 62; BW = round(BH * _bi.width / _bi.height); BSRC = "data:image/png;base64," + base64.b64encode(_bb.getvalue()).decode()
+    badge = f'<img data-tag="badge" src="{BSRC}" style="flex:none;height:{BH}px;width:{BW}px">'
     txt = f"font-family:var(--d);font-weight:700;font-size:{FS}px;letter-spacing:.16em;line-height:1;color:{INK};white-space:nowrap;text-transform:uppercase"
     def group(words, tag, seps):
         parts = []
@@ -113,13 +115,13 @@ def band(layout, forbid=()):
     pad = END + 14
     half = (W - 2 * pad - LW - 2 * GAP) // 2
     lw_in, rw_in = half, half
-    fl = "position:absolute;top:0;height:%dpx;display:flex;align-items:center;justify-content:space-between" % H
-    row = (f'<div data-tag="left" style="{fl};left:{pad}px;width:{half}px">{lead_l}{group(LEFT, "L", seps_l)}</div>'
+    fl = "position:absolute;top:0;height:%dpx;display:flex;align-items:center;gap:%dpx" % (H, G)
+    row = (f'<div data-tag="left" style="{fl};left:{(W - LW) // 2 - G - 860}px;width:860px;justify-content:flex-end">{lead_l}{group(LEFT, "L", seps_l)}</div>'
            f'<img data-tag="lockup" src="{src}" style="position:absolute;left:{(W - LW) // 2}px;top:{(H - LH) // 2}px;width:{LW}px;height:{LH}px">'
-           f'<div data-tag="right" style="{fl};left:{W - pad - half}px;width:{half}px">{group(RIGHT, "R", seps_r)}{diamond()}{logo}{tail_r}</div>')
+           f'<div data-tag="right" style="{fl};left:{(W + LW) // 2 + G}px;width:860px;justify-content:flex-start">{diamond()}{group(RIGHT, "R", seps_r)}{diamond()}{logo}{tail_r}</div>')
     rules = "".join(f'<div style="position:absolute;left:0;width:{W}px;top:{y}px;height:1.5px;background:{ACCENT}"></div>' for y in (7, H - 8.5))
     html = B.page(W, H, GROUND, rules + row + "".join(e[0] for e in extras), grain=False)
-    els = [("left", pad, 0, half, H), ("lockup", (W - LW) // 2, (H - LH) // 2, LW, LH), ("right", W - pad - half, 0, half, H)] + [(f"x{i}",) + e[1] for i, e in enumerate(extras)]
+    els = [("left", (W - LW) // 2 - G - 860, 0, 860, H), ("lockup", (W - LW) // 2, (H - LH) // 2, LW, LH), ("right", (W + LW) // 2 + G, 0, 860, H)] + [(f"x{i}",) + e[1] for i, e in enumerate(extras)]
     return html, els
 
 
@@ -131,7 +133,7 @@ async def badge_x(html):
     from playwright.async_api import async_playwright
     async with async_playwright() as pw:
         br = await pw.chromium.launch(); pg = await br.new_page(viewport={"width": W, "height": H}); await pg.set_content(html); await pg.wait_for_timeout(300)
-        r = await pg.evaluate("(()=>{const r=document.querySelector('[data-tag=badge]').getBoundingClientRect();return [r.left,r.right]})()"); await br.close()
+        r = await pg.evaluate("(()=>{return ['badge','logo'].map(t=>{const r=document.querySelector('[data-tag='+t+']').getBoundingClientRect();return [r.left,r.right]})})()"); await br.close()
     return r
 
 
@@ -139,7 +141,7 @@ async def main():
     outs = []
     async with B.session():
         for k, nm in NAMES.items():
-            a, b = await badge_x(band(nm)[0]); html, els = band(nm, [(a - 6, b + 6)])
+            fb = [(a - 6, b + 6) for a, b in await badge_x(band(nm)[0])]; html, els = band(nm, fb)
             out = os.path.join(OUT, f"entry_band_{k}_{nm}.png")
             await B.render(html, out, W, H, elements=els, page_bg=GROUND, text_pairs=[("type", INK, GROUND, FS, True)], margin=6,
                            collision_ignore={(a, f"x{i}") for a in ("left", "right") for i in range(80)})   # stickers sit in the type rows' free bands by design
