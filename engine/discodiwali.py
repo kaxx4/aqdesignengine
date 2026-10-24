@@ -635,13 +635,13 @@ class Poster:
                      'rgba(0,0,0,0) 52%,rgba(0,0,0,.5) 68%,rgba(0,0,0,.68) 100%)"></div>')
             self.raw("status", c["status"], 540, 1034, 900, 52, "font-family:var(--e);font-weight:600;font-size:44px")
             if c.get("note"):
-                self.raw("note", c["note"], 540, 1092, 760, 64, "font-family:var(--e);font-weight:700;font-size:54px")
+                self.raw("note", c["note"], 540, 1104, 900, 84, "font-family:var(--e);font-weight:700;font-size:72px")
             if c.get("date"):
-                self.raw("when", c["date"], 540, 1170, 900, 46, "font-family:var(--e);font-weight:700;font-size:40px")
+                self.raw("when", c["date"], 540, 1186, 900, 46, "font-family:var(--e);font-weight:700;font-size:40px")
             if c.get("time"):
-                self.raw("clock", c["time"], 540, 1214, 900, 40, "font-family:var(--e);font-weight:700;font-size:36px")
+                self.raw("clock", c["time"], 540, 1230, 900, 40, "font-family:var(--e);font-weight:700;font-size:36px")
             if c.get("venue"):
-                self.raw("venue", c["venue"], 540, 1270, 960, 40, "font-family:var(--e);font-weight:700;font-size:34px")
+                self.raw("venue", c["venue"], 540, 1286, 960, 40, "font-family:var(--e);font-weight:700;font-size:34px")
             return
         self.raw("status", c["status"], 538, 1030 + dy, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
         if c.get("note"):
@@ -689,8 +689,8 @@ class Poster:
             self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
         if c.get("note"):
             big = bool(c.get("date") or c.get("venue"))     # with the logistics block the note is the PRICE: make it a second hero line
-            self.raw("note", c["note"], 541, 1224 if big else 1215, 760 if big else 500, 76 if big else 44,
-                     f"font-family:var(--e);font-weight:{700 if big else 600};font-size:{66 if big else 38}px")
+            self.raw("note", c["note"], 541, 1234 if big else 1215, 900 if big else 500, 100 if big else 44,
+                     f"font-family:var(--e);font-weight:{700 if big else 600};font-size:{88 if big else 38}px")
         # Optional logistics block (user, 2026-10-23: bulk stories mention date, time, location). Supplied facts only. The pill drops below it.
         py = 1314
         sh = 0 if (c.get("status") or c.get("note")) else -90      # status and note dropped: pull the block up under the edition lines
