@@ -28,11 +28,12 @@ SLIDES = [  # name, photo, pos, natural_r, chip, lines, sub, cta
  ("06_close", P[21], "70% 55%", None, "SEE YOU NEXT TIME", [("400+ GUESTS.", "400+ GUESTS."), ("ONE SELFIE.", mark("ONE SELFIE."))], ["punjabi night, 2025."], "follow @ngo.aquaterra"),
 ]
 if os.path.exists(COVER_FILE):
-    SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "50% 40%", None, "JUN 2025", [("PUNJABI NIGHT", "PUNJABI NIGHT"), ("2025", mark("2025"))], ["one night. a lot of dhol."], None))
+    SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "42% 55%", None, "JUN 2025", [("PUNJABI NIGHT", "PUNJABI NIGHT"), ("2025", mark("2025"))], ["one night. a lot of dhol."], None))
 async def main():
     async with B.session():
         for fmt, (W, H, size) in dict(story=(1080, 1920, 112), feed=(1080, 1350, 100)).items():
             for name, src, pos, nr, chip, lines, sub, cta in SLIDES:
+                if fmt == "feed" and not name.startswith("01_"): continue   # feed size is for the cover only
                 if fmt == "feed" and not name.startswith("01_"): continue   # feed size is for the cover only
                 global OUT
                 await photo_full(f"{fmt}_{name}", W, H, src, pos, chip, lines, sub, hash(name) % 90, size=size, natural_r=nr, cta=cta)
