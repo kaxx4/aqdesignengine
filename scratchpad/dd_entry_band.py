@@ -3,7 +3,7 @@
 Spec: 350 x 15 mm at 12 px/mm = 4200 x 180 px output (305 dpi). Designed at 2100 x 90 CSS px, rendered at device scale 2.
 End zones (15 mm each) carry no type: the clasp or snap sits there. Symmetric about the centre, because the centre faces out on the wrist: the title lockup
 WITH its ball is the hero. The AQ wordmark (core.LOGO, never inverted) sits straight on the black ground at the right.
-Copy is supplied facts only: ALL FOR CHARITY, MASQUERADE SANGEET EDITION, 10 NOV 2026, 4:30 PM ONWARDS. No venue (so no pin sticker), price, tier or serial number.
+Copy is supplied facts only: ALL FOR CHARITY, MASQUERADE SANGEET EDITION, 10 NOV 2026, the LIVE badge. No time, venue (so no pin sticker), price, tier or serial number.
 Four DIFFERENT scatter patterns (user, 2026-10-24: "all 4 will be diff scatter patterns"), stickers riding the top and bottom rules clear of the type row: confetti (random, small) /
 rails (a strict big row above, a quiet small row below) / clusters (six pockets of three) / crescendo (zigzag, size swelling left to right). Type, rules and diamonds: off-white and gold, the format palette (DISCO_DIWALI.md rule 1).
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_entry_band.py"""
@@ -19,7 +19,7 @@ W, H = 2100, 90                       # CSS px; 6 px/mm, so 350 x 15 mm
 END, GAP, FS = 90, 54, 21             # clasp zone each end (15 mm), gap round the lockup, type size
 GROUND, INK, ACCENT = "#000000", dd.OFFWHITE, dd.GOLD
 LEFT = ("ALL FOR CHARITY", "MASQUERADE SANGEET EDITION")
-RIGHT = ("10 NOV 2026", "4:30 PM ONWARDS")
+RIGHT = ("10 NOV 2026", "@BADGE")      # the LIVE badge (ALL FOR CHARITY / LIVE / AQUATERRA card) takes the slot the time line held (user, 2026-10-24)
 LH = 70                               # lockup height; its ball must clear the rule at y=7
 _cache = {}
 
@@ -49,7 +49,7 @@ def diamond():
     return f'<i style="display:block;flex:none;width:7px;height:7px;background:{ACCENT};transform:rotate(45deg)"></i>'
 
 
-def band(layout):
+def band(layout, forbid=()):
     src, (lw, lh) = lockup_uri(); LW = round(LH * lw / lh)
     lg = Image.open(os.path.join(ROOT, "engine", "assets", "logo.png")); LGH = 30; LGW = round(LGH * lg.width / lg.height)
     logo = f'<img data-tag="logo" src="{core.LOGO}" style="flex:none;height:{LGH}px;width:{LGW}px">'
@@ -63,8 +63,8 @@ def band(layout):
     KINDS = ["heart", "star", "diya", "calendar", "star", "heart", "diya"]
     lo, hi = END + 6, W - END - 6
     lk0, lk1 = (W - LW) // 2 - 8, (W + LW) // 2 + 8
-    def ok(x, w):                                                        # inside the clasp-free run, clear of the lockup
-        return lo <= x and x + w <= hi and (x + w <= lk0 or x >= lk1)
+    def ok(x, w):                                                        # inside the clasp-free run, clear of the lockup and the badge
+        return lo <= x and x + w <= hi and (x + w <= lk0 or x >= lk1) and all(x + w <= a or x >= b for a, b in forbid)
     def put(name, h, rot, x, top, tag):
         y = 6 if top else H - h - 6                                      # ride the top or the bottom rule, clear of the 34-56 type row
         html, w = sticker(name, h, rot, (x, y), tag)
@@ -99,11 +99,15 @@ def band(layout):
             if put(KINDS[i % len(KINDS)], h, rng.randint(-14, 14), x, i % 2 == 0, f"sc{len(extras)}"): x += 70
             else: x += 15
             i += 1
+    BH = 66; BW = round(BH * 1061 / 1005)
+    badge = f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="flex:none;height:{BH}px;width:{BW}px">'
     txt = f"font-family:var(--d);font-weight:700;font-size:{FS}px;letter-spacing:.16em;line-height:1;color:{INK};white-space:nowrap;text-transform:uppercase"
     def group(words, tag, seps):
         parts = []
         for i, w in enumerate(words):
             if i: parts.append(seps[i - 1])
+            if w == "@BADGE":
+                parts.append(badge); continue
             parts.append(f'<span data-tag="{tag}{i}" style="{txt}">{w}</span>')
         return "".join(parts)
     pad = END + 14
@@ -122,11 +126,20 @@ def band(layout):
 NAMES = {"1": "confetti", "2": "rails", "3": "clusters", "4": "crescendo"}
 
 
+async def badge_x(html):
+    """Where the flex row actually put the badge, so the scatter can keep off it."""
+    from playwright.async_api import async_playwright
+    async with async_playwright() as pw:
+        br = await pw.chromium.launch(); pg = await br.new_page(viewport={"width": W, "height": H}); await pg.set_content(html); await pg.wait_for_timeout(300)
+        r = await pg.evaluate("(()=>{const r=document.querySelector('[data-tag=badge]').getBoundingClientRect();return [r.left,r.right]})()"); await br.close()
+    return r
+
+
 async def main():
     outs = []
     async with B.session():
         for k, nm in NAMES.items():
-            html, els = band(nm)
+            a, b = await badge_x(band(nm)[0]); html, els = band(nm, [(a - 6, b + 6)])
             out = os.path.join(OUT, f"entry_band_{k}_{nm}.png")
             await B.render(html, out, W, H, elements=els, page_bg=GROUND, text_pairs=[("type", INK, GROUND, FS, True)], margin=6,
                            collision_ignore={(a, f"x{i}") for a in ("left", "right") for i in range(80)})   # stickers sit in the type rows' free bands by design
