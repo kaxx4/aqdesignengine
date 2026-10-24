@@ -34,10 +34,20 @@ PHOTOS = [(f"{HALL}/04_pink-ceiling-chandelier-phone.jpg", .55), (f"{HALL}/05_bo
 PHOTOS2 = [(f"{LIB}/05_cards-hall-dance-green-light.jpg", .50), (f"{LIB}/07_dance-blur-blue-light.jpg", .50),
            (f"{LIB}/08_cards-hall-crowd-purple.jpg", .50), (f"{LIB}/09_night-courtyard-string-lights-crowd.jpg", .50),
            (f"{LIB}/01_IMG_7180_group-aquaterra-banner.jpg", .50)]
-SET2 = os.environ.get("SET") == "2"
-START = 16 if SET2 else 1
-if SET2:
+# SET 3 (2026-10-24, "create 10 more"): every still is already used, so these are SECOND CROPS of ten landscape photos, taken from the opposite
+# side of the frame to the first use (fx .12 or .88 against .42-.60 before), so each cover shows a different part of the room. SET=3.
+PHOTOS3 = [(f"{HALL}/01_dancers-silver-pillar-purple.jpg", .12), (f"{HALL}/04_pink-ceiling-chandelier-phone.jpg", .90),
+           (f"{HALL}/05_boys-crowd-green-light.jpg", .88), (f"{HALL}/06_blue-room-crowd-faces.jpg", .12),
+           (f"{HALL}/07_pink-glare-girls-backs-phone.jpg", .88), (f"{HALL}/09_boy-on-shoulders-star-balloon.jpg", .86),
+           (f"{LIB}/05_cards-hall-dance-green-light.jpg", .12), (f"{LIB}/07_dance-blur-blue-light.jpg", .86),
+           (f"{LIB}/08_cards-hall-crowd-purple.jpg", .88), (f"{HALL}/02_crowd-teal-kurta-purple.jpg", .12)]
+SETN = os.environ.get("SET", "1")
+SET2 = SETN in ("2", "3")
+START = {"1": 1, "2": 16, "3": 21}[SETN]
+if SETN == "2":
     PHOTOS = PHOTOS2
+elif SETN == "3":
+    PHOTOS = PHOTOS3
 # sticker files and the aspect (h/w) of the VISIBLE art; the mask asset has transparent padding, handled in place()
 FILES = {"mask": (os.path.join(ASSET, "mask_copper.png"), 920 / 1400), "heart": (os.path.join(STK, "copper_heart.png"), 1324 / 1496),
          "star": (os.path.join(STK, "copper_star.png"), 1.0), "diya": (os.path.join(STK, "copper_diya.png"), 1146 / 1870)}
@@ -101,7 +111,7 @@ def build(i, photo, fx):
     return P, E
 
 async def main():
-    out = os.path.join(ROOT, "out", "discodiwali", "reels_stickers_2" if SET2 else "reels_stickers"); os.makedirs(out, exist_ok=True)
+    out = os.path.join(ROOT, "out", "discodiwali", {"1": "reels_stickers", "2": "reels_stickers_2", "3": "reels_stickers_3"}[SETN]); os.makedirs(out, exist_ok=True)
     async with B.session():
         for i, (photo, fx) in enumerate(PHOTOS, START):
             P, E = build(i, photo, fx)
