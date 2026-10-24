@@ -25,7 +25,7 @@ def story():
     line("lab", "What you get in return", 1150, 60, 700, 64, stroke=False, color=dd.GOLD)
     for i, t in enumerate(("Media coverage", "Logos on all creatives and banners", "Google reviews", "Standee or stall on the event day")):
         line(f"g{i}", t, 1246 + i * 76, 46, 700, 50, stroke=False)
-    line("g4", "And a lot more", 1246 + 4 * 76 + 6, 46, 400, 50, stroke=False, color=dd.GOLD)
+    line("g4", "And a lot more", 1246 + 4 * 76 + 6, 46, 700, 50, stroke=False)
     vw = 300; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = 1654
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">'); els.append(("title", vx, vy, vw, vh))
     return "".join(parts), els, vy + vh
