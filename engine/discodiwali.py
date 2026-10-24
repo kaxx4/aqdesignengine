@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("dim", "status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("dim", "note", "link", "photo", "date", "time", "venue")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("banner", "dim", "status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("banner", "dim", "note", "link", "photo", "date", "time", "venue")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -630,6 +630,13 @@ class Poster:
         link = c.get("link", "Link in bio")
         nolink = link is False                            # WhatsApp: nothing to link to, so no pill, and the info lines drop into the freed space
         dy = 62 if nolink else 0
+        if c.get("banner"):
+            self.raw("phase", c["status"], 540, 1054, 960, 82, "font-family:var(--e);font-weight:700;font-size:92px")
+            bw = 790; bh = round(bw * 470 / 2000); by = 1198 - bh // 2
+            P.append(f'<img data-tag="banner" src="{uri("sold_out_banner.png")}" style="position:absolute;left:{(W - bw) // 2}px;top:{by}px;width:{bw}px;height:{bh}px;'
+                     f'transform:rotate(-5deg);z-index:11;box-shadow:0 14px 34px rgba(0,0,0,.6);border-radius:4px">')
+            self.box("banner", (W - bw) // 2, by + 26, bw, bh - 26)
+            return
         if c.get("date") or c.get("venue"):               # logistics (user, 2026-10-24): compact block, status/note pulled up to make room
             P.append('<div data-tag="infoshade" style="position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,'
                      'rgba(0,0,0,0) 52%,rgba(0,0,0,.5) 68%,rgba(0,0,0,.68) 100%)"></div>')
@@ -685,6 +692,13 @@ class Poster:
         self.raw("sub1", "MASQUERADE SANGEET", 617, 938, 520, 46,
                  "font-family:var(--e);font-weight:600;font-size:40px")
         self.raw("sub2", "Edition", 617, 981, 180, 42, "font-family:var(--e);font-weight:400;font-size:38px")
+        if c.get("banner"):                               # SOLD OUT variant (user, 2026-10-24: "phase 1 sold out"): the phase is the hero line, the speckled banner crosses under it, no link pill
+            self.raw("phase", c["status"], 541, 1190, 960, 150, "font-family:var(--e);font-weight:700;font-size:128px")
+            bw = 1060; bh = round(bw * 470 / 2000); by = 1420 - bh // 2
+            P.append(f'<img data-tag="banner" src="{uri("sold_out_banner.png")}" style="position:absolute;left:{(W - bw) // 2}px;top:{by}px;width:{bw}px;height:{bh}px;'
+                     f'transform:rotate(-5deg);z-index:11;box-shadow:0 14px 34px rgba(0,0,0,.6);border-radius:4px">')
+            self.box("banner", (W - bw) // 2, by + 30, bw, bh - 30)
+            return
         if c.get("status"):
             self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
         if c.get("note"):
@@ -705,6 +719,8 @@ class Poster:
                 self.raw("address", c["address"], 541, 1484 + sh, 960, 40, "font-family:var(--e);font-weight:400;font-size:32px")
             py = (1546 if c.get("address") else 1500) + sh
         link = c.get("link", "Link in bio")
+        if link is False:
+            return
         P.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{py}px;width:382px;height:82px;border-radius:22px;'
                  f'border:2px solid rgba(222,180,100,.6);background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;'
                  f'font-family:var(--e);font-weight:600;font-size:44px;line-height:1;text-transform:uppercase">{link}</div>')
