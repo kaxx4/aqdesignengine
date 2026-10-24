@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("note", "link", "photo", "date", "time", "venue")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -628,6 +628,19 @@ class Poster:
         link = c.get("link", "Link in bio")
         nolink = link is False                            # WhatsApp: nothing to link to, so no pill, and the info lines drop into the freed space
         dy = 62 if nolink else 0
+        if c.get("date") or c.get("venue"):               # logistics (user, 2026-10-24): compact block, status/note pulled up to make room
+            P.append('<div data-tag="infoshade" style="position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(180deg,'
+                     'rgba(0,0,0,0) 52%,rgba(0,0,0,.5) 68%,rgba(0,0,0,.68) 100%)"></div>')
+            self.raw("status", c["status"], 540, 1034, 900, 52, "font-family:var(--e);font-weight:600;font-size:44px")
+            if c.get("note"):
+                self.raw("note", c["note"], 540, 1080, 600, 40, "font-family:var(--e);font-weight:600;font-size:34px")
+            if c.get("date"):
+                self.raw("when", c["date"], 540, 1158, 900, 46, "font-family:var(--e);font-weight:700;font-size:40px")
+            if c.get("time"):
+                self.raw("clock", c["time"], 540, 1202, 900, 40, "font-family:var(--e);font-weight:700;font-size:36px")
+            if c.get("venue"):
+                self.raw("venue", c["venue"], 540, 1260, 960, 40, "font-family:var(--e);font-weight:700;font-size:34px")
+            return
         self.raw("status", c["status"], 538, 1030 + dy, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
         if c.get("note"):
             self.raw("note", c["note"], 540, 1075 + dy, 350, 34, "font-family:var(--e);font-weight:600;font-size:28px")
