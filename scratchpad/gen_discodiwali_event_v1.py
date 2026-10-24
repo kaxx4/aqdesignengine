@@ -31,8 +31,9 @@ if os.path.exists(COVER_FILE):
     SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "60% 50%", None, "DIWALI 2025", [("DISCO DIWALI", "DISCO DIWALI"), ("2.0", mark("2.0"))], ["one night. a whole lot of glitter."], None))
 async def main():
     async with B.session():
-        for fmt, (W, H, size) in dict(story=(1080, 1920, 112)).items():
+        for fmt, (W, H, size) in dict(story=(1080, 1920, 112), feed=(1080, 1350, 100)).items():
             for name, src, pos, nr, chip, lines, sub, cta in SLIDES:
+                if fmt == "feed" and not name.startswith("01_"): continue   # feed size is for the cover only
                 global OUT
                 await photo_full(f"{fmt}_{name}", W, H, src, pos, chip, lines, sub, hash(name) % 90, size=size, natural_r=nr, cta=cta)
 asyncio.run(main())
