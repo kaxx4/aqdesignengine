@@ -3,7 +3,7 @@
 Spec: 350 x 15 mm at 12 px/mm = 4200 x 180 px output (305 dpi). Designed at 2100 x 90 CSS px, rendered at device scale 2.
 End zones (15 mm each) carry no type: the clasp or snap sits there. Type stays 2 mm inside the band's edges.
 Symmetric about the centre, because the centre is what faces out on the wrist: the title lockup (ball-free, a 15 mm band cannot carry the ball) is the hero.
-Copy is supplied facts only: ALL FOR CHARITY, MASQUERADE SANGEET EDITION, 10 NOV 2026, 4:30 PM ONWARDS. The AQ wordmark (core.LOGO, never inverted) sits on a cream pill at the right, the AQ presence. No venue, price, tier or serial number.
+Copy is supplied facts only: ALL FOR CHARITY, MASQUERADE SANGEET EDITION, 10 NOV 2026, 4:30 PM ONWARDS. The AQ wordmark (core.LOGO, never inverted) sits on a black pill at the right, the AQ presence. No venue, price, tier or serial number.
 Adaptations (CLAUDE.md sec 2 ladder): the format's own ground and palette (CLAUDE.md sec 9 exception, DISCO_DIWALI.md rule 1); lockup recoloured to ink on the two
 light grounds (it is lettering, so only its colour changes, never its shape). Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_entry_band.py"""
 import asyncio, base64, importlib.util, io, os, sys
@@ -51,7 +51,7 @@ def band(name):
             parts.append(f'<span data-tag="{tag}{i}" style="{txt}">{w}</span>')
         return "".join(parts)
     lg = Image.open(os.path.join(ROOT, "engine", "assets", "logo.png")); PH = 50; LGH = 30; LGW = round(LGH * lg.width / lg.height); PW = LGW + 36
-    pill = (f'<div data-tag="logo" style="flex:none;width:{PW}px;height:{PH}px;border-radius:999px;background:{core.CREAM};display:flex;align-items:center;justify-content:center">'
+    pill = (f'<div data-tag="logo" style="flex:none;width:{PW}px;height:{PH}px;border-radius:999px;background:#000;display:flex;align-items:center;justify-content:center">'
             f'<img src="{core.LOGO}" style="height:{LGH}px;width:{LGW}px"></div>')
     pad = END + 14
     half = (W - 2 * pad - LW - 2 * GAP) // 2
