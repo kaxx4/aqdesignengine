@@ -88,3 +88,29 @@ def pin(size=340, rot=0, u="p", shadow=True):
             f'<circle cx="200" cy="150" r="66" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="8"/>'
             f'<circle cx="200" cy="150" r="66" fill="none" stroke="#FFEBDD" stroke-width="9" stroke-dasharray="0 14" stroke-linecap="round" transform="translate(200 150) scale(.84) translate(-200 -150)"/>'
             f'<circle cx="200" cy="150" r="34" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/></g></svg>')
+
+
+def samosa(size=340, rot=0, u="m", shadow=True):
+    """Copper samosa (Nandu Jee, 2026-10-24: 'a food sticker'): a rounded triangle in the mask texture, a crimped base seam of pearl dots, a fold line, and two flat steam curls."""
+    d = "M200 92 C214 92 224 100 232 114 L378 362 C386 378 376 400 356 400 H44 C24 400 14 378 22 362 L168 114 C176 100 186 92 200 92 Z"
+    crimp = "".join(f'<circle cx="{58 + i * 28}" cy="352" r="7" fill="#FFEBDD" stroke="#7A2A12" stroke-width="2.5"/>' for i in range(12))
+    steam = "".join(f'<path d="M{x} 78 C{x - 22} 58 {x + 22} 38 {x} 12" fill="none" stroke="#FFEBDD" stroke-width="9" stroke-linecap="round" opacity=".85"/>' for x in (170, 232))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{round(size * 1.05)}" viewBox="0 0 400 420" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 220)"{_sh(u, shadow)}>{_metal(u, d, 400, 420, .92, 200, 270)}'
+            f'<path d="M60 322 H340" stroke="#3A0F06" stroke-opacity=".7" stroke-width="6" stroke-linecap="round"/>{crimp}'
+            f'<path d="M200 130 L150 300" stroke="#3A0F06" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>{steam}</g></svg>')
+
+
+def dhol(size=340, rot=0, u="x", shadow=True):
+    """Copper dhol (Live Dhol, 2026-10-24: 'a dhol sticker'): a barrel on its side in the mask texture, both heads as rimmed ellipses, zigzag rope lacing, two crossed sticks."""
+    body = "M80 112 C160 74 240 74 320 112 V298 C240 336 160 336 80 298 Z"
+    d = f"{body} M46 205 a34 92 0 1 0 68 0 a34 92 0 1 0 -68 0 Z M296 205 a34 92 0 1 0 68 0 a34 92 0 1 0 -68 0 Z"
+    lace = "M104 126 L146 300 L190 118 L234 304 L278 118 L312 296"
+    stick = lambda x1, y1, x2, y2: (f'<path d="M{x1} {y1} L{x2} {y2}" stroke="#3A0F06" stroke-width="22" stroke-linecap="round"/><path d="M{x1} {y1} L{x2} {y2}" stroke="url(#tr{u})" stroke-width="13" stroke-linecap="round"/>'
+                                    f'<circle cx="{x2}" cy="{y2}" r="17" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>')
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u, d, 400, 400, .92, 200, 215)}'
+            f'<ellipse cx="330" cy="205" rx="27" ry="78" fill="#E9C9A6" opacity=".55"/>'
+            f'<path d="{lace}" fill="none" stroke="#3A0F06" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>'
+            f'<path d="{lace}" fill="none" stroke="#FFEBDD" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>'
+            f'{stick(120, 20, 280, 118)}{stick(290, 20, 130, 112)}</g></svg>')

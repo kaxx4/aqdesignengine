@@ -30,10 +30,10 @@ def poster(H):
                  f'box-sizing:border-box;z-index:10;box-shadow:0 14px 40px rgba(0,0,0,.6)">'
                  f'<img src="{dd.photo_uri(PHOTO)}" style="width:100%;height:100%;object-fit:cover;object-position:76% 50%;filter:contrast(1.06) saturate(1.05)"></div>')
     els.append(("circle", cx, cy0, d, d))
-    # copper STAR sticker (user, 2026-10-24: "a different sticker, not the mask") tucked on the circle's top-right; sticker() is square, rotation baked in
+    # copper DHOL sticker (user, 2026-10-24: "a different sticker, not the mask") tucked on the circle's top-right; sticker() is square, rotation baked in
     ss = 300 if story else 280
     mx, my = 1040 - ss, (cy0 - 150 if story else 40)
-    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{mx}px;top:{my}px;z-index:12">{CP.star(ss, -10)}</div>'); els.append(("sticker", mx, my, ss, ss))
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{mx}px;top:{my}px;z-index:12">{CP.dhol(ss, -8)}</div>'); els.append(("sticker", mx, my, ss, ss))
     # headline + tagline
     hy = cy0 + d + (28 if story else 26)
     hs = 165
