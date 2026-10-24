@@ -1,4 +1,4 @@
-"""DISCO DIWALI "PHOTOBOOTH" activity poster (copy of dd_stimulator.py; photo cropped to the DISCO DIWALI block tower and balloons so no faces appear): same layout; headline is the name only, no invented details), feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
+"""DISCO DIWALI "PHOTOBOOTH" activity poster (copy of dd_stimulator.py; photo v2 (user: keep the people, not the tower): cropped to the two people and the curtain): same layout; headline is the name only, no invented details), feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
 From the user's Paradox reference (circular photo, big red NANDU JEE, two-part tagline, JOIN NOW button, sponsor + logos): the MECHANISM is kept
 (real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper diya sticker on the
 circle's corner, the lockup (with ball) as the footer mark. Adaptations: the Realmark title-sponsor mark, the Paradox logo and the beach palms are NOT Disco Diwali's, so they
@@ -12,7 +12,7 @@ spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, 
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
 B = dd.B; W = 1080
 OUT = os.path.join(ROOT, "out", "discodiwali", "photobooth")
-PHOTO = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-photobooth", "01_block-letters-balloons-crop.jpg")
+PHOTO = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-photobooth", "02_two-people-curtain-crop.jpg")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dd_photo_bg as PB, dd_copper as CP   # noqa: E402  (photo ground and copper stickers, shared with the carousel posters)
@@ -28,7 +28,7 @@ def poster(H):
     cx, cy0 = (W - d) // 2, (340 if story else 140)
     parts.append(f'<div data-tag="circle" style="position:absolute;left:{cx}px;top:{cy0}px;width:{d}px;height:{d}px;border-radius:50%;overflow:hidden;border:8px solid {dd.GOLD};'
                  f'box-sizing:border-box;z-index:10;box-shadow:0 14px 40px rgba(0,0,0,.6)">'
-                 f'<img src="{dd.photo_uri(PHOTO)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 40%;filter:contrast(1.06) saturate(1.05)"></div>')
+                 f'<img src="{dd.photo_uri(PHOTO)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;filter:contrast(1.06) saturate(1.05)"></div>')
     els.append(("circle", cx, cy0, d, d))
     # copper PIN sticker (user, 2026-10-24: "a different sticker, not the mask") tucked on the circle's top-right; sticker() is square, rotation baked in
     ss = 300 if story else 280
