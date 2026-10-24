@@ -1,5 +1,5 @@
 """DISCO DIWALI story (diya ground, string lights, copper mask: user, 2026-10-24 "in disco diwali branding"): call for stalls (nails, lip balm, press-ons), 2026-10-24. Text-led: no circle photo. Copy is the user's own, lightly cut to fit:
-WE ARE LOOKING FOR STALLS / NAILS, LIP BALM, PRESS-ONS / INTERESTED OR KNOW SOMEONE? LET US KNOW. No contact method was supplied, so NO link pill and no handle.
+WE ARE LOOKING FOR STALLS / NAILS & PRESS-ONS, LIP BALM (nails and press-ons are one stall, user 2026-10-24) / INTERESTED OR KNOW SOMEONE? LET US KNOW. No contact method was supplied, so NO link pill and no handle.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_stall_call.py -> out/discodiwali/stall_call/story.png"""
 import asyncio, importlib.util, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,12 +20,11 @@ def story():
         parts.append(f'<div data-tag="{tag}" style="position:absolute;left:0;width:{W}px;top:{top}px;text-align:center;font-family:var(--d);font-weight:{weight};font-size:{size}px;line-height:1;'
                      f'text-transform:uppercase;white-space:nowrap;{STROKE if stroke else f"color:{color};"}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     line("h1", "We are", 672, 118, 700, 118); line("h2", "looking for", 774, 118, 700, 118); line("h3", "stalls", 900, 170, 700, 190)
-    line("k1", "Nails", 1128, 92, 700, 92, stroke=False, color=dd.GOLD)
-    line("k2", "Lip balm", 1224, 92, 700, 92, stroke=False, color=dd.GOLD)
-    line("k3", "Press-ons", 1320, 92, 700, 92, stroke=False, color=dd.GOLD)
-    line("ask1", "Interested or know someone?", 1456, 50, 700, 54, stroke=False)
-    line("ask2", "Let us know", 1518, 50, 400, 54, stroke=False)
-    vw = 300; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = 1582
+    line("k1", "Nails &amp; press-ons", 1150, 92, 700, 92, stroke=False, color=dd.GOLD)
+    line("k2", "Lip balm", 1262, 92, 700, 92, stroke=False, color=dd.GOLD)
+    line("ask1", "Interested or know someone?", 1440, 50, 700, 54, stroke=False)
+    line("ask2", "Let us know", 1502, 50, 400, 54, stroke=False)
+    vw = 300; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2; vy = 1566
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">'); els.append(("title", vx, vy, vw, vh))
     return "".join(parts), els, vy + vh
 async def main():
