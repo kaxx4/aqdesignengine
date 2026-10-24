@@ -1,6 +1,6 @@
 """DISCO DIWALI "NANDU JEE" point poster, feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
 From the user's Paradox reference (circular photo, big red NANDU JEE, two-part tagline, JOIN NOW button, sponsor + logos): the MECHANISM is kept
-(real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper mask tucked on the
+(real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper diya sticker on the
 circle's corner, the lockup (with ball) as the footer mark. Adaptations: the Realmark title-sponsor mark, the Paradox logo and the beach palms are NOT Disco Diwali's, so they
 are dropped; the JOIN NOW / LIMITED SPOTS button becomes the story's LINK IN BIO pill (the feed, for WhatsApp, has none: nothing to link to). Copy is the user's own
 reference copy: NANDU JEE / SERVING CHAOS AND CRAVINGS ('on the house' dropped 2026-10-24, user). No date, price or venue. Photo: user-supplied portrait, consent unconfirmed.
@@ -15,11 +15,11 @@ OUT = os.path.join(ROOT, "out", "discodiwali", "nandu")
 PHOTO = os.path.join(ROOT, "engine", "assets", "img", "events", "nandu-jee", "01_nandu-jee-googly-eyes.jpg")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import dd_charity_ground as G          # noqa: E402  (diya ground, shared with the charity poster)
+import dd_photo_bg as PB, dd_copper as CP   # noqa: E402  (photo ground and copper stickers, shared with the carousel posters)
 
 def poster(H):
     story = H > 1350
-    parts, els = [G.ground_diya(W, H)], []
+    parts, els = [PB.photo_ground(dd, W, H, "14_01", "50% 40%", dim=.62)], []
     # LIVE badge, top left
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
@@ -30,12 +30,10 @@ def poster(H):
                  f'box-sizing:border-box;z-index:10;box-shadow:0 14px 40px rgba(0,0,0,.6)">'
                  f'<img src="{dd.photo_uri(PHOTO)}" style="width:100%;height:100%;object-fit:cover;object-position:50% 38%;filter:contrast(1.06) saturate(1.05)"></div>')
     els.append(("circle", cx, cy0, d, d))
-    # copper mask tucked on the circle's top-right corner (visible outline = 1403x878 native at scale k)
-    k = .30 if story else .28
-    mvw, mvh = round(1403 * k), round(878 * k)
-    mx, my = 1040 - mvw, (cy0 - 120 if story else 60)
-    parts.append(f'<img data-tag="mask" src="{dd.uri("mask_copper.png")}" style="position:absolute;left:{round(mx - 157 * k)}px;top:{round(my - 211 * k)}px;width:{round(1680 * k)}px;'
-                 f'z-index:12;filter:drop-shadow(0 8px 22px rgba(0,0,0,.6))">'); els.append(("mask", mx, my, mvw, mvh))
+    # copper DIYA sticker (user, 2026-10-24: "a different sticker, not the mask") tucked on the circle's top-right; sticker() is square, rotation baked in
+    ss = 300 if story else 280
+    mx, my = 1040 - ss, (cy0 - 150 if story else 40)
+    parts.append(f'<div data-tag="sticker" style="position:absolute;left:{mx}px;top:{my}px;z-index:12">{CP.diya(ss, 8)}</div>'); els.append(("sticker", mx, my, ss, ss))
     # headline + tagline
     hy = cy0 + d + (28 if story else 26)
     hs = 150
@@ -65,7 +63,7 @@ async def main():
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, bleed_tags=("plate",), crop_tags=("plate", "circle"),
-                           page_bg="#000", collision_ignore=[("circle", "mask"), ("circle", "head")],
+                           page_bg="#000", collision_ignore=[("circle", "sticker"), ("circle", "head")],
                            text_pairs=[("head", "#fff", "#000", 150, True), ("tag", "#fff", "#000", 50, True)])
     print("nandu done ->", OUT)
 asyncio.run(main())
