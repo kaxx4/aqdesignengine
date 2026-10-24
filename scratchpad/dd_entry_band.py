@@ -4,8 +4,8 @@ Spec: 350 x 15 mm at 12 px/mm = 4200 x 180 px output (305 dpi). Designed at 2100
 End zones (15 mm each) carry no type: the clasp or snap sits there. Symmetric about the centre, because the centre faces out on the wrist: the title lockup
 WITH its ball is the hero. The AQ wordmark (core.LOGO, never inverted) sits straight on the black ground at the right.
 Copy is supplied facts only: ALL FOR CHARITY, MASQUERADE SANGEET EDITION, 10 NOV 2026, 4:30 PM ONWARDS. No venue (so no pin sticker), price, tier or serial number.
-Layouts: A separators (stickers replace the diamonds) / B bookends (diya + heart at each end) / C scatter (small stickers sit on the rules, top and bottom) /
-D burst (a cluster round the ball, diamonds elsewhere). Type, rules and diamonds: off-white and gold, the format palette (DISCO_DIWALI.md rule 1).
+Four DIFFERENT scatter patterns (user, 2026-10-24: "all 4 will be diff scatter patterns"), stickers riding the top and bottom rules clear of the type row: confetti (random, small) /
+rails (a strict big row above, a quiet small row below) / clusters (six pockets of three) / crescendo (zigzag, size swelling left to right). Type, rules and diamonds: off-white and gold, the format palette (DISCO_DIWALI.md rule 1).
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_entry_band.py"""
 import asyncio, base64, importlib.util, io, os, sys
 from PIL import Image
@@ -55,22 +55,50 @@ def band(layout):
     logo = f'<img data-tag="logo" src="{core.LOGO}" style="flex:none;height:{LGH}px;width:{LGW}px">'
     S = lambda *a, **k: sticker(*a, **k)[0]
     lead_l = tail_r = ""; lead_w = tail_w = 0
-    seps_l, seps_r = [diamond()], [diamond(), diamond()]              # right: date|time and time|logo
+    seps_l, seps_r = [diamond()], [diamond(), diamond()]   # diamonds stay in the gaps; the stickers scatter on the rules              # right: date|time and time|logo
     extras = []                                                        # absolute stickers: (html, (x, y, w, h))
     cx = W // 2
-    if layout == "A":                                                  # separators: stickers replace the diamonds
-        seps_l = [S("heart", 38, -8)]; seps_r = [S("calendar", 38, 8), S("star", 38, -10)]   # the second right sticker sits before the logo
-    elif layout == "B":                                                # bookends: a sticker at each end of the type run
-        h1, w1 = sticker("diya", 34, -6); h2, w2 = sticker("heart", 34, 8)
-        lead_l, lead_w = h1, w1 + 18; tail_r, tail_w = h2, w2 + 18
-    elif layout == "C":                                                # scatter: small stickers ride the rules, top and bottom
-        for i, (name, h, rot, x, top) in enumerate([("star", 24, -12, 330, True), ("heart", 28, 10, 560, False), ("diya", 26, -8, 760, True), ("calendar", 26, 9, 1250, False),
-                                                    ("star", 30, 14, 1360, True), ("heart", 24, -10, 1590, False), ("diya", 28, 8, 1780, True), ("star", 22, -14, 1900, False)]):
-            y = 1 if top else H - h - 1
-            html, w = sticker(name, h, rot, (x, y), f"scatter{i}"); extras.append((html, (x, y, w, h)))
-    elif layout == "D":                                                # burst: a cluster round the ball
-        for i, (name, h, rot, dx, y) in enumerate([("heart", 28, -12, -LW // 2 - 40, 6), ("star", 26, 10, -LW // 2 - 34, 58), ("calendar", 26, -9, LW // 2 + 6, 6), ("diya", 24, 8, LW // 2 + 6, 60)]):
-            x = cx + dx; html, w = sticker(name, h, rot, (x, y), f"burst{i}"); extras.append((html, (x, y, w, h)))
+    import random
+    rng = random.Random({"confetti": 7, "rails": 3, "clusters": 11, "crescendo": 5}[layout])
+    KINDS = ["heart", "star", "diya", "calendar", "star", "heart", "diya"]
+    lo, hi = END + 6, W - END - 6
+    lk0, lk1 = (W - LW) // 2 - 8, (W + LW) // 2 + 8
+    def ok(x, w):                                                        # inside the clasp-free run, clear of the lockup
+        return lo <= x and x + w <= hi and (x + w <= lk0 or x >= lk1)
+    def put(name, h, rot, x, top, tag):
+        y = 6 if top else H - h - 6                                      # ride the top or the bottom rule, clear of the 34-56 type row
+        html, w = sticker(name, h, rot, (x, y), tag)
+        if not ok(x, w): return False
+        for _, (ex, ey, ew, eh) in extras:                               # allow a little overlap (it is a pile), never a stack
+            if abs((ex + ew / 2) - (x + w / 2)) < (ew + w) * .36 and abs((ey + eh / 2) - (y + h / 2)) < (eh + h) * .4: return False
+        extras.append((html, (x, y, w, h))); return True
+    n = 0
+    if layout == "confetti":                                             # random, small, both rules, every tilt
+        while n < 16:
+            if put(rng.choice(KINDS), rng.choice([18, 20, 22, 24]), rng.randint(-18, 18), rng.randint(lo, hi), rng.random() < .5, f"sc{len(extras)}"): n += 1
+            if len(extras) > 60: break
+    elif layout == "rails":                                              # a strict rail: big row on top, a quiet small row below
+        x = lo + 4; i = 0
+        while x < hi - 30:
+            if put(KINDS[i % len(KINDS)], 26, (-9, 7)[i % 2], x, True, f"sc{len(extras)}"): x += 100
+            else: x += 20
+            i += 1
+        x = lo + 56
+        while x < hi - 30:
+            if put("star", 18, (-12, 12)[(x // 100) % 2], x, False, f"sc{len(extras)}"): x += 100
+            else: x += 20
+    elif layout == "clusters":                                           # six pockets of three overlapping stickers, alternating rules
+        for j, cx_ in enumerate([210, 620, 880, 1240, 1510, 1830]):
+            top = j % 2 == 0
+            for k, off in enumerate((-22, 0, 22)):
+                put(KINDS[(j + k * 2) % len(KINDS)], (22, 26, 22)[k], rng.randint(-18, 18), cx_ + off, top, f"sc{len(extras)}")
+    elif layout == "crescendo":                                          # zigzag across the rules, sticker size swelling left to right
+        i = 0; x = lo + 4
+        while x < hi - 24:
+            h = round(18 + 8 * (x - lo) / (hi - lo))
+            if put(KINDS[i % len(KINDS)], h, rng.randint(-14, 14), x, i % 2 == 0, f"sc{len(extras)}"): x += 70
+            else: x += 15
+            i += 1
     txt = f"font-family:var(--d);font-weight:700;font-size:{FS}px;letter-spacing:.16em;line-height:1;color:{INK};white-space:nowrap;text-transform:uppercase"
     def group(words, tag, seps):
         parts = []
@@ -84,24 +112,25 @@ def band(layout):
     fl = "position:absolute;top:0;height:%dpx;display:flex;align-items:center;justify-content:space-between" % H
     row = (f'<div data-tag="left" style="{fl};left:{pad}px;width:{half}px">{lead_l}{group(LEFT, "L", seps_l)}</div>'
            f'<img data-tag="lockup" src="{src}" style="position:absolute;left:{(W - LW) // 2}px;top:{(H - LH) // 2}px;width:{LW}px;height:{LH}px">'
-           f'<div data-tag="right" style="{fl};left:{W - pad - half}px;width:{half}px">{group(RIGHT, "R", seps_r)}{"" if layout == "B" else seps_r[1] if layout == "A" else diamond()}{logo}{tail_r}</div>')
+           f'<div data-tag="right" style="{fl};left:{W - pad - half}px;width:{half}px">{group(RIGHT, "R", seps_r)}{diamond()}{logo}{tail_r}</div>')
     rules = "".join(f'<div style="position:absolute;left:0;width:{W}px;top:{y}px;height:1.5px;background:{ACCENT}"></div>' for y in (7, H - 8.5))
     html = B.page(W, H, GROUND, rules + row + "".join(e[0] for e in extras), grain=False)
     els = [("left", pad, 0, half, H), ("lockup", (W - LW) // 2, (H - LH) // 2, LW, LH), ("right", W - pad - half, 0, half, H)] + [(f"x{i}",) + e[1] for i, e in enumerate(extras)]
     return html, els
 
 
-NAMES = {"A": "separators", "B": "bookends", "C": "scatter", "D": "burst"}
+NAMES = {"1": "confetti", "2": "rails", "3": "clusters", "4": "crescendo"}
 
 
 async def main():
     outs = []
     async with B.session():
         for k, nm in NAMES.items():
-            html, els = band(k)
+            html, els = band(nm)
             out = os.path.join(OUT, f"entry_band_{k}_{nm}.png")
             await B.render(html, out, W, H, elements=els, page_bg=GROUND, text_pairs=[("type", INK, GROUND, FS, True)], margin=6,
-                           collision_ignore={(a, f"x{i}") for a in ("left", "right") for i in range(8)})   # stickers sit in the type rows' free bands by design
+                           collision_ignore={(a, f"x{i}") for a in ("left", "right") for i in range(80)})   # stickers sit in the type rows' free bands by design
             outs.append(out)
+            Image.open(out).convert("RGB").save(out[:-4] + ".pdf", resolution=25.4 * 12)   # 12 px/mm, so the page is exactly 350 x 15 mm
     print("done", outs)
 asyncio.run(main())
