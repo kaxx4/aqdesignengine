@@ -35,7 +35,7 @@ SLIDES = [  # name, photo, pos, natural_r, chip, lines, sub, cta
  ("06_close", P[57], "48% 50%", None, "SEE YOU NEXT TIME", [("DISCO DIWALI 1.0", "DISCO DIWALI 1.0"), ("350+ GUESTS.", mark("350+ GUESTS."))], ["the crew, in one frame."], "follow @ngo.aquaterra"),
 ]
 if os.path.exists(COVER_FILE):
-    SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "50% 40%", None, "OCT 2024", [("DISCO DIWALI", "DISCO DIWALI"), ("1.0", mark("1.0"))], ["one night. a whole lot of glitter."], None))
+    SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "30% 50%", None, "OCT 2024", [("DISCO DIWALI", "DISCO DIWALI"), ("1.0", mark("1.0"))], ["one night. a whole lot of glitter."], None))
 async def main():
     async with B.session():
         for fmt, (W, H, size) in dict(story=(1080, 1920, 112), feed=(1080, 1350, 100)).items():
