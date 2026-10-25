@@ -24,15 +24,16 @@ def pimg(path, maxw=1500):
     buf = io.BytesIO(); im.save(buf, "JPEG", quality=88)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode(), im.height / im.width
 COVER_FILE = SRC + "cover.jpg"   # the separate cover photo; slides render without it until it is supplied
-# 67.jpg (signs with MILF/DILF jokes) is deliberately NOT used: not suitable for a public NGO page
-P = {n: pimg(SRC + f"{n}.jpg")[0] for n in (68, 69, 70, 71)}
+# 67.jpg is the same crew photo as 73.jpg; 73 (the user's resend) is the one used
+P = {n: pimg(SRC + f"{n}.jpg")[0] for n in (68, 69, 70, 71, 73)}
 NAT_TOP, NAT_GH = 0, 300
-NAT = {}
+NAT = {"05_signs": (520, 140)}   # whole crew + all signs, letterboxed below the logo
 SLIDES = [  # name, photo, pos, natural_r, chip, lines, sub, cta
  ("02_kick", P[68], "50% 50%", None, "KICK OFF", [("BALL AT", "BALL AT"), ("THEIR FEET.", mark("THEIR FEET."))], ["two players, one red ball, full focus."], None),
  ("03_match", P[70], "55% 50%", None, "GAME ON", [("GAME ON,", "GAME ON,"), ("BAREFOOT AND ALL.", ring("BAREFOOT AND ALL."))], ["a scramble for the ball at dusk."], None),
  ("04_hug", P[69], "50% 40%", None, "FULL TIME", [("GROUP HUG,", "GROUP HUG,"), ("NO REFEREE.", mark("NO REFEREE."))], ["five friends and a camera, after the match."], None),
- ("05_close", P[71], "50% 40%", None, "SEE YOU NEXT TIME", [("FOOTBALL", "FOOTBALL"), ("FUNDRAISER 2024.", mark("FUNDRAISER 2024."))], ["under the aquaterra banner."], "follow @ngo.aquaterra"),
+ ("05_signs", P[73], "", 900 / 1600, "THE SQUAD", [("SIGNS UP,", "SIGNS UP,"), ("FOOTBALL SZN.", mark("FOOTBALL SZN."))], ["the crew and their hand-made posters."], None),
+ ("06_close", P[71], "50% 40%", None, "SEE YOU NEXT TIME", [("FOOTBALL", "FOOTBALL"), ("FUNDRAISER 2024.", mark("FUNDRAISER 2024."))], ["under the aquaterra banner."], "follow @ngo.aquaterra"),
 ]
 if os.path.exists(COVER_FILE):
     SLIDES.insert(0, ("01_cover", pimg(COVER_FILE)[0], "55% 30%", None, "2024", [("FOOTBALL", "FOOTBALL"), ("FUNDRAISER", mark("FUNDRAISER"))], ["a pitch, a crowd and a cause."], None))
