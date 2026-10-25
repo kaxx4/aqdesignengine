@@ -9,7 +9,12 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 exec(open(os.path.join(_HERE, "gen_why_we_do_v1.py")).read().split("# ====================== CAROUSEL")[0])
 _ev = open(os.path.join(_HERE, "gen_events_vibe_v1.py")).read().splitlines()
 _s = next(i for i, l in enumerate(_ev) if l.startswith("def step_chip")); _e = next(i for i, l in enumerate(_ev) if l.startswith("async def type_slide"))
-exec("\n".join(_ev[_s:_e]).replace("gh = 680 if natural_r", "gh = 300 if natural_r"))   # shorter fade so a held sign stays readable
+exec("\n".join(_ev[_s:_e]).replace("gh = 680 if natural_r", "gh = NAT_GH if natural_r")
+     .replace("left:0;top:0;width:{W}px;height:auto", "left:0;top:{NAT_TOP}px;width:{W}px;height:auto")
+     .replace("top:{ph - gh}px", "top:{ph + (NAT_TOP if natural_r else 0) - gh}px")
+     .replace("top:{ph - 3}px", "top:{ph + (NAT_TOP if natural_r else 0) - 3}px"))   # NAT_TOP slides a natural-aspect photo up; NAT_GH is its fade height
+NAT_TOP, NAT_GH = 0, 300
+NAT = {"04_rim": (-160, 140)}   # rim frame: the players sit at the foot of the picture, so lift it clear of the headline
 from PIL import Image
 OUT = "out/terrathon2_event"; os.makedirs(OUT, exist_ok=True)
 SRC = "scratchpad/carousel_2026/terrathon_2_2025/src_images/"
@@ -23,7 +28,7 @@ P = {n: pimg(SRC + f"{n}.jpg")[0] for n in (31, 32, 33, 34, 35)}
 SLIDES = [  # name, photo, pos, natural_r, chip, lines, sub, cta
  ("02_pitch", P[31], "50% 50%", None, "ON THE PITCH", [("EYES ON", "EYES ON"), ("THE BALL.", mark("THE BALL."))], ["bat out, fielder ready, a yellow ball mid-air."], None),
  ("03_court", P[34], "55% 50%", None, "FULL COURT", [("DRIBBLE,", "DRIBBLE,"), ("DEFEND.", mark("DEFEND."))], ["a ball in play under the tin roof."], None),
- # 04_rim dropped: dark frame, and the headline hides the players at the foot of the picture
+ ("04_rim", P[32], "", 1600 / 1066, "UP FOR IT", [("EVERY EYE", "EVERY EYE"), ("ON THE RIM.", ring("ON THE RIM."))], ["the ball on the hoop, heads tipped back."], None),
  ("05_sign", P[33], "", 1600 / 1200, "THE CHEER SQUAD", [("THEY SAY", "THEY SAY"), ("SHOOTERS SHOOT.", mark("SHOOTERS SHOOT."))], ["a hand-painted sign, held up courtside."], None),
  ("06_close", P[35], "40% 50%", None, "SEE YOU NEXT TIME", [("TERRATHON 2.0", "TERRATHON 2.0"), ("2025.", mark("2025."))], ["game on. see you at the next one."], "follow @ngo.aquaterra"),
 ]
@@ -33,6 +38,7 @@ async def main():
     async with B.session():
         for fmt, (W, H, size) in dict(story=(1080, 1920, 112), feed=(1080, 1350, 100)).items():
             for name, src, pos, nr, chip, lines, sub, cta in SLIDES:
+                global NAT_TOP, NAT_GH; NAT_TOP, NAT_GH = NAT.get(name, (0, 300))
                 if fmt == "feed" and not name.startswith("01_"): continue   # feed size is for the cover only
                 if fmt == "feed" and not name.startswith("01_"): continue   # feed size is for the cover only
                 global OUT
