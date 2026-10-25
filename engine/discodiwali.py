@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("banner", "dim", "status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("banner", "dim", "note", "link", "photo", "date", "time", "venue")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("bignote", "banner", "dim", "status", "note", "link", "date", "time", "venue", "address"), "poster_ref": ("banner", "dim", "note", "link", "photo", "date", "time", "venue")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -702,7 +702,7 @@ class Poster:
         if c.get("status"):
             self.raw("status", c["status"], 543, 1136, 880, 62, "font-family:var(--e);font-weight:600;font-size:52px")
         if c.get("note"):
-            big = bool(c.get("date") or c.get("venue"))     # with the logistics block the note is the PRICE: make it a second hero line
+            big = bool(c.get("date") or c.get("venue") or c.get("bignote"))     # with the logistics block the note is the PRICE: make it a second hero line
             self.raw("note", c["note"], 541, 1234 if big else 1215, 900 if big else 500, 100 if big else 44,
                      f"font-family:var(--e);font-weight:{700 if big else 600};font-size:{88 if big else 38}px")
         # Optional logistics block (user, 2026-10-23: bulk stories mention date, time, location). Supplied facts only. The pill drops below it.
