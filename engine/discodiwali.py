@@ -64,7 +64,7 @@ REQUIRED = {
     "story_ref":    ("edition", "status", "photo"),
     "poster_ref":   ("edition", "status"),
 }
-OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue", "stamp"), "poster_ref": ("note", "link", "photo")}
+OPTIONAL = {"announce": ("note", "photo"), "countdown": ("unit",), "tickets_open": ("detail", "date"), "sold_out": (), "save_the_date": (), "teaser_full": (), "teaser_arch": (), "teaser_trio": (), "story_launch": ("note", "date", "time"), "wa_poster": ("note",), "wa_dp": ("date",), "story_ref": ("note", "link", "date", "time", "venue", "stamp"), "poster_ref": ("note", "link", "photo", "date", "time", "venue", "stamp")}
 
 # SVG shader used by style="blue": splits the title lockup into R/G/B copies offset +-3px and screen-blends them back.
 BLUE_DEFS = ('<svg width="0" height="0" style="position:absolute"><defs><filter id="ca" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB">'
@@ -628,6 +628,19 @@ class Poster:
         link = c.get("link", "Link in bio")
         nolink = link is False                            # WhatsApp: nothing to link to, so no pill, and the info lines drop into the freed space
         dy = 62 if nolink else 0
+        if c.get("stamp"):
+            # STAMP variant (2026-10-25, user: the WhatsApp poster must follow the story): same layout as story_ref's stamp, badge, copper mask, ball-free
+            # title and edition lines as above, the band across the title's lower half (it covers it by design, like the story), date / time / venue
+            # under it, no pill. Scale .44 centred on y 880 so the stack fits a 1350 canvas: the band's lower edge is y 1163 at x 150.
+            kb, y0b = .44, 880
+            bx, by = round(540 - 1400 * kb), round(y0b - 771 * kb)
+            self.img(c["stamp"] if isinstance(c["stamp"], str) else "early_bird_sold_out_banner.png", bx, by, round(2800 * kb), z=30, tag="banner",
+                     extra="filter:drop-shadow(0 10px 28px rgba(0,0,0,.55));")
+            self.box("banner", bx, by, round(2800 * kb), round(1547 * kb))
+            for key, label, size, h, y in (("date", "date", 40, 44, 1203), ("time", "time", 38, 42, 1251), ("venue", "venue", 31, 36, 1297)):
+                if c.get(key):
+                    self.raw(label, c[key], 540, y, 940, h, f"font-family:var(--e);font-weight:{400 if key == 'time' else 600};font-size:{size}px")
+            return
         self.raw("status", c["status"], 538, 1030 + dy, 700, 52, "font-family:var(--e);font-weight:600;font-size:44px")
         if c.get("note"):
             self.raw("note", c["note"], 540, 1075 + dy, 350, 34, "font-family:var(--e);font-weight:600;font-size:28px")
