@@ -681,7 +681,7 @@ class Poster:
                 # The asset is 2800 px long (lengthened by make_early_bird_banner.py) so 0.52 still bleeds off both canvas edges.
                 kb, y0b = .52, 960
                 bx, by = round(540 - 1400 * kb), round(y0b - 771 * kb)
-                self.img("early_bird_sold_out_banner.png", bx, by, round(2800 * kb), z=30, tag="banner",
+                self.img(c["stamp"] if isinstance(c["stamp"], str) else "early_bird_sold_out_banner.png", bx, by, round(2800 * kb), z=30, tag="banner",
                          extra="filter:drop-shadow(0 10px 28px rgba(0,0,0,.55));")
                 self.box("banner", bx, by, round(2800 * kb), round(1547 * kb))
                 stack_y = {"date": 1245, "time": 1303, "venue": 1352}; y = 0

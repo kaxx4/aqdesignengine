@@ -3,12 +3,13 @@
 2. the old SOLD OUT lettering is removed by REPLACING each text pixel with a real band pixel from the same columns (so the grain, which
    gets coarser toward the left, is the band's own);
 3. the new lettering EARLY BIRD / SOLD OUT and a small NEXT PHASE OPENS SOON are set in NeutralFace in the same off-white speckle.
-Usage: python scratchpad/make_early_bird_banner.py <path to the user's banner jpg>"""
+Usage: python scratchpad/make_early_bird_banner.py <user banner jpg> [LINE1 LINE2 OUTFILE]   (defaults: EARLY BIRD / SOLD OUT / early_bird_sold_out_banner.png)"""
 import glob, os, random, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = sys.argv[1]; OUT = os.path.join(ROOT, "engine/assets/disco_diwali/early_bird_sold_out_banner.png")
+SRC = sys.argv[1]; L1 = sys.argv[2] if len(sys.argv) > 2 else "EARLY BIRD"; L2 = sys.argv[3] if len(sys.argv) > 3 else "SOLD OUT"
+OUT = os.path.join(ROOT, "engine/assets/disco_diwali", sys.argv[4] if len(sys.argv) > 4 else "early_bird_sold_out_banner.png")
 im = np.asarray(Image.open(SRC).convert("RGB")).astype(np.uint8); H, W, _ = im.shape
 PT, PB = (-0.29255, 679.39), (-0.29239, 1447.89)                 # fitted top / bottom edge: y = m x + c
 yy, xx = np.mgrid[0:H, 0:W]
@@ -49,17 +50,17 @@ def fit(fontpath, text, target_w):
         if w >= target_w * S or size > 600: return f
         size += 4
 lay = Image.new("L", (LW, LH), 0); d = ImageDraw.Draw(lay)
-f1 = fit(bold[-1], "EARLY BIRD", 1380)
-l2 = "SOLD OUT"; f2 = ImageFont.truetype(bold[-1], f1.size)
+f1 = fit(bold[-1], max((L1, L2), key=len), 1380)
+l2 = L2; f2 = ImageFont.truetype(bold[-1], f1.size)
 f3 = fit(reg[-1], "NEXT PHASE OPENS SOON", 620)
 def centered(txt_, f, cy):
     w = f.getlength(txt_); bb = f.getbbox(txt_); h = bb[3] - bb[1]
     d.text(((LW - w) / 2 - bb[0] * 0, cy - bb[1] - h / 2), txt_, font=f, fill=255)
     return h
-h1 = f1.getbbox("EARLY BIRD")[3] - f1.getbbox("EARLY BIRD")[1]
+h1 = f1.getbbox(L1)[3] - f1.getbbox(L1)[1]
 gap = 46 * S; h3 = f3.getbbox("NEXT PHASE OPENS SOON")[3] - f3.getbbox("NEXT PHASE OPENS SOON")[1]
 total = h1 * 2 + gap + 62 * S + h3; y0 = LH / 2 - total / 2
-centered("EARLY BIRD", f1, y0 + h1 / 2); centered(l2, f2, y0 + h1 + gap + h1 / 2)
+centered(L1, f1, y0 + h1 / 2); centered(l2, f2, y0 + h1 + gap + h1 / 2)
 centered("NEXT PHASE OPENS SOON", f3, y0 + h1 * 2 + gap + 62 * S + h3 / 2)
 lay = lay.resize((LW // S, LH // S), Image.LANCZOS)
 # speckle: off-white with darker grey flecks like the original lettering
