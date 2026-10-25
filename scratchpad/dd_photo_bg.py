@@ -9,7 +9,7 @@ turned faces; check before any public post. Use: photo_ground(dd, W, H, "14_04",
 """
 import glob, os
 
-EVENTS = ("unsorted-2026-10-07", "disco-diwali-hall-2026-10-14")
+EVENTS = ("unsorted-2026-10-07", "disco-diwali-hall-2026-10-14", "disco-diwali-2026-10-21")
 
 
 def find(dd, ref):
