@@ -8,14 +8,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "engine")); sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, "engine", "discodiwali.py"))
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
-import dd_charity_ground as G
 B = dd.B; W = 1080
 OUT = os.path.join(ROOT, "out", "discodiwali", "dresscode")
 PHOTO = os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-dresscode", "01_four-friends-booth.jpg")
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 def poster(H):
     story = H > 1350
-    parts, els = [G.ground_diya(W, H)], []
+    parts, els = [(f'<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 38%,#FF2D87 0%,#C41E8E 38%,#5B1A9E 72%,#1E0A4A 100%)"></div>'
+                   f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:160px;top:-53px;width:1045px;z-index:5">'
+                   f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.7;pointer-events:none">'
+                   f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.3;pointer-events:none">')], []
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     pw, ph = (920, 700) if story else (840, 560)
@@ -35,7 +37,9 @@ def poster(H):
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     hy = fy + fh + (70 if story else 60)
     line("h1", "Dress code", hy, 84, 700, 84)
-    s2 = 108; line("h2", "Indo-Western", hy + 96, s2, 700, s2)
+    s2 = 108
+    parts.append(f'<div data-tag="h2" style="position:absolute;left:0;width:{W}px;top:{hy + 96}px;text-align:center;font-family:var(--d);font-weight:700;font-size:{s2}px;line-height:1;'
+                 f'text-transform:uppercase;white-space:nowrap;color:#FFD400;-webkit-text-stroke:5px #0A0A0A;paint-order:stroke fill;text-shadow:7px 7px 0 #0A0A0A;z-index:20">Indo-Western</div>'); els.append(("h2", 40, hy + 96, 1000, s2))
     y = hy + 96 + s2 + (44 if story else 28)
     vw = 300 if story else 250; t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(y - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
@@ -46,6 +50,6 @@ async def main():
     async with B.session():
         for name, H in (("feed", 1350), ("story", 1920)):
             inner, els, bottom = poster(H); print(f"[{name}] last element ends at y={bottom} of {H}")
-            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, bleed_tags=("plate", "lights"), crop_tags=("plate",), page_bg="#000",
-                           collision_ignore=[("frame", "sticker"), ("frame", "badge")], text_pairs=[("h2", "#fff", "#000", 108, True)])
+            await B.render(B.page(W, H, "#000", inner, grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=els, bleed_tags=("plate", "lights", "h2"), crop_tags=("plate",), page_bg="#000",
+                           collision_ignore=[("frame", "sticker"), ("frame", "badge")], text_pairs=[("h2", "#FFD400", "#C41E8E", 108, True)])
 asyncio.run(main())
