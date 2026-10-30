@@ -19,13 +19,14 @@ from PIL import Image
 W, H = core.SIZES["feed"]; M = 64
 BLUE = core.ACCENTS[4]
 HERE = os.path.dirname(os.path.abspath(__file__))
-im = Image.open(os.path.join(HERE, "in/photo.jpg")); im.thumbnail((1620, 2160))
+im = Image.open(os.path.join(HERE, "in/photo_juice.jpg")); im.thumbnail((1620, 2160))
 buf = io.BytesIO(); im.save(buf, "JPEG", quality=90)
 PHOTO = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
-PW, PH = W, round(W * 4032 / 3024)            # photo at cover width: 1080x1440
+_iw, _ih = Image.open(os.path.join(HERE, "in/photo_juice.jpg")).size
+PW, PH = W, round(W * _ih / _iw)            # photo at cover width: 1080x1440
 PY = -(PH - H) // 2                            # fixed crop, identical on every slide
-CX, CY = 520, 560                              # star centre, identical on every slide
+CX, CY = 620, 860                              # star centre on the cup, identical on every slide
 N = 12
 RADII = [round(170*(1800/170)**(k/(N-2))) for k in range(N-1)] + [None]   # geometric growth; None = fully revealed
 
