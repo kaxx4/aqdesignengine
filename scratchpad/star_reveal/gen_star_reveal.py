@@ -26,7 +26,8 @@ PHOTO = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 PW, PH = W, round(W * 4032 / 3024)            # photo at cover width: 1080x1440
 PY = -(PH - H) // 2                            # fixed crop, identical on every slide
 CX, CY = 520, 560                              # star centre, identical on every slide
-RADII = [170, 420, 900, 1700, None]            # None = fully revealed
+N = 12
+RADII = [round(170*(1800/170)**(k/(N-2))) for k in range(N-1)] + [None]   # geometric growth; None = fully revealed
 
 def star(cx, cy, R, r_ratio=0.382):
     pts = []
