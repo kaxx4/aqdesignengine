@@ -189,3 +189,16 @@ def cloche(size=340, rot=0, u="l", shadow=True):
             f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{steam}{_metal(u + "2", plate, 400, 400, .93, 200, 303)}{_metal(u, dome, 400, 400, .92, 200, 220)}'
             f'<circle cx="200" cy="96" r="22" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/><rect x="186" y="104" width="28" height="14" rx="5" fill="#7A2A12" stroke="#3A0F06" stroke-width="4"/>'
             f'<path d="M104 236 C108 192 132 162 164 146" fill="none" stroke="#FFEBDD" stroke-width="10" stroke-linecap="round" opacity=".7"/></g></svg>')
+
+
+def mug(size=340, rot=0, u="g", shadow=True):
+    """Copper coffee mug (Meet Cute cafe, 2026-11-04): a rounded cup in the mask texture with a ring handle, a saucer, a heart in the foam and two steam curls."""
+    cupd = "M76 128 H300 C306 128 310 132 310 138 L300 268 C296 310 262 340 220 340 H156 C114 340 80 310 76 268 L66 138 C66 132 70 128 76 128 Z"
+    handle = "M300 168 C352 160 376 190 370 222 C364 256 330 270 294 262 L298 236 C322 240 340 232 342 218 C344 202 330 192 304 196 Z"
+    saucer = "M28 346 C28 336 40 330 58 330 H318 C336 330 348 336 348 346 C348 362 322 374 290 374 H86 C54 374 28 362 28 346 Z"
+    steam = "".join(f'<path d="M{x} 104 C{x - 18} 86 {x + 18} 66 {x} 44" fill="none" stroke="#FFEBDD" stroke-width="9" stroke-linecap="round" opacity=".85"/>' for x, in ((150,), (226,)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{steam}{_metal(u + "2", saucer, 400, 400, .94, 188, 352)}'
+            f'<path d="{handle}" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>{_metal(u, cupd, 400, 400, .92, 188, 234)}'
+            f'<ellipse cx="188" cy="138" rx="112" ry="16" fill="#3A0F06" opacity=".75"/>'
+            f'<path d="M188 160 C176 146 154 152 158 170 C162 186 188 198 188 198 C188 198 214 186 218 170 C222 152 200 146 188 160 Z" fill="#FFEBDD" opacity=".9"/></g></svg>')
