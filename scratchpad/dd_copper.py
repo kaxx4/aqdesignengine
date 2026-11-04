@@ -165,3 +165,16 @@ def slice_(size=340, rot=0, u="z", shadow=True):
             f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u, d, 400, 400, .9, 200, 190)}{pep}'
             f'<path d="M262 130 C266 168 258 190 270 206 C280 192 274 160 284 128 Z" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/>'
             f'{_metal(u + "2", crust, 400, 400, .9, 200, 76)}</g></svg>')
+
+
+def brownie(size=340, rot=0, u="w", shadow=True):
+    """Copper brownie stack (Crave'lla, 2026-11-04): two squares in the mask texture, the top one drizzled with a pearl zigzag, crumbs at the base."""
+    lo = "M70 210 L300 196 C316 196 326 206 326 222 L330 338 C330 352 320 362 306 362 L82 370 C66 370 56 360 56 344 L54 228 C54 216 60 210 70 210 Z"
+    hi = "M100 76 L310 92 C324 94 332 104 330 118 L320 222 C318 236 308 244 294 242 L88 226 C74 224 66 214 68 200 L78 92 C80 80 88 74 100 76 Z"
+    drip = "M98 120 L136 168 L170 112 L206 176 L238 120 L272 182 L300 130"
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u + "2", lo, 400, 400, .92, 192, 285)}{_metal(u, hi, 400, 400, .92, 200, 160)}'
+            f'<path d="{drip}" fill="none" stroke="#3A0F06" stroke-width="16" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/>'
+            f'<path d="{drip}" fill="none" stroke="#FFEBDD" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>'
+            + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="2.5"/>' for x, y, r in ((40, 372, 9), (348, 366, 7), (366, 378, 5))) +
+            '</g></svg>')
