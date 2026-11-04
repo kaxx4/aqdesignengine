@@ -41,11 +41,17 @@ STALLS = {
     "meetcute": ("Meet|Cute", "Food stall", "meet-cute/01_meet-cute-logo.png", "#FFFAF0", 0, "meet-cute/02_meet-cute-pasta-fork.jpg", "50% 50%", .34, "mug", 10, 150),
     "artstop":  ("The|ArtStop", "Jewellery stall", "the-artstop/01_the-artstop-logo.png", "#4C1815", 0, "the-artstop/02_the-artstop-lip-charms.jpg", "50% 50%", .52, "heart", 10, 112),
     "nandu":    ("Nandu|Jee", "Food stall", "nandu-jee/01_nandu-jee-googly-eyes.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", 8, 165),
+    "photobooth": ("Photo|Booth", "Activity", "cp:camera", "#0B0B0B", 0, "", "", 0, "star", 10, 165),
+    "gajra":    ("Gajra &amp;|Jhumka", "Jewellery stall", "cp:jhumka", "#0B0B0B", 0, "", "", 0, "heart", 10, 165),
+    "periodsim": ("Period Pain|Simulator", "Activity", "cp:bolt", "#0B0B0B", 0, "", "", 0, "star", -10, 165),
     "puchka":   ("Puchka", "Food stall", "puchka/01_puchka-plates-crop.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", -10, 165),
 }
 
 
 def circle(src, fill, inset):
+    if src.startswith("cp:"):   # no logo or photo supplied: a large copper sticker drawn for this stall, on a near-black disc
+        return (f'<div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,#2A1410 0%,{fill} 70%)"></div>'
+                f'<div style="position:absolute;left:14%;top:14%;width:72%;height:72%">{getattr(CP, src[3:])(round(580 * .72), 0, u=src[3:4] + "C")}</div>')
     if fill is None:   # a photo, not a logo: fill the circle
         return f'<img src="{dd.photo_uri(os.path.join(EV, src))}" style="width:100%;height:100%;object-fit:cover;filter:contrast(1.06) saturate(1.05)">'
     return (f'<div style="position:absolute;inset:0;background:{fill}"></div>'
@@ -65,7 +71,7 @@ COL_X, COL_W = 820, 640          # the right-hand text column
 
 
 async def fit_name(lines, cap=170):
-    m = await B.measure_text([dict(text=t.upper(), font="d", size=100, weight=700) for t in lines], W=W, H=H)
+    m = await B.measure_text([dict(text=t.upper().replace("&AMP;", "&"), font="d", size=100, weight=700) for t in lines], W=W, H=H)
     widest = max(r["text_w"] for r in m)
     return min(cap, int(100 * (COL_W - 20) / widest))
 

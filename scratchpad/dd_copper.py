@@ -202,3 +202,42 @@ def mug(size=340, rot=0, u="g", shadow=True):
             f'<path d="{handle}" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>{_metal(u, cupd, 400, 400, .92, 188, 234)}'
             f'<ellipse cx="188" cy="138" rx="112" ry="16" fill="#3A0F06" opacity=".75"/>'
             f'<path d="M188 160 C176 146 154 152 158 170 C162 186 188 198 188 198 C188 198 214 186 218 170 C222 152 200 146 188 160 Z" fill="#FFEBDD" opacity=".9"/></g></svg>')
+
+
+def camera(size=340, rot=0, u="a", shadow=True):
+    """Copper camera (Photobooth, 2026-11-04): a body in the mask texture, a pearl-rimmed lens with a gem, a flash block and a shutter button."""
+    body = "M60 130 H140 L162 96 H238 L260 130 H340 C358 130 372 144 372 162 V318 C372 336 358 350 340 350 H60 C42 350 28 336 28 318 V162 C28 144 42 130 60 130 Z"
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#7AA0C8"/><stop offset="1" stop-color="#0E1A2E"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>'
+            f'<rect x="64" y="104" width="46" height="30" rx="8" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+            f'<rect x="286" y="104" width="54" height="30" rx="8" fill="#FFEBDD" stroke="#3A0F06" stroke-width="5"/>'
+            f'{_metal(u, body, 400, 400, .93, 200, 225)}'
+            f'<circle cx="200" cy="240" r="84" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="10"/>'
+            f'<circle cx="200" cy="240" r="84" fill="none" stroke="#FFEBDD" stroke-width="10" stroke-dasharray="0 16" stroke-linecap="round" transform="translate(200 240) scale(.86) translate(-200 -240)"/>'
+            f'<circle cx="200" cy="240" r="48" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="6"/>'
+            f'<circle cx="184" cy="222" r="12" fill="#fff" opacity=".7"/></g></svg>')
+
+
+def jhumka(size=340, rot=0, u="j", shadow=True):
+    """Copper jhumka earring (Gajra & Jhumka stall, 2026-11-04): a stud with a gem, a link, a bell-shaped dome in the mask texture and a fringe of pearl drops."""
+    dome = "M200 150 C266 150 316 200 330 286 H70 C84 200 134 150 200 150 Z"
+    drops = "".join(f'<path d="M{x} 296 V{318 + (i % 2) * 14}" stroke="url(#tr{u})" stroke-width="4"/><circle cx="{x}" cy="{326 + (i % 2) * 14}" r="9" fill="#FFEBDD" stroke="#7A2A12" stroke-width="2.5"/>'
+                    for i, x in enumerate(range(84, 330, 20)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#FF7A5A"/><stop offset="1" stop-color="#6A1208"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>'
+            f'<circle cx="200" cy="52" r="40" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+            f'<circle cx="200" cy="52" r="40" fill="none" stroke="#FFEBDD" stroke-width="8" stroke-dasharray="0 13" stroke-linecap="round" transform="translate(200 52) scale(.8) translate(-200 -52)"/>'
+            f'<circle cx="200" cy="52" r="18" fill="url(#gem{u})" stroke="#3A0F06" stroke-width="3"/>'
+            f'<rect x="190" y="90" width="20" height="64" rx="10" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="4"/>'
+            f'{drops}{_metal(u, dome, 400, 400, .9, 200, 230)}'
+            f'<rect x="64" y="280" width="272" height="20" rx="10" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="4"/></g></svg>')
+
+
+def bolt(size=340, rot=0, u="v", shadow=True):
+    """Copper lightning bolt (Period Pain Simulator, 2026-11-04): a zap in the mask texture with a pearl rim and two spark marks."""
+    d = "M236 16 L92 222 H184 L150 384 L310 160 H214 Z"
+    sparks = "".join(f'<path d="M{x1} {y1} L{x2} {y2}" stroke="#FFEBDD" stroke-width="9" stroke-linecap="round"/>' for x1, y1, x2, y2 in ((40, 120, 70, 140), (34, 176, 70, 178), (330, 250, 362, 236), (334, 300, 368, 304)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{sparks}{_metal(u, d, 400, 400, .86, 200, 200)}</g></svg>')
