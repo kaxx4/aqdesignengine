@@ -153,3 +153,15 @@ def sub(size=340, rot=0, u="b", shadow=True):
             f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}><g transform="translate(0 34)">{_metal(u + "2", base, 400, 400, .93, 200, 250)}</g>'
             f'<g transform="translate(0 16)"><path d="{lettuce}" fill="#7FA032" stroke="#2E3A0C" stroke-width="3"/>{toms}</g>'
             f'{_metal(u, d, 400, 400, .93, 200, 160)}{seeds}</g></svg>')
+
+
+def slice_(size=340, rot=0, u="z", shadow=True):
+    """Copper pizza slice (Pizza Hut, 2026-11-04): a wedge in the mask texture with a thick rounded crust band, pearl-rimmed pepperoni and a cheese drip."""
+    d = "M200 384 L54 92 C100 62 150 48 200 48 C250 48 300 62 346 92 Z"
+    crust = "M44 96 C96 52 150 32 200 32 C250 32 304 52 356 96 C346 116 338 122 328 118 C286 92 244 82 200 82 C156 82 114 92 72 118 C62 122 54 116 44 96 Z"
+    pep = "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="#B8341C" stroke="#FFEBDD" stroke-width="4" stroke-dasharray="0 9" stroke-linecap="round"/>'
+                  f'<circle cx="{x}" cy="{y}" r="{r}" fill="none" stroke="#3A0F06" stroke-width="2.5" opacity=".7"/>' for x, y, r in ((150, 150, 26), (246, 158, 24), (198, 236, 22), (176, 314, 14)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u, d, 400, 400, .9, 200, 190)}{pep}'
+            f'<path d="M262 130 C266 168 258 190 270 206 C280 192 274 160 284 128 Z" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/>'
+            f'{_metal(u + "2", crust, 400, 400, .9, 200, 76)}</g></svg>')
