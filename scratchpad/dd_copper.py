@@ -140,3 +140,16 @@ def cup(size=340, rot=0, u="q", shadow=True):
             f'{_metal(u, d, 400, 400, .92, 200, 235)}'
             f'<rect x="92" y="80" width="216" height="26" rx="12" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
             f'<path d="M108 270 C160 286 240 286 294 270" fill="none" stroke="#3A0F06" stroke-opacity=".55" stroke-width="6" stroke-linecap="round"/>{boba}</g></svg>')
+
+
+def sub(size=340, rot=0, u="b", shadow=True):
+    """Copper sub sandwich (Subway, 2026-11-04): a long roll in the mask texture, a dark filling seam with a wavy lettuce edge and tomato rounds, pearl 'sesame' on top."""
+    d = "M40 170 C40 128 78 112 120 112 H280 C322 112 360 128 360 170 C360 196 344 206 330 210 H70 C56 206 40 196 40 170 Z"
+    base = "M50 238 C50 222 62 214 80 214 H320 C338 214 350 222 350 238 C350 268 326 288 290 288 H110 C74 288 50 268 50 238 Z"
+    lettuce = "M60 212 " + " ".join(f"Q{75 + i * 30} {226 if i % 2 else 200} {90 + i * 30} 212" for i in range(9))
+    toms = "".join(f'<ellipse cx="{x}" cy="214" rx="30" ry="14" fill="#D8442A" stroke="#3A0F06" stroke-width="3"/>' for x in (110, 190, 270))
+    seeds = "".join(f'<ellipse cx="{x}" cy="{y}" rx="6" ry="3.5" fill="#FFEBDD" transform="rotate({a} {x} {y})"/>' for x, y, a in ((110, 140, 20), (150, 128, -15), (196, 136, 30), (240, 126, -20), (282, 140, 15), (176, 160, -30), (226, 160, 25)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}><g transform="translate(0 34)">{_metal(u + "2", base, 400, 400, .93, 200, 250)}</g>'
+            f'<g transform="translate(0 16)"><path d="{lettuce}" fill="#7FA032" stroke="#2E3A0C" stroke-width="3"/>{toms}</g>'
+            f'{_metal(u, d, 400, 400, .93, 200, 160)}{seeds}</g></svg>')
