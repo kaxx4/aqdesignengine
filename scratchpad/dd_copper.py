@@ -178,3 +178,14 @@ def brownie(size=340, rot=0, u="w", shadow=True):
             f'<path d="{drip}" fill="none" stroke="#FFEBDD" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>'
             + "".join(f'<circle cx="{x}" cy="{y}" r="{r}" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="2.5"/>' for x, y, r in ((40, 372, 9), (348, 366, 7), (366, 378, 5))) +
             '</g></svg>')
+
+
+def cloche(size=340, rot=0, u="l", shadow=True):
+    """Copper serving cloche (Zaairah Dine and Lounge, 2026-11-04): a domed cover in the mask texture on a pearl-rimmed platter, a knob on top, a glint and two steam curls."""
+    dome = "M58 286 C58 182 120 112 200 112 C280 112 342 182 342 286 Z"
+    plate = "M24 292 C24 284 30 280 40 280 H360 C370 280 376 284 376 292 C376 312 352 326 318 326 H82 C48 326 24 312 24 292 Z"
+    steam = "".join(f'<path d="M{x} 62 C{x - 18} 46 {x + 18} 30 {x} 10" fill="none" stroke="#FFEBDD" stroke-width="8" stroke-linecap="round" opacity=".85"/>' for x in (150, 250))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{steam}{_metal(u + "2", plate, 400, 400, .93, 200, 303)}{_metal(u, dome, 400, 400, .92, 200, 220)}'
+            f'<circle cx="200" cy="96" r="22" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/><rect x="186" y="104" width="28" height="14" rx="5" fill="#7A2A12" stroke="#3A0F06" stroke-width="4"/>'
+            f'<path d="M104 236 C108 192 132 162 164 146" fill="none" stroke="#FFEBDD" stroke-width="10" stroke-linecap="round" opacity=".7"/></g></svg>')
