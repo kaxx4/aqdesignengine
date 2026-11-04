@@ -128,3 +128,15 @@ def kulfi(size=340, rot=0, u="k", shadow=True):
             f'{_metal(u, d, 400, 400, .9, 200, 172)}'
             f'<path d="M150 252 C176 262 222 262 252 250" fill="none" stroke="#3A0F06" stroke-opacity=".6" stroke-width="6" stroke-linecap="round"/>'
             f'<path d="M164 258 C162 280 172 290 180 280 C184 274 182 266 182 260" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/>{dots}</g></svg>')
+
+
+def cup(size=340, rot=0, u="q", shadow=True):
+    """Copper drink can-glass (Artily, 2026-11-04): a rounded can-shaped glass in the mask texture, a lid rim, a straw, and pearl 'boba' at the bottom."""
+    d = "M118 92 H282 C296 92 302 104 300 118 L292 332 C290 362 270 378 240 378 H160 C130 378 110 362 108 332 L100 118 C98 104 104 92 118 92 Z"
+    boba = "".join(f'<circle cx="{x}" cy="{y}" r="15" fill="#2E0C05" stroke="#FFEBDD" stroke-width="4" opacity=".9"/>' for x, y in ((150, 340), (190, 348), (230, 344), (266, 334), (170, 310), (212, 316), (250, 306)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>'
+            f'<path d="M222 104 L262 8" stroke="#3A0F06" stroke-width="26" stroke-linecap="round"/><path d="M222 104 L262 8" stroke="url(#tr{u})" stroke-width="16" stroke-linecap="round"/>'
+            f'{_metal(u, d, 400, 400, .92, 200, 235)}'
+            f'<rect x="92" y="80" width="216" height="26" rx="12" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+            f'<path d="M108 270 C160 286 240 286 294 270" fill="none" stroke="#3A0F06" stroke-opacity=".55" stroke-width="6" stroke-linecap="round"/>{boba}</g></svg>')
