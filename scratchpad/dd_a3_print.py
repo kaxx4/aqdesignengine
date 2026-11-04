@@ -41,9 +41,9 @@ STALLS = {
     "meetcute": ("Meet|Cute", "Food stall", "meet-cute/01_meet-cute-logo.png", "#FFFAF0", 0, "meet-cute/02_meet-cute-pasta-fork.jpg", "50% 50%", .34, "mug", 10, 150),
     "artstop":  ("The|ArtStop", "Jewellery stall", "the-artstop/01_the-artstop-logo.png", "#4C1815", 0, "the-artstop/02_the-artstop-lip-charms.jpg", "50% 50%", .52, "heart", 10, 112),
     "nandu":    ("Nandu|Jee", "Food stall", "nandu-jee/01_nandu-jee-googly-eyes.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", 8, 165),
-    "photobooth": ("Photo|Booth", "Activity", "cp:camera", "#0B0B0B", 0, "", "", 0, "star", 10, 165),
-    "gajra":    ("Gajra &amp;|Jhumka", "Jewellery stall", "cp:jhumka", "#0B0B0B", 0, "", "", 0, "heart", 10, 165),
-    "periodsim": ("Period Pain|Simulator", "Activity", "cp:bolt", "#0B0B0B", 0, "", "", 0, "star", -10, 165),
+    "photobooth": ("Photo|Booth", "Activity", "photobooth/01_photobooth-set-crop.jpg", None, 0, "", "", 0, "camera", 10, 165),
+    "gajra":    ("Gajra &amp;|Jhumka", "Jewellery stall", "gajra-jhumka/01_gajre-board-crop.jpg", None, 0, "", "", 0, "jhumka", 10, 165),
+    "periodsim": ("Period Pain|Simulator", "Activity", "period-pain-simulator/01_period-sim-electrodes-crop.jpg", None, 0, "", "", 0, "bolt", -10, 165),
     "puchka":   ("Puchka", "Food stall", "puchka/01_puchka-plates-crop.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", -10, 165),
 }
 
