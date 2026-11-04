@@ -114,3 +114,17 @@ def dhol(size=340, rot=0, u="x", shadow=True):
             f'<path d="{lace}" fill="none" stroke="#3A0F06" stroke-width="14" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>'
             f'<path d="{lace}" fill="none" stroke="#FFEBDD" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>'
             f'{stick(120, 20, 280, 118)}{stick(290, 20, 130, 112)}</g></svg>')
+
+
+def kulfi(size=340, rot=0, u="k", shadow=True):
+    """Copper kulfi on a stick (Bombay Kulfi, 2026-11-04): a tapered, dome-topped bar in the mask texture, a bite out of the top-right shoulder, a band of pearl 'pista' dots, a drip, and a wooden-toned stick."""
+    d = ("M138 70 C138 34 166 14 200 14 C222 14 240 22 250 36 C238 44 236 62 248 72 C256 78 262 78 262 78 "
+         "L248 300 C246 318 232 330 214 330 H186 C168 330 154 318 152 300 Z")
+    dots = "".join(f'<circle cx="{x}" cy="{y}" r="8" fill="#FFEBDD" stroke="#7A2A12" stroke-width="2.5"/>' for x, y in ((176, 120), (214, 108), (196, 158), (232, 150), (172, 196), (212, 206)))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>'
+            f'<rect x="184" y="306" width="32" height="88" rx="14" fill="#C98A52" stroke="#3A0F06" stroke-width="6"/>'
+            f'<path d="M193 318 V380" stroke="#FFE2C2" stroke-width="5" stroke-linecap="round" opacity=".6"/>'
+            f'{_metal(u, d, 400, 400, .9, 200, 172)}'
+            f'<path d="M150 252 C176 262 222 262 252 250" fill="none" stroke="#3A0F06" stroke-opacity=".6" stroke-width="6" stroke-linecap="round"/>'
+            f'<path d="M164 258 C162 280 172 290 180 280 C184 274 182 266 182 260" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/>{dots}</g></svg>')
