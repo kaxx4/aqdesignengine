@@ -13,7 +13,9 @@ EVENTS = ("unsorted-2026-10-07", "disco-diwali-hall-2026-10-14")
 
 
 def find(dd, ref):
-    """ref like '07_03': '07' = unsorted-2026-10-07, '14' = disco-diwali-hall-2026-10-14, then the NN_ file prefix."""
+    """ref like '07_03': '07' = unsorted-2026-10-07, '14' = disco-diwali-hall-2026-10-14, then the NN_ file prefix. A path to an existing file is used as is."""
+    if os.path.isfile(ref):
+        return ref
     day, nn = ref.split("_")
     folder = [e for e in EVENTS if e.endswith("-" + day)][0]
     hits = sorted(glob.glob(os.path.join(dd.ROOT, "engine", "assets", "img", "events", folder, f"{nn}_*.jpg")))

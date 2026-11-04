@@ -14,6 +14,7 @@ B = dd.B; W = 1080
 OUT = os.path.join(ROOT, "out", "discodiwali", "kulfi")
 PHOTO = os.path.join(ROOT, "engine", "assets", "img", "events", "bombay-kulfi", "01_bombay-kulfi-logo.png")
 import base64
+BG = os.path.join(ROOT, "engine", "assets", "img", "events", "bombay-kulfi", "02_kulfi-sticks-yellow-board.jpg")   # user-supplied kulfi photo as the ground (2026-11-04)
 LOGO = "data:image/png;base64," + base64.b64encode(open(PHOTO, "rb").read()).decode()
 STROKE = "color:#fff;-webkit-text-stroke:4px #000;paint-order:stroke fill;"
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -21,7 +22,7 @@ import dd_photo_bg as PB, dd_copper as CP   # noqa: E402  (photo ground and copp
 
 def poster(H):
     story = H > 1350
-    parts, els = [PB.photo_ground(dd, W, H, "07_03", "50% 45%", dim=.58)], []
+    parts, els = [PB.photo_ground(dd, W, H, BG, "50% 50%", dim=.52)], []
     # LIVE badge, top left
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
@@ -52,11 +53,7 @@ def poster(H):
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(y - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
     els.append(("title", vx, y, vw, vh)); bottom = y + vh
-    if story:                                           # link pill where the link sticker goes; clear of Instagram's reply bar (1670+)
-        py = bottom + 22
-        parts.append(f'<div data-tag="linkpill" style="position:absolute;left:342px;top:{py}px;width:382px;height:82px;border-radius:22px;border:2px solid rgba(222,180,100,.6);'
-                     f'background:rgba(236,200,150,.22);z-index:12;display:flex;align-items:center;justify-content:center;font-family:var(--d);font-weight:700;font-size:44px;line-height:1;'
-                     f'text-transform:uppercase;color:#fff">Link in bio</div>'); els.append(("linkpill", 342, py, 382, 82)); bottom = py + 82
+    # no LINK IN BIO pill (user, 2026-11-04)
     return "".join(parts), els, bottom
 
 async def main():
