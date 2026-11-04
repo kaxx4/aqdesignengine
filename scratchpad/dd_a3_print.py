@@ -36,7 +36,7 @@ STALLS = {
     "artily":   ("Artily", "Beverage stall", "artily/01_artily-logo.png", "#FFFFFF", 3, "artily/02_artily-blue-drink-pour.jpg", "50% 50%", .52, "cup", 10, 165),
     "subway":   ("Subway", "Food stall", "subway/01_subway-logo.png", "#0C8A42", 0, "subway/02_subway-sub-in-basket.jpg", "50% 50%", .52, "sub", -12, 165),
     "pizzahut": ("Pizza|Hut", "Food stall", "pizza-hut/01_pizza-hut-logo.png", "#FFFFFF", 0, "pizza-hut/02_pizza-hut-pizza-top-down.jpg", "50% 50%", .52, "slice_", 14, 165),
-    "cravella": ("Crave&rsquo;lla", "Food stall", "cravella/01_cravella-logo.png", "#5F2327", 0, "cravella/02_cravella-brownies.jpg", "50% 0%", .52, "brownie", -8, 150),
+    "cravella": ("Crave’lla", "Food stall", "cravella/01_cravella-logo.png", "#5F2327", 0, "cravella/02_cravella-brownies.jpg", "50% 0%", .52, "brownie", -8, 150),
     "zaairah":  ("Zaairah", "Food stall", "zaairah/01_zaairah-logo.png", "#000000", 0, "zaairah/02_zaairah-pasta-plate.jpg", "50% 50%", .52, "cloche", 8, 165),
     "meetcute": ("Meet|Cute", "Food stall", "meet-cute/01_meet-cute-logo.png", "#FFFAF0", 0, "meet-cute/02_meet-cute-pasta-fork.jpg", "50% 50%", .34, "mug", 10, 150),
     "artstop":  ("The|ArtStop", "Jewellery stall", "the-artstop/01_the-artstop-logo.png", "#4C1815", 0, "the-artstop/02_the-artstop-lip-charms.jpg", "50% 50%", .52, "heart", 10, 112),
