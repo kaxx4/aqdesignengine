@@ -142,4 +142,5 @@ async def main():
             im = Image.open(png).convert("RGB"); print(f"[{name}] {im.size}")
             im.save(os.path.join(OUT, f"{name}_a3.pdf"), "PDF", resolution=300)
     print("event signs done ->", OUT)
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
