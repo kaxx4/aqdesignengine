@@ -1,4 +1,4 @@
-"""DISCO DIWALI "THE ARTSTOP" charms stall poster (copy of dd_meetcute.py: vendor logo filling the circle, the vendor's own lip-balm-charm photo as the ground, the existing copper heart sticker to echo the locket logo), feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
+"""DISCO DIWALI "THE ARTSTOP" jewellery stall poster (copy of dd_meetcute.py: vendor logo filling the circle, the vendor's own lip-balm-charm photo as the ground, the existing copper heart sticker to echo the locket logo), feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
 From the user's Paradox reference (circular photo, big red NANDU JEE, two-part tagline, JOIN NOW button, sponsor + logos): the MECHANISM is kept
 (real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper diya sticker on the
 circle's corner, the lockup (with ball) as the footer mark. Adaptations: the Realmark title-sponsor mark, the Paradox logo and the beach palms are NOT Disco Diwali's, so they
@@ -46,7 +46,7 @@ def poster(H):
                      f'text-transform:uppercase;white-space:nowrap;{STROKE if stroke else "color:#fff;"}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     line("head", "The ArtStop", hy, hs, 700, hs)
     t1 = hy + hs + 14
-    line("tag1", "Charms stall", t1, 50, 700, 54, stroke=False)
+    line("tag1", "Jewellery stall", t1, 50, 700, 54, stroke=False)
     y = t1 + 54 + (30 if story else 26)
     # footer lockup, with ball
     vw = 260 if story else 300
