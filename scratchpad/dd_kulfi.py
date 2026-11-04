@@ -46,8 +46,8 @@ def poster(H):
                      f'text-transform:uppercase;white-space:nowrap;{STROKE if stroke else "color:#fff;"}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     line("head", "Bombay Kulfi", hy, hs, 700, hs)
     t1 = hy + hs + 14
-    line("tag1", "The coolest stall on the rooftop", t1, 40, 700, 44, stroke=False)
-    y = t1 + 44 + (30 if story else 26)
+    line("tag1", "The coolest food stall on the rooftop", t1, 37, 700, 41, stroke=False)
+    y = t1 + 41 + (30 if story else 26)
     # footer lockup, with ball
     vw = 260 if story else 300
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
