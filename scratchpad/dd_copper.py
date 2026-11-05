@@ -241,3 +241,14 @@ def bolt(size=340, rot=0, u="v", shadow=True):
     sparks = "".join(f'<path d="M{x1} {y1} L{x2} {y2}" stroke="#FFEBDD" stroke-width="9" stroke-linecap="round"/>' for x1, y1, x2, y2 in ((40, 120, 70, 140), (34, 176, 70, 178), (330, 250, 362, 236), (334, 300, 368, 304)))
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
             f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{sparks}{_metal(u, d, 400, 400, .86, 200, 200)}</g></svg>')
+
+
+def tee(size=340, rot=0, u="t", shadow=True):
+    """Copper t-shirt (UNBASIC clothing stall, 2026-11-05): a tee in the mask texture, a pearl-beaded neckline and a pocket."""
+    d = ("M148 40 C164 66 236 66 252 40 L356 86 L388 176 L318 196 L316 368 C316 378 308 386 298 386 H102 C92 386 84 378 84 368 "
+         "L82 196 L12 176 L44 86 Z")
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u, d, 400, 400, .92, 200, 214)}'
+            f'<path d="M148 40 C164 66 236 66 252 40" fill="none" stroke="#FFEBDD" stroke-width="10" stroke-dasharray="0 14" stroke-linecap="round"/>'
+            f'<path d="M82 196 L94 120 M318 196 L306 120" stroke="#3A0F06" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>'
+            f'<rect x="232" y="132" width="52" height="58" rx="8" fill="none" stroke="#FFEBDD" stroke-width="5" opacity=".85"/></g></svg>')

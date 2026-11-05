@@ -43,6 +43,7 @@ STALLS = {
     "nandu":    ("Nandu|Jee", "Food stall", "nandu-jee/01_nandu-jee-googly-eyes.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", 8, 165),
     "photobooth": ("Photo|Booth", "Activity", "photobooth/01_photobooth-set-crop.jpg", None, 0, "", "", 0, "camera", 10, 165),
     "gajra":    ("Gajra &amp;|Jhumka", "Jewellery stall", "gajra-jhumka/01_gajre-board-crop.jpg", None, 0, "", "", 0, "jhumka", 10, 165),
+    "unbasic":  ("Unbasic", "Clothing stall", "unbasic/01_unbasic-logo.png", "#000000", 6, "", "", 0, "tee", 10, 165),
     "periodsim": ("Period Pain|Simulator", "Activity", "period-pain-simulator/01_period-sim-electrodes-crop.jpg", None, 0, "", "", 0, "bolt", -10, 165),
     "puchka":   ("Puchka", "Food stall", "puchka/01_puchka-plates-crop.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", -10, 165),
 }
