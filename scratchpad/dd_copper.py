@@ -252,3 +252,19 @@ def tee(size=340, rot=0, u="t", shadow=True):
             f'<path d="M148 40 C164 66 236 66 252 40" fill="none" stroke="#FFEBDD" stroke-width="10" stroke-dasharray="0 14" stroke-linecap="round"/>'
             f'<path d="M82 196 L94 120 M318 196 L306 120" stroke="#3A0F06" stroke-opacity=".55" stroke-width="5" stroke-linecap="round"/>'
             f'<rect x="232" y="132" width="52" height="58" rx="8" fill="none" stroke="#FFEBDD" stroke-width="5" opacity=".85"/></g></svg>')
+
+
+def bloom(size=340, rot=0, u="f", shadow=True):
+    """Copper flower (Eloza, 2026-11-06, echoing the carnation in its logo and the crochet roses on the stall): five overlapping round petals in the mask texture, a pearl-beaded heart, and two leaves tucked under it."""
+    import math
+    cx, cy, R, r = 200, 172, 74, 66
+    circ = lambda x, y, rr: f"M{x + rr:.1f} {y:.1f} a{rr} {rr} 0 1 0 {-2 * rr} 0 a{rr} {rr} 0 1 0 {2 * rr} 0 Z"
+    pet = " ".join(circ(cx + R * math.sin(math.radians(a)), cy - R * math.cos(math.radians(a)), r) for a in (0, 72, 144, 216, 288))
+    leaves = (f'<path d="M200 250 C150 252 112 280 100 330 C152 330 192 306 200 250 Z" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+              f'<path d="M200 250 C250 252 288 280 300 330 C248 330 208 306 200 250 Z" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="5"/>'
+              f'<path d="M200 250 V372" stroke="#3A0F06" stroke-width="16" stroke-linecap="round"/><path d="M200 250 V372" stroke="url(#tr{u})" stroke-width="8" stroke-linecap="round"/>')
+    beads = "".join(f'<circle cx="{cx + 34 * math.cos(a):.1f}" cy="{cy + 34 * math.sin(a):.1f}" r="9" fill="#FFEBDD" stroke="#7A2A12" stroke-width="2.5"/>' for a in [i * 2 * math.pi / 7 for i in range(7)])
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{leaves}{_metal(u, pet, 400, 400, .95, cx, cy)}'
+            f'<circle cx="{cx}" cy="{cy}" r="30" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="6"/>{beads}'
+            f'<circle cx="{cx}" cy="{cy}" r="14" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/></g></svg>')
