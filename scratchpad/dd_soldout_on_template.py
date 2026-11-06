@@ -5,7 +5,7 @@ import os
 from PIL import Image, ImageFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "out", "discodiwali", "soldout_on_template"); os.makedirs(OUT, exist_ok=True)
-CY, DEG, WF = float(os.environ.get("CY", .50)), float(os.environ.get("DEG", 14)), float(os.environ.get("WF", 1.04))
+CY, DEG, WF = float(os.environ.get("CY", .48)), float(os.environ.get("DEG", 14)), float(os.environ.get("WF", 1.3))
 base = Image.open(os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-soldout", "story_template.png")).convert("RGBA"); w, h = base.size
 b = Image.open(os.path.join(ROOT, "engine", "assets", "disco_diwali", "sold_out_banner.png")).convert("RGBA")
 bw = round(w * WF); b = b.resize((bw, round(bw * b.size[1] / b.size[0])), Image.LANCZOS)
