@@ -1,6 +1,6 @@
 """DISCO DIWALI "SOLD OUT" v2 (user, 2026-11-06, sent the full-details poster: title, edition, 10th November 2026, 4:30 PM onwards, 60, Chowringhee Banquets).
 Base = poster_ref with that logistics block (date, time, venue; supplied facts only, no price, no lineup, no status line), the Starry Night style SOLD OUT banner
-across the title, set so the edition, date, time and venue lines stay clear. Feed (1080x1350, also WhatsApp) only, the size the user sent.
+across the title, set so the edition, date, time and venue lines stay clear. Feed (1080x1350, also WhatsApp) and story (1080x1920, user sent that layout too).
 Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_soldout_banner2.py -> out/discodiwali/soldout_banner2/feed.png"""
 import asyncio, importlib.util, os, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -27,6 +27,8 @@ def banner_over(png, width_frac, cy_frac, deg):
 async def main():
     async with dd.B.session():
         await dd.render_poster("poster_ref", BRIEF, "feed", os.path.join(OUT, "feed.png"))
+        await dd.render_poster("story_ref", dict(BRIEF, status=None, photo=os.path.join(ROOT, "engine", "assets", "img", "events", "disco-diwali-soldout", "diya_story_ground.jpg")), "story", os.path.join(OUT, "story.png"))   # story_ref needs a photo: the brand diya pattern stands in, like the user's story
     banner_over(os.path.join(OUT, "feed.png"), 1.04, CY, DEG)
+    banner_over(os.path.join(OUT, "story.png"), 1.04, float(os.environ.get("SCY", .405)), DEG)
     print("done ->", OUT)
 asyncio.run(main())
