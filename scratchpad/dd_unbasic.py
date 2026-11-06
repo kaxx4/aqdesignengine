@@ -1,4 +1,4 @@
-"""DISCO DIWALI "UNBASIC" clothing stall poster (copy of dd_meetcute.py: logo filling the circle, the vendor's own three-tee photo as the ground, copper tee sticker). The photo is a 662x623 cut-out on black: it is fitted to the width (contain) and top-aligned so the outer girls keep their faces clear of the circle, feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
+"""DISCO DIWALI "UNBASIC" clothing stall poster (copy of dd_meetcute.py: logo filling the circle, the vendor's own three-tee photo as the ground, copper tee sticker)., feed (1080x1350, also the WhatsApp size) and story (1080x1920), 2026-10-24.
 From the user's Paradox reference (circular photo, big red NANDU JEE, two-part tagline, JOIN NOW button, sponsor + logos): the MECHANISM is kept
 (real photo in a circle, display headline, snarky tagline) and rebuilt on the Disco Diwali skeleton: diya ground, string lights, LIVE badge, copper diya sticker on the
 circle's corner, the lockup (with ball) as the footer mark. Adaptations: the Realmark title-sponsor mark, the Paradox logo and the beach palms are NOT Disco Diwali's, so they
@@ -22,13 +22,7 @@ import dd_photo_bg as PB, dd_copper as CP   # noqa: E402  (photo ground and copp
 
 def poster(H):
     story = H > 1350
-    POS = "50% 0%" if H <= 1350 else "50% 12%"
-    g = PB.photo_ground(dd, W, H, BG, POS, dim=.30).replace("object-fit:cover", "object-fit:contain", 1)
-    # the photo is a cut-out on black: fade its bottom edge into the ground (a hard edge cut the jeans off) and put Disco Diwali's celestial plate under it
-    fade = ("linear-gradient(180deg,#000 0,#000 60%,transparent 75%)" if H <= 1350 else "linear-gradient(180deg,#000 0,#000 49%,transparent 58%)")
-    g = g.replace("z-index:1;filter", f"z-index:1;-webkit-mask-image:{fade};mask-image:{fade};filter", 1)
-    g = g.replace('<img data-tag="plate" src=', f'<img data-tag="plate" src="{dd.uri("bg_beaded_portrait.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px;object-fit:cover;z-index:0">'
-                  '<img data-tag="plate" src=', 1)
+    g = PB.photo_ground(dd, W, H, BG, "50% 50%", dim=.52)   # the standard stall ground: full-bleed photo (cover), same dim as the other stalls
     parts, els = [g], []
     # LIVE badge, top left
     bx, by, bw = 40, (210 if story else 40), 150
@@ -42,8 +36,8 @@ def poster(H):
                  f'<img src="{LOGO}" style="position:absolute;left:4%;top:4%;width:92%;height:92%;object-fit:contain"></div>')
     els.append(("circle", cx, cy0, d, d))
     # copper DHOL sticker (user, 2026-10-24: "a different sticker, not the mask") tucked on the circle's top-right; sticker() is square, rotation baked in
-    ss = 250 if story else 230
-    mx, my = (150, 350) if story else (130, 250)
+    ss = 300 if story else 280
+    mx, my = 1040 - ss, (cy0 - 150 if story else 40)
     parts.append(f'<div data-tag="sticker" style="position:absolute;left:{mx}px;top:{my}px;z-index:12">{CP.tee(ss, 10)}</div>'); els.append(("sticker", mx, my, ss, ss))
     # headline + tagline
     hy = cy0 + d + (28 if story else 26)
