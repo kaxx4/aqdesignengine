@@ -300,3 +300,15 @@ def polish(size=340, rot=0, u="o", shadow=True):
             f'<rect x="136" y="196" width="128" height="106" rx="26" fill="#2E0C05" fill-opacity=".72" stroke="url(#tr{u})" stroke-width="5"/>'
             f'<circle cx="200" cy="249" r="30" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="5"/>'
             f'<path d="M118 190 C118 170 128 158 140 154" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".5"/></g></svg>')
+
+
+def yarn(size=340, rot=0, u="y", shadow=True):
+    """Copper yarn ball with a crochet hook (Chetan Kala crochet stall, 2026-11-08): a ball in the mask texture, curved strand lines, a loose tail, and a hook stuck into it (it exits the ball, it does not cross it: a full diagonal read as a 'no' sign)."""
+    ball = "M200 54 C292 54 356 120 356 206 C356 292 292 358 200 358 C108 358 44 292 44 206 C44 120 108 54 200 54 Z"
+    strands = "".join(f'<path d="{d}" fill="none" stroke="#3A0F06" stroke-opacity=".6" stroke-width="7" stroke-linecap="round"/><path d="{d}" fill="none" stroke="#FFEBDD" stroke-width="3" stroke-linecap="round" opacity=".6" transform="translate(-4 -4)"/>'
+                      for d in ("M70 150 C130 190 250 190 330 140", "M58 220 C130 260 260 260 342 210", "M92 296 C150 322 250 322 306 290", "M130 82 C170 150 170 260 140 340", "M232 72 C280 150 280 270 250 346"))
+    tail = f'<path d="M290 330 C340 360 330 392 372 384" fill="none" stroke="#3A0F06" stroke-width="16" stroke-linecap="round"/><path d="M290 330 C340 360 330 392 372 384" fill="none" stroke="url(#tr{u})" stroke-width="8" stroke-linecap="round"/>'
+    hook = (f'<path d="M236 244 L338 74" stroke="#3A0F06" stroke-width="22" stroke-linecap="round"/><path d="M236 244 L338 74" stroke="url(#tr{u})" stroke-width="12" stroke-linecap="round"/>'
+            f'<path d="M338 74 C350 54 378 58 376 82" fill="none" stroke="#3A0F06" stroke-width="18" stroke-linecap="round"/><path d="M338 74 C350 54 378 58 376 82" fill="none" stroke="url(#tr{u})" stroke-width="9" stroke-linecap="round"/>')
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{tail}{_metal(u, ball, 400, 400, .93, 200, 206)}{strands}{hook}</g></svg>')
