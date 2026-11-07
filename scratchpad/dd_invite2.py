@@ -23,24 +23,28 @@ async def build(H):
     top = 210 if story else 44
     s.parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{top}px;width:170px;z-index:20">')
     s.els.append(("badge", 40, top, 170, round(170 * 1005 / 1061)))
-    s.mask(700, top + 8, 320, 12)
+    s.mask(760, top + 8, 250, 12)
     pw = 1000; px = (W - pw) // 2
-    f1 = await fit("Special invitation", pw - 90, 140); f3 = await fit("Rs. 550", pw - 90, 340); fl = 60
-    pad = 40; gap = 10
-    ph = pad + f1 + gap + fl + gap + f3 + pad
-    py = (520 if story else 330)
+    f_sp = await fit("Special", 560, 150); f_inv = await fit("Invitation", pw - 90, 240); f3 = await fit("Rs. 550", pw - 90, 340); fl = 54
+    pad = 34; gap = 8
+    py = (440 if story else 250)
+    room = (790 if story else 745)                             # panel height available: the fee takes what the invitation lines leave
+    f3 = min(f3, room - 2 * pad - f_sp - f_inv - fl - 3 * gap)
+    ph = pad + f_sp + gap + f_inv + gap + fl + gap + f3 + pad
+    print(f"   sizes: special {f_sp}, invitation {f_inv}, label {fl}, fee {f3}; panel {ph}px")
     s.add("panel", px, py, pw, ph, f'<div style="height:{ph}px;border-radius:34px;border:6px solid {GOLD};box-sizing:border-box;background:rgba(0,0,0,.62);box-shadow:0 0 40px rgba(201,151,28,.35),0 16px 40px rgba(0,0,0,.6)"></div>', z=15, declare=False)
     s.els.append(("panel", px, py, pw, ph))
-    y = s.text("invite", "Special invitation", py + pad, f1, color=GOLD, x=px, w=pw)
+    y = s.text("invite1", "Special", py + pad, f_sp, color=GOLD, x=px, w=pw)
+    y = s.text("invite2", "Invitation", y + gap, f_inv, color=GOLD, x=px, w=pw)
     y = s.text("label", "Entry", y + gap, fl, x=px, w=pw, stroke=4, ls=.25)
     y = s.text("fee", "Rs. 550", y + gap, f3, x=px, w=pw, stroke=6)
-    iy = py + ph + (60 if story else 34)
-    y = s.text("when", "10th November, 2026", iy, 56 if story else 50, stroke=3) + 12
-    y = s.text("clock", "4:30 PM onwards", y, 46 if story else 40, stroke=3) + 10
-    y = s.text("venue", "60, Chowringhee Banquets", y, 42 if story else 36, stroke=3)
-    vw = 270 if story else 220; ly = (1440 if story else 1128)
+    iy = py + ph + (50 if story else 24)
+    y = s.text("when", "10th November, 2026", iy, 52 if story else 46, stroke=3) + 10
+    y = s.text("clock", "4:30 PM onwards", y, 42 if story else 38, stroke=3) + 8
+    y = s.text("venue", "60, Chowringhee Banquets", y, 38 if story else 34, stroke=3)
+    vw = 240 if story else 190; ly = (1450 if story else 1158)
     end = s.lockup(W // 2, ly, vw)
-    s.text("edition", E.EDITION, end + 10, 26 if story else 22, stroke=2, ls=.04)
+    s.text("edition", E.EDITION, end + 8, 24 if story else 20, stroke=2, ls=.04)
     return s, (y, ly)
 
 
