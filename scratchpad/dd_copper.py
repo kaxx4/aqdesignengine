@@ -268,3 +268,20 @@ def bloom(size=340, rot=0, u="f", shadow=True):
             f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{leaves}{_metal(u, pet, 400, 400, .95, cx, cy)}'
             f'<circle cx="{cx}" cy="{cy}" r="30" fill="#2E0C05" stroke="url(#tr{u})" stroke-width="6"/>{beads}'
             f'<circle cx="{cx}" cy="{cy}" r="14" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="3"/></g></svg>')
+
+
+def donut(size=340, rot=0, u="n", shadow=True):
+    """Copper ring donut (Mad Over Donuts, 2026-11-08): a torus in the mask texture, a wavy icing edge, pearl sprinkles and a glint."""
+    ring = ("M200 40 C300 40 372 108 372 200 C372 292 300 360 200 360 C100 360 28 292 28 200 C28 108 100 40 200 40 Z "
+            "M200 128 C160 128 130 160 130 200 C130 240 160 272 200 272 C240 272 270 240 270 200 C270 160 240 128 200 128 Z")
+    ice = ("M200 70 C288 70 346 124 346 200 C346 276 288 330 200 330 C112 330 54 276 54 200 C54 124 112 70 200 70 Z "
+           "M200 146 C170 146 150 170 150 200 C150 230 170 254 200 254 C230 254 250 230 250 200 C250 170 230 146 200 146 Z")
+    import math
+    sp = "".join(f'<rect x="-9" y="-3.5" width="18" height="7" rx="3.5" fill="#FFEBDD" stroke="#7A2A12" stroke-width="2" transform="translate({200 + 112 * math.cos(a):.1f} {200 + 112 * math.sin(a):.1f}) rotate({a * 57.3 + 90 + (i % 3) * 25:.0f})"/>'
+                 for i, a in enumerate([k * 2 * math.pi / 11 + .2 for k in range(11)]))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}><clipPath id="rg{u}"><path d="{ring}" clip-rule="evenodd"/></clipPath>'
+            f'{_metal(u, ring, 400, 400, .95, 200, 200)}'
+            f'<path d="{ice}" fill="#3A0F06" fill-opacity=".38" fill-rule="evenodd"/>'
+            f'<path d="{ice}" fill="none" stroke="#FFEBDD" stroke-width="4" stroke-dasharray="14 10" stroke-linecap="round" opacity=".55" fill-rule="evenodd"/>{sp}'
+            f'<path d="M92 120 C112 84 150 62 192 58" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".5"/></g></svg>')
