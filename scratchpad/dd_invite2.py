@@ -36,14 +36,15 @@ async def build(H):
     top = 210 if story else 44
     s.parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{top}px;width:170px;z-index:20">')
     s.els.append(("badge", 40, top, 170, round(170 * 1005 / 1061)))
-    s.mask(760, top + 8, 250, 12)
+    mw = 500 if story else 480
+    s.mask(W - mw - (40 if story else 30), top + (6 if story else 12), mw, 12)
     pw = 1000; px = (W - pw) // 2
     f_inv = await fit("Invitation", pw - 90, 240); f_sp = f_inv       # both lines one size, INVITATION fills the panel width
     pad = 40; gap = 10
     ph = pad + f_sp + gap + f_inv + pad
     info_h = 150 if not story else 175
     gap_pi = 50 if story else 34
-    zone0, zone1 = (440, 1450) if story else (300, 1130)       # between the mask/badge and the footer mark
+    zone0, zone1 = (560, 1450) if story else (470, 1140)       # between the mask/badge and the footer mark
     py = zone0 + max(0, (zone1 - zone0 - (ph + gap_pi + info_h)) // 2)
     print(f"   sizes: special {f_sp}, invitation {f_inv}; panel {ph}px at y={py}")
     y = s.text("invite1", "Special", py + pad, f_sp, color=GOLD, x=px, w=pw)
