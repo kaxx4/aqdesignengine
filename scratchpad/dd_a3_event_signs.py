@@ -106,7 +106,7 @@ def ticket_sign():
     y = end + 60
     y = s.text("l1", f'Please keep your <span style="color:{GOLD}">ticket ID</span>', y, 84) + 22
     y = s.text("l2", "number ready!", y, 84) + 44
-    y = s.text("l3", f'(sent with your confirmation text as <span style="color:{COPPER}">{TICKET_FMT}</span>)', y, 42, stroke=3)
+    y = s.text("l3", f'(sent with confirmation text as <span style="color:{COPPER}">{TICKET_FMT}</span>)', y, 42, stroke=3)
     s.credit()
     return s
 
