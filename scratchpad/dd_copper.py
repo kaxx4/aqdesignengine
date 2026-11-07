@@ -285,3 +285,18 @@ def donut(size=340, rot=0, u="n", shadow=True):
             f'<path d="{ice}" fill="#3A0F06" fill-opacity=".38" fill-rule="evenodd"/>'
             f'<path d="{ice}" fill="none" stroke="#FFEBDD" stroke-width="4" stroke-dasharray="14 10" stroke-linecap="round" opacity=".55" fill-rule="evenodd"/>{sp}'
             f'<path d="M92 120 C112 84 150 62 192 58" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity=".5"/></g></svg>')
+
+
+def polish(size=340, rot=0, u="o", shadow=True):
+    """Copper nail-polish bottle (Fizzy Nails, 2026-11-08): a rounded bottle in the mask texture, a pearl-rimmed shoulder, a gem label and a tall cap with a ridged grip."""
+    body = "M104 170 C104 150 120 140 140 140 H260 C280 140 296 150 296 170 V330 C296 358 276 374 248 374 H152 C124 374 104 358 104 330 Z"
+    cap = "M168 28 C168 18 176 12 186 12 H214 C224 12 232 18 232 28 V132 H168 Z"
+    rid = "".join(f'<path d="M{x} 30 V124" stroke="#3A0F06" stroke-opacity=".55" stroke-width="4" stroke-linecap="round"/>' for x in (180, 193, 207, 220))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 400 400" style="display:block;overflow:visible">{_defs(u)}{_defs(u + "2")}'
+            f'<defs><radialGradient id="gem{u}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFEADF"/><stop offset=".35" stop-color="#FF5AA0"/><stop offset="1" stop-color="#6A0838"/></radialGradient></defs>'
+            f'<g transform="rotate({rot} 200 200)"{_sh(u, shadow)}>{_metal(u, body, 400, 400, .92, 200, 258)}'
+            f'<rect x="176" y="132" width="48" height="16" rx="6" fill="url(#tr{u})" stroke="#3A0F06" stroke-width="4"/>'
+            f'{_metal(u + "2", cap, 400, 400, .9, 200, 72)}{rid}'
+            f'<rect x="136" y="196" width="128" height="106" rx="26" fill="#2E0C05" fill-opacity=".72" stroke="url(#tr{u})" stroke-width="5"/>'
+            f'<circle cx="200" cy="249" r="30" fill="url(#gem{u})" stroke="url(#tr{u})" stroke-width="5"/>'
+            f'<path d="M118 190 C118 170 128 158 140 154" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".5"/></g></svg>')

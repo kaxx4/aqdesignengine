@@ -46,6 +46,7 @@ STALLS = {
     "unbasic":  ("Unbasic", "Clothing stall", "unbasic/01_unbasic-logo.png", "#000000", 6, "", "", 0, "tee", 10, 165),
     "eloza":    ("Eloza", "Jewellery &amp; crochet stall", "eloza/01_eloza-logo.png", "#F4F1E9", 5, "", "", 0, "bloom", 10, 165),
     "mod":      ("Mad Over|Donuts", "Food stall", "mad-over-donuts/01_mod-logo.png", "#F26B2A", 0, "", "", 0, "donut", 10, 165),
+    "fizzy":    ("Fizzy|Nails", "Nail stall", "fizzy-nails/01_fizzy-nails-logo.png", "#BD0696", 0, "", "", 0, "polish", 10, 165),
     "periodsim": ("Period Pain|Simulator", "Activity", "period-pain-simulator/01_period-sim-electrodes-crop.jpg", None, 0, "", "", 0, "bolt", -10, 165),
     "puchka":   ("Puchka", "Food stall", "puchka/01_puchka-plates-crop.jpg", None, 0, "14_04", "50% 30%", .62, "samosa", -10, 165),
 }
