@@ -23,6 +23,7 @@ dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
 B = dd.B
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dd_copper as CP   # noqa: E402
+import dd_ground as G    # noqa: E402
 
 TICKET_FMT = "AP-XXXX"
 DIRECTION = "To the rooftop &rarr;"
@@ -34,13 +35,7 @@ GOLD, COPPER = dd.GOLD, "#E8955C"
 
 
 def ground(W, H):
-    plate = "bg_beaded_landscape.jpg" if W > H else "bg_beaded_portrait.jpg"
-    return "".join([
-        '<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>',
-        f'<img data-tag="plate" src="{dd.uri(plate)}" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1">',
-        f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:{W - 1300}px;top:-60px;width:1150px;z-index:5">',
-        f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.5;pointer-events:none">',
-        f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.3;pointer-events:none">'])
+    return G.ground(dd, W, H)          # the blue diya ground (user, 2026-11-07), shared by every A3 sign: scratchpad/dd_ground.py
 
 
 class Sign:

@@ -18,7 +18,7 @@ spec = importlib.util.spec_from_file_location("discodiwali", os.path.join(ROOT, 
 dd = importlib.util.module_from_spec(spec); spec.loader.exec_module(dd)
 B = dd.B; core = dd.core
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import dd_photo_bg as PB, dd_copper as CP   # noqa: E402
+import dd_photo_bg as PB, dd_copper as CP, dd_ground as G   # noqa: E402
 
 W, H, SCALE = 1527, 1080, 3.25
 OUT = os.path.join(ROOT, "out", "discodiwali", "print_a3")
@@ -61,12 +61,7 @@ def circle(src, fill, inset):
 
 
 def ground():
-    p = ['<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>',
-         f'<img data-tag="plate" src="{dd.uri("bg_beaded_landscape.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px;object-fit:cover;object-position:50% 50%;z-index:1">',
-         f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:230px;top:-60px;width:1150px;z-index:5">',
-         f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.5;pointer-events:none">',
-         f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.3;pointer-events:none">']
-    return "".join(p)
+    return G.ground(dd, W, H)          # the blue diya ground (user, 2026-11-07), shared by every A3 sign: scratchpad/dd_ground.py
 
 
 COL_X, COL_W = 820, 640          # the right-hand text column
