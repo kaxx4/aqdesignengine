@@ -9,7 +9,7 @@ Same system as the stall signs (dd_a3_print.py, approved by the user): beaded ce
 "BROUGHT TO YOU BY TEAM AQUATERRA" credit line in place of the reference's cream pill (the user rejected the pill as off-brand).
 
 Copy is the user's reference copy. Two values are the user's to confirm and live at the top of this file:
-  TICKET_FMT  the reference printed AP-XXXX; kept as-is until the user names Disco Diwali's ticket-ID format
+  TICKET_FMT  the reference printed AP-XXXX; the user set Disco Diwali's format to DD26-XXXX (2026-11-07)
   DIRECTION   the reference printed 2ND FLOOR ->; the venue is a rooftop (user, 2026-10-19), the arrow's direction depends on where the sign hangs
 300 dpi at A3: scale 3.25 on 1527x1080 / 1080x1527 CSS px. sRGB, no bleed.
 
@@ -25,7 +25,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import dd_copper as CP   # noqa: E402
 import dd_ground as G    # noqa: E402
 
-TICKET_FMT = "AP-XXXX"
+TICKET_FMT = "DD26-XXXX"
 DIRECTION = "To the rooftop &rarr;"
 EDITION = "Masquerade Sangeet Edition"
 SCALE = 3.25
