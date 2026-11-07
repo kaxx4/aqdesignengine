@@ -33,7 +33,7 @@ def _png(path):
 # slug: (name, tagline, circle content, circle fill, logo inset %, ground photo, ground focus, dim, sticker fn, sticker rot, headline px)
 STALLS = {
     "kulfi":    ("Bombay|Kulfi", "Food stall", "bombay-kulfi/01_bombay-kulfi-logo.png", "#FFFFFF", 8, "bombay-kulfi/02_kulfi-sticks-yellow-board.jpg", "50% 50%", .52, "kulfi", 12, 116),
-    "artily":   ("Artily", "Beverage stall", "artily/01_artily-logo.png", "#FFFFFF", 3, "artily/02_artily-blue-drink-pour.jpg", "50% 50%", .52, "cup", 10, 165),
+    "artily":   ("Artily", "Beverage partner", "artily/01_artily-logo.png", "#FFFFFF", 3, "artily/02_artily-blue-drink-pour.jpg", "50% 50%", .52, "cup", 10, 165),
     "subway":   ("Subway", "Food stall", "subway/01_subway-logo.png", "#0C8A42", 0, "subway/02_subway-sub-in-basket.jpg", "50% 50%", .52, "sub", -12, 165),
     "pizzahut": ("Pizza|Hut", "Food stall", "pizza-hut/01_pizza-hut-logo.png", "#FFFFFF", 0, "pizza-hut/02_pizza-hut-pizza-top-down.jpg", "50% 50%", .52, "slice_", 14, 165),
     "cravella": ("Crave’lla", "Food stall", "cravella/01_cravella-logo.png", "#5F2327", 0, "cravella/02_cravella-brownies.jpg", "50% 0%", .52, "brownie", -8, 150),
