@@ -17,9 +17,23 @@ async def fit(text, width, cap):
     return min(cap, int(100 * width / m[0]["text_w"]))
 
 
+def diya_ground(H):
+    """The approved blue diya ground (brain/DISCO_DIWALI.md, user 2026-10-14 'i want this blue effect'): black, navy and gold lotus-diya corners fading to black, string lights, gold dust, grain.
+    A story stacks TWO plates, the second flipped and faded in, so all four corners carry the pattern (engine format rule 8)."""
+    P = ['<div data-tag="plate" style="position:absolute;inset:0;z-index:0;background:#000"></div>',
+         f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:0;width:{W}px;height:{min(H, dd.BASE_H)}px;object-fit:cover;z-index:1">']
+    if H > dd.BASE_H:
+        P.append(f'<img data-tag="plate" src="{dd.uri("bg_diya_portrait.jpg")}" style="position:absolute;left:0;top:{H - dd.BASE_H}px;width:{W}px;height:{dd.BASE_H}px;object-fit:cover;z-index:1;'
+                 'transform:scaleY(-1);-webkit-mask-image:linear-gradient(to top,transparent 0%,#000 45%);mask-image:linear-gradient(to top,transparent 0%,#000 45%)">')
+    P += [f'<img data-tag="lights" src="{dd.uri("string_lights.png")}" style="position:absolute;left:170px;top:-40px;width:1100px;z-index:5">',
+          f'<img data-tag="plate" src="{dd.uri("sparkles.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:30;mix-blend-mode:screen;opacity:.55;pointer-events:none">',
+          f'<img data-tag="plate" src="{dd.uri("grain.png")}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:31;mix-blend-mode:screen;opacity:.35;pointer-events:none">']
+    return "".join(P)
+
+
 async def build(H):
     story = H > 1350
-    s = Sign(W, H)
+    s = Sign(W, H); s.parts = [diya_ground(H)]
     top = 210 if story else 44
     s.parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{top}px;width:170px;z-index:20">')
     s.els.append(("badge", 40, top, 170, round(170 * 1005 / 1061)))
