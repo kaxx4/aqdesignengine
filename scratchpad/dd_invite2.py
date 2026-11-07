@@ -36,15 +36,15 @@ async def build(H):
     top = 210 if story else 44
     s.parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:40px;top:{top}px;width:170px;z-index:20">')
     s.els.append(("badge", 40, top, 170, round(170 * 1005 / 1061)))
-    mw = 500 if story else 480
-    s.mask(W - mw - (40 if story else 30), top + (6 if story else 12), mw, 12)
+    mw = 840 if story else 740                                   # v9: the mask fills the band above the invitation (user: 'fill in the empty space with the mask')
+    s.mask(W - mw + (30 if story else 70), top - (70 if story else 20), mw, 10)
     pw = 1000; px = (W - pw) // 2
     f_inv = await fit("Invitation", pw - 90, 240); f_sp = f_inv       # both lines one size, INVITATION fills the panel width
     pad = 40; gap = 10
     ph = pad + f_sp + gap + f_inv + pad
     info_h = 150 if not story else 175
     gap_pi = 50 if story else 34
-    zone0, zone1 = (560, 1450) if story else (470, 1140)       # between the mask/badge and the footer mark
+    zone0, zone1 = (640, 1450) if story else (560, 1140)       # between the mask/badge and the footer mark
     py = zone0 + max(0, (zone1 - zone0 - (ph + gap_pi + info_h)) // 2)
     print(f"   sizes: special {f_sp}, invitation {f_inv}; panel {ph}px at y={py}")
     y = s.text("invite1", "Special", py + pad, f_sp, color=GOLD, x=px, w=pw)
@@ -65,7 +65,7 @@ async def main():
         for name, H in (("feed", 1350), ("story", 1920)):
             s, (info_end, ly) = await build(H)
             print(f"[{name}] info ends y={info_end}, lockup starts y={ly}")
-            await B.render(B.page(W, H, "#000", "".join(s.parts), grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=s.els, bleed_tags=("plate",), crop_tags=("plate",),
+            await B.render(B.page(W, H, "#000", "".join(s.parts), grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=s.els, bleed_tags=("plate", "mask"), crop_tags=("plate",),
                            page_bg="#000", text_pairs=[("text", "#fff", "#000", 40, True), ("gold", GOLD, "#000", 80, True)])
     print("done ->", OUT)
 asyncio.run(main())
