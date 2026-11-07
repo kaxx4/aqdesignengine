@@ -1,5 +1,5 @@
 """DISCO DIWALI "SPECIAL INVITATION" v2 (user, 2026-11-07: 'SPECIAL INVITATION and Rs.550 highlighted, reduce the Disco Diwali text and place it at the footer').
-The invitation line and the fee are the hero: a gold-framed panel, SPECIAL INVITATION in gold, SPECIAL over INVITATION in gold, one size, INVITATION measured to fill the panel (v6, user 2026-11-07: the entry fee is REMOVED, so no price is printed). The date, time and venue sit
+The invitation line and the fee are the hero: no box (v7, user 2026-11-07: outline removed), SPECIAL INVITATION in gold, SPECIAL over INVITATION in gold, one size, INVITATION measured to fill the panel (v6, user 2026-11-07: the entry fee is REMOVED, so no price is printed). The date, time and venue sit
 under the panel. The lockup (with ball) is shrunk to a footer mark with the edition line beneath it. Built on the Sign primitives (beaded celestial ground, string lights, LIVE badge,
 copper mask) at feed 1080x1350 and story 1080x1920 (top 200 and bottom 250 clear for Instagram's bars). Supplied facts only: 10th November 2026, 4:30 PM onwards, 60 Chowringhee
 Banquets. Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_invite2.py -> out/discodiwali/invite2/{feed,story}.png"""
@@ -46,8 +46,6 @@ async def build(H):
     zone0, zone1 = (440, 1450) if story else (300, 1130)       # between the mask/badge and the footer mark
     py = zone0 + max(0, (zone1 - zone0 - (ph + gap_pi + info_h)) // 2)
     print(f"   sizes: special {f_sp}, invitation {f_inv}; panel {ph}px at y={py}")
-    s.add("panel", px, py, pw, ph, f'<div style="height:{ph}px;border-radius:34px;border:6px solid {GOLD};box-sizing:border-box;background:rgba(0,0,0,.62);box-shadow:0 0 40px rgba(201,151,28,.35),0 16px 40px rgba(0,0,0,.6)"></div>', z=15, declare=False)
-    s.els.append(("panel", px, py, pw, ph))
     y = s.text("invite1", "Special", py + pad, f_sp, color=GOLD, x=px, w=pw)
     y = s.text("invite2", "Invitation", y + gap, f_inv, color=GOLD, x=px, w=pw)
     iy = py + ph + gap_pi
@@ -67,6 +65,6 @@ async def main():
             s, (info_end, ly) = await build(H)
             print(f"[{name}] info ends y={info_end}, lockup starts y={ly}")
             await B.render(B.page(W, H, "#000", "".join(s.parts), grain=False), os.path.join(OUT, f"{name}.png"), W, H, elements=s.els, bleed_tags=("plate",), crop_tags=("plate",),
-                           page_bg="#000", containers=("panel",), text_pairs=[("text", "#fff", "#000", 40, True), ("gold", GOLD, "#000", 80, True)])
+                           page_bg="#000", text_pairs=[("text", "#fff", "#000", 40, True), ("gold", GOLD, "#000", 80, True)])
     print("done ->", OUT)
 asyncio.run(main())
