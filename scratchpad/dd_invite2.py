@@ -1,5 +1,5 @@
 """DISCO DIWALI "SPECIAL INVITATION" v2 (user, 2026-11-07: 'SPECIAL INVITATION and Rs.550 highlighted, reduce the Disco Diwali text and place it at the footer').
-The invitation line and the fee are the hero: no box (v7, user 2026-11-07: outline removed), SPECIAL INVITATION in gold, SPECIAL over INVITATION in gold, one size, INVITATION measured to fill the panel (v6, user 2026-11-07: the entry fee is REMOVED, so no price is printed). The date, time and venue sit
+The invitation line and the fee are the hero: no box (v7, user 2026-11-07: outline removed), SPECIAL INVITATION in white (v10, user 2026-11-07), SPECIAL over INVITATION in gold, one size, INVITATION measured to fill the panel (v6, user 2026-11-07: the entry fee is REMOVED, so no price is printed). The date, time and venue sit
 under the panel. The lockup (with ball) is shrunk to a footer mark with the edition line beneath it. Built on the Sign primitives (beaded celestial ground, string lights, LIVE badge,
 copper mask) at feed 1080x1350 and story 1080x1920 (top 200 and bottom 250 clear for Instagram's bars). Supplied facts only: 10th November 2026, 4:30 PM onwards, 60 Chowringhee
 Banquets. Run: PYTHONIOENCODING=utf-8 python scratchpad/dd_invite2.py -> out/discodiwali/invite2/{feed,story}.png"""
@@ -47,8 +47,8 @@ async def build(H):
     zone0, zone1 = (640, 1450) if story else (560, 1140)       # between the mask/badge and the footer mark
     py = zone0 + max(0, (zone1 - zone0 - (ph + gap_pi + info_h)) // 2)
     print(f"   sizes: special {f_sp}, invitation {f_inv}; panel {ph}px at y={py}")
-    y = s.text("invite1", "Special", py + pad, f_sp, color=GOLD, x=px, w=pw)
-    y = s.text("invite2", "Invitation", y + gap, f_inv, color=GOLD, x=px, w=pw)
+    y = s.text("invite1", "Special", py + pad, f_sp, stroke=5, x=px, w=pw)
+    y = s.text("invite2", "Invitation", y + gap, f_inv, stroke=5, x=px, w=pw)
     iy = py + ph + gap_pi
     y = s.text("when", "10th November, 2026", iy, 52 if story else 46, stroke=3) + 10
     y = s.text("clock", "4:30 PM onwards", y, 42 if story else 38, stroke=3) + 8
