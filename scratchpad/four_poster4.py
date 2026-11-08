@@ -53,11 +53,37 @@ def _title_deco():
     return _svg(1000, 190, "".join(L))
 title_deco = _title_deco()
 def _co_deco(i):
-    ACC = {0: (sr.DG, sr.LG), 1: (sr.LAV, sr.LAVL), 2: (sr.RED, sr.PINKL), 3: (sr.BLUE, sr.BLUEL)}[i]
-    if i == 0:  L = [sr.band([(214, 132), (246, 116), (282, 108), (318, 112)], [2, 8, 9, 2], ACC[0], ACC[1], side=-1), sr.ribbon([(232, 94), (248, 106), (266, 98), (284, 112)], 7, sr.BLUE, sr.BLUEL), _dots([(206, 112, 4, sr.LAVL), (312, 92, 5, "#F5A02A")]), _star(300, 136, 8, YEL)]
-    elif i == 1: L = [sr.band([(216, 114), (248, 96), (288, 88), (322, 96)], [2, 9, 10, 2], ACC[0], ACC[1], side=-1), sr.loop([(236, 76), (246, 68), (260, 72), (260, 86), (248, 94), (238, 88)], sr.LG, 6), _dots([(300, 70, 5, sr.LAVL), (206, 126, 4, "#F5A02A")]), _star(312, 124, 8, CREAM)]
-    elif i == 2: L = [sr.band([(212, 122), (246, 102), (286, 92), (326, 102)], [2, 9, 11, 2], ACC[0], ACC[1], side=-1), sr.loop([(240, 76), (250, 68), (264, 72), (264, 86), (252, 94), (242, 88)], sr.SALMON, 6), _dots([(300, 74, 5, "#F5A02A"), (208, 94, 4, sr.LAVL)]), _star(310, 128, 8, YEL)]
-    else:        L = [sr.ribbon([(214, 128), (234, 114), (256, 120), (278, 104), (302, 100)], 8, ACC[0], ACC[1]), _star(236, 98, 10, YEL), _star(314, 134, 8, CREAM), _dots([(290, 90, 5, sr.LAVL), (322, 112, 4, "#F5A02A"), (200, 108, 4, sr.LAVL)])]
+    """small sector icons in the illustration's flat style, kept inside x 214..334, y 88..156 (clear of logo + text)"""
+    L = []
+    if i == 0:   # AquaTerra: globe with a sprout (environment / NGO)
+        L = [f'<circle cx="274" cy="124" r="30" fill="{sr.BLUE}"/>',
+             sr.blob([(256, 108), (270, 102), (282, 108), (278, 120), (266, 126), (256, 120)], sr.LG),
+             sr.blob([(280, 128), (292, 124), (298, 134), (290, 146), (280, 142)], sr.DG),
+             f'<path d="M244 124 Q274 114 304 124 M274 94 Q262 124 274 154" fill="none" stroke="{sr.BLUEL}" stroke-width="2.5" opacity=".8"/>',
+             f'<path d="M274 94 L274 76" stroke="{sr.DG}" stroke-width="5" stroke-linecap="round"/>',
+             sr.band([(274, 80), (262, 68), (248, 66)], [1, 8, 2], sr.LG, sr.DG, side=-1), sr.band([(274, 76), (288, 62), (304, 60)], [1, 8, 2], sr.LG, sr.DG, side=1),
+             _dots([(220, 112, 4, sr.LAVL), (322, 100, 4, "#F5A02A")]), _star(316, 140, 8, YEL)]
+    elif i == 1: # Shikshaq: open book + pencil (education)
+        L = [f'<path d="M232 140 L274 132 L274 100 L232 106 Z" fill="{sr.LAV}"/>', f'<path d="M316 140 L274 132 L274 100 L316 106 Z" fill="{sr.LAVL}"/>',
+             f'<path d="M232 106 L274 100 L316 106" fill="none" stroke="{CREAM}" stroke-width="3" stroke-linejoin="round"/>',
+             "".join(f'<line x1="240" y1="{112+i_*8}" x2="268" y2="{108+i_*8}" stroke="{CREAM}" stroke-width="2.4" stroke-linecap="round"/><line x1="280" y1="{108+i_*8}" x2="308" y2="{112+i_*8}" stroke="{sr.LAV}" stroke-width="2.4" stroke-linecap="round"/>' for i_ in range(3)),
+             f'<g transform="rotate(38 308 90)"><rect x="302" y="62" width="12" height="52" rx="2" fill="{YEL}"/><path d="M302 114 L314 114 L308 126 Z" fill="{sr.PINKL}"/><rect x="302" y="62" width="12" height="9" fill="{sr.RED}"/></g>',
+             _dots([(222, 92, 4, sr.LAVL), (326, 140, 4, "#F5A02A")]), _star(240, 80, 8, CREAM)]
+    elif i == 2: # MK Cycles: bicycle wheel + gear (cycles)
+        cx, cy = 262, 118
+        L = [f'<circle cx="{cx}" cy="{cy}" r="32" fill="none" stroke="{sr.RED}" stroke-width="6"/>', f'<circle cx="{cx}" cy="{cy}" r="26" fill="none" stroke="{sr.PINKL}" stroke-width="2"/>',
+             "".join(f'<line x1="{cx}" y1="{cy}" x2="{cx+27*math.cos(math.radians(a_*30)):.1f}" y2="{cy+27*math.sin(math.radians(a_*30)):.1f}" stroke="{CREAM}" stroke-width="1.8"/>' for a_ in range(12)),
+             f'<circle cx="{cx}" cy="{cy}" r="5" fill="{YEL}"/>']
+        gx, gy = 316, 134
+        g = "M" + " L".join(f"{gx+(15 if k%2==0 else 11)*math.cos(math.radians(k*22.5)):.1f} {gy+(15 if k%2==0 else 11)*math.sin(math.radians(k*22.5)):.1f}" for k in range(16)) + "Z"
+        L += [f'<path d="{g}" fill="{YEL}"/>', f'<circle cx="{gx}" cy="{gy}" r="5" fill="{TILE}"/>', _dots([(318, 96, 4, "#F5A02A"), (222, 98, 4, sr.LAVL)])]
+    else:        # Ekavya: building frame + crane (real estate)
+        L = ['<g transform="translate(2 20)">'] + [f'<rect x="236" y="96" width="62" height="58" fill="none" stroke="{sr.BLUE}" stroke-width="4"/>',
+             "".join(f'<line x1="236" y1="{96+k*19.3:.1f}" x2="298" y2="{96+k*19.3:.1f}" stroke="{sr.BLUE}" stroke-width="3.5"/>' for k in (1, 2)),
+             "".join(f'<line x1="{236+k*20.7:.1f}" y1="96" x2="{236+k*20.7:.1f}" y2="154" stroke="{sr.BLUE}" stroke-width="3.5"/>' for k in (1, 2)),
+             f'<rect x="258" y="136" width="14" height="12" fill="{YEL}"/><rect x="278" y="117" width="14" height="12" fill="{YEL}"/><rect x="240" y="117" width="14" height="12" fill="{sr.PINKL}"/>',
+             f'<path d="M300 154 L300 74 M300 74 L240 74 M300 74 L322 74" stroke="{sr.RED}" stroke-width="5" stroke-linecap="round"/><path d="M252 74 L252 90" stroke="{CREAM}" stroke-width="2"/><path d="M300 74 L322 94" stroke="{sr.RED}" stroke-width="2.5"/>',
+             _dots([(222, 82, 4, sr.LAVL), (326, 132, 4, "#F5A02A")]), _star(326, 108, 8, YEL)] + ['</g>']
     return _svg(344, 208, "".join(L))
 
 html = f'''<!doctype html><meta charset=utf-8><style>{core.FONTS}{core.ROOT}
