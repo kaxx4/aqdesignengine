@@ -2,6 +2,7 @@
 title tile, the recreated sparkler illustration in a tall art tile, four company tiles (logo + 'Visit us at' + link,
 each with an accent taken from the illustration), a wish tile and a 'from' tile. Tokens: radius 32, 16px gaps, 40px margin."""
 import asyncio, os, sys, base64, importlib.util, random, math
+os.environ["SPARKLER_HAND"] = "black"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, f"{ROOT}/engine")
 import core
 sp = importlib.util.spec_from_file_location("sr", f"{ROOT}/scratchpad/sparkler_recreate.py"); sr = importlib.util.module_from_spec(sp); sp.loader.exec_module(sr)
@@ -25,12 +26,12 @@ aq_logo = f'<span style="background:{CREAM};border-radius:999px;padding:8px 20px
 mk_logo = f'<img src="data:image/png;base64,{b64(CO+"/mk_logo_crop.png")}" style="height:62px">'
 ek_logo = (f'<span style="display:inline-flex;align-items:center;gap:12px"><img src="data:image/svg+xml;base64,{b64(CO+"/ek_icon.svg")}" style="height:54px">'
            f'<span style="font-weight:800;font-size:24px;letter-spacing:.12em">EKAVYA VYAPAAR</span></span>')
-def company(i, logo, site, color):
+def company(i, logo, site, color, note=None):
     y = y_art + i * (CO_H + G)
     return (f'<div class="tile" style="left:{M+ART_W+G}px;top:{y:.0f}px;width:{COL_W}px;height:{CO_H:.0f}px;padding:22px 26px;display:flex;flex-direction:column;justify-content:space-between">'
             f'<div style="display:flex;align-items:center;justify-content:space-between"><div class=logo style="min-height:64px;display:flex;align-items:center">{logo}</div><span style="width:16px;height:16px;border-radius:50%;background:{color};flex:none"></span></div>'
-            f'<div><div style="font-family:var(--m);font-weight:700;font-size:14px;letter-spacing:.14em;color:{MUTED}">VISIT US AT</div>'
-            f'<div class=chk data-n="{site}" style="margin-top:5px;font-size:23px;font-weight:700;color:{CREAM};white-space:nowrap">{site}</div></div></div>')
+            f'<div><div style="font-family:var(--m);font-weight:700;font-size:14px;letter-spacing:.14em;color:{MUTED}">{"NOW BUILDING" if note else "VISIT US AT"}</div>'
+            f'<div class=chk data-n="{note or site}" style="margin-top:5px;font-size:23px;font-weight:700;color:{CREAM};white-space:nowrap">{note or site}</div></div></div>')
 html = f'''<!doctype html><meta charset=utf-8><style>{core.FONTS}{core.ROOT}
 @font-face{{font-family:AR;src:url(data:font/woff2;base64,{ARCH});font-weight:100 900}}
 *{{margin:0;box-sizing:border-box}}
@@ -41,17 +42,15 @@ html = f'''<!doctype html><meta charset=utf-8><style>{core.FONTS}{core.ROOT}
 <svg width="{W}" height="{H}" style="position:absolute;left:0;top:0;z-index:1">{dust}</svg>
 <div class="tile" style="left:{M}px;top:{M}px;width:{CW}px;height:{T_H}px;padding:0 36px;display:flex;align-items:center;justify-content:space-between">
   <div><div style="font-family:var(--m);font-weight:700;font-size:15px;letter-spacing:.2em;color:{MUTED};margin-bottom:6px">DIWALI GREETINGS</div>
-  <div class=chk data-n=title style="font-weight:800;font-size:112px;line-height:1;letter-spacing:-.03em;color:{YEL};white-space:nowrap">HAPPY DIWALI</div></div>
+  <div style="display:flex;align-items:baseline;gap:22px;white-space:nowrap" class=chk data-n=title>
+    <span style="font-family:var(--s);font-style:italic;font-weight:400;font-size:124px;line-height:1;color:{CREAM};letter-spacing:-.01em">Happy</span>
+    <span style="font-weight:800;font-size:122px;line-height:1;letter-spacing:-.035em;color:{YEL};text-shadow:5px 5px 0 {sr.RED}">DIWALI</span></div></div>
   <svg width="86" height="86" viewBox="-50 -50 100 100">{"".join(f'<line x1="{14*math.cos(math.radians(i*15)):.1f}" y1="{14*math.sin(math.radians(i*15)):.1f}" x2="{(46 if i%2==0 else 36)*math.cos(math.radians(i*15)):.1f}" y2="{(46 if i%2==0 else 36)*math.sin(math.radians(i*15)):.1f}" stroke="{CREAM}" stroke-width="3" stroke-linecap="round"/>' for i in range(24))}</svg>
 </div>
 <div class="tile" style="left:{M}px;top:{y_art}px;width:{ART_W}px;height:{ART_H}px"><div style="position:absolute;left:-120px;top:0;width:880px;height:880px">{art_svg}</div></div>
-{company(0, aq_logo, "www.ngoaquaterra.com", AQC)}{company(1, sh_logo, "www.shikshaq.in", SHC)}{company(2, mk_logo, "mkcycles.in", MKC)}{company(3, ek_logo, "ekavyavyapaar.vercel.app", EKC)}
-<div class="tile" style="left:{M}px;top:{y_r3}px;width:{ART_W}px;height:{R3_H}px;padding:0 34px;display:flex;align-items:center">
-  <div class=chk data-n=wish style="font-size:38px;font-weight:700;line-height:1.18;letter-spacing:-.01em;color:{CREAM}">Wishing you light, love<br>and a bright year ahead</div></div>
-<div class="tile" style="left:{M+ART_W+G}px;top:{y_r3}px;width:{COL_W}px;height:{R3_H}px;padding:20px 26px;display:flex;flex-direction:column;justify-content:center">
-  <div style="font-family:var(--m);font-weight:700;font-size:14px;letter-spacing:.14em;color:{MUTED};margin-bottom:8px">FROM</div>
-  <div class=chk data-n=from style="font-size:22px;font-weight:800;line-height:1.32;letter-spacing:.01em">
-    <span style="color:{AQC}">●</span> AQ &nbsp;<span style="color:{SHC}">●</span> SHIKSHAQ<br><span style="color:{MKC}">●</span> MK CYCLES &nbsp;<span style="color:{EKC}">●</span> EKAVYA</div></div>
+{company(0, aq_logo, "www.ngoaquaterra.com", AQC)}{company(1, sh_logo, "www.shikshaq.in", SHC)}{company(2, mk_logo, "mkcycles.in", MKC)}{company(3, ek_logo, "", EKC, note="in South Kolkata")}
+<div class="tile" style="left:{M}px;top:{y_r3}px;width:{CW}px;height:{R3_H}px;padding:0 36px;display:flex;align-items:center;justify-content:center">
+  <div class=chk data-n=wish style="font-size:40px;font-weight:700;letter-spacing:-.015em;color:{CREAM};white-space:nowrap">Wishing you light, love and a bright year ahead</div></div>
 <div class=gr></div></div>'''
 async def main():
     from playwright.async_api import async_playwright

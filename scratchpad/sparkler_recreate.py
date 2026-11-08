@@ -118,10 +118,13 @@ A(f'<circle cx="372" cy="184" r="33" fill="#F2E6A4"/>')
 # ================= stick + fist (traced from a 3x zoom: fist coordinates are zoom units, group scaled by 1/3)
 A(f'<path d="M363 250 L371 250 L369 430 L362 430Z" fill="#4E2A22"/>')
 sil = "M225 105 Q225 70 260 68 L628 50 Q652 50 648 76 L640 106 Q622 150 548 166 L560 200 L738 520 L722 622 L642 802 L598 978 L175 978 L150 802 L70 562 L58 520 L230 335Z"
-fist = f'<path d="{sil}" fill="{PINK}"/>'
+BLACKHAND = os.environ.get("SPARKLER_HAND") == "black"
+_hf = "#15151a" if BLACKHAND else PINK
+_hs = ' stroke="#F4EFE0" stroke-width="9" stroke-linejoin="round"' if BLACKHAND else ""
+fist = f'<path d="{sil}" fill="{_hf}"{_hs}/>'
 lines = ["M368 170 L548 164", "M410 176 L410 214", "M232 340 L440 186 Q462 178 470 200 L500 302", "M205 455 L545 318 Q572 312 576 340 L586 482",
          "M262 515 L575 493 Q602 496 598 522 Q572 642 540 700 Q530 718 500 721", "M330 625 L466 617 L470 668", "M386 628 Q440 650 480 690 Q492 706 498 722", "M498 722 Q524 790 562 920"]
-for d in lines: fist += f'<path d="{d}" fill="none" stroke="#150c10" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
+for d in lines: fist += f'<path d="{d}" fill="none" stroke="{"#F4EFE0" if BLACKHAND else "#150c10"}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>'
 A(f'<g transform="translate(230 410) scale(0.33333)">{fist}</g>')
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 736 736" width="736" height="736"><defs><filter id="rf" x="-3%" y="-3%" width="106%" height="106%">'
        '<feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/></filter>'
