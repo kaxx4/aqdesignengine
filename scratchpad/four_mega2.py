@@ -24,17 +24,17 @@ for x, y, ang, L, w, c1, c2 in [(-20, 210, 22, 380, 34, "#6F5CD6", "#B7A8F5"), (
     d, g = leaf(x, y, ang, L, w, bend=w * .7); A(spray(d, c1, c2, g))
 # --- halo + sparkler star (ref 1) with stick running into the hand
 A(spray(circle(600, 470, 215), "#12120d", "#3e3d2f", (600, 255, 600, 690)))
-A(f'<line x1="600" y1="470" x2="770" y2="930" stroke="#5b3a2e" stroke-width="13" stroke-linecap="round"/>')
+A(f'<line x1="600" y1="470" x2="606" y2="880" stroke="#5b3a2e" stroke-width="13" stroke-linecap="round"/>')
 A(spray(star(600, 470, 190, 70, 11, 6, pinch=.2), "#F5B700", "#F45B1F", (560, 290, 650, 660)))
 A(spray(circle(600, 470, 58), "#FFF2B8", "#F5C400", (600, 420, 600, 530)))
 # --- stars + orbs (ref 2)
 A(spray(star(230, 300, 140, 40, 7, -10, pinch=.3), COB, PALE, (150, 200, 300, 420)))
 A(spray(star(805, 235, 150, 44, 7, 12, pinch=.3), ORG, YEL, (805, 150, 805, 400)))
 A(spray(star(400, 880, 95, 28, 6, 0, pinch=.3), TEAL, CREAM, (330, 800, 480, 960)))
-A(spray(star(560, 1130, 85, 25, 6, 20, pinch=.3), YEL, ORG, (560, 1060, 560, 1200)))
+A(spray(star(925, 960, 100, 29, 6, 20, pinch=.3), YEL, ORG, (925, 880, 925, 1040)))
 def orb(cx, cy, r, c1, c2, g): A(spray(circle(cx, cy, r), c1, c2, g))
 orb(205, 560, 112, TEAL, CREAM, (150, 480, 280, 650)); orb(905, 470, 98, PALE, CREAM, (840, 380, 960, 560))
-orb(170, 1040, 168, TEAL, YEL, (60, 900, 300, 1200)); orb(385, 1165, 80, PALE, CREAM, (330, 1190, 440, 1320))
+orb(170, 1040, 168, TEAL, YEL, (60, 900, 300, 1200)); orb(385, 1165, 80, PALE, CREAM, (330, 1190, 440, 1320)); orb(925, 1215, 105, PALE, TEAL, (860, 1130, 990, 1330))
 # quiet company motifs inside the orbs (dark, low contrast)
 M = f'fill="none" stroke="{INK}" stroke-opacity=".55" stroke-linecap="round"'
 A(f'<g {M} stroke-width="7"><circle cx="205" cy="560" r="64"/><circle cx="205" cy="560" r="8" fill="{INK}" fill-opacity=".55"/>' + "".join(
@@ -45,17 +45,15 @@ for ang, L in [(-150, 85), (-115, 100), (-80, 95), (-45, 85), (-20, 70)]:
 for r_ in range(3):
     for c_ in range(3):
         A(f'<rect x="{355+c_*24}" y="{1135+r_*20}" width="16" height="12" fill="{INK}" fill-opacity=".5"/>')                                        # Ekavya building frame
-# --- open hand (ref 2): fingers as separated capsules, black gaps, spray teal at the tips
-hand = []
-fingers = [((598, 985), (580, 765), 60), ((664, 975), (660, 700), 62), ((730, 980), (745, 712), 62), ((795, 1010), (830, 800), 58)]
-palm = "M545 1380 L545 1070 Q545 970 640 960 L760 960 Q850 975 850 1080 L850 1380Z"
-hand.append(spray(palm, COB, TEAL, (700, 1250, 700, 960), extra=f'stroke="{INK}" stroke-width="10" stroke-linejoin="round"'))
-for (x1, y1), (x2, y2), w in fingers:
-    hand.append(spray_line(x1, y1, x2, y2, w, COB, TEAL, (x1, y1 + 60, x2, y2), under=INK))
-hand.append(spray_line(575, 1115, 478, 975, 64, COB, TEAL, (575, 1115, 478, 955), under=INK))
-for d_ in ["M585 1110 Q650 1060 715 1090", "M600 1190 Q690 1150 790 1175"]:
-    hand.append(f'<path d="{d_}" fill="none" stroke="{INK}" stroke-width="9" stroke-linecap="round"/>')
-A('<g transform="rotate(16 700 1330)">' + "".join(hand) + '</g>')
+# --- fist gripping the sparkler (ref 1): curled finger bands, thumb across the top, wrist off the bottom edge
+fist = []
+fist.append(spray("M610 1400 L610 1170 L792 1170 L792 1400Z", COB, TEAL, (700, 1400, 700, 1170), extra=f'stroke="{INK}" stroke-width="9" stroke-linejoin="round"'))   # wrist
+body = "M586 1190 L590 1020 Q594 962 660 958 L762 958 Q822 962 826 1020 L828 1192 Q708 1232 586 1190Z"
+fist.append(spray(body, COB, TEAL, (700, 1230, 700, 960), extra=f'stroke="{INK}" stroke-width="9" stroke-linejoin="round"'))
+for d_ in ["M826 1052 Q752 1068 688 1128", "M828 1110 Q756 1128 706 1176", "M810 1160 Q768 1176 738 1204", "M606 1100 Q640 1080 690 1072"]:
+    fist.append(f'<path d="{d_}" fill="none" stroke="{INK}" stroke-width="9" stroke-linecap="round"/>')
+fist.append(spray_line(640, 1000, 748, 990, 62, COB, TEAL, (640, 1030, 748, 960), under=INK))   # thumb resting on top
+art.append('<g transform="translate(700 1380) rotate(-10) scale(1.3) translate(-700 -1380)">' + "".join(fist) + '</g>')
 body_art = f'<g filter="url(#rough)">{"".join(art)}</g>'
 # --- thin asterisk burst bottom-left (ref 2)
 bx, by = 105, 1240
@@ -72,4 +70,4 @@ body = (f'<div class=chk data-n="t1" style="position:absolute;left:40px;top:58px
         f'<div class=chk data-n="logos" style="position:absolute;right:40px;top:62px;display:flex;align-items:center;gap:14px;z-index:12">{logos}</div>'
         f'<div class=chk data-n="urls" style="position:absolute;left:176px;width:380px;bottom:34px;text-align:left;line-height:1.45;font-family:var(--m);font-weight:700;font-size:14px;letter-spacing:.04em;color:#a39e8c;z-index:12;white-space:nowrap">VISIT US AT<br>NGOAQUATERRA.COM · SHIKSHAQ.IN<br>MKCYCLES.IN · EKAVYAVYAPAAR.VERCEL.APP</div>')
 html = K.page(body_art, body)
-asyncio.run(K.shoot(html, f"{R}/out/four/mega2_final.png"))
+asyncio.run(K.shoot(html, f"{R}/out/four/mega2_v4.png"))
