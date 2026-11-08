@@ -136,8 +136,9 @@ async def main():
             await pg.set_content(f'<body style="margin:0;background:#000">{svg.replace("width=\"736\" height=\"736\"", f"width=\"{size}\" height=\"{size}\"", 1)}</body>')
             await pg.wait_for_timeout(300); await pg.screenshot(path=f"{ROOT}/out/four/{out}"); await pg.close()
         await b.close()
-asyncio.run(main())
-from PIL import Image
-ref = Image.open("/tmp/claude-0/-home-user/789e1244-ae70-5b86-bc19-5e0a334e997b/images/1.jpg").convert("RGB").resize((736, 736))
-mine = Image.open(f"{ROOT}/out/four/sparkler_recreation_736.png").convert("RGB")
-sb = Image.new("RGB", (1472, 736)); sb.paste(ref, (0, 0)); sb.paste(mine, (736, 0)); sb.save(f"{ROOT}/out/four/_sparkler_compare.png")
+if __name__ == '__main__':
+  asyncio.run(main())
+  from PIL import Image
+  ref = Image.open("/tmp/claude-0/-home-user/789e1244-ae70-5b86-bc19-5e0a334e997b/images/1.jpg").convert("RGB").resize((736, 736))
+  mine = Image.open(f"{ROOT}/out/four/sparkler_recreation_736.png").convert("RGB")
+  sb = Image.new("RGB", (1472, 736)); sb.paste(ref, (0, 0)); sb.paste(mine, (736, 0)); sb.save(f"{ROOT}/out/four/_sparkler_compare.png")
