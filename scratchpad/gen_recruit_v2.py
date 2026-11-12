@@ -348,4 +348,5 @@ async def main():
             await B.render(html, f"{OUT}/{name}.png", W, H, elements=els or None, page_bg="var(--bg)")
             print("rendered", name)
         H = 1350
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

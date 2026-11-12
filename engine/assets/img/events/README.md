@@ -78,3 +78,20 @@ Pulled from the community platform's published feed posts (Supabase `post_images
 | 05_disha-grammar-class-wide.webp | 902 Grammar Workshop at Disha Foundation | Wide classroom, volunteers at the board, children seated. |
 | 06_dog-drive-night-volunteers.webp | 904 Dog Feeding Drive at Natural City | Night, two volunteers feeding several dogs. |
 | 07_street-tree-dog.webp | 878 Dog drive at Jatindas Park | A street, a tree and a stray dog in the distance. Faceless; used as a posterised landscape ground. |
+
+### welfare-feed-2026, second pull (2026-11-12, all LOCAL-ONLY, gitignored)
+
+Rebuild with: Supabase project `community-platform-aq`, public bucket `project-images/framer/<hash>`, joined through `project_image_url_backup_20261104.row_id = welfare_projects.id` (col `main_image`), and the blog covers from `posts` / `post_images` (source_kind `blog`, hosted on framerusercontent.com).
+
+| File | Source | Real fingerprint |
+|---|---|---|
+| 08_dog-drive-bhowanipur | Tails and Treats, Bhowanipur | series is at edition 53 (first logged Jan 2022) |
+| 09_sundarbans-sunset-group | Sunderbans 8.0 | 120+ checkups, 25K worth of meds and stationery, Dec 2025 |
+| 10_teaching-abc-board | Speak to Shine speaking workshop | teaching is ~70% of welfare work |
+| 11_art-workshop-table | Canvas Time art workshop | 25 children taught |
+| 12_roots-stall-novus-tee | "Novus - Roots", The Newtown School | 300 walk-ins |
+| 13_roots-stall-morpheus-tee | "Morpheus - Roots", South City International School | 300 and 350 walk-ins across two days |
+| 14_food-for-all-bananas | Food For All 13.0 | Food For All is at edition 17 |
+| 15_emami-science-city-lineup | AQ x Vishwajagriti and Emami Collab, Science City | 300 stationery kits, 30 kids hosted |
+| 16_cow-biscuit-dobson | Tails and Treats, Dobson Lane | 10+ dogs and cows fed biscuits |
+| blog-* | five Groundwork Diaries covers | titles: People in the Mirror, Dynamics, He Barks I Heal, Voicing One's Opinions, Letter to My City |
