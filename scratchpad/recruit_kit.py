@@ -66,7 +66,8 @@ def page(inner, H=1350, bg=CREAM):
     return B.page(W, H, bg, inner, grain=False)
 
 def doodle(kind, x, y, size, color, rot=0, z=9):
-    return V.dood(kind, x, y, size, color, rot, z)
+    return (f'<div style="position:absolute;left:{x}px;top:{y}px;width:{size}px;height:{size}px;z-index:{z}">'
+            f'{dd.stamp(kind, color, rot=rot)}</div>')
 
 # ---- photos (all real AQ photos, tracked in git, owner permission given for every frame including children) ----
 def ph(rel): return rel          # K.cover(K.PH["..."], w, h) takes a path relative to engine/assets/img/
