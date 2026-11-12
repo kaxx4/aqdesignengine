@@ -139,14 +139,21 @@ Built in v2 (events-heavy, keep as the Events lane): `r1_cast`, `r2_blank`, `r3_
 Built in v3 (this document's first wave, one per lane family): the Loop, Sundarbans cast, Tails and Treats fill-in, "you are not too young", Crftd at a school fest, ShikshAQ chat, Groundwork Diaries page, the Doors with all departments. See `scratchpad/gen_recruit_v3.py` and `out/recruit_nov2026/v3/`.
 Next: Social Media, Collabs, HR, Schools Network, Classes lane pieces; The Day; The Path; the Quiz; reel scripts per lane; parent and school pieces; WhatsApp variants per lane.
 
-## 10. OPEN QUESTIONS (these change copy, so they are listed rather than guessed)
+## 10. OWNER RULINGS (2026-11-12) AND WHAT IS STILL OPEN
 
-1. **The eight departments.** The site says "8 Student-Led Departments" but its text names only events, welfare, Crftd and ShikshAQ. The Operating Model lists six (HR, Collabs, Startups, Social Media, Events, Welfare). The v3 Doors piece shows Events, Welfare, Crftd, ShikshAQ, Social Media, Magazine and Blogs, Collabs and HR. Is that the list?
-2. **Crftd or ROOTS.** The site calls it Crftd; every platform log through 2026 says Roots. Is Crftd the new name? Until answered, posters say Crftd.
-3. **Magazine and Blogs.** The site calls the blog Groundwork Diaries, the platform has a "Digital Magazine" team. One thing or two?
-4. **The funnel.** Is there an interview for every applicant? The HR tracker says yes, the site says "apply in two minutes". "How it works" on the Doors piece says form, WhatsApp, community, a drive, and stops there.
-5. **One drive.** Is the minimum commitment one welfare drive? v2 assumed it.
-6. **Community versus Team.** Which does this campaign recruit into? The Operating Model separates open Community membership from selected Team membership.
-7. **Real members.** Spotlight pieces need first names and permission. Who can speak for each lane?
-8. **Language.** Kolkata has its own words (adda, bhai, kolkata-english). Do you want Bengali in the copy?
-9. **Photos of children.** The platform photos are already public on the site, but this repo is public. Frames with children stay local and are never committed; confirm they may appear on posts.
+Resolved by the owner:
+1. **The eight departments:** events, welfare, Crftd, ShikshAQ, social media (marketing and social media are one department), blogs, collabs, HR.
+2. **Crftd is the new name for ROOTS.** Write Crftd.
+3. **Funnel:** every applicant gets an interview, and getting in is easy. **Do not talk about the process.** No step lists, no "how it works". The ask is just the URL.
+4. **We recruit into Community AQ.** Once someone joins a department they are in Team AQ. Never explain the two layers.
+5. **Photos with children:** full permission, for every frame in the library, and they are committed to git for future use.
+6. **No Bengali, no adda-style lines** in the copy.
+7. **Variation inside one campaign:** every piece uses a different mechanism (the owner's five references, then 17 more from the 74-style bank), held together by the campaign constants in `RECRUITMENT_BUILD_BRIEF_NOV2026.md`.
+8. **Lane colours** follow the Social team's own code: events sky, welfare mint, Crftd tomato, ShikshAQ lemon, social media and blogs grape, collabs pink, HR teal.
+
+Still open:
+- **Magazine versus blogs.** The site's blog is Groundwork Diaries and the platform has a Digital Magazine team. One thing or two? (Pieces say "blogs".)
+- **Real members.** Spotlight pieces need first names and permission. None have been supplied, so no person is named anywhere.
+- **"One drive."** Is it still true that the first step is a single welfare drive? Pieces avoid saying it.
+- **ShikshAQ's "under 48 hours"** is launch research. Is there a current figure?
+- **Certificates and LORs** appear at most as one tiny line. Confirm that is the right weight.

@@ -67,7 +67,7 @@ Standing caveat applies: many people in these frames look like minors, and none 
 
 ## welfare-feed-2026/ (logged 2026-11-12)
 
-Pulled from the community platform's published feed posts (Supabase `post_images`, public bucket `post-images`), posts 876-904 (sharbat drives, dog drives, Disha Foundation teaching). Real AQ welfare photos, the missing "ordinary Saturday" half of the library. Only the faceless frames (02, 04, 07) are tracked in git; 01, 03, 05, 06 are local-only because the repo is public and they show children or teen volunteers (see `.gitignore`). Consent caveat applies: several frames show children, so use wide or from-behind frames and never crop to a child's face for recruitment art.
+Pulled from the community platform's published feed posts (Supabase `post_images`, public bucket `post-images`), posts 876-904 (sharbat drives, dog drives, Disha Foundation teaching). Real AQ welfare photos, the missing "ordinary Saturday" half of the library. The owner gave explicit permission (2026-11-12) to use these photos, including the frames with children, in AQ designs and to keep them in git for future use.
 
 | File | Source post | Content |
 |---|---|---|
@@ -79,7 +79,7 @@ Pulled from the community platform's published feed posts (Supabase `post_images
 | 06_dog-drive-night-volunteers.webp | 904 Dog Feeding Drive at Natural City | Night, two volunteers feeding several dogs. |
 | 07_street-tree-dog.webp | 878 Dog drive at Jatindas Park | A street, a tree and a stray dog in the distance. Faceless; used as a posterised landscape ground. |
 
-### welfare-feed-2026, second pull (2026-11-12, all LOCAL-ONLY, gitignored)
+### welfare-feed-2026, second pull (2026-11-12, tracked in git with the owner's permission)
 
 Rebuild with: Supabase project `community-platform-aq`, public bucket `project-images/framer/<hash>`, joined through `project_image_url_backup_20261104.row_id = welfare_projects.id` (col `main_image`), and the blog covers from `posts` / `post_images` (source_kind `blog`, hosted on framerusercontent.com).
 

@@ -311,7 +311,7 @@ def r5():
     # four colour blocks
     blocks = [("#4A73FF", "01 · events", "Events", "Fests, sports days and a dance floor built from nothing.", "circle"),
               ("#FF5A1F", "02 · welfare", "Welfare", "Sharbat in summer, biscuits for strays, a Sunday class for 65+ kids.", "half"),
-              ("#FF8AD6", "03 · startups", "Startups", "ROOTS sells the clothes. Shikshaq finds the tutor. Students run both.", "dots"),
+              ("#FF8AD6", "03 · startups", "Startups", "Crftd sells the clothes. ShikshAQ finds the tutor. Students run both.", "dots"),
               ("#7FE3A4", "04 · magazine", "Magazine", "Written and published by students. Nobody makes you write about your summer.", "star")]
     bx, by, bw, bh = 48, 866, 240, 330
     for i, (col, top, name, desc, icon) in enumerate(blocks):
@@ -327,10 +327,10 @@ def r5():
                  f'<div style="position:absolute;left:16px;bottom:16px;width:{bw-32}px;font-family:var(--e);font-size:14px;line-height:20px;color:#0A0A0A">{desc}</div></div>')
     # black "how it works" band, numerals running off the bottom like the reference
     P.append(f'<div style="position:absolute;left:0;top:1222px;width:{W}px;height:{H-1222}px;background:#0A0A0A;z-index:4"></div>')
-    P.append(f'<div style="position:absolute;left:48px;top:1240px;font-family:var(--s);font-size:44px;line-height:44px;color:#fff;z-index:8">How it works.</div>')
-    P.append(t("Fill the form. Come to one drive. Find your team. Certificate and LOR if you do the work.", 620, 1244, 15, color="#bbb", w=396, lh=22, tag="how"))
-    for i, (c, n) in enumerate([("#4A73FF", "01"), ("#FF5A1F", "02"), ("#FF8AD6", "03"), ("#7FE3A4", "04")]):
-        P.append(f'<div style="position:absolute;left:{48+i*248}px;top:{1290}px;font-family:var(--s);font-size:100px;line-height:86px;color:{c};z-index:8">{n}</div>')
+    P.append(f'<div style="position:absolute;left:48px;top:1240px;font-family:var(--s);font-size:44px;line-height:44px;color:#fff;z-index:8">Come in.</div>')
+    P.append(t("Apply and you are in the community. Join a team when you find yours.", 620, 1244, 15, color="#bbb", w=396, lh=22, tag="how"))
+    for i, (c, n) in enumerate([("#3DA9FC", "Events"), ("#1B8A5A", "Welfare"), ("#FF4D2E", "Crftd"), ("#FFC700", "ShikshAQ")]):
+        P.append(f'<div style="position:absolute;left:{48+i*248}px;top:{1300}px;font-family:var(--s);font-size:80px;line-height:80px;color:{c};z-index:8">{n}</div>')
     return "r5_site", page("".join(P)), [("sub", 700, 262, 316, 90)]
 
 async def main():

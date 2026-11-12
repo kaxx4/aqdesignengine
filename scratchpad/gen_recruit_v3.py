@@ -197,18 +197,18 @@ def site(sp):
               "half": '<path d="M0 20a20 20 0 0 1 40 0z" fill="#0A0A0A"/><path d="M0 24a20 20 0 0 0 40 0z" fill="#0A0A0A"/>',
               "dots": '<circle cx="10" cy="10" r="9" fill="#0A0A0A"/><circle cx="30" cy="10" r="9" fill="#0A0A0A"/><circle cx="10" cy="30" r="9" fill="#0A0A0A"/><circle cx="30" cy="30" r="9" fill="#0A0A0A"/>',
               "star": '<g stroke="#0A0A0A" stroke-width="4" stroke-linecap="round"><path d="M20 2v36M2 20h36M7 7l26 26M33 7L7 33"/></g>'}[b["icon"]]
-        nm = sp.get("bname", 40)
+        nm = sp.get("bname", 40); fg = core.text_on(b["col"]); ic = ic.replace("#0A0A0A", fg)
         P.append(f'<div style="position:absolute;left:{x}px;top:{y}px;width:{bw}px;height:{bh}px;background:{b["col"]};z-index:5">'
-                 f'<div style="position:absolute;left:16px;top:14px;font-family:var(--e);font-size:13px;color:#0A0A0A">{b["top"]}</div>'
+                 f'<div style="position:absolute;left:16px;top:14px;font-family:var(--e);font-size:13px;color:{fg}">{b["top"]}</div>'
                  f'<svg style="position:absolute;right:14px;top:12px" width="34" height="34" viewBox="0 0 40 40">{ic}</svg>'
-                 f'<div style="position:absolute;left:16px;bottom:{sp.get("bdesc_h",76)+12}px;font-family:var(--s);font-size:{nm}px;line-height:{nm}px;color:#0A0A0A">{b["name"]}</div>'
-                 f'<div style="position:absolute;left:16px;bottom:14px;width:{bw-32}px;font-family:var(--e);font-size:14px;line-height:19px;color:#0A0A0A">{b["desc"]}</div></div>')
+                 f'<div style="position:absolute;left:16px;bottom:{sp.get("bdesc_h",76)+12}px;font-family:var(--s);font-size:{nm}px;line-height:{nm}px;color:{fg}">{b["name"]}</div>'
+                 f'<div style="position:absolute;left:16px;bottom:14px;width:{bw-32}px;font-family:var(--e);font-size:14px;line-height:19px;color:{fg}">{b["desc"]}</div></div>')
     band_y = sp["band_y"]
     P.append(f'<div style="position:absolute;left:0;top:{band_y}px;width:{W}px;height:{H-band_y}px;background:#0A0A0A;z-index:4"></div>')
     P.append(f'<div style="position:absolute;left:48px;top:{band_y+18}px;font-family:var(--s);font-size:44px;line-height:44px;color:#fff;z-index:8">{sp["band_title"]}</div>')
     P.append(V.t(sp["band_text"], 620, band_y + 22, 15, color="#bbb", w=396, lh=22, tag="how"))
     for i, (c, n) in enumerate(sp["numerals"]):
-        P.append(f'<div style="position:absolute;left:{48+i*(984//len(sp["numerals"]))}px;top:{band_y+68}px;font-family:var(--s);font-size:100px;line-height:100px;color:{c};z-index:8">{n}</div>')
+        P.append(f'<div style="position:absolute;left:{48+i*(984//len(sp["numerals"]))}px;top:{band_y+68}px;font-family:var(--s);font-size:{sp.get("numsize",100)}px;line-height:{sp.get("numsize",100)}px;color:{c};z-index:8">{n}</div>')
     return sp["name"], V.page("".join(P)), []
 
 # ------------------------------------------------------------------ FORMAT: chat bubbles (ShikshAQ's own signature device)
@@ -283,20 +283,20 @@ SP["g"] = dict(name="g_diaries", nav=["Home", "Projects", "Teams", "Diaries"], h
 SP["h"] = dict(name="h_doors", nav=["Teams +", "Drives", "Magazine", "Shikshaq"], headline="Eight departments, all run by people <i>still doing homework.</i>",
     sub="Pick the door that sounds like your kind of chaos. You can walk through more than one.", sub_y=300, btn_y=392, link="See the drives",
     strip_y=548, strip_h=128,
-    strip=[("dither", V.P_FACES, "#FF5A1F", .4), ("block", "#4A73FF", "Welfare", "Tails and Treats", "edition 53"), ("glyph",),
-           ("dither", WL + "12_roots-stall-novus-tee.jpg", "#FF8AD6", .4), ("block", "#7FE3A4", "Welfare", "Sharbat Seva", "edition 33"),
-           ("dither", WL + "09_sundarbans-sunset-group.png", "#4A73FF", .5)],
+    strip=[("dither", V.P_FACES, "#3DA9FC", .4), ("block", MINT, "Welfare", "Tails and Treats", "edition 53"), ("glyph",),
+           ("dither", WL + "12_roots-stall-novus-tee.jpg", "#FF4D2E", .4), ("block", MINT, "Welfare", "Sharbat Seva", "edition 33"),
+           ("dither", WL + "09_sundarbans-sunset-group.png", "#7E5BFF", .5)],
     t2_y=708, title2="Eight doors, one form.", sub2="Every team is run by students. Nobody gets a script.", cols=4, bh=206, by=786, bname=34, bdesc_h=58,
-    blocks=[dict(col="#4A73FF", top="01 · events", name="Events", desc="Fests, vendors, sponsors, a dance floor built from nothing.", icon="circle"),
-            dict(col="#FF5A1F", top="02 · welfare", name="Welfare", desc="Dogs, food, plantations, classrooms and trips.", icon="half"),
-            dict(col="#FFD84A", top="03 · crftd", name="Crftd", desc="Streetwear. Profit funds a welfare drive.", icon="star"),
-            dict(col="#FFB347", top="04 · shikshaq", name="ShikshAQ", desc="The tutor platform. Under 48 hours.", icon="dots"),
-            dict(col="#FF8AD6", top="05 · social", name="Social Media", desc="Reels, design, the account you scroll.", icon="star"),
-            dict(col="#C9B8FF", top="06 · magazine", name="Blogs", desc="Written and published by students.", icon="circle"),
-            dict(col="#7FE3A4", top="07 · collabs", name="Collabs", desc="Schools, colleges, NGOs, a foundation or two.", icon="half"),
-            dict(col="#9BE3F0", top="08 · hr", name="HR", desc="Interviews, onboarding, certificates.", icon="dots")],
-    band_y=1224, band_title="How it works.", band_text="Fill the form. We message you on WhatsApp. Join the community. Come to a drive.",
-    numerals=[("#4A73FF", "01"), ("#FF5A1F", "02"), ("#FF8AD6", "03"), ("#7FE3A4", "04")])
+    blocks=[dict(col=SKY, top="01 · events", name="Events", desc="Fests, vendors, sponsors, a dance floor built from nothing.", icon="circle"),
+            dict(col=MINT, top="02 · welfare", name="Welfare", desc="Dogs, food, plantations, classrooms and trips.", icon="half"),
+            dict(col=TOM, top="03 · crftd", name="Crftd", desc="Streetwear. Profit funds a welfare drive.", icon="star"),
+            dict(col=LEM, top="04 · shikshaq", name="ShikshAQ", desc="The tutor platform. Under 48 hours.", icon="dots"),
+            dict(col=GRAPE, top="05 · social media", name="Social", desc="Reels, design, the account you scroll.", icon="star"),
+            dict(col=GRAPE, top="06 · blogs", name="Blogs", desc="Written and published by students.", icon="circle"),
+            dict(col=PINK, top="07 · collabs", name="Collabs", desc="Schools, NGOs, a foundation or two.", icon="half"),
+            dict(col=TEAL, top="08 · hr", name="HR", desc="Onboarding, interviews, certificates.", icon="dots")],
+    band_y=1224, band_title="Come in.", band_text="Apply and you are in the community. Join a team when you find yours.", numsize=80,
+    numerals=[(SKY, "Events"), (MINT, "Welfare"), (TOM, "Crftd"), (LEM, "ShikshAQ")])
 
 async def main():
     os.makedirs(OUT, exist_ok=True)
