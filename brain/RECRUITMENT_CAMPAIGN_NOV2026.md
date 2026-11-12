@@ -2,6 +2,8 @@
 
 Status: strategy draft, 2026-11-12. Nothing here is built or scheduled. Items marked **[CONFIRM]** need a real answer from the team before they ship. Everything else is sourced from `AQ_FACTS.md` or `VOICE.md`.
 
+> **UPDATE 2026-11-12 (owner feedback): the v1 designs and the sample copy in sections 5, 8 and 9b below were rejected as boring and badly written. The live plan, the five close recreations of the owner's references, the tier model (what you can do, recruit, FOMO, learning, general) and all copy now live in `RECRUITMENT_COPY_PACK_NOV2026.md`. The sections below stay as strategy background (audience, funnel, benefits ledger).** Facts settled since this draft: application is `ngoaquaterra.com/recruitment`; school students and college first years; no start date and no deadline; December is exams, then winter break; certificates and LORs are real for people who do the work, but are not to be sold as perks; minimum commitment is one drive [CONFIRM]; the owner approves all content.
+
 ---
 
 ## 0. READ THIS FIRST: three things that fight the brief

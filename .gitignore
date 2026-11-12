@@ -61,3 +61,10 @@ engine/assets/sponsorship/
 training_samples/sponsorship_deck/
 scratchpad/sponsorship_private/
 out/decks/
+
+# Welfare feed photos pulled from the community platform (2026-11-12): the repo is PUBLIC and several frames show
+# children and teen volunteers. Only the faceless frames (jar hands, dogs) are tracked; the rest stay local.
+engine/assets/img/events/welfare-feed-2026/*
+!engine/assets/img/events/welfare-feed-2026/02_sharbat-jar-bottles.webp
+!engine/assets/img/events/welfare-feed-2026/04_dog-biscuits-pat.webp
+!engine/assets/img/events/welfare-feed-2026/07_street-tree-dog.webp

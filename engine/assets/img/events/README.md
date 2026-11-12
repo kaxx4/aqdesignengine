@@ -64,3 +64,17 @@ Supplied by the user for the Disco Diwali carousel. Playing-card and silver-star
 | 09_boy-on-shoulders-star-balloon.jpg | A boy in a white kurta reaching for a star balloon, orange par lights left. |
 
 Standing caveat applies: many people in these frames look like minors, and none has a consent record. Check before public use.
+
+## welfare-feed-2026/ (logged 2026-11-12)
+
+Pulled from the community platform's published feed posts (Supabase `post_images`, public bucket `post-images`), posts 876-904 (sharbat drives, dog drives, Disha Foundation teaching). Real AQ welfare photos, the missing "ordinary Saturday" half of the library. Only the faceless frames (02, 04, 07) are tracked in git; 01, 03, 05, 06 are local-only because the repo is public and they show children or teen volunteers (see `.gitignore`). Consent caveat applies: several frames show children, so use wide or from-behind frames and never crop to a child's face for recruitment art.
+
+| File | Source post | Content |
+|---|---|---|
+| 01_sharbat-stall-volunteers.webp | 877 Sharbat Distribution Drive | Three teen volunteers at a street sharbat stall, bottles and cups. |
+| 02_sharbat-jar-bottles.webp | 877 | Sharbat jar and bottles on a stall counter, hands only. Faceless. |
+| 03_disha-volunteer-blackboard.webp | 903 Teaching Internship at Disha Foundation | Volunteer at a chalkboard, classroom behind. |
+| 04_dog-biscuits-pat.webp | 878 Dog drive at Jatindas Park | A stray dog with biscuits and a volunteer's hand. Faceless. |
+| 05_disha-grammar-class-wide.webp | 902 Grammar Workshop at Disha Foundation | Wide classroom, volunteers at the board, children seated. |
+| 06_dog-drive-night-volunteers.webp | 904 Dog Feeding Drive at Natural City | Night, two volunteers feeding several dogs. |
+| 07_street-tree-dog.webp | 878 Dog drive at Jatindas Park | A street, a tree and a stray dog in the distance. Faceless; used as a posterised landscape ground. |
