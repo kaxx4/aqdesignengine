@@ -45,7 +45,7 @@ Every piece answers one question for one reader: **"which part of that loop coul
 | ROOTS stalls at school fests: Novus 300 walk-ins, Confluence 300 and 250, Concord 200 and 250, Morpheus 300 and 350 | platform |
 | Crftd: every rupee of profit funds a welfare drive | site `/crftd` |
 | about 70% of welfare activity is teaching workshops; Pather Sathi Sunday School, 65+ children | Operating Model, `AQ_FACTS.md` |
-| ShikshAQ: tutor search 11 days before, under 48 hours after launch; 50+ verified profiles at launch | `AQ_FACTS.md` (launch research, scoped) |
+| ShikshAQ: a tutor search for Kolkata, classes IV to XII, ICSE, ISC, CBSE and State board, shikshaq.in. **Nothing else is cleared**: no "verified", no zero commission, no direct contact, no 11 days to under 48 hours, no counts (`addons/shikshaq/brain/CAMPAIGN_BRIEF_WHAT_IS_SHIKSHAQ.md` section 5) | ShikshAQ campaign brief |
 
 ## 3. THE LANES (the spokes)
 
@@ -58,7 +58,7 @@ Each lane has one "(just a student)" responsibility, one real proof, one real ph
 | 3 | **Welfare: teaching** | stand at the board | ~70% of welfare work; Sunday school 65+ kids | project-images | tomato |
 | 4 | **Welfare: trips** | organise a health camp in the Sundarbans | 120+ checkups, 8 trips | project-images | mint |
 | 5 | **Crftd** | run a streetwear label | stalls at school fests, 300 walk-ins; profit funds a drive | project-images (ROOTS stalls) | lemon |
-| 6 | **ShikshAQ** | run the tutor platform | 11 days to under 48 hours | typographic, chat-bubble format | lemon |
+| 6 | **ShikshAQ** | run a tutor search for a whole city | classes IV to XII across four boards; no research figures (not cleared) | typographic, chat-bubble format | lemon |
 | 7 | **Social Media** | run the account everyone scrolls | Instagram, LinkedIn, blogs | the team's own designs | pink |
 | 8 | **Magazine and Blogs** | get published | student essays and art on the site | blog covers (real) | grape |
 | 9 | **Collabs** | sit across from a foundation | Emami collab: 300 kits, 30 kids | project-images | teal |
@@ -94,7 +94,7 @@ Not every piece recruits. Every lane gets at least one T1 and one T3 or T4. The 
 | T1 what you can do | shows the work, no ask | Tails and Treats at edition 53; Crftd at a school fest |
 | T2 recruit | nudges to apply | The Doors; the story link; WhatsApp A |
 | T3 FOMO | the sidelines feel loud | the Sundarbans cast list; "you watched it on stories" |
-| T4 learning | the skills school skips | haggling; "you are not too young"; ShikshAQ's 11 days |
+| T4 learning | the skills school skips | haggling; "you are not too young"; ShikshAQ vs asking a cousin |
 | T5 general | a joke worth forwarding | "you are not late"; "you reorganised your desktop twice" |
 
 ## 7. FOUR WEEKS, NO DATES
@@ -129,11 +129,11 @@ No start date or deadline exists, so the weeks are relative. Exam fortnight: lea
 | `c_tails` | welfare: drives | fill-in-the-blank | "Tails and Treats has run 53 times since January 2022. Every round is a bag of (biscuits), a few (volunteers), and some (dogs) who have never once asked anyone's age." | edition 53 |
 | `d_teach` | welfare: teaching | the note | "About 70% of our welfare work is a classroom, run by students." / **You are not too young.** / "Nobody asks if you are old enough. They ask if you showed up." / "Bring a marker." | about 70% |
 | `e_crftd` | Crftd | fill-in-the-blank | "Crftd turns up at a school fest, hangs a blank (T-shirt), and 300 (students) walk in. They spray it until it looks like this. Every rupee of profit funds a welfare drive." | 300 walk-ins (Novus) |
-| `f_shikshaq` | ShikshAQ | chat bubbles | 11 DAYS TO FIND A TUTOR. / Now, under 48 hours. / parent: "need a maths tutor near salt lake. been asking around for 11 days." / ShikshAQ: "verified tutors near you. message them directly on whatsapp. no commission, ever." / parent: "...that was it?" | 11 days, under 48 hours, 50+ profiles |
+| `f_shikshaq` | ShikshAQ | chat bubbles | ASKED THREE COUSINS. STILL NO TUTOR. / Or just search. / parent: "need a maths tutor near salt lake. asked three cousins and a neighbour." / ShikshAQ: "search for a tutor near you at shikshaq.in. classes iv to xii." / parent: "...that was it?" | none (cleared facts only) |
 | `g_diaries` | magazine and blogs | website page | "Stories from the ground, written by whoever was there." Real covers and titles: People in the Mirror, Dynamics, He Barks I Heal, Voicing One's Opinions, Letter to My City. How to get in: join the writer group, send a draft, see it live. | five real posts |
 | `h_doors` | the Doors | website page | "Eight departments, all run by people still doing homework." / "Eight doors, one form." Eight blocks, one line each. How it works: fill the form, we message you on WhatsApp, join the community, come to a drive. | eight departments, Tails and Treats 53, Sharbat Seva 33 |
 
-Claims that need an owner check before posting: ShikshAQ's "under 48 hours" is launch research, not a live figure; Crftd's "they spray it" is read off the photo; the writer-group steps come from the HR tracker's blogs tab; `h_doors` shows eight departments the owner has not yet confirmed (section 10).
+Claims that need an owner check before posting: Crftd's "they spray it" is read off the photo; the writer-group steps come from the HR tracker's blogs tab; `h_doors` shows eight departments the owner has not yet confirmed (section 10).
 
 Built in v2 (events-heavy, keep as the Events lane): `r1_cast`, `r2_blank`, `r3_late` (+story), `r4_haggling` (+story), `r5_site`.
 Built in v3 (this document's first wave, one per lane family): the Loop, Sundarbans cast, Tails and Treats fill-in, "you are not too young", Crftd at a school fest, ShikshAQ chat, Groundwork Diaries page, the Doors with all departments. See `scratchpad/gen_recruit_v3.py` and `out/recruit_nov2026/v3/`.
@@ -155,5 +155,31 @@ Still open:
 - **Magazine versus blogs.** The site's blog is Groundwork Diaries and the platform has a Digital Magazine team. One thing or two? (Pieces say "blogs".)
 - **Real members.** Spotlight pieces need first names and permission. None have been supplied, so no person is named anywhere.
 - **"One drive."** Is it still true that the first step is a single welfare drive? Pieces avoid saying it.
-- **ShikshAQ's "under 48 hours"** is launch research. Is there a current figure?
+- **ShikshAQ.** Its own campaign brief bans "verified", zero commission, direct contact and the 11-days/48-hours research until the owner confirms them. Every piece now avoids all four. Which of them, if any, can be used?
 - **Certificates and LORs** appear at most as one tiny line. Confirm that is the right weight.
+
+## 11. V4 WAVE (17 pieces, 2026-11-12)
+
+One piece per style from the 74-style bank, every one carrying the campaign constants (`RECRUITMENT_BUILD_BRIEF_NOV2026.md`). Scripts: `scratchpad/gen_recruit_v4_*.py`, shared kit `scratchpad/recruit_kit.py`. Renders in `out/recruit_nov2026/v4/` (gitignored).
+
+| Lane | Piece | Style skeleton | Tier |
+|---|---|---|---|
+| events | `events_1` | date-pill schedule rows: "SOMEONE HAD TO BOOK THE DJ." | T1 |
+| events | `events_2` | extruded three-plate headline on a photo: VENDOR. SPONSOR. DJ. | T4 |
+| collabs | `collabs_1` | listing cards with rotated status tags: "THE OTHER SIDE OF THE TABLE WAS A FOUNDATION." | T3 |
+| collabs | `collabs_2` | diagonal fan of cards on black: "SCHOOLS. NGOs. A FOUNDATION OR TWO." | T4 |
+| welfare | `welfare_1` | pills bleeding off both edges: "53 ROUNDS OF BISCUITS." | T1 |
+| welfare | `welfare_2` | numbered photos on leader lines: "540+ drives look like. mostly bananas." | T1 |
+| welfare | `welfare_3` | map with a torn headline strip: "205 PLACES. THE MAP IS A SUGGESTION." | T3 |
+| hr | `hr_1` | dashboard of proof cards: "1,400+ ... ALL OF THEM STUDENTS. ALL OF THIS, TOO." | T2 |
+| hr | `hr_2` | three phones showing real AQ assets: "SCREEN TIME, justified." | T3 |
+| crftd | `crftd_1` | halftone T-shirt over a CRFTD word mural: "EVERY RUPEE OF PROFIT FUNDS A WELFARE DRIVE" | T1 |
+| crftd | `crftd_2` | sticker swarm in a giant headline: "300 WALK-INS." | T3 |
+| shikshaq | `shikshaq_1` | signpost and speech bubbles: "ASKING AROUND IS NOT A SEARCH ENGINE." | T4 |
+| shikshaq | `shikshaq_2` | workflow card collage: "FINDING A TUTOR, IN FOUR BORING STEPS." | T1 |
+| social | `social_1` | pinboard of the team's real captions: "WELL, WELL, WELL." | T5 |
+| social | `social_2` | 2x2 collage with torn tape: "WHO MAKES THE posts?" | T4 |
+| blogs | `blogs_1` | grid-paper headline with real post titles as chips: "SOMEONE WROTE TO THEIR CITY." | T1 |
+| blogs | `blogs_2` | highlighter-and-pill headline with a die-cut cover: "HOW A LETTER TO MY CITY BECAME A BLOG POST" | T4 |
+
+Needs the owner's eye: "yes, we argued about balloons" (a joke, not a logged fact); Confluence "300 and 250" and Concord "200 and 250" (the platform does not say whether the second figure is a second day); the three phones on `hr_2` assume these assets reach Community AQ members; `social_2`'s tape labels list Instagram, LinkedIn, reels, blogs and design.

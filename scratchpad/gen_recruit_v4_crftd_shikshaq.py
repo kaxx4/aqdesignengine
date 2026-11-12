@@ -151,9 +151,9 @@ def crftd_1(it=1):
     # torn ribbon, headline INSIDE the rotated wrapper so ribbon and type turn together
     rw, rh = 980, 236
     line = lambda txt, y: (f'<div class="measure" data-tag="rib" style="position:absolute;left:70px;width:{rw-140}px;top:{y}px;text-align:center;white-space:nowrap;'
-                           f'font-family:var(--d);font-weight:900;font-size:64px;line-height:70px;color:{INK};text-transform:uppercase">{txt}</div>')
+                           f'font-family:var(--d);font-weight:900;font-size:64px;line-height:60px;color:{INK};text-transform:uppercase">{txt}</div>')
     h.append(f'<div style="position:absolute;left:{(W-rw)//2-12}px;top:872px;width:{rw}px;height:{rh}px;z-index:12;transform:rotate(-2.2deg)">'
-             f'{torn_ribbon(rw, rh)}{line("EVERY RUPEE OF PROFIT", 46)}{line("FUNDS A WELFARE DRIVE", 122)}</div>')
+             f'{torn_ribbon(rw, rh)}{line("EVERY RUPEE OF PROFIT", 50)}{line("FUNDS A WELFARE DRIVE", 122)}</div>')
     els.append(("ribbon", 40, 860, rw, rh + 40))
     h.append(K.t("crftd (formerly roots) school-fest stalls. novus alone logged 300 walk-ins.", 64, 1134, 17, color=INK, font="m", weight=700,
                  z=14, tag="note", extra=f"background:{CREAM};padding:6px 10px;border:3px solid {INK};"))
@@ -282,7 +282,7 @@ def shikshaq_1(it=1):
         h.append(K.t(l, 64, 176 + i * int(fs * .94), fs, color=INK, font="d", weight=900, lh=int(fs * .94), z=6, tag=f"h{i}", upper=True))
         els.append((f"h{i}", 64, 176 + i * int(fs * .94) + 6, int(m[i]["text_w"] / 100 * fs), int(fs * .8)))
     yb = 176 + 2 * int(fs * .94) + 14
-    h.append(K.t("tutor search took 11 days. after shikshaq launched, under 48 hours.", 64, yb, 29, color=INK, font="e", weight=500, w=952, lh=36, z=6, tag="sub"))
+    h.append(K.t("a tutor search for kolkata, classes iv to xii. built and run by students.", 64, yb, 29, color=INK, font="e", weight=500, w=952, lh=36, z=6, tag="sub"))
     els.append(("sub", 64, yb, 952, 38))
     # signpost
     PX = 290; top = 412
@@ -291,8 +291,8 @@ def shikshaq_1(it=1):
     h.append(f'<div style="position:absolute;left:{PX-120}px;top:1052px;width:240px;height:34px;border-radius:50%;background:{INK};z-index:1"></div>')
     h.append(cloud(80, 408, 130)); h.append(cloud(405, 398, 120))
     els += [("pole", PX - 14, top, 28, 640), ("base", PX - 120, 1052, 240, 34), ("cloud1", 80, 408, 130, 52), ("cloud2", 405, 398, 120, 48)]
-    signs = [("KOLKATA", LEM, "leaf", -2.5), ("ZERO COMMISSION", SKY, "cross", 2), ("FREE TO USE", TOM, "heart", -1.5),
-             ("DIRECT CONTACT", MINT, "speech", 2.5), ("RUN BY STUDENTS", GRAPE, "star", -2)]
+    signs = [("KOLKATA", LEM, "leaf", -2.5), ("CLASS IV TO XII", SKY, "cross", 2), ("ICSE AND ISC", TOM, "heart", -1.5),
+             ("CBSE", MINT, "speech", 2.5), ("STATE BOARD", GRAPE, "star", -2)]
     ms = measure([dict(text=t_, font="d", size=34, weight=900) for t_, *_ in signs])
     for i, ((txt, col, ic, rot), mm) in enumerate(zip(signs, ms)):
         wpx = int(mm["text_w"] + 120); y = top + 58 + i * 114
@@ -306,9 +306,9 @@ def shikshaq_1(it=1):
                      extra=f"transform:rotate({rot}deg);transform-origin:{-60}px 20px;"))
         els.append((f"sign{i}", sx, y, wpx, 90))
     # bubbles
-    bub = [(456, 172, GRAPE, "stripes", 1, ["11 DAYS", "asking around for a tutor"], 436),
-           (420, 160, MINT, "curves", 2, ["UNDER 48 HOURS", "on shikshaq, after launch"], 676),
-           (372, 150, TOM, "brush", 3, ["50+ VERIFIED", "profiles at launch"], 896)]
+    bub = [(456, 172, GRAPE, "stripes", 1, ["ASK A COUSIN", "step one, apparently"], 436),
+           (420, 160, MINT, "curves", 2, ["NOTICE BOARD", "step two, still"], 676),
+           (372, 150, TOM, "brush", 3, ["OR JUST SEARCH", "shikshaq.in"], 896)]
     for bw, bh, bg, pat, uid, (big, small), by in bub:
         bx = 560
         h.append(f'<div style="position:absolute;left:{bx}px;top:{by}px;z-index:4">{bubble_svg(bw, bh, bg, pat, uid)}</div>')
@@ -319,7 +319,7 @@ def shikshaq_1(it=1):
         h.append(K.t(big, px + 20, py + 10, 36, color=INK, font="d", weight=900, lh=42, z=10, tag=f"bb{uid}", upper=True))
         h.append(K.t(small, px + 20, py + 56, 14, color=INK, font="m", weight=700, z=10, tag=f"bs{uid}"))
         els += [(f"bub{uid}", bx, by, bw, bh + 40), (f"plate{uid}", px, py, pw, ph)]
-    h.append(K.t("shikshaq launch research, scoped. made by aquaterra, an ngo whose team are students.", 64, 1148, 14, color="var(--ink3)", font="m", weight=700, z=6, tag="note"))
+    h.append(K.t("shikshaq.in. classes iv to xii. icse, isc, cbse and state board.", 64, 1148, 14, color="var(--ink3)", font="m", weight=700, z=6, tag="note"))
     els.append(("note", 64, 1148, 800, 20))
     h.append(chrome("shikshaq")); h.append(K.url_pill())
     els += [("logo", 64, 48, 200, 40), ("tab", 760, 58, 256, 40), ("lane", 64, 116, 120, 38), ("url", 64, 1188, 952, 84)]
@@ -328,6 +328,85 @@ def shikshaq_1(it=1):
     html = K.page("".join(h))
     tp = [("h0", INK, CREAM, fs, True), ("sub", INK, CREAM, 29, False), ("note", core.INK3 if hasattr(core, "INK3") else INK, CREAM, 14, True)]
     return K.render(nm("shikshaq_1", it), html, H, elements=els, text_pairs=tp, collision_ignore=ign)
+
+
+# --------------------------------------------------------------------------- shikshaq_2
+def card(x, y, w, h, fill, rot, inner="", z=4, tag="card"):
+    return (f'<div style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{h}px;background:{fill};border:3px solid {INK};border-radius:20px;'
+            f'box-shadow:4px 5px 0 {INK};transform:rotate({rot}deg);z-index:{z};overflow:hidden">{inner}</div>')
+
+
+def bar(x, y, w, hh=12, col=INK, op=.16):
+    return f'<div style="position:absolute;left:{x}px;top:{y}px;width:{w}px;height:{hh}px;border-radius:6px;background:{col};opacity:{op}"></div>'
+
+
+def shikshaq_2(it=1):
+    H = 1350
+    h = []; els = []
+    PALE = shapes.lighten(LEM, .78)
+    h.append(K.t("FINDING A TUTOR,", 64, 180, 72, color=INK, font="d", weight=900, lh=70, z=6, tag="h0", upper=True))
+    h.append(K.t("IN FOUR BORING STEPS.", 64, 252, 72, color=INK, font="d", weight=900, lh=70, z=6, tag="h1", upper=True))
+    m = measure([dict(text="FINDING A TUTOR,", font="d", size=72, weight=900), dict(text="IN FOUR BORING STEPS.", font="d", size=72, weight=900)])
+    els += [("h0", 64, 184, int(m[0]["text_w"]), 58), ("h1", 64, 256, int(m[1]["text_w"]), 58)]
+    h.append(K.t("the fourth one is a website.", 64, 346, 29, color=INK, font="e", weight=500, w=952, lh=36, z=6, tag="sub"))
+    els.append(("sub", 64, 346, 800, 38))
+    # pale field
+    PX0, PY0, PW, PH = 64, 408, 952, 700
+    h.append(f'<div style="position:absolute;left:{PX0}px;top:{PY0}px;width:{PW}px;height:{PH}px;background:{PALE};border:3px solid {INK};border-radius:44px;z-index:1"></div>')
+    els.append(("panel", PX0, PY0, PW, PH))
+    # faint structural lines, as the reference's field has (solid hairlines, not a wash)
+    h.append(f'<div style="position:absolute;left:{PX0+PW//2}px;top:{PY0+3}px;width:2px;height:{PH-6}px;background:{INK};opacity:1;z-index:1;display:none"></div>')
+    cx0, cy0 = 540, 760
+    # card A: search
+    chips = "".join(f'<div style="position:absolute;left:22px;top:{80+i*60}px;width:{250-i*20}px;height:42px;border:3px solid {INK};border-radius:999px;background:{CREAM}"></div>'
+                    f'<div style="position:absolute;left:40px;top:{89+i*60}px;font-family:var(--m);font-weight:700;font-size:15px;color:{INK};letter-spacing:.04em">{lab}</div>'
+                    for i, lab in enumerate(["cousin", "neighbour", "friend"]))
+    A = card(170, 612, 320, 320, PAPER, -3, f'<div style="position:absolute;left:22px;top:22px;font-family:var(--d);font-weight:900;font-size:28px;color:{INK}">ASK AROUND</div>' + chips, 3)
+    # card B: a profile, as a skeleton (no invented face, no invented name)
+    B_ = card(440, 564, 300, 380, LEM, 2,
+              f'<div style="position:absolute;left:24px;top:20px;font-family:var(--m);font-weight:700;font-size:16px;color:{INK};letter-spacing:.04em">notice board</div>'
+              f'<div style="position:absolute;left:24px;top:60px;width:78px;height:78px;border-radius:50%;border:3px solid {INK};background:{PAPER}"></div>'
+              + bar(122, 74, 140, 16, INK, .8) + bar(122, 104, 100, 12, INK, .35)
+              + bar(24, 168, 252, 12) + bar(24, 196, 220, 12) + bar(24, 224, 240, 12) + bar(24, 252, 160, 12)
+              + bar(24, 312, 120, 30, INK, .18) + bar(156, 312, 120, 30, INK, .18), 4)
+    # card C: the message
+    C = card(600, 716, 320, 230, PAPER, -2,
+             f'<div style="position:absolute;left:22px;top:22px;width:200px;height:56px;border:3px solid {INK};border-radius:18px;background:{CREAM}"></div>'
+             + bar(40, 42, 150, 12, INK, .35)
+             + f'<div style="position:absolute;left:94px;top:98px;width:204px;height:56px;border:3px solid {INK};border-radius:18px;background:{SKY}"></div>'
+             + bar(112, 118, 140, 12, INK, .5)
+             + f'<div style="position:absolute;left:22px;top:180px;font-family:var(--m);font-weight:700;font-size:15px;color:{INK};letter-spacing:.04em">a number, maybe</div>', 6)
+    # card D: the money
+    D = card(330, 808, 270, 150, SKY, 3,
+             f'<div style="position:absolute;left:0;top:30px;width:100%;text-align:center;font-family:var(--d);font-weight:900;font-size:36px;line-height:40px;color:{INK}">SEARCH<br>NEAR YOU</div>', 7)
+    h += [A, B_, C, D]
+    els += [("cardA", 170, 612, 320, 320), ("cardB", 440, 564, 300, 380), ("cardC", 600, 716, 320, 230), ("cardD", 330, 808, 270, 150)]
+    # status pills, like the reference's 'For review' / 'Approved'
+    for txt, col, x, y, rot in (("maybe", MINT, 650, 550, 3), ("shikshaq.in", PINK, 760, 686, -4)):
+        wp = int(len(txt) * 10.4 + 36)
+        h.append(f'<div style="position:absolute;left:{x}px;top:{y}px;padding:7px 14px;background:{col};border:3px solid {INK};border-radius:999px;z-index:9;transform:rotate({rot}deg);'
+                 f'font-family:var(--m);font-weight:700;font-size:15px;letter-spacing:.04em;color:{core.text_on(col)}">{txt}</div>')
+        els.append((f"pill_{txt}", x, y, wp, 38))
+    # stage labels, sentence case, numbered, set AROUND the pile
+    stages = [("Ask", "01", "a cousin", 104, 448), ("Ask again", "02", "a neighbour", 704, 448),
+              ("Read", "03", "the notice board", 104, 990), ("Or search", "04", "shikshaq.in, near you", 560, 990)]
+    for nm_, no, cap, x, y in stages:
+        h.append(f'<div class="measure" data-tag="st{no}" style="position:absolute;left:{x}px;top:{y}px;z-index:10;white-space:nowrap;font-family:var(--e);font-weight:700;font-size:30px;line-height:36px;color:{INK}">'
+                 f'<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:{INK};margin-right:12px;vertical-align:middle"></span>{nm_}'
+                 f'<sup style="font-family:var(--m);font-size:14px;font-weight:700;margin-left:5px;vertical-align:top;position:relative;top:2px">{no}</sup></div>')
+        h.append(K.t(cap, x + 22, y + 42, 15, color=INK, font="m", weight=700, z=10, tag=f"cap{no}", w=(290 if no != "04" else 400), lh=20))
+        els += [(f"st{no}", x, y, 260, 38), (f"cap{no}", x + 22, y + 42, 280, 22)]
+    h.append(K.t("shikshaq.in. classes iv to xii. icse, isc, cbse and state board. run by aquaterra students.",
+                 64, 1128, 14, color="var(--ink3)", font="m", weight=700, z=6, tag="note", w=952, lh=20))
+    els.append(("note", 64, 1128, 952, 40))
+    h.append(chrome("shikshaq")); h.append(K.url_pill())
+    els += [("logo", 64, 48, 200, 40), ("tab", 760, 58, 256, 40), ("lane", 64, 116, 120, 38), ("url", 64, 1188, 952, 84)]
+    names = [e[0] for e in els]
+    furn = lambda n: n.startswith(("card", "pill", "st", "cap"))
+    ign = [(a, b) for a in names for b in names if a < b and ((furn(a) and furn(b)) or "panel" in (a, b))]
+    html = K.page("".join(h))
+    tp = [("h0", INK, CREAM, 72, True), ("sub", INK, CREAM, 29, False), ("stage", INK, PALE, 34, True), ("cap", INK, PALE, 15, True), ("note", INK, CREAM, 14, True)]
+    return K.render(nm("shikshaq_2", it), html, H, elements=els, text_pairs=tp, collision_ignore=ign, containers=("panel",))
 
 
 if __name__ == "__main__":

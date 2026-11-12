@@ -137,7 +137,7 @@ FACTS = {
     "dd2": "Disco Diwali 2.0 (Oct 2025): 550 registrations, 10+ small businesses; Disco Diwali Masquerade Sangeet Edition, 10 November 2026",
     "crftd_stalls": "Crftd (formerly ROOTS) school-fest stalls: Novus 300 walk-ins; Confluence 300 and 250; Concord 200 and 250; Morpheus 300 and 350 (platform). Every rupee of profit funds a welfare drive (site)",
     "teaching": "about 70% of welfare activity is teaching workshops; Pather Sathi Sunday School, 65+ children, running 2.5 years",
-    "shikshaq": "ShikshAQ tutor search: 11 days before, under 48 hours after launch; 50+ verified tutor profiles at launch; zero commission (launch research, scoped)",
+    "shikshaq": "ShikshAQ: a tutor search for Kolkata, classes IV to XII, ICSE, ISC, CBSE and State board, shikshaq.in. NEVER state: tutors are verified, zero commission, direct contact, the 11 days to under 48 hours research, any count (addons/shikshaq/brain/CAMPAIGN_BRIEF_WHAT_IS_SHIKSHAQ.md section 5 bans them until the owner confirms)",
     "places": "205 distinct locations across 558 logged projects, June 2021 to September 2026 (platform)",
     "events_list": "Paradox 3.0 (June 2025, 300 attendees), Disco Diwali 1.0 Oct 2024 and 2.0 Oct 2025, Starry Night Dec 2024, TerraThon, TerraMUN",
     "loop": "~90% of revenue is fundraising events (80% tickets, 20% sponsorship), ~10% Crftd, 0% individual donations",

@@ -224,7 +224,7 @@ def chat(sp):
         return (f'<div style="position:absolute;left:{x}px;top:{yy}px;width:{w}px;background:{col};border:3px solid #0A0A0A;border-radius:26px;box-shadow:6px 6px 0 #0A0A0A;padding:22px 26px;'
                 f'font-family:var(--e);font-weight:600;font-size:30px;line-height:40px;color:#0A0A0A;z-index:6">'
                 f'<div style="font-family:var(--m);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;color:#333">{who}</div>{text}</div>')
-    P.append(bubble(sp["b1"], 64, y, 600, "#FFFFFF", False, "a parent, 11 days in"))
+    P.append(bubble(sp["b1"], 64, y, 600, "#FFFFFF", False, "a parent, asking around"))
     P.append(bubble(sp["b2"], 330, y + 200, 686, LEM, True, "shikshaq"))
     P.append(bubble(sp["b3"], 64, y + 400, 560, "#FFFFFF", False, "the same parent"))
     P.append(V.t(sp["src"], 64, y + 590, 15, color="var(--ink3)", font="m", weight=700, ls=.04, w=952, lh=22, tag="src", upper=False))
@@ -264,9 +264,9 @@ SP["e"] = dict(name="e_crftd", photo=WL + "12_roots-stall-novus-tee.jpg", fy=.35
     sentence=("Crftd turns up at a school fest, hangs a blank ( {0} ) T-shirt, and 300 ( {1} ) students walk in. They spray it ( {2} ) until it looks like this. ( {3} ) "
               "Every rupee of profit funds a welfare drive. ( {4} )"), fs=30, lh=82)
 
-SP["f"] = dict(name="f_shikshaq", h1="11 DAYS TO FIND<br>A TUTOR.", h1_lines=2, h1_size=100, h2="Now, under 48 hours.",
-    b1="need a maths tutor near salt lake. been asking around for 11 days.", b2="verified tutors near you. message them directly on whatsapp. no commission, ever.",
-    b3="...that was it?", src="shikshaq launch research, 50+ verified tutor profiles at launch. run by students.")
+SP["f"] = dict(name="f_shikshaq", h1="ASKED THREE COUSINS.<br>STILL NO TUTOR.", h1_lines=2, h1_size=66, h2="Or just search.",
+    b1="need a maths tutor near salt lake. asked three cousins and a neighbour.", b2="search for a tutor near you at shikshaq.in. classes iv to xii.",
+    b3="...that was it?", src="shikshaq.in. icse, isc, cbse and state board. run by aquaterra students.")
 
 SP["g"] = dict(name="g_diaries", nav=["Home", "Projects", "Teams", "Diaries"], headline="Stories from the ground, written by <i>whoever was there.</i>",
     sub="Essays, field notes and art from members who were actually in the room.",
@@ -290,7 +290,7 @@ SP["h"] = dict(name="h_doors", nav=["Teams +", "Drives", "Magazine", "Shikshaq"]
     blocks=[dict(col=SKY, top="01 · events", name="Events", desc="Fests, vendors, sponsors, a dance floor built from nothing.", icon="circle"),
             dict(col=MINT, top="02 · welfare", name="Welfare", desc="Dogs, food, plantations, classrooms and trips.", icon="half"),
             dict(col=TOM, top="03 · crftd", name="Crftd", desc="Streetwear. Profit funds a welfare drive.", icon="star"),
-            dict(col=LEM, top="04 · shikshaq", name="ShikshAQ", desc="The tutor platform. Under 48 hours.", icon="dots"),
+            dict(col=LEM, top="04 · shikshaq", name="ShikshAQ", desc="A tutor search for Kolkata, run by students.", icon="dots"),
             dict(col=GRAPE, top="05 · social media", name="Social", desc="Reels, design, the account you scroll.", icon="star"),
             dict(col=GRAPE, top="06 · blogs", name="Blogs", desc="Written and published by students.", icon="circle"),
             dict(col=PINK, top="07 · collabs", name="Collabs", desc="Schools, NGOs, a foundation or two.", icon="half"),
