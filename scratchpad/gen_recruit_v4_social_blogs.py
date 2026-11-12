@@ -76,7 +76,7 @@ def social_1():
     P.append(card(488, Y2 - 4, 520, 128, -1.5, lab("ANOTHER REAL CAPTION") + body("Well, well, well, AQ has been <b style='font-weight:800'>BUSY</b> this week.", 30)))
     P.append(card(520, Y2 + 150, 488, 150, 2.0, lab("THIS WEEK AT AQ") + disp("No, it is not welfare", 30)
                   + '<div style="height:6px"></div>' + body("people keep assuming shikshaq is a welfare project, and we are working on fixing that.", 18), z=12))
-    P.append(card(70, 985, 330, 140, -2.2, lab("THIS WEEK AT AQ") + body("no firm date yet, but both are properly underway.", 25), z=12))
+    P.append(card(70, 980, 360, 150, -2.2, lab("CRFTD IS DROWNING IN ORDERS") + body("it is a good problem to have, but the team is working through the backlog before anything else.", 20), z=12))
     P.append(f'<div class="measure" data-tag="card" style="position:absolute;left:480px;top:1010px;width:330px;background:{PAPER};border:3px solid {INK};border-radius:46px;{SH}padding:18px 26px;box-sizing:border-box;transform:rotate(-1.5deg);z-index:13">'
              f'<div style="font-family:var(--d);font-weight:900;font-size:36px;line-height:38px;text-transform:uppercase">who writes <span style="font-family:var(--s);font-style:italic;font-weight:400;text-transform:none;font-size:46px">these?</span></div></div>')
     P.append(f'<div style="position:absolute;left:520px;top:1103px;width:36px;height:36px;background:{PAPER};border-right:3px solid {INK};border-bottom:3px solid {INK};transform:rotate(45deg) skew(8deg,8deg);z-index:12"></div>')
@@ -115,16 +115,16 @@ def social_2():
     P.append(box(0, 0, VX, HY, f"background:{INK};", z=2))
     ck = checker(W - VX, HY, GRAPE, "#C9BBFF", 80)
     P.append(f'<div style="position:absolute;left:{VX}px;top:0;width:{W-VX}px;height:{HY}px;z-index:2;overflow:hidden;line-height:0">{ck}</div>')
-    sl = slide_img(10, BX, H - HY, fy=.0, fx=.5)
+    sl = slide_img(15, BX, H - HY, fy=.0, fx=.5)
     P.append(img(uri(sl), 0, HY, BX, H - HY, z=2))
     P.append(box(BX, HY, W - BX, H - HY, f"background:{CREAM};", z=2))
     P.append(K.logo_pill(64, 48, dark=True))
     P.append(K.series_tab(58))
     P.append(K.lane_chip("social", y=116))
-    P.append(t("WHO MAKES", 64, 196, 112, color=CREAM, font="d", weight=900, lh=108, z=6, tag="h1", upper=True))
-    P.append(t("THE", 64, 296, 112, color=CREAM, font="d", weight=900, lh=108, z=6, tag="h2", upper=True))
-    P.append(t("posts?", 262, 258, 176, color=LEM, font="s", italic=True, lh=170, z=6, tag="h3"))
-    bx = 560; bw = W - bx - 64
+    P.append(t("WHO MAKES", 64, 206, 94, color=CREAM, font="d", weight=900, lh=96, z=6, tag="h1", upper=True))
+    P.append(t("THE", 64, 292, 94, color=CREAM, font="d", weight=900, lh=96, z=6, tag="h2", upper=True))
+    P.append(t("posts?", 290, 262, 176, color=LEM, font="s", italic=True, lh=170, z=6, tag="h3"))
+    bx = 636; bw = W - bx - 64
     P.append(t("this week at aq is written, designed and posted by students aged 14 to 19.", bx, HY + 78, 30, color=INK, font="e", weight=600, w=bw, lh=40, z=6, tag="body1"))
     P.append(t("so are the reels. so are the blogs.", bx, HY + 270, 30, color=INK, font="e", weight=600, w=bw, lh=40, z=6, tag="body2"))
     P.append(t("there are 1,400+ of us. applications are open.", bx, HY + 395, 30, color=INK, font="e", weight=600, w=bw, lh=40, z=6, tag="body3"))
@@ -132,10 +132,10 @@ def social_2():
     # tape strips across the seams, read top to bottom as one list
     P.append(tape(VX - 300, 470, 400, 78, "INSTAGRAM,", -5))
     P.append(tape(-14, 585, 440, 78, "LINKEDIN,", 3.5))
-    P.append(tape(250, 720, 290, 74, "REELS,", -4, size=52))
-    P.append(tape(170, 835, 330, 74, "BLOGS,", 4, size=52))
-    P.append(tape(210, 950, 330, 74, "DESIGN.", -3, size=52))
-    P.append(K.url_pill(x=bx, y=1188, w=W - bx - 64, size=22))
+    P.append(tape(310, 700, 270, 74, "REELS,", -4, size=52))
+    P.append(tape(330, 812, 250, 74, "BLOGS,", 4, size=52))
+    P.append(tape(358, 928, 262, 72, "DESIGN.", -3, size=52))
+    P.append(K.url_pill(x=bx, y=1188, w=W - bx - 64, size=19))
     return K.render("social_2", K.page("".join(P), bg=CREAM), H)
 
 # ------------------------------------------------------------------------------------------------ blogs_1
@@ -160,7 +160,7 @@ def blogs_1():
     ws = mw([dict(text=s, font="d", size=sz, weight=900) for s in lines])
     sz = int(sz * min(1.0, 900 / max(ws)))
     ws = [w * sz / 200 for w in ws]
-    step = round(sz * .93); y0 = 300
+    step = round(sz * .93); y0 = 290
     xs = [64] * 4
     print("size", sz, "widths", [int(w) for w in ws])
     i = 3   # highlight band behind CITY.
@@ -173,16 +173,13 @@ def blogs_1():
               "tea": "Cup of Tea", "syn": "Syntax Error", "judge": "Before You Judge Read This", "emp": "Art of Empathy", "peb": "Pebbles and Peaks",
               "nost": "The Art of Nostalgia and Heartbreak", "x": ""}
     ybot = y0 + 4 * step
-    spots = [("mirror", 64, y0 - 62, -3), ("dyn", 330, y0 - 70, 2), ("barks", 520, y0 - 52, -2),
-             ("opin", 64 + L[1][2] + 24, y0 + step * 1 + 40, 3),
-             ("city", 64 + L[3][2] + 40, y0 + step * 3 + 60, -3),
-             ("tea", 64 + L[2][2] + 40, y0 + step * 2 + 50, 2),
-             ("syn", 64 + L[0][2] + 26, y0 + 36, -3),
-             ("judge", 64, ybot + 28, -1.5), ("emp", 530, ybot + 48, 2),
-             ("peb", 64, ybot + 100, 2), ("nost", 330, ybot + 126, -1.5)]
+    spots = [("mirror", 64, y0 - 74, -3), ("dyn", 346, y0 - 80, 2), ("barks", 540, y0 - 70, -2), ("syn", 800, y0 - 76, 3),
+             ("opin", 620, y0 + step * 2 + 34, 3), ("tea", 740, y0 + step * 2 + 100, -2),
+             ("city", 530, y0 + step * 3 + 22, -3), ("emp", 700, y0 + step * 3 + 86, 2),
+             ("judge", 64, ybot + 34, -1.5), ("peb", 64, ybot + 104, 2), ("nost", 330, ybot + 136, -1.5)]
     for k, x, y, r in spots:
         P.append(chip(x, y, titles[k], r))
-    P.append(doodle("lightning", 905, y0 + step * 0 + 130, 88, LEM, 8, 16))
+    P.append(doodle("lightning", 915, y0 + step * 1 + 10, 90, LEM, 8, 16))
     P.append(doodle("star", 36, ybot - 20, 60, PINK, -10, 16))
     P.append(t("we published it. by students aged 14 to 19.", 64, ybot + 230, 30, color=INK, font="e", weight=600, w=900, lh=38, z=8, tag="cap1"))
     P.append(t("every title on this poster is a real post on our own site.", 64, ybot + 270, 24, color=INK, font="e", weight=400, w=900, lh=32, z=8, tag="cap2"))
@@ -214,39 +211,40 @@ def blogs_2():
     P.append(box(64, 1292, 952, 3, f"background:{INK};", z=3))
     P.append(t("04.", 64, 190, 18, color=INK, font="m", weight=700, tag="mast1"))
     P.append(t("STUDENT COVERS, STUDENT WORDS", 330, 190, 18, color=INK, font="m", weight=700, tag="mast2", ls=.04))
-    P.append(t("NGOAQUATERRA.COM", 760, 190, 18, color=INK, font="m", weight=700, tag="mast3", ls=.04))
-    sz = 150
-    L = [("HOW A", 64, 290), ("LETTER TO MY CITY", 64, 470), ("BECAME A", 64, 650), ("", 64, 850)]
-    # line 2 is the marker line: size it to the width
-    s2, w2 = fit("LETTER TO MY CITY", "d", 900, 860)
-    s1 = 210; s3 = 190
-    P.append(t("HOW A", 64, 215, s1, font="d", weight=900, lh=s1, z=6, tag="L1", upper=True, extra="letter-spacing:-.02em;"))
-    my = 215 + s1 - 20
-    mh = round(s2 * 1.04)
-    P.append(f'<div style="position:absolute;left:44px;top:{my}px;width:960px;height:{mh}px;background:{LEM};border:4px solid {INK};border-radius:12px;transform:rotate(-3deg);z-index:5"></div>')
-    P.append(t("LETTER TO MY CITY", 72, my + round(s2 * .02), s2, font="d", weight=900, lh=mh, z=6, tag="L2", upper=True, extra="letter-spacing:-.02em;transform:rotate(-3deg);transform-origin:left center;"))
-    y3 = my + mh + 28
-    P.append(t("BECAME A", 64, y3, s3, font="d", weight=900, lh=s3, z=6, tag="L3", upper=True, extra="letter-spacing:-.02em;"))
-    y4 = y3 + s3 - 10
-    s4 = 170
-    wb = mw([dict(text="BLOG", font="d", size=s4, weight=900), dict(text="POST", font="d", size=s4, weight=900)])
-    pillw = int(wb[0]) + 64 + 120
-    P.append(f'<div style="position:absolute;left:44px;top:{y4}px;width:{pillw}px;height:{round(s4*1.08)}px;background:{GRAPE};border:4px solid {INK};border-radius:999px;z-index:5"></div>')
-    P.append(t("BLOG", 76, y4 + 4, s4, font="d", weight=900, lh=round(s4 * 1.0), z=6, tag="L4a", upper=True, color=INK, extra="letter-spacing:-.02em;"))
-    ax = 44 + pillw - 100
-    P.append(f'<div style="position:absolute;left:{ax}px;top:{y4+round(s4*.54)-38}px;width:76px;height:76px;border-radius:50%;background:{INK};z-index:6;display:flex;align-items:center;justify-content:center;color:{CREAM};font-family:var(--e);font-weight:700;font-size:44px">&#8594;</div>')
-    P.append(t("POST", 44 + pillw + 24, y4 + 4, s4, font="d", weight=900, lh=s4, z=6, tag="L4b", upper=True, extra="letter-spacing:-.02em;"))
-    print("y", my, y3, y4, "bottom", y4 + round(s4 * 1.08))
-    # die-cut real cover draped across the seam between line 1 and the marker line
-    dc = diecut(K.PH["blog_city"], 250, 380, fx=.5, fy=.3)
-    cw, ch = 250 + 32, 380 + 32
-    P.append(f'<img src="{uri(dc, "PNG")}" style="position:absolute;left:690px;top:{205}px;width:{cw}px;height:{ch}px;transform:rotate(7deg);z-index:7;filter:drop-shadow(8px 8px 0 {INK})">')
-    P.append(t("published on our own site, under the writer's name, with a cover by a student.", 64, 1210, 24, font="e", weight=500, w=720, lh=32, z=8, tag="cap"))
-    P.append(doodle("squiggle", 800, 1190, 80, GRAPE, 0, 9))
-    P.append(doodle("sparkle", 560, 188, 56, INK, 0, 9)) if False else None
-    P.append(doodle("arrow", 560, 1075, 0, INK, 0, 9)) if False else None
-    P.append(K.url_pill(x=64, y=1100, w=560, size=28)) if False else None
-    return K.render("blogs_2", K.page("".join([p for p in P if p])), H)
+    sz = 140; step = 142
+    y1 = 224
+    ST = dict(font="d", weight=900, upper=True, z=6)
+    ex = "letter-spacing:-.02em;"
+    P.append(t("HOW A", 64, y1, sz, lh=step, tag="L1", extra=ex, **ST))
+    # marker line
+    y2 = y1 + step
+    w2 = mw([dict(text="LETTER", font="d", size=sz, weight=900)])[0]
+    P.append(f'<div style="position:absolute;left:40px;top:{y2+10}px;width:{int(w2)+60}px;height:{round(sz*.92)}px;background:{LEM};border:4px solid {INK};border-radius:12px;transform:rotate(-3deg);z-index:5"></div>')
+    P.append(t("LETTER", 70, y2, sz, lh=step, tag="L2", extra=ex + "transform:rotate(-3deg);transform-origin:left center;", **ST))
+    y3 = y2 + step + 6
+    P.append(t("TO MY CITY", 64, y3, sz, lh=step, tag="L3", extra=ex, **ST))
+    y4 = y3 + step
+    P.append(t("BECAME A", 64, y4, sz, lh=step, tag="L4", extra=ex, **ST))
+    y5 = y4 + step + 8
+    wb = mw([dict(text="BLOG", font="d", size=sz, weight=900)])[0]
+    ph_ = round(sz * .98); pillw = int(wb) + 32 + 108
+    P.append(f'<div style="position:absolute;left:44px;top:{y5+6}px;width:{pillw}px;height:{ph_}px;background:{GRAPE};border:4px solid {INK};border-radius:999px;z-index:5"></div>')
+    P.append(t("BLOG", 76, y5, sz, lh=step, tag="L5a", extra=ex, **ST))
+    ax = 44 + pillw - 88
+    P.append(f'<div style="position:absolute;left:{ax}px;top:{y5+6+ph_//2-36}px;width:72px;height:72px;border-radius:50%;background:{INK};z-index:6;display:flex;align-items:center;justify-content:center;color:{CREAM};font-family:var(--e);font-weight:700;font-size:42px">&#8594;</div>')
+    P.append(t("POST", 44 + pillw + 12, y5, sz, lh=step, tag="L5b", extra=ex, **ST))
+    print("lines y", y1, y2, y3, y4, y5, "bottom", y5 + ph_, "widths", int(w2), int(wb), pillw)
+    # real student cover, die-cut, draped across the seam between line 1 and the marker line
+    dc = diecut(K.PH["blog_city"], 180, 262, fx=.5, fy=.3)
+    cw, ch = 180 + 32, 262 + 32
+    P.append(f'<img src="{uri(dc, "PNG")}" style="position:absolute;left:790px;top:205px;width:{cw}px;height:{ch}px;transform:rotate(7deg);z-index:7;filter:drop-shadow(8px 8px 0 {INK})">')
+    P.append(t("published on our own site, under the writer's name, with a cover by a student.", 64, 1060, 26, font="e", weight=500, w=700, lh=32, z=8, tag="cap"))
+    P.append(doodle("squiggle", 800, 1060, 90, GRAPE, 0, 9))
+    P.append(doodle("sparkle", 650, 232, 54, INK, 0, 9))
+    P.append(doodle("sparkle", 880, 990, 60, INK, 0, 9))
+    P.append(doodle("star", 900, 700, 56, INK, 12, 9))
+    P.append(K.url_pill(y=1188))
+    return K.render("blogs_2", K.page("".join(P)), H)
 
 # ------------------------------------------------------------------------------------------------ hr_2
 def phone(x, y, w, h, screen_inner, z=6):
@@ -267,21 +265,21 @@ def hr_2():
     H = 1350
     P = [box(0, 0, W, H, f"background:{CREAM};", z=0)]
     P.append(K.logo(64, 48)); P.append(K.series_tab(58)); P.append(K.lane_chip("hr", y=116))
-    P.append(t("SCREEN TIME,", 64, 190, 112, font="d", weight=900, lh=108, z=6, tag="h1", upper=True, extra="letter-spacing:-.02em;"))
-    P.append(t("justified.", 64, 292, 128, font="s", italic=True, color=TEAL if False else INK, lh=120, z=6, tag="h2"))
-    pw, ph = 296, 640; gap = 32; py = 432
+    P.append(t("SCREEN TIME,", 64, 190, 112, font="d", weight=900, lh=96, z=6, tag="h1", upper=True, extra="letter-spacing:-.02em;"))
+    P.append(t("justified.", 74, 292, 128, font="s", italic=True, color=TEAL if False else INK, lh=120, z=6, tag="h2"))
+    pw, ph = 296, 610; gap = 32; py = 420
     xs = [64 + i * (pw + gap) for i in range(3)]
     sw, sh = pw - 24, ph - 24
     # screen 1: the team's real slide
-    s1 = img(uri(cover(K.social_slide(10), sw, int(sw * 1.7), fx=.5, fy=0)), 0, 44, sw, int(sw * 1.7), z=2, extra="object-fit:cover;")
+    s1 = img(uri(cover(K.social_slide(13), sw, int(sw * 1.7), fx=.5, fy=0)), 0, 44, sw, int(sw * 1.7), z=2, extra="object-fit:cover;")
     # screen 2: a real blog cover (9:16)
     s2 = img(uri(cover(K.PH["blog_dynamics"], sw, sh, fx=.5, fy=.5)), 0, 0, sw, sh, z=1)
     # screen 3: a real drive photo
     s3 = img(uri(cover(K.PH["dog_bhowanipur"], sw, sh, fx=.5, fy=.5)), 0, 0, sw, sh, z=1)
     for x, sc in zip(xs, (s1, s2, s3)): P.append(phone(x, py, pw, ph, sc))
     notes = ["a weekly roundup.", "a student's essay.", "a dog drive."]
-    for x, n in zip(xs, notes): P.append(sticky(x + 52, py + ph - 62, n))
-    P.append(t("what shows up for 1,400+ students aged 14 to 19 in community AQ.", 64, 1118, 28, font="e", weight=600, w=700, lh=36, z=8, tag="cap"))
+    for x, n in zip(xs, notes): P.append(sticky(x + 40, py + ph - 70, n))
+    P.append(t("what shows up for 1,400+ students aged 14 to 19 in community AQ.", 64, 1120, 28, font="e", weight=600, w=900, lh=36, z=8, tag="cap"))
     P.append(K.url_pill(y=1196, w=952))
     return K.render("hr_2", K.page("".join(P)), H)
 
