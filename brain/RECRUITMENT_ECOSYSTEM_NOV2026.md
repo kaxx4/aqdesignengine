@@ -209,3 +209,18 @@ Owner feedback after v4: "more direct, cleaner, more visually appealing stuff ar
 | `a11_yourturn` (+story) | hr | YOUR TURN. | applications are open |
 
 The same sentence extends to any lane: new pieces are one photo, one verb, one fact.
+
+## 13. V6: MIX AND MATCH, MADE TO FEEL NATURAL (2026-11-13)
+
+Owner feedback after v5: "too boring and basic, more visually pushing, more natural", then "look at the inspo, learn and mix and match." The inspo is the five reference mechanisms (cast list with colour windows and tabs, fill-in-the-blank crops, the note card, the full-bleed glass hero, the website page) plus `AQ Design Engine/Brain/Decisions/Pinterest board learnings`: organic blob frames, the photo's own object as the frame, bleed type cut by the canvas edge, sticker-label strips, collage with real depth, riso halftone and misregistration, marker and graffiti display, giant serif heroes. v5 used none of it; v6 mixes 3 or 4 per piece.
+
+Still one message ("A STUDENT [did a real thing] THIS."), still one real fact and the URL. Script `scratchpad/gen_recruit_v6.py`, out `out/recruit_nov2026/v6/`. New machinery: real cut-outs of people (rembg, stored in `engine/assets/img/cutouts/`) so type sits BEHIND them; chalk, spray and marker SVG filters; torn-paper strips, tape, taped prints; grain, vignette and halftone on every photo.
+
+| Piece | Mix |
+|---|---|
+| `b1_teach` | the real blackboard as the frame + chalk type written on it, behind the teacher and class + cast-list colour windows with tabs |
+| `b2_events` | full-bleed hero + organic blob behind a cut-out pair + bleed type + glass pills (Vendors, DJ, Sponsors) |
+| `b3_dogs` | riso halftone with misregistration + torn sticker strips + a marker circle + speech-bubble tags |
+| `b4_crftd` | giant lowercase serif hero + the verb sprayed in tomato + sticker tags on the real stall wall |
+| `b5_sundarbans` | black-and-white photo + cast-list colour windows with tabs + giant serif |
+| `b6_collabs` | taped print on pink paper + organic blobs + torn strips + marker arrow |
