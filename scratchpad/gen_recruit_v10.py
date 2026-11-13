@@ -44,10 +44,10 @@ geo = V9.geo
 # 1. scattered around the dogs
 async def dogs(story=False):
     H, top, bot = geo(story); o = 0 if not story else 160
-    P = V9.bg_cast(PH["dog_bhowanipur"], H, fy=.5, wins=[(290, int(H*.53), 270, int(H*.30), MINT, "THE DOGS", "tl"), (575, int(H*.53), 330, int(H*.30), LEM, "ALSO THE DOGS", "tr")])
+    P = V9.bg_cast(PH["dog_bhowanipur"], H, fy=.5, wins=[(290, int(H*.53), 270, int(H*.30), MINT, "THE DOGS", "bl"), (575, int(H*.53), 330, int(H*.30), LEM, "ALSO THE DOGS", "tr")])
     P += [bub("we should totally feed<br>the dogs near school", 64, 170 + o, "#FFFFFF", "L", 44, -2.5),
           bub("i'll bring biscuits", 600, 400 + o, MINT, "R", 40, 3),
-          bub("round 53.", 64, 560 + o, LEM, "L", 80, -4, pad=(16, 34))]
+          bub("round 53.", 64, 540 + o, LEM, "L", 80, -4, pad=(16, 34), z=40)]
     P += chrome(top, bot, H)
     await done("f1_dogs" + ("_story" if story else ""), P, H)
 
