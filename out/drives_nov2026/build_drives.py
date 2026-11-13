@@ -1,24 +1,32 @@
-"""AQ DRIVES CAROUSEL BUILDER (Nov 2026 batch) - ONE shared builder, per-drive content in jobs_drives.py.
+"""AQ DRIVES CAROUSEL BUILDER, v2 (Nov 2026 batch). ONE shared builder, per-drive content in jobs_drives.py.
 
 Built on the aq-photo-carousel skill helpers (.claude/skills/aq-photo-carousel/scripts/build_carousel.py:
-logo, dots, scrims, vision-driven doodles, truthful index tag). What this file adds, each as a RULE:
+logo, dots, scrims, vision-driven doodles). v2 follows user direction: PHOTO is the focus (large photo
+area, no dark dead space, little caption chrome), no closing slide, cooler graphics from the engine's
+own vocabulary (shapes.py / tex.py / doodles.py).
 
-  * welfare accent: every large/structural colour is core.accent_for('welfare') (mint). The skill's
-    cool rotation is overridden; doodles keep a small contrasting rung (lemon/sky) as punctuation.
-  * BASE-IMAGE COMPOSITION: every slide's photo is pre-composed with PIL into a 1080x1350 (2x) base so
-    vision.plan_spots measures what is really on screen. Two fits:
-      - "cover": object-fit cover with a per-photo focus (centering) so faces/subject stay clear of the
-        bottom text zone. Narrow phone portraits (dogs) are focused so the subject sits in the upper
-        part of the frame, above the cover title.
-      - "band":  LANDSCAPE photos are NOT cropped to a 4:5 sliver (a 16:9 frame would lose 55% of
-        its width and upscale 2x). They run full-width as a band over a blurred, darkened copy of
-        themselves, so every face survives.
-  * no dates on slides: the JSON gives a *posted* date, not the date the drive happened, so printing
-    one would assert a fact the data does not hold.
-  * 'volunteers' never 'unique volunteers'.
-  * the closer is a cream type slide (AQUATERRA + @ngo.aquaterra), sized from MEASURED text.
+MECHANISMS (one per drive, chosen from brain/VISUAL_DNA.md vocabulary; design.py draws were consulted but
+returned the same two-slab recipe for three subjects, so the mechanism is assigned per drive by hand):
+  tape    cream ground, photo as a tilted card with ink outline + hard shadow, a mint cut-paper plate
+          behind it, two torn tape strips, a die-cut starburst sticker.            (876, 902, 905)
+  slab    cream ground, photo in a 32px rounded slab, mint slab peeking out offset behind it (notched-
+          slab family), staggered word pills overlapping the slab edge on the cover.      (878, 903)
+  bleed   full-bleed photo, bottom halftone dot screen (halftone belongs on PHOTOS, so it is legal),
+          cream caption slab, staggered word-pill title, sticker swarm (starburst + location chip) and
+          vision-placed doodles.                                                          (877, 901, 904)
+Not used: duotone / riso photo (children's faces must stay natural) and torn edges (no free edge to tear).
+
+ADAPTATIONS vs the recipes (precedence ladder, CLAUDE.md section 2): hard brand rules win. Welfare mint is
+the only structural accent (accent_for('welfare')); a 2nd/3rd hue (lemon pill, sky doodle) is punctuation,
+so the "N colours" counts are a target not a ceiling. Display type is NeutralFace caps; no serif used. Hard ink
+outline/offset shadow appears on card, pills and stickers only (the craft layer, section 9).
+
+KEPT FROM v1: landscape photos are never cropped to a 4:5 sliver: in `tape` they sit in a card
+cropped to 972x900 with a focus point (still 67% of a 16:9 frame) instead of a blurred band; truthful
+"N volunteers" sticker; no printed dates; measured exclusion boxes for hair; 'volunteers' never
+'unique volunteers'; all copy from drives.json.
 """
-import asyncio, json, os, sys, importlib.util, math
+import asyncio, os, sys, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _r = HERE
@@ -29,234 +37,242 @@ _spec = importlib.util.spec_from_file_location(
     "bc", os.path.join(REPO, ".claude/skills/aq-photo-carousel/scripts/build_carousel.py"))
 bc = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(bc)   # also chdirs to REPO
 core, B, lay, vision = bc.core, bc.B, bc.lay, bc.vision
-from PIL import Image, ImageOps, ImageFilter, ImageEnhance
+sys.path.insert(0, os.path.join(REPO, "engine"))
+shapes = bc.load("shapes"); tex = bc.load("tex")
+from PIL import Image, ImageOps
 
 W, H, M = bc.W, bc.H, bc.M
-SC = 2                                       # base images at 2x, like the PNG output
-MINT = core.accent_for("welfare")            # semantic dept colour (A[1])
+SC = 2
+MINT = core.accent_for("welfare")
 MINTBRIGHT = "#00E5A0"
+LEMON = core.ACCENTS[2]
+INK = core.INK
 OUT_ROOT = os.path.join(REPO, "out/drives_nov2026")
 BASE_DIR = os.path.join(OUT_ROOT, "_base")
+CAPTION_INK = core.on_cream(MINT, 26)
 
-# --- override the skill's cool rotation: large areas = welfare mint, punctuation = small contrast rung
 bc.slide_accent = lambda seed: MINT
-bc.ACCENT_ORDER = [1, 2, 4, 1, 6, 2, 4]      # mint, lemon, sky, mint, teal, lemon, sky
+bc.ACCENT_ORDER = [1, 2, 4, 1, 6, 2, 4]
 bc.DOODLE_EXTRA = {0: MINTBRIGHT, 3: MINTBRIGHT}
 
-
-def accent_text_on_dark(size=15):
-    return core.on_dark(MINT, size)
+CX, CW = 54, 972            # photo card geometry (tape / slab)
 
 
-# ----------------------------------------------------------------------------- base images
-def compose_base(src, fit, focus, role, out):
-    """Pre-compose the photo into the slide's 1080x1350 base (saved at 2x)."""
+def fit_img(src, w, h, focus, out):
     im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
-    cw, ch = W * SC, H * SC
-    if fit == "cover":
-        base = ImageOps.fit(im, (cw, ch), Image.LANCZOS, centering=focus)
-    elif fit == "band":
-        bg = ImageOps.fit(im, (cw, ch), Image.LANCZOS, centering=(0.5, 0.5)).filter(ImageFilter.GaussianBlur(60))
-        bg = ImageEnhance.Brightness(bg).enhance(0.42)
-        bh = round(cw * im.height / im.width)
-        band = im.resize((cw, bh), Image.LANCZOS)
-        if role == "cover":           # title block owns the bottom ~520px
-            avail_top, avail_bot = 150 * SC, (H - 540) * SC
-        else:                         # caption + footer own the bottom ~290px
-            avail_top, avail_bot = 150 * SC, (H - 300) * SC
-        y = avail_top + max(0, (avail_bot - avail_top - bh) // 2)
-        base = bg
-        base.paste(band, (0, y))
-    else:
-        raise ValueError(fit)
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    base.save(out, quality=90)
+    ImageOps.fit(im, (w * SC, h * SC), Image.LANCZOS, centering=focus).save(out, quality=90)
     return out
 
 
-# ----------------------------------------------------------------------------- text helpers
-def footer(loc):
-    return (f'<div style="position:absolute;bottom:52px;left:{M}px;z-index:20;font-family:var(--m);'
-            f'font-weight:700;font-size:13px;letter-spacing:.06em;color:#FFFFFF;'
-            f'text-shadow:0 2px 6px rgba(0,0,0,.5)">@ngo.aquaterra '
+async def tw(text, font, size, weight, ls=0):
+    r = (await B.measure_text([dict(text=text, font=font, size=size, weight=weight, letter_spacing=ls)]))[0]
+    return r["text_w"]
+
+
+async def fit_title(lines_html, max_w, max_size=96, min_size=54):
+    ws = [await tw(l.replace("&amp;", "&"), "d", 100, 900) for l in lines_html.split("<br>")]
+    return max(min_size, min(max_size, int(100 * max_w / max(ws))))
+
+
+def footer(loc, dark_bg):
+    col = "#FFFFFF" if dark_bg else INK
+    sh = "text-shadow:0 2px 6px rgba(0,0,0,.55);" if dark_bg else ""
+    return (f'<div style="position:absolute;bottom:40px;left:{M}px;z-index:20;font-family:var(--m);'
+            f'font-weight:700;font-size:13px;letter-spacing:.06em;color:{col};{sh}">@ngo.aquaterra '
             f'<span style="opacity:.75;font-weight:500">&middot; {loc}</span></div>')
 
 
-async def fit_title(lines_html, max_size=88, min_size=54):
-    """Largest display size at which EVERY title line fits the 952px measure (measured, not guessed)."""
-    lines = lines_html.split("<br>")
-    res = await B.measure_text([dict(text=l.replace("&amp;", "&"), font="d", size=100, weight=900)
-                                for l in lines])
-    widest = max(r["text_w"] for r in res)
-    return max(min_size, min(max_size, int(100 * (W - 2 * M) / widest)))
+def ink_dots(n, active, y=62):
+    out = f'<div style="position:absolute;top:{y}px;right:{M}px;z-index:20;display:flex;gap:8px">'
+    for i in range(n):
+        c = MINT if i == active else "rgba(10,10,10,.22)"
+        b = f"border:2px solid {INK};" if i == active else ""
+        out += f'<span style="width:10px;height:10px;border-radius:50%;background:{c};{b}"></span>'
+    return out + "</div>"
 
 
-async def measure_block(text, font, size, weight, max_w, ls=0):
-    r = (await B.measure_text([dict(text=text, font=font, size=size, weight=weight,
-                                    max_width=max_w, letter_spacing=ls)]))[0]
-    return r
+def starburst_sticker(n, x, y, size=220, rot=-9):
+    """Die-cut starburst with the TRUE volunteer count. Label is HTML over the svg (text fits by construction)."""
+    ink = core.text_on(MINT)
+    svg = shapes.sticker(shapes.starburst(14, 48, 38), MINT, size=size, shadow=True, rot=rot, detail="none")
+    return (f'<div style="position:absolute;left:{x}px;top:{y}px;width:{size}px;height:{size}px;z-index:24">{svg}'
+            f'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;'
+            f'justify-content:center;transform:rotate({rot}deg);color:{ink}">'
+            f'<span style="font-family:var(--d);font-weight:900;font-size:{round(size*.30)}px;line-height:.9">{n}</span>'
+            f'<span style="font-family:var(--m);font-weight:700;font-size:{round(size*.06)}px;'
+            f'letter-spacing:.06em;margin-top:3px">volunteers</span></div></div>')
 
 
-# ----------------------------------------------------------------------------- slides
-async def render_photo(drive, role, base_img, idx, total, out_png, seed, cap=None, extra_exclude=None):
-    accent = MINT
-    ex = bc.EXCLUDE + list(extra_exclude or [])
-    if role == "cover":
-        ex.append((40, 112, 760, 40))      # the kicker line is real UI: doodles must not land on it
-    fillers, fboxes = bc.filler_from_vision(base_img, seed, n=4, exclude=ex)
+def pill(text, accent, x, y, fs, rot):
+    fg = core.text_on(accent)
+    return (f'<div style="position:absolute;left:{x}px;top:{y}px;background:{accent};color:{fg};'
+            f'border:4px solid {INK};border-radius:14px;padding:6px 22px;box-shadow:6px 6px 0 {INK};'
+            f'font-family:var(--d);font-weight:900;font-size:{fs}px;line-height:1;text-transform:uppercase;'
+            f'white-space:nowrap;transform:rotate({rot}deg);z-index:22">{text}</div>')
+
+
+async def pills_block(title_html, x0, bottom_y, max_w):
+    """Staggered word pills stacked UP from bottom_y. Returns (html, boxes, top_y)."""
+    words = title_html.replace("<br>", " ").replace("&amp;", "&").split()
+    fs = 70
+    while True:
+        ws = [await tw(w, "d", fs, 900) for w in words]
+        if max(ws) + 52 + 8 + 52 <= max_w or fs <= 44:
+            break
+        fs -= 4
+    accents = [MINT, "#FFFFFF" if False else core.CREAM, LEMON]
+    html, boxes = "", []
+    h = fs + 12 + 8
+    y = bottom_y - h
+    for i, w_ in reversed(list(enumerate(words))):
+        wpx = ws[i] + 44 + 8
+        x = x0 + (i % 3) * 30
+        html += pill(w_, accents[i % 3], x, y, fs, -2 if i % 2 == 0 else 2)
+        boxes.append((f"pill{i}", x, y, wpx + 6, h + 6))
+        y -= h + 14
+    return html, boxes, y + h + 14
+
+
+def caption_slab(txt, bottom, max_w=820):
+    return (f'<div style="position:absolute;left:{M}px;bottom:{bottom}px;z-index:21;max-width:{max_w}px;'
+            f'background:{core.CREAM};color:{INK};border:3px solid {INK};border-radius:22px;'
+            f'padding:12px 20px;box-shadow:4px 4px 0 {INK};font-family:var(--e);font-weight:500;'
+            f'font-size:21px;line-height:1.3">{txt}</div>')
+
+
+# ---------------------------------------------------------------------------------- layouts
+async def render_bleed(drive, role, idx, total, spec, out_png, seed):
+    base = fit_img(os.path.join(HERE, "_src", str(drive["post_id"]), spec["file"]), W, H,
+                   spec.get("focus", (0.5, 0.4)), os.path.join(BASE_DIR, f'{drive["post_id"]}_{idx}.jpg'))
+    ex = bc.EXCLUDE + list(spec.get("exclude") or [])
+    ex = [e for e in ex if e != (0, H - 300, W, 300)] + [(0, H - 380, W, 380)]
+    fillers, fboxes = bc.filler_from_vision(base, seed, n=3, exclude=ex)
     el = list(fboxes)
-    inner = bc.full_bleed_photo(bc.photo_b64(base_img))
-    if role == "cover":
-        inner += bc.scrim_top(340, tint=accent) + bc.scrim_bottom(560, tint=accent)
-    else:
-        inner += bc.scrim_bottom(300 if cap else 170, tint=accent)
-    inner += bc.logo_pill() + bc.dots(total, idx - 1, accent=accent) + fillers
+    halftone = (f'<div style="position:absolute;left:0;right:0;bottom:0;height:420px;z-index:10;'
+                f'background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));"></div>'
+                f'<div style="position:absolute;left:0;right:0;bottom:0;height:300px;z-index:11;'
+                f'{tex.halftone(color="#0A0A0A", size=7, opacity=.5)}'
+                f'-webkit-mask-image:linear-gradient(to top,#000,transparent);'
+                f'mask-image:linear-gradient(to top,#000,transparent)"></div>')
+    inner = bc.full_bleed_photo(bc.photo_b64(base)) + bc.scrim_top(220) + halftone
+    inner += bc.logo_pill() + bc.dots(total, idx - 1, accent=MINT, y=70) + fillers
     el.append(("logo", M, 48, 260, 56))
-    if not fboxes:
-        # RULE (vision starved a busy street photo to 0 spots): never ship a slide with no craft
-        # layer. Fall back to a TRUTHFUL sticker (the volunteer count from the data), placed in a
-        # known-safe strip: above the title on the right of a cover, in the dark scrim band on a slide.
-        sx, sy = (W - M - 190, 900) if role == "cover" else (M, H - 250)
-        inner += bc.sticker(f'{drive["volunteers"]} volunteers', MINT, sx, sy, rot=-3)
-        el.append(("sticker", sx, sy, 190, 36))
-
     if role == "cover":
-        loc = drive["loc"].upper()
-        vol = f'{drive["volunteers"]} VOLUNTEERS'
-        inner += (f'<div style="position:absolute;top:120px;left:{M}px;z-index:20;font-family:var(--m);'
-                  f'font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;'
-                  f'color:{MINTBRIGHT};display:inline-flex;align-items:center;gap:10px;'
-                  f'background:rgba(8,12,10,.62);padding:7px 14px 7px 12px;border-radius:999px;margin-left:-12px">'
-                  f'<span style="width:10px;height:10px;border-radius:50%;background:{accent}"></span>'
-                  f'{loc} &middot; {vol}</div>')
-        el.append(("kicker", M - 12, 112, 700, 38))
-        size = await fit_title(drive["title_html"])
-        nlines = drive["title_html"].count("<br>") + 1
-        sub = await measure_block(drive["subhead"], "e", 20, 500, 820)
-        sub_h = sub["h"]
-        sub_bottom = 150
-        title_bottom = sub_bottom + sub_h + 30
-        title_h = round(nlines * size * 0.92)
-        title_y = H - title_bottom - title_h
-        inner += (f'<div style="position:absolute;bottom:{title_bottom}px;left:{M}px;right:{M}px;z-index:20;'
-                  f'font-family:var(--d);font-weight:900;font-size:{size}px;line-height:.92;'
-                  f'text-transform:uppercase;color:#FFFFFF;text-shadow:0 4px 14px rgba(0,0,0,.55)">'
-                  f'{drive["title_html"]}</div>')
-        # per-line boxes (a multi-line headline as ONE box is ~60% air)
-        for k, l in enumerate(drive["title_html"].split("<br>")):
-            lw = (await B.measure_text([dict(text=l.replace("&amp;", "&"), font="d", size=size, weight=900)]))[0]
-            el.append((f"title{k}", M, title_y + round(k * size * 0.92), round(lw["text_w"]), round(size * 0.92)))
-        inner += (f'<div style="position:absolute;bottom:{sub_bottom}px;left:{M}px;right:{M}px;z-index:20;'
-                  f'display:flex;align-items:flex-start;gap:12px">'
-                  f'<span style="width:18px;height:3px;background:{accent};margin-top:11px;flex:none"></span>'
-                  f'<span style="font-family:var(--e);font-weight:500;font-size:20px;line-height:1.35;'
-                  f'color:rgba(255,255,255,.94);text-shadow:0 2px 6px rgba(0,0,0,.45);max-width:820px">'
-                  f'{drive["subhead"]}</span></div>')
-        el.append(("subhead", M + 30, H - sub_bottom - sub_h, round(sub["text_w"]) if sub["lines"] == 1 else 820, sub_h))
+        sub_h = (await B.measure_text([dict(text=drive["subhead"], font="e", size=21, weight=500,
+                                            max_width=780)]))[0]["h"] + 24 + 6
+        inner += caption_slab(drive["subhead"], 84, 820)
+        el.append(("subhead", M, H - 84 - sub_h, 820, sub_h))
+        phtml, pbox, ptop = await pills_block(drive["title_html"], M, H - 84 - sub_h - 22, 960)
+        inner += phtml; el += pbox
+        sx, sy = spec.get("stick", (W - M - 215, 120))
+        inner += starburst_sticker(drive["volunteers"], sx, sy)
+        el.append(("sticker", sx, sy, 220, 220))
+        if drive.get("swarm"):
+            chip = drive["loc"].upper()
+            cw = await tw(chip, "m", 13, 700, 1.0) + 36
+            cx_, cy_ = W - M - round(cw), sy + 235
+            inner += bc.sticker(chip, LEMON, cx_, cy_, rot=3)
+            el.append(("chip", cx_, cy_, round(cw), 34))
     else:
-        inner += bc.index_tag(idx, total, accent)
-        el.append(("index", W - M - 90, H - 140 - 26, 90, 26))
-        if cap:
-            inner += bc.caption(cap, accent)
-            c = await measure_block(cap, "e", 19, 500, 820)
-            el.append(("caption", M + 30, H - 100 - c["h"], 820, c["h"]))
-    inner += footer(drive["loc"])
-    el.append(("footer", M, H - 70, 420, 20))
+        c = (await B.measure_text([dict(text=spec["cap"], font="e", size=21, weight=500, max_width=780)]))[0]
+        inner += caption_slab(spec["cap"], 84)
+        el.append(("caption", M, H - 84 - c["h"] - 30, 820, c["h"] + 30))
+    inner += footer(drive["loc"], True)
+    el.append(("footer", M, H - 58, 420, 20))
     html = B.page(W, H, "var(--bg)", inner, grain=False)
-    await B.render(html, out_png, W, H, elements=el, page_bg="var(--bg)",
+    ign = {("sticker", "chip"), ("chip", "sticker")}
+    await B.render(html, out_png, W, H, elements=el, page_bg="var(--bg)", collision_ignore=ign,
                    text_pairs=[("footer", "#FFFFFF", "#101010", 13, True)])
 
 
-async def render_closer(drive, idx, total, out_png, seed):
-    accent = MINT
+async def render_card(drive, role, idx, total, spec, out_png, seed, kind):
+    slab = kind == "slab"
+    CY = 150
+    CH = 800 if role == "cover" else 980
+    img = fit_img(os.path.join(HERE, "_src", str(drive["post_id"]), spec["file"]), CW, CH,
+                  spec.get("focus", (0.5, 0.4)), os.path.join(BASE_DIR, f'{drive["post_id"]}_{idx}.jpg'))
     el = []
-    hero_txt = "AQUATERRA"
-    r = await B.measure_text([dict(text=hero_txt, font="d", size=100, weight=900)])
-    fs = min(190, int(100 * (W - 2 * M) / r[0]["text_w"]))
-    hr = (await B.measure_text([dict(text=hero_txt, font="d", size=fs, weight=900)]))[0]
-    KICK_Y, HERO_Y = 290, 344
-    hero_h = round(fs * 0.92)
-    inner = ""   # page ground is already var(--bg); an explicit cream div on it is an invisible fill
-    kick = f'{drive["loc"].upper()} &middot; {drive["volunteers"]} VOLUNTEERS'
-    inner += (f'<div style="position:absolute;top:{KICK_Y}px;left:{M}px;z-index:6;font-family:var(--m);'
-              f'font-weight:700;font-size:15px;letter-spacing:.18em;text-transform:uppercase;'
-              f'color:var(--ink)">{kick}</div>')
-    kw = (await B.measure_text([dict(text=kick, font="m", size=15, weight=700, letter_spacing=2.7)]))[0]
-    el.append(("kicker", M, KICK_Y, round(kw["text_w"]), 22))
-    inner += (f'<div style="position:absolute;top:{HERO_Y}px;left:{M}px;z-index:6;font-family:var(--d);'
-              f'font-weight:900;font-size:{fs}px;line-height:.92;text-transform:uppercase;'
-              f'color:var(--ink)">{hero_txt}</div>')
-    el.append(("hero", M, HERO_Y, round(hr["text_w"]), hero_h))
-    body = f'{drive["volunteers"]} volunteers showed up. come once, decide after.'
-    BODY_Y = HERO_Y + hero_h + 52
-    bm = await measure_block(body, "e", 26, 500, 760)
-    inner += (f'<div style="position:absolute;top:{BODY_Y}px;left:{M}px;width:760px;z-index:6;'
-              f'display:flex;align-items:flex-start;gap:14px">'
-              f'<span style="width:26px;height:4px;background:{accent};margin-top:14px;flex:none;'
-              f'border:2px solid var(--ink)"></span>'
-              f'<span style="font-family:var(--e);font-weight:500;font-size:26px;line-height:1.4;'
-              f'color:var(--ink)">{body}</span></div>')
-    el.append(("body", M + 40, BODY_Y, 720, bm["h"]))
-    FIELD_Y, FIELD_W, FIELD_H = H - 600, 640, 380
-    inner += (f'<div style="position:absolute;top:{FIELD_Y}px;right:0;width:{FIELD_W}px;height:{FIELD_H}px;'
-              f'background:{accent};border-left:5px solid var(--ink);border-top:5px solid var(--ink);'
-              f'border-bottom:5px solid var(--ink);z-index:2"></div>')
-    el.append(("accent_field", W - FIELD_W, FIELD_Y, FIELD_W, FIELD_H))
-    ink = core.text_on(accent)
-    inner += (f'<div style="position:absolute;top:{FIELD_Y + 5}px;right:0;width:{FIELD_W - 5}px;height:{FIELD_H - 10}px;'
-              f'z-index:5;display:flex;flex-direction:column;justify-content:center;gap:14px;padding-left:44px;'
-              f'box-sizing:border-box">'
-              f'<span style="font-family:var(--m);font-weight:700;font-size:15px;letter-spacing:.18em;'
-              f'text-transform:uppercase;color:{ink}">follow along</span>'
-              f'<span style="font-family:var(--m);font-weight:700;font-size:40px;color:{ink}">@ngo.aquaterra</span>'
-              f'</div>')
-    hm = (await B.measure_text([dict(text="@ngo.aquaterra", font="m", size=40, weight=700)]))[0]
-    assert 44 + hm["text_w"] < FIELD_W - 20, "handle does not fit its block"
-    spots = [(M, FIELD_Y + 40, 110, 0), (M + 130, FIELD_Y + 250, 64, 2), (M + 210, FIELD_Y + 50, 72, 4),
-             (M + 290, FIELD_Y + 230, 50, 1)]   # every spot ends before the block's left edge (W-640=440)
-    for i, (sx, sy, sz, ai) in enumerate(spots):
-        kind = bc.VOCAB[(seed * 3 + i * 5) % len(bc.VOCAB)]
-        rung = (seed + ai) % len(bc.ACCENT_ORDER)
-        col = bc.DOODLE_EXTRA.get(rung, bc.A[bc.ACCENT_ORDER[rung]])
-        if col == MINT:
-            col = MINTBRIGHT
-        inner += bc.one(kind, sx, sy, sz, col, rot=((seed * 29 + i * 47) % 60) - 30)
-        el.append((f"doodle{i}", sx, sy, sz, sz))
-    inner += bc.logo_pill() + bc.dots(total, idx - 1, accent=accent) + bc.index_tag(idx, total, accent)
+    rad = 32 if slab else 22
+    rot = 0 if slab else (-1.2 if idx % 2 else 1.0)
+    plate_rot = 0 if slab else -rot * 1.4
+    inner = (f'<div style="position:absolute;inset:0;{tex.paper_fibre(opacity=.05)}"></div>')
+    # plate: solid mint cut paper behind the card (offset = the notched-slab / riso-misregister move)
+    off = 22 if slab else 16
+    inner += tex.cutpaper(CX + off, CY + off, CW, CH, MINT, rot=plate_rot, z=3, shadow=0, radius=f"{rad}px",
+                          outline=None)
+    inner += (f'<img src="{bc.photo_b64(img)}" style="position:absolute;left:{CX}px;top:{CY}px;width:{CW}px;'
+              f'height:{CH}px;object-fit:cover;border:{3 if slab else 4}px solid {INK};border-radius:{rad}px;'
+              f'transform:rotate({rot}deg);z-index:5;'
+              f'{"" if slab else f"box-shadow:8px 8px 0 {INK};"}">')
+    el.append(("card", CX, CY, CW, CH))
+    if not slab:
+        inner += tex.tape(CX + 50, CY - 24, 150, 44, rot=-9, color="#F2E9C9", z=30)
+        inner += tex.tape(CX + CW - 200, CY - 20, 150, 44, rot=8, color="#F2E9C9", z=30)
+    inner += bc.logo_pill() + ink_dots(total, idx - 1)
     el.append(("logo", M, 48, 260, 56))
-    inner += (f'<div style="position:absolute;bottom:52px;left:{M}px;z-index:20;font-family:var(--m);'
-              f'font-weight:700;font-size:13px;letter-spacing:.06em;color:var(--ink)">@ngo.aquaterra '
-              f'<span style="opacity:.6;font-weight:500">&middot; {drive["loc"]}</span></div>')
-    el.append(("footer", M, H - 70, 420, 20))
+    ty = CY + CH + 48
+    if role == "cover":
+        fs = await fit_title(drive["title_html"], 760)
+        n = drive["title_html"].count("<br>") + 1
+        th = round(n * fs * 0.92)
+        inner += (f'<div style="position:absolute;top:{ty}px;left:{M}px;z-index:20;font-family:var(--d);'
+                  f'font-weight:900;font-size:{fs}px;line-height:.92;text-transform:uppercase;color:{INK}">'
+                  f'{drive["title_html"]}</div>')
+        for k, l in enumerate(drive["title_html"].split("<br>")):
+            lw = await tw(l.replace("&amp;", "&"), "d", fs, 900)
+            el.append((f"title{k}", M, ty + round(k * fs * .92), round(lw), round(fs * .92)))
+        sy_ = ty + th + 14
+        sm = (await B.measure_text([dict(text=drive["subhead"], font="e", size=19, weight=500, max_width=760)]))[0]
+        inner += (f'<div style="position:absolute;top:{sy_}px;left:{M}px;width:760px;z-index:20;display:flex;gap:12px">'
+                  f'<span style="width:18px;height:4px;background:{MINT};border:2px solid {INK};margin-top:10px;flex:none"></span>'
+                  f'<span style="font-family:var(--e);font-weight:500;font-size:19px;line-height:1.35;color:{INK}">'
+                  f'{drive["subhead"]}</span></div>')
+        el.append(("subhead", M + 30, sy_, 730, sm["h"]))
+        sx, sy = (W - M - 215, CY + CH - 170)
+        inner += starburst_sticker(drive["volunteers"], sx, sy)
+        el.append(("sticker", sx, sy, 220, 220))
+    else:
+        c = (await B.measure_text([dict(text=spec["cap"], font="e", size=28, weight=500, max_width=720)]))[0]
+        inner += (f'<div style="position:absolute;top:{ty}px;left:{M}px;width:720px;z-index:20;display:flex;gap:14px">'
+                  f'<span style="width:22px;height:5px;background:{MINT};border:2px solid {INK};margin-top:15px;flex:none"></span>'
+                  f'<span style="font-family:var(--e);font-weight:500;font-size:28px;line-height:1.3;color:{INK}">'
+                  f'{spec["cap"]}</span></div>')
+        el.append(("caption", M + 36, ty, 684, c["h"]))
+    # doodles in the cream zone, right of the text (text is held to 760px)
+    for i, (dx, dy, sz) in enumerate([(870, ty - 6, 84), (960, ty + 96, 50)]):
+        kind_ = bc.VOCAB[(seed * 3 + i * 5) % len(bc.VOCAB)]
+        rung = (seed + i) % len(bc.ACCENT_ORDER)
+        col = bc.DOODLE_EXTRA.get(rung, bc.A[bc.ACCENT_ORDER[rung]])
+        if col == MINT: col = MINTBRIGHT
+        inner += bc.one(kind_, dx, dy, sz, col, rot=((seed * 29 + i * 47) % 60) - 30)
+        el.append((f"doodle{i}", dx, dy, sz, sz))
+    inner += footer(drive["loc"], False)
+    el.append(("footer", M, H - 58, 420, 20))
     html = B.page(W, H, "var(--bg)", inner, grain=False)
-    await B.render(html, out_png, W, H, elements=el, page_bg="var(--bg)",
-                   color_pairs=[("accent_field", accent, "var(--bg)", True)],
-                   containers=("accent_field",),
-                   text_pairs=[("body", core.INK, "var(--bg)", 26, False),
-                               ("kicker", core.INK, "var(--bg)", 15, True),
-                               ("handle", ink, accent, 40, True)])
+    ign = {("sticker", "card")}
+    await B.render(html, out_png, W, H, elements=el, page_bg="var(--bg)", collision_ignore=ign,
+                   containers=(),
+                   text_pairs=[("caption", INK, "#F4EFE0", 28, False), ("footer", INK, "#F4EFE0", 13, True)])
 
 
 async def build(drive, only=None):
     d = os.path.join(OUT_ROOT, f'{drive["post_id"]}_{drive["slug"]}')
     os.makedirs(d, exist_ok=True)
     photos = [drive["cover"]] + drive["slides"]
-    total = len(photos) + 1
-    seed = drive["seed"]
+    total = len(photos)
     for i, p in enumerate(photos, start=1):
         if only and i not in only:
             continue
         role = "cover" if i == 1 else "slide"
-        base = compose_base(os.path.join(HERE, "_src", str(drive["post_id"]), p["file"]),
-                            p.get("fit", "cover"), p.get("focus", (0.5, 0.5)), role,
-                            os.path.join(BASE_DIR, f'{drive["post_id"]}_{i}.jpg'))
-        await render_photo(drive, role, base, i, total, os.path.join(d, f"slide_{i}.png"), seed + i,
-                           cap=p.get("cap"), extra_exclude=p.get("exclude"))
-    if not only or total in only:
-        await render_closer(drive, total, total, os.path.join(d, f"slide_{total}.png"), seed + total)
+        out = os.path.join(d, f"slide_{i}.png")
+        if drive["style"] == "bleed":
+            await render_bleed(drive, role, i, total, p, out, drive["seed"] + i)
+        else:
+            await render_card(drive, role, i, total, p, out, drive["seed"] + i, drive["style"])
     with open(os.path.join(d, "caption.txt"), "w") as f:
         f.write(drive["caption"].strip() + "\n")
-    print(f'  -> {d} ({total} slides)')
+    print(f'  -> {d} ({total} slides, {drive["style"]})')
 
 
 async def main(ids=None, only=None):
