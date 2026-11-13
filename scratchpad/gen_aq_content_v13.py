@@ -36,7 +36,13 @@ def kick(txt, x, y, color=INK):
     return (f'<div style="position:absolute;left:{x}px;top:{y}px;font-family:var(--m);font-weight:700;font-size:19px;letter-spacing:.12em;color:{color};'
             f'text-transform:uppercase;z-index:60">{txt}</div>')
 
-def headline(txt, x, y, size, color=INK, w=952, z=60):
+def headline(txt, x, y, size, color=INK, w=952, z=60, sans=False):
+    """sans=True: NeutralFace caps for the plain words, the <i> words stay Instrument Serif italic (the mix)."""
+    if sans:
+        ss = round(size * .78)
+        txt = txt.replace("<i>", f'<i style="font-family:var(--s);font-weight:400;text-transform:none;font-size:{size}px;letter-spacing:-.01em">')
+        return (f'<div style="position:absolute;left:{x}px;top:{y}px;width:{w}px;font-family:var(--d);font-weight:900;text-transform:uppercase;font-size:{ss}px;'
+                f'line-height:{size}px;letter-spacing:-.01em;color:{color};z-index:{z}">{txt}</div>')
     return (f'<div style="position:absolute;left:{x}px;top:{y}px;width:{w}px;font-family:var(--s);font-size:{size}px;line-height:{round(size*1.0)}px;'
             f'letter-spacing:-.01em;color:{color};z-index:{z}">{txt}</div>')
 
@@ -71,7 +77,7 @@ def s_full(sp, i, n):
          logo(True), pager(i, n, "#F6EFD8")]
     y = H - 110 - (sp.get("body_lines", 3) * 43) - sp.get("hl_lines", 2) * sp.get("hs", 92) - 70
     if sp.get("kick"): P.append(kick(sp["kick"], 64, y - 50, "#F6EFD8"))
-    P.append(headline(sp["hl"], 64, y, sp.get("hs", 92), "#F6EFD8"))
+    P.append(headline(sp["hl"], 64, y, sp.get("hs", 92), "#F6EFD8", sans=sp.get("sans", True)))
     if sp.get("body"): P.append(body(sp["body"], 64, y + sp.get("hl_lines", 2) * sp.get("hs", 92) + 26, "#F6EFD8", 880))
     if sp.get("link"): P.append(linkline(64, H - 100))
     return P, INK
@@ -104,9 +110,42 @@ def s_type(sp, i, n):
                  f'box-shadow:9px 10px 0 #0A0A0A;transform:rotate(3deg);z-index:10"><img src="{warm(sp["ph"], 420, 520, sp.get("fy", .45))}" style="width:100%;height:100%;object-fit:cover;display:block"></div>')
     y = sp.get("y", 720 if sp.get("ph") else 380)
     if sp.get("kick"): P.append(kick(sp["kick"], 64, y - 56, fg))
-    P.append(headline(sp["hl"], 64, y, sp.get("hs", 110), fg)); y += sp.get("hl_lines", 2) * sp.get("hs", 110) + 34
+    P.append(headline(sp["hl"], 64, y, sp.get("hs", 110), fg, sans=sp.get("sans", True))); y += sp.get("hl_lines", 2) * sp.get("hs", 110) + 34
     if sp.get("body"): P.append(body(sp["body"], 64, y, fg, 900)); y += sp.get("body_lines", 2) * 43 + 30
     if sp.get("chips"): P.append(chips(sp["chips"], 64, y, "#F6EFD8" if col != "#F6EFD8" else LEM))
+    if sp.get("link"): P.append(linkline(64, H - 100, bg="#F6EFD8" if col != "#F6EFD8" else LEM))
+    return P, col
+
+def hl_html(txt, size, color, sans):
+    if sans:
+        ss = round(size * .78)
+        txt = txt.replace("<i>", f'<i style="font-family:var(--s);font-weight:400;text-transform:none;font-size:{size}px;letter-spacing:-.01em">')
+        return (f'<div style="font-family:var(--d);font-weight:900;text-transform:uppercase;font-size:{ss}px;line-height:{size}px;letter-spacing:-.01em;color:{color}">{txt}</div>')
+    return f'<div style="font-family:var(--s);font-size:{size}px;line-height:{size}px;color:{color}">{txt}</div>'
+
+def flow(sp, color, anchor, size_default):
+    k = (f'<div style="font-family:var(--m);font-weight:700;font-size:19px;letter-spacing:.12em;color:{color};text-transform:uppercase">{sp["kick"]}</div>' if sp.get("kick") else "")
+    b = (f'<div style="font-family:var(--e);font-size:31px;line-height:43px;color:{color};max-width:900px">{sp["body"]}</div>' if sp.get("body") else "")
+    return (f'<div style="position:absolute;left:64px;{anchor};width:952px;display:flex;flex-direction:column;gap:24px;z-index:60">'
+            + k + hl_html(sp["hl"], sp.get("hs", size_default), color, sp.get("sans", True)) + b + "</div>")
+
+def s_full(sp, i, n):
+    P = [f'<img src="{warm(sp["ph"], W, H, sp.get("fy", .45))}" style="position:absolute;inset:0;width:{W}px;height:{H}px;object-fit:cover;z-index:1">',
+         K.box(0, 0, W, H, "background:linear-gradient(180deg,rgba(10,10,10,.35) 0%,rgba(10,10,10,0) 22%,rgba(10,10,10,0) 40%,rgba(10,10,10,.85) 100%);", z=2),
+         logo(True), pager(i, n, "#F6EFD8"), flow(sp, "#F6EFD8", f"bottom:{150 if sp.get('link') else 90}px", 92)]
+    if sp.get("link"): P.append(linkline(64, H - 100))
+    return P, INK
+
+def s_type(sp, i, n):
+    col = sp.get("col", LEM); fg = core.text_on(col) if col not in (INK,) else "#F6EFD8"
+    P = [K.box(0, 0, W, H, f"background:{col};", z=0), logo(True), pager(i, n, fg)]
+    if sp.get("ph"):
+        P.append(f'<div style="position:absolute;right:64px;top:150px;width:420px;height:520px;border:4px solid #0A0A0A;border-radius:24px;overflow:hidden;'
+                 f'box-shadow:9px 10px 0 #0A0A0A;transform:rotate(3deg);z-index:10"><img src="{warm(sp["ph"], 420, 520, sp.get("fy", .45))}" style="width:100%;height:100%;object-fit:cover;display:block"></div>')
+    blk = flow(sp, fg, f"top:{sp.get('y', 730 if sp.get('ph') else 380)}px", 110)
+    if sp.get("chips"):
+        blk = blk[:-6] + '<div style="position:relative;height:140px">' + chips(sp["chips"], 0, 0, "#F6EFD8" if col != "#F6EFD8" else LEM) + '</div></div>'
+    P.append(blk)
     if sp.get("link"): P.append(linkline(64, H - 100, bg="#F6EFD8" if col != "#F6EFD8" else LEM))
     return P, col
 
