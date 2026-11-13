@@ -183,3 +183,29 @@ One piece per style from the 74-style bank, every one carrying the campaign cons
 | blogs | `blogs_2` | highlighter-and-pill headline with a die-cut cover: "HOW A LETTER TO MY CITY BECAME A BLOG POST" | T4 |
 
 Needs the owner's eye: "yes, we argued about balloons" (a joke, not a logged fact); Confluence "300 and 250" and Concord "200 and 250" (the platform does not say whether the second figure is a second day); the three phones on `hr_2` assume these assets reach Community AQ members; `social_2`'s tape labels list Instagram, LinkedIn, reels, blogs and design.
+
+## 12. V5: ONE MESSAGE, SAID DIRECTLY (2026-11-13)
+
+Owner feedback after v4: "more direct, cleaner, more visually appealing stuff around a certain message." v2 to v4 gave every piece its own idea and skeleton, which read as variety but not as one campaign. v5 inverts it.
+
+**The message:** *A student did a real thing, and this is it.* One sentence pattern, "A STUDENT [did X] THIS.", set in NeutralFace caps with the verb phrase on a department-colour highlight bar. Everything else on the page is cut.
+
+**Every piece has exactly:** the logo, a department chip, the headline, one mono line with one real fact and its qualifier, and the URL pill. No doodles, no stickers, no second headline. Photos are full-bleed or in one thick-bordered frame, never collaged.
+
+**Three layouts only** (script `scratchpad/gen_recruit_v5.py`): L1 full-bleed photo with a scrim and the headline in the lower third (or top, where the photo needs its bottom); L2 a framed photo on a department-colour ground; L3 cream ground with type and one real artifact (blog covers, the social team's own slides, a number, the board chips).
+
+| Piece | Department | Headline | Fact line |
+|---|---|---|---|
+| `a1_events` (+story) | events | A STUDENT BOOKED THE DHOL FOR THIS. | disco diwali 2.0 drew 550 registrations and 10+ small businesses |
+| `a2_dogs` (+story) | welfare | A STUDENT FED THESE DOGS | tails and treats, edition 53, first run january 2022 |
+| `a3_sundarbans` (+story) | welfare | STUDENTS RAN THIS HEALTH CAMP | sunderbans 8.0, december 2025, 120+ checkups |
+| `a4_teach` (+story) | welfare | A STUDENT TAUGHT THIS CLASS | about 70% of our welfare work is teaching |
+| `a5_crftd` (+story) | crftd | A STUDENT RUNS THIS LABEL | crftd, formerly roots; every rupee of profit funds a welfare drive |
+| `a6_collabs` (+story) | collabs | STUDENTS HOSTED 30 KIDS AT SCIENCE CITY | with vishwajagriti and emami, 300 stationery kits |
+| `a7_blogs` | blogs | A STUDENT WROTE THIS | three real posts from our own site |
+| `a8_social` | social media | A STUDENT WROTE THIS CAPTION | this week at aq, by the social media team |
+| `a9_shikshaq` | shikshaq | A STUDENT RUNS THE TUTOR SEARCH | a tutor search for kolkata, run by students (cleared facts only) |
+| `a10_students` | hr | STUDENTS RUN ALL OF THIS. 1,400+ | ages 14 to 19, zero donations, zero fees |
+| `a11_yourturn` (+story) | hr | YOUR TURN. | applications are open |
+
+The same sentence extends to any lane: new pieces are one photo, one verb, one fact.
