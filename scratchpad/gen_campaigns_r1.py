@@ -77,12 +77,12 @@ async def sunday():
 # ============================================================ 3. SHIKSHAQ  (lemon, clean, icon-led)
 SHIK = [
     ("Studying for your exams?<br><i>Start here.</i>", "ShikshAQ: free papers, study material and tutors, for students in Kolkata.", None, "chess1"),
-    ("Past papers,<br><i>free.</i>", "Practise on real question papers.", "star", None),
-    ("Study material,<br><i>free.</i>", "Notes for your class and subject, in one place.", "speech", None),
-    ("Need<br><i>a tutor?</i>", "Search near you, by subject, class and area.", "heart", None),
+    ("Past papers,<br><i>free.</i>", "Practise on real question papers.", None, "draw"),
+    ("Study material,<br><i>free.</i>", "Notes for your class and subject, in one place.", None, "onceupon"),
+    ("Need<br><i>a tutor?</i>", "Search near you, by subject, class and area.", None, "stem3"),
     ("Made for<br><i>your syllabus.</i>", None, None, "chess4"),
     ("Built by<br><i>AquaTerra.</i>", "Free, because learning shouldn't depend on what you can pay.", None, "stem4"),
-    ("shikshaq.in", "Send it to someone with boards this year.", "sparkle", None),
+    ("shikshaq.in", "Send it to someone with boards this year.", None, "magic"),
 ]
 async def shik():
     n = len(SHIK)
