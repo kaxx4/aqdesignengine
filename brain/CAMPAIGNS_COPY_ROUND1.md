@@ -13,7 +13,7 @@ Look: clean, confident, big type plus one strong photo per slide.
 | 4 | We feed, plant and show up. | Sharbat on hot days, food on the street, biscuits for the strays, saplings for the parks. |
 | 5 | We go further when it's needed. | Relief trips and health camps in the Sundarbans. |
 | 6 | And we build things. | ShikshAQ, a free learning platform. TerraNotes, our monthly magazine. |
-| 7 | (optional) We fund it ourselves. | No donations. Our events pay for the work. |
+
 | 8 | Every part of it is for someone else. | That's AquaTerra. |
 
 ## 2. ONE SUNDAY (story carousel, photo-led, captions only)
@@ -21,13 +21,13 @@ Look: documentary. Full-bleed photos, small captions bottom-left.
 
 | # | Caption |
 |---|---|
-| 1 | One Sunday at Pather Sathi. |
+| 1 | One Sunday. |
 | 2 | The plan gets made on Friday. The worksheet, the game, who's bringing chart paper. |
 | 3 | Thirty-odd kids. A handful of us. |
 | 4 | Today's lesson: chess. |
 | 5 | Somebody wins. It's rarely the teacher. |
 | 6 | Then everyone holds up what they made. |
-| 7 | Same time next Sunday. It's been that way for two and a half years. |
+| 7 | Same time next Sunday. |
 
 ## 3. SHIKSHAQ (carousel, service, not recruitment)
 Look: clean and useful, ShikshAQ's lemon, simple icons.
@@ -47,3 +47,6 @@ Look: clean and useful, ShikshAQ's lemon, simple icons.
 - CONFIRM: "Thirty-odd kids. A handful of us." (logged sessions are 25 to 45 children); "Somebody wins. It's rarely the teacher." is a light joke, not a logged fact.
 - CONFIRM: ShikshAQ's papers and study material are free and live now; "search by area" is how the site works.
 - Slide 7 of campaign 1 is optional, given that campaign 2 was dropped.
+
+## Owner edits (2026-11-14) and build
+No funding talk; Pather Sathi not named; ShikshAQ papers and study material confirmed live. Added: Impact posts (single posts, all-time figures on real photos): 3,500+ children in our classrooms; 4,000+ saplings in the ground; 8 trips to the Sundarbans; 53 rounds of Tails and Treats; 15,000+ bananas handed out; 2,500 kg of clothes and books passed on; 540+ drives since 2021. Built by `scratchpad/gen_campaigns_r1.py` into `out/campaigns_r1/` (A what, B sunday, C shikshaq, D impact).
