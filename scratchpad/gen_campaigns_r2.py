@@ -164,7 +164,7 @@ ROUND = [  # E One Round
     dict(L="doc", ph="cow_biscuit", fy=.5, a="Sometimes a cow joins in.", b="Nobody objects."),
     dict(L="doc", ph="dog_night", fy=.5, a="Some rounds run late.", b="The dogs don't mind."),
     dict(L="doc", ph="street_dog", fy=.5, a="Same streets, same faces,", b="round after round."),
-    dict(L="solid", col=LEM, hl="Next round's<br><i>soon.</i>", hs=140, ln="Come along. Apply at "+LINK),
+    dict(L="solid", col=LEM, ph="dog_saltlake", fy=.5, hl="Next round's<br><i>soon.</i>", hs=140, ln="Come along.", link=True),
 ]
 SUND = [  # F Sundarbans
     dict(L="cine", ph="sundarbans", fy=.5, hl="The Sundarbans trip.", hs=120, ln="Weeks of planning for one long day."),
