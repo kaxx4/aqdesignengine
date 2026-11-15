@@ -50,7 +50,10 @@ def chrome(i, n, H, dark=True, col="#F6EFD8", story=False):
     return P
 
 def linkline(y, txt=LINK, bg="#F6EFD8"):
-    return C.linkline(64, y, txt, bg)
+    label = "Apply" if "recruitment" in txt else ("Read" if "terranotes" in txt else "Talk to us")
+    return (f'<div style="position:absolute;left:64px;top:{y-20}px;display:flex;align-items:center;gap:14px;padding:14px 26px;background:{bg};border:4px solid #0A0A0A;'
+            f'border-radius:999px;box-shadow:6px 6px 0 #0A0A0A;z-index:90;font-family:var(--e);font-weight:600;font-size:32px;color:#0A0A0A">'
+            f'<span style="font-family:var(--d);font-weight:900;text-transform:uppercase">{label}</span><span style="font-family:var(--m);font-weight:700;font-size:28px">{txt}</span></div>')
 
 async def out(name, P, bg, H):
     await K._render(name, K.page(V6.DEFS + "".join(P) + V6.grain(.26), H, bg=bg), H, None, None)
@@ -65,7 +68,8 @@ def L_doc(sp, i, n, story=False, tag=LEM):
     P = [full(PH[sp["ph"]], H, sp.get("fy", .45)), K.box(0, 0, W, H, "background:linear-gradient(180deg,rgba(0,0,0,.3) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 60%,rgba(0,0,0,.65) 100%);", z=2)]
     P += chrome(i, n, H, story=story)
     if sp.get("title"):
-        P.append(block([f'<div style="font-family:var(--s);font-style:italic;font-size:150px;line-height:140px;color:#F6EFD8">{sp["title"]}</div>', line(sp.get("sub", ""), "#F6EFD8", 32)], f"bottom:{90+bot}px"))
+        sub = (f'<div style="align-self:flex-start;background:{tag};padding:14px 24px;border:4px solid #0A0A0A;box-shadow:7px 8px 0 #0A0A0A;font-family:var(--e);font-weight:600;font-size:36px;color:#0A0A0A">{sp.get("sub","")}</div>' if sp.get("sub") else "")
+        P.append(block([f'<div style="font-family:var(--s);font-style:italic;font-size:150px;line-height:140px;color:#F6EFD8">{sp["title"]}</div>', sub], f"bottom:{90+bot}px"))
     else:
         txt = f'<span style="font-weight:600">{sp["a"]}</span>' + (f'<br>{sp["b"]}' if sp.get("b") else "")
         P.append(f'<div style="position:absolute;left:64px;bottom:{90+bot}px;max-width:820px;background:{tag};padding:20px 28px;font-family:var(--e);font-size:40px;'
@@ -167,19 +171,19 @@ SUND = [  # F Sundarbans
     dict(L="cine", ph="sund2", fy=.4, hl="It starts weeks before,<br>with lists.", ln="Who's going. What's needed. Who's carrying what."),
     dict(L="cine", ph="sund3", fy=.4, hl="Medicines. Stationery.<br>Packed by hand.", ln=""),
     dict(L="cine", ph="sund4", fy=.35, hl="Then a full day<br>of checkups.", ln=""),
-    dict(L="solid", col=INK, hl="Eight trips.<br><i>The next one needs<br>more hands.</i>", hs=110, link=True),
+    dict(L="cine", ph="sund1", fy=.4, hl="Eight trips.<br>The next one needs more hands.", hs=96, link=True),
 ]
 LEARN = [  # G What you'll learn here
     dict(L="solid", col=LEM, ph="holi", fy=.4, hl="What you'll<br><i>learn here.</i>", hs=120, ln="Stuff no exam tests."),
-    dict(L="solid", col=TOM, ph="stem2", fy=.45, hl="How to stand<br><i>in front of a room.</i>", ln="Teach forty kids once and presentations stop being scary."),
-    dict(L="solid", col=MINT, ph="plant", fy=.4, hl="How to plan<br><i>something real.</i>", ln="A drive has a date, a place, a list and people counting on it."),
-    dict(L="solid", col=PINK, ph="cookie", fy=.4, hl="How to talk to<br><i>people who aren't your friends.</i>", hs=92, ln="Principals, partners, shopkeepers."),
-    dict(L="solid", col=GRAPE, ph="blog_tea", fy=.5, hl="How to write<br><i>for someone.</i>", ln="TerraNotes, captions, emails that get replies."),
+    dict(L="solid", col=SKY, ph="stem2", fy=.45, hl="How to stand<br><i>in front of a room.</i>", ln="Teach forty kids once and presentations stop being scary."),
+    dict(L="solid", col=TOM, ph="plant", fy=.4, hl="How to plan<br><i>something real.</i>", ln="A drive has a date, a place, a list and people counting on it."),
+    dict(L="solid", col=SKY, ph="cookie", fy=.4, hl="How to talk to<br><i>people who aren't your friends.</i>", hs=92, ln="Principals, partners, shopkeepers."),
+    dict(L="solid", col=TOM, ph="blog_tea", fy=.5, hl="How to write<br><i>for someone.</i>", ln="TerraNotes, captions, emails that get replies."),
     dict(L="solid", col=SKY, ph="dd_floor_green", fy=.4, hl="How to be someone<br><i>a team counts on.</i>", hs=96, ln="And what it feels like when it works."),
     dict(L="solid", col=LEM, ph="dd_group", fy=.6, hl="Come find out<br><i>what else.</i>", ln="Applications are open.", link=True),
 ]
 COLLAB = [  # H How a collab happens
-    dict(L="cream", ph="rakhi", fy=.5, hl="How a collab<br><i>happens.</i>", hs=112, ln="For schools, colleges and NGOs in Kolkata."),
+    dict(L="cream", ph="rakhi", fy=.5, hl="How a collab<br><i>happens.</i>", hs=112, ln="For schools, colleges and NGOs in Kolkata. A registered NGO, DARPAN-certified."),
     dict(L="cream", ph="emami", fy=.5, num="01", hl="It starts with<br><i>a conversation.</i>", ln="You reach out, or we do. Either way, we listen first."),
     dict(L="cream", ph="desk", fy=.45, num="02", hl="We plan it<br><i>together.</i>", ln="What it is, who it's for, when, and how many of us."),
     dict(L="cream", ph="old_age", fy=.45, num="03", hl="Then we<br><i>show up.</i>", ln="With the team, the material and everything else it needs."),
@@ -196,7 +200,7 @@ COMEIN = [  # J Come in
     dict(L="chat", ph="five_group", fy=.5, tint=PINK, lines=[("so what do people<br>actually do at aq", False), ("teach, mostly.<br>and a lot else.", False), ("come see.", True)]),
     dict(L="chat", ph="teach_abc", fy=.35, tint=TOM, lines=[("i've never taught<br>anything", False), ("neither had we", False), ("we'll show you how.", True)]),
     dict(L="chat", ph="dog_night", fy=.5, tint=MINT, rc=MINT, lines=[("dog round on sunday", False), ("i'll bring biscuits", False), ("come. they sniff<br>new people first.", True)]),
-    dict(L="chat", ph="books", fy=.45, tint=GRAPE, rc=GRAPE, lines=[("can i write for<br>terranotes?", False), ("that's what it's for", False), ("send it.", True)]),
+    dict(L="chat", ph="books", fy=.45, tint=GRAPE, rc=GRAPE, lines=[("can i write for<br>terranotes?", False), ("that's what it's for", False), ("send us your<br>first piece.", True)]),
     dict(L="chat", ph="sharbat_bananas", fy=.4, tint=LEM, lines=[("do i need experience?", False), ("nope. everyone<br>starts somewhere.", False), ("come once.<br>decide after.", True)], link=True),
 ]
 
