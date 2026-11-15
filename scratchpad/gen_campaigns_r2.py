@@ -77,7 +77,7 @@ def L_cine(sp, i, n, story=False):
     """cinematic: warm full-bleed, letterbox bars, big serif caption"""
     H, top, bot = geo(story)
     bar = 120 if not story else 0
-    P = [full(PH[sp["ph"]], H, sp.get("fy", .45)), K.box(0, 0, W, H, "background:linear-gradient(180deg,rgba(20,8,0,.25),rgba(20,8,0,0) 40%,rgba(20,8,0,.7));", z=2)]
+    P = [full(PH[sp["ph"]], H, sp.get("fy", .45)), K.box(0, 0, W, H, "background:linear-gradient(180deg,rgba(20,8,0,.25),rgba(20,8,0,0) 38%,rgba(10,4,0,.82));", z=2)]
     if bar: P += [K.box(0, 0, W, bar, "background:#0A0A0A;", z=3), K.box(0, H - bar, W, bar, "background:#0A0A0A;", z=3)]
     P += chrome(i, n, H, story=story)
     parts = [f'<div style="font-family:var(--s);font-style:italic;font-size:{sp.get("hs", 96)}px;line-height:{sp.get("hs", 96)}px;color:#FFF3E0;text-shadow:0 3px 24px rgba(0,0,0,.6)">{sp["hl"]}</div>']
@@ -89,7 +89,7 @@ def L_cine(sp, i, n, story=False):
 def L_solid(sp, i, n, story=False):
     """solid colour + big mixed headline + framed photo"""
     H, top, bot = geo(story)
-    col = sp.get("col", MINT); fg = core.text_on(col)
+    col = sp.get("col", MINT); fg = "#F6EFD8" if col == INK else core.text_on(col)
     P = [K.box(0, 0, W, H, f"background:{col};", z=0)] + chrome(i, n, H, col=fg, story=story)
     parts = [mix(sp["hl"], sp.get("hs", 104), fg)]
     if sp.get("ln"): parts.append(line(sp["ln"], fg, 32))
@@ -105,6 +105,7 @@ def L_cream(sp, i, n, story=False):
     H, top, bot = geo(story)
     P = [K.box(0, 0, W, H, f"background:{CREAM};", z=0), K.box(0, 0, 22, H, f"background:{PINK};", z=1)] + chrome(i, n, H, dark=False, col=INK, story=story)
     parts = [mix(sp["hl"], sp.get("hs", 100), INK)]
+    if sp.get("num"): parts.insert(0, f'<div style="font-family:var(--d);font-weight:900;font-size:120px;line-height:110px;color:{PINK};-webkit-text-stroke:3px #0A0A0A">{sp["num"]}</div>')
     if sp.get("ln"): parts.append(line(sp["ln"], "#3A3A36", 32))
     if sp.get("pills"):
         ps = "".join(f'<div style="padding:12px 26px;border:4px solid #0A0A0A;border-radius:999px;background:{c};box-shadow:5px 5px 0 #0A0A0A;font-family:var(--e);font-weight:600;font-size:30px">{t}</div>' for t, c in sp["pills"])
@@ -159,32 +160,31 @@ ROUND = [  # E One Round
     dict(L="doc", ph="cow_biscuit", fy=.5, a="Sometimes a cow joins in.", b="Nobody objects."),
     dict(L="doc", ph="dog_night", fy=.5, a="Some rounds run late.", b="The dogs don't mind."),
     dict(L="doc", ph="street_dog", fy=.5, a="Same streets, same faces,", b="round after round."),
-    dict(L="doc", ph="dog_bhowanipur", fy=.35, a="Come on the next one.", b=LINK),
+    dict(L="solid", col=LEM, hl="Next round's<br><i>soon.</i>", hs=140, ln="Come along. Apply at "+LINK),
 ]
 SUND = [  # F Sundarbans
-    dict(L="cine", ph="sundarbans", fy=.5, hl="The Sundarbans trip.", hs=120, ln="What it takes to run a health camp, far from the city."),
+    dict(L="cine", ph="sundarbans", fy=.5, hl="The Sundarbans trip.", hs=120, ln="Weeks of planning for one long day."),
     dict(L="cine", ph="sund2", fy=.4, hl="It starts weeks before,<br>with lists.", ln="Who's going. What's needed. Who's carrying what."),
     dict(L="cine", ph="sund3", fy=.4, hl="Medicines. Stationery.<br>Packed by hand.", ln=""),
     dict(L="cine", ph="sund4", fy=.35, hl="Then a full day<br>of checkups.", ln=""),
-    dict(L="cine", ph="sund1", fy=.4, hl="And the people<br>you meet there.", ln=""),
-    dict(L="cine", ph="sundarbans", fy=.6, hl="Eight trips so far.", hs=110, ln="The next one needs people.", link=True),
+    dict(L="solid", col=INK, hl="Eight trips.<br><i>The next one needs<br>more hands.</i>", hs=110, link=True),
 ]
 LEARN = [  # G What you'll learn here
-    dict(L="solid", col=LEM, ph="stem4", fy=.4, hl="What you'll<br><i>learn here.</i>", hs=120, ln="Things school doesn't get around to."),
-    dict(L="solid", col=TOM, ph="chess1", fy=.4, hl="How to stand<br><i>in front of a room.</i>", ln="Teach forty kids once and presentations stop being scary."),
+    dict(L="solid", col=LEM, ph="holi", fy=.4, hl="What you'll<br><i>learn here.</i>", hs=120, ln="Stuff no exam tests."),
+    dict(L="solid", col=TOM, ph="stem2", fy=.45, hl="How to stand<br><i>in front of a room.</i>", ln="Teach forty kids once and presentations stop being scary."),
     dict(L="solid", col=MINT, ph="plant", fy=.4, hl="How to plan<br><i>something real.</i>", ln="A drive has a date, a place, a list and people counting on it."),
-    dict(L="solid", col=PINK, ph="rakhi", fy=.5, hl="How to talk to<br><i>people who aren't your friends.</i>", hs=92, ln="Principals, partners, shopkeepers, strangers."),
-    dict(L="solid", col=GRAPE, ph="blog_city", fy=.5, hl="How to write<br><i>for someone.</i>", ln="TerraNotes, captions, emails that get replies."),
+    dict(L="solid", col=PINK, ph="cookie", fy=.4, hl="How to talk to<br><i>people who aren't your friends.</i>", hs=92, ln="Principals, partners, shopkeepers."),
+    dict(L="solid", col=GRAPE, ph="blog_tea", fy=.5, hl="How to write<br><i>for someone.</i>", ln="TerraNotes, captions, emails that get replies."),
     dict(L="solid", col=SKY, ph="dd_floor_green", fy=.4, hl="How to be someone<br><i>a team counts on.</i>", hs=96, ln="And what it feels like when it works."),
-    dict(L="solid", col=LEM, ph="sund2", fy=.4, hl="Come find out<br><i>what else.</i>", ln="Applications are open.", link=True),
+    dict(L="solid", col=LEM, ph="dd_group", fy=.6, hl="Come find out<br><i>what else.</i>", ln="Applications are open.", link=True),
 ]
 COLLAB = [  # H How a collab happens
     dict(L="cream", ph="rakhi", fy=.5, hl="How a collab<br><i>happens.</i>", hs=112, ln="For schools, colleges and NGOs in Kolkata."),
-    dict(L="cream", ph="emami", fy=.5, hl="It starts with<br><i>a conversation.</i>", ln="You reach out, or we do. Either way, we listen first."),
-    dict(L="cream", ph="stem2", fy=.45, hl="We plan it<br><i>together.</i>", ln="What it is, who it's for, when, and how many of us."),
-    dict(L="cream", ph="plant", fy=.4, hl="Then we<br><i>show up.</i>", ln="With the team, the material and everything else it needs."),
-    dict(L="cream", hl="Recently,<br><i>with:</i>", hs=112, pills=[("BSS School", LEM), ("Ashok Hall", MINT), ("AIM Foundation", SKY), ("Vishwajagriti", PINK), ("Emami", TOM)], ph="stem3", fy=.35),
-    dict(L="cream", ph="sund4", fy=.35, hl="Work<br><i>with us.</i>", hs=120, ln="Workshops, drives, events, ideas.", link=True, url="ngoaquaterra.com/collaborations"),
+    dict(L="cream", ph="emami", fy=.5, num="01", hl="It starts with<br><i>a conversation.</i>", ln="You reach out, or we do. Either way, we listen first."),
+    dict(L="cream", ph="desk", fy=.45, num="02", hl="We plan it<br><i>together.</i>", ln="What it is, who it's for, when, and how many of us."),
+    dict(L="cream", ph="old_age", fy=.45, num="03", hl="Then we<br><i>show up.</i>", ln="With the team, the material and everything else it needs."),
+    dict(L="cream", hl="Recently,<br><i>with:</i>", hs=112, pills=[("BSS School", LEM), ("Ashok Hall", MINT), ("AIM Foundation", SKY), ("Vishwajagriti", PINK), ("Emami", TOM)], ph="plant_school", fy=.45),
+    dict(L="cream", ph="green_talk", fy=.5, hl="Work<br><i>with us.</i>", hs=120, ln="Workshops, drives, events, ideas.", link=True, url="ngoaquaterra.com/collaborations"),
 ]
 TERRA = [  # I TerraNotes
     dict(L="taped", phs=["blog_city", "blog_mirror"], hl="TerraNotes.", hs=130, ln="A monthly magazine by AquaTerra."),
@@ -193,15 +193,15 @@ TERRA = [  # I TerraNotes
     dict(L="taped", phs=["blog_judge", "blog_empathy", "blog_nostalgia"], hl="Read it.<br><i>Or write for it.</i>", ln="ngoaquaterra.com/terranotes", link=True, url="ngoaquaterra.com/recruitment"),
 ]
 COMEIN = [  # J Come in
-    dict(L="chat", ph="dd_group", fy=.6, tint=PINK, lines=[("so what do people<br>actually do at aq", False), ("teach, mostly.<br>and a lot else.", False), ("come see.", True)]),
-    dict(L="chat", ph="teach_abc", fy=.35, tint=TOM, lines=[("i've never taught<br>anything", False), ("neither had we", False), ("you'll be fine.", True)]),
-    dict(L="chat", ph="dog_bhowanipur", fy=.5, tint=MINT, rc=MINT, lines=[("dog round on sunday", False), ("i'll bring biscuits", False), ("come. they sniff<br>new people first.", True)]),
-    dict(L="chat", ph="blog_city", fy=.5, tint=GRAPE, rc=GRAPE, lines=[("can i write for<br>terranotes?", False), ("that's what it's for", False), ("send it.", True)]),
-    dict(L="chat", ph="sund1", fy=.4, tint=LEM, lines=[("do i need experience?", False), ("nope", False), ("come once.<br>decide after.", True)], link=True),
+    dict(L="chat", ph="five_group", fy=.5, tint=PINK, lines=[("so what do people<br>actually do at aq", False), ("teach, mostly.<br>and a lot else.", False), ("come see.", True)]),
+    dict(L="chat", ph="teach_abc", fy=.35, tint=TOM, lines=[("i've never taught<br>anything", False), ("neither had we", False), ("we'll show you how.", True)]),
+    dict(L="chat", ph="dog_night", fy=.5, tint=MINT, rc=MINT, lines=[("dog round on sunday", False), ("i'll bring biscuits", False), ("come. they sniff<br>new people first.", True)]),
+    dict(L="chat", ph="books", fy=.45, tint=GRAPE, rc=GRAPE, lines=[("can i write for<br>terranotes?", False), ("that's what it's for", False), ("send it.", True)]),
+    dict(L="chat", ph="sharbat_bananas", fy=.4, tint=LEM, lines=[("do i need experience?", False), ("nope. everyone<br>starts somewhere.", False), ("come once.<br>decide after.", True)], link=True),
 ]
 
 CAMPAIGNS = {"E_round": ROUND, "F_sund": SUND, "G_learn": LEARN, "H_collab": COLLAB, "I_terra": TERRA, "J_comein": COMEIN}
-STORY_PICK = {"E_round": [0, 2, 3, 6], "F_sund": [0, 2, 3, 5], "G_learn": [0, 1, 3, 6], "H_collab": [0, 2, 4, 5], "I_terra": [0, 1, 2, 3], "J_comein": [0, 1, 2, 4]}
+STORY_PICK = {"E_round": [0, 2, 3, 6], "F_sund": [0, 2, 3, 4], "G_learn": [0, 1, 3, 6], "H_collab": [0, 2, 4, 5], "I_terra": [0, 1, 2, 3], "J_comein": [0, 1, 2, 4]}
 
 async def render_campaign(key, slides):
     n = len(slides)
@@ -215,32 +215,32 @@ async def render_campaign(key, slides):
 
 # round-1 campaigns as stories (reuse round-1 copy through these looks)
 R1_STORIES = {
-    "A_what": [dict(L="solid", col=CREAM if False else LEM, ph="sund2", fy=.4, hl="We're<br><i>AquaTerra.</i>", hs=130, ln="A student-run NGO in Kolkata."),
-               dict(L="solid", col=TOM, ph="chess1", fy=.4, hl="Mostly,<br><i>we teach.</i>", hs=130),
-               dict(L="solid", col=MINT, ph="dog_bhowanipur", fy=.5, hl="We feed, plant<br><i>and show up.</i>", hs=110),
-               dict(L="solid", col=SKY, ph="sund1", fy=.4, hl="Every part of it is<br><i>for someone else.</i>", hs=96, link=True)],
-    "B_sunday": [dict(L="doc", ph="onceupon", fy=.5, title="One Sunday.", sub="a teaching session, start to finish."),
+    "A_what": [dict(L="solid", col=LEM, ph="artnook", fy=.45, hl="We're<br><i>AquaTerra.</i>", hs=130, ln="Run by students, aged 14 to 19, in Kolkata."),
+               dict(L="solid", col=TOM, ph="teach_class", fy=.5, hl="Mostly,<br><i>we teach.</i>", hs=130),
+               dict(L="solid", col=MINT, ph="sharbat_stall", fy=.4, hl="We feed, plant<br><i>and show up.</i>", hs=110),
+               dict(L="solid", col=SKY, ph="sharbat_cup", fy=.5, hl="Every part of it is<br><i>for someone else.</i>", hs=96, link=True)],
+    "B_sunday": [dict(L="doc", ph="mult", fy=.45, title="One Sunday.", sub="what teaching with us actually looks like."),
                  dict(L="doc", ph="chess4", fy=.5, a="Today's lesson: chess."),
                  dict(L="doc", ph="chess1", fy=.4, a="Then everyone holds up", b="what they made."),
                  dict(L="doc", ph="magic", fy=.4, a="Same time", b="next Sunday.")],
-    "C_shik": [dict(L="solid", col=LEM, ph="chess1", fy=.4, hl="Studying for<br>your exams?<br><i>Start here.</i>", hs=110),
-               dict(L="solid", col=LEM, ph="draw", fy=.4, hl="Past papers.<br><i>Free.</i>", hs=130),
-               dict(L="solid", col=LEM, ph="stem3", fy=.35, hl="Need<br><i>a tutor?</i>", hs=130, ln="Search near you, by subject, class and area."),
-               dict(L="solid", col=LEM, ph="magic", fy=.4, hl="shikshaq.in", hs=150, ln="Send it to someone with boards this year.")],
+    "C_shik": [dict(L="solid", col=LEM, ph="books", fy=.45, hl="Exam season?<br><i>Start with<br>the papers.</i>", hs=110),
+               dict(L="solid", col=LEM, ph="fable", fy=.5, hl="Past papers.<br><i>Free.</i>", hs=130),
+               dict(L="solid", col=LEM, ph="teach_board", fy=.4, hl="Need<br><i>a tutor?</i>", hs=130, ln="Search near you, by subject, class and area."),
+               dict(L="solid", col=LEM, ph="stem3", fy=.35, hl="shikshaq.in", hs=150, ln="Send it to someone with boards this year.")],
 }
 
-HL = [("About", LEM, "sparkle"), ("Teaching", TOM, "star"), ("ShikshAQ", LEM, "speech"), ("Dogs", MINT, "heart"), ("Sundarbans", SKY, "leaf"),
-      ("Collabs", PINK, "plus"), ("TerraNotes", GRAPE, "squiggle"), ("Join", TEAL, "burst")]
+HL = [("About", LEM, "artnook"), ("Teaching", TOM, "teach_class"), ("ShikshAQ", LEM, "books"), ("Dogs", MINT, "dog_bhowanipur"), ("Sundarbans", SKY, "sundarbans"),
+      ("Collabs", PINK, "rakhi"), ("TerraNotes", GRAPE, "blog_city"), ("Join", TEAL, "five_group")]
 
 async def highlights():
-    for name, col, icon in HL:
+    for name, col, ph in HL:
         H = 1920
-        fg = core.text_on(col)
-        P = [K.box(0, 0, W, H, f"background:{col};", z=0),
-             f'<div style="position:absolute;left:290px;top:710px;width:500px;height:500px;border-radius:50%;background:#F6EFD8;border:6px solid #0A0A0A;box-shadow:12px 13px 0 #0A0A0A;'
-             f'z-index:2;display:flex;align-items:center;justify-content:center"><div style="position:relative;width:260px;height:260px">{K.dd.stamp(icon, INK)}</div></div>',
-             f'<div style="position:absolute;left:0;top:1290px;width:{W}px;text-align:center;font-family:var(--d);font-weight:900;font-size:70px;text-transform:uppercase;color:{fg};z-index:3">{name}</div>']
-        await out(f"K_highlight_{name.lower()}", P, col, H)
+        im = K.cover(PH[ph], 560, 560, fy=.4)
+        P = [K.box(0, 0, W, H, f"background:{CREAM};", z=0),
+             f'<div style="position:absolute;left:250px;top:620px;width:580px;height:580px;border-radius:50%;background:{col};border:6px solid #0A0A0A;box-shadow:12px 13px 0 #0A0A0A;z-index:2"></div>',
+             f'<img src="{K.uri(im)}" style="position:absolute;left:290px;top:660px;width:500px;height:500px;border-radius:50%;object-fit:cover;border:5px solid #0A0A0A;z-index:3">',
+             f'<div style="position:absolute;left:0;top:1290px;width:{W}px;text-align:center;font-family:var(--d);font-weight:900;font-size:76px;text-transform:uppercase;color:{INK};z-index:3">{name}</div>']
+        await out(f"K_highlight_{name.lower()}", P, CREAM, H)
 
 async def whatsapp():
     H = 1080

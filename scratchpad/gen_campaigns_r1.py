@@ -32,13 +32,14 @@ async def out(name, P, bg, h=H):
 
 # ============================================================ 1. WHAT IS AQUATERRA  (cream, framed photo, big type)
 WHAT = [
-    ("sund2", .4, "We're<br><i>AquaTerra.</i>", "Here's what that means.", 0),
-    ("stem3", .35, "Run by<br><i>students.</i>", "Started in 2021 by 16 school students in Kolkata. Today there are 1,400+ of us, aged 14 to 19.", 1),
-    ("chess1", .4, "Mostly,<br><i>we teach.</i>", "Weekly workshops for children at shelters and community centres across the city.", 0),
-    ("dog_bhowanipur", .5, "We feed, plant<br><i>and show up.</i>", "Sharbat on hot days, food on the street, biscuits for the strays, saplings for the parks.", 1),
-    ("sund4", .35, "We go further<br><i>when it's needed.</i>", "Relief trips and health camps in the Sundarbans.", 0),
-    ("stem2", .45, "And we<br><i>build things.</i>", "ShikshAQ, a free learning platform. TerraNotes, our monthly magazine.", 1),
-    ("sund1", .4, "Every part of it is<br><i>for someone else.</i>", "That's AquaTerra.", 0),
+    ("artnook", .45, "We're<br><i>AquaTerra.</i>", "Run by students, aged 14 to 19, in Kolkata.", 0),
+    ("green_talk", .5, "Started by<br><i>16 school students.</i>", "In 2021. Today there are 1,400+ of us.", 1),
+    ("teach_class", .5, "Mostly,<br><i>we teach.</i>", "Weekly workshops for children at shelters and community centres across the city.", 0),
+    ("sharbat_stall", .4, "We feed, plant<br><i>and show up.</i>", "Sharbat on hot days, food on the street, biscuits for the strays, saplings for the parks.", 1),
+    ("sund1", .4, "Sometimes we go<br><i>further.</i>", "Like the Sundarbans, with medicines and a health camp.", 0),
+    ("blog_city", .5, "And we<br><i>build things.</i>", "ShikshAQ, a free learning platform. TerraNotes, our monthly magazine.", 1),
+    ("smile_notes", .45, "A registered<br><i>NGO.</i>", "DARPAN-certified with the Government of India.", 0),
+    ("sharbat_cup", .5, "Every part of it is<br><i>for someone else.</i>", "Come see it for yourself.", 1),
 ]
 async def what():
     n = len(WHAT)
@@ -52,9 +53,9 @@ async def what():
 
 # ============================================================ 2. ONE SUNDAY  (documentary: full-bleed photo, small caption)
 SUNDAY = [
-    ("onceupon", .5, None, "One Sunday."),
+    ("mult", .45, None, "One Sunday."),
     ("draw", .4, "The plan gets made on Friday.", "The worksheet, the game, who's bringing chart paper."),
-    ("mult", .4, "Thirty-odd kids.", "A handful of us."),
+    ("onceupon", .95, "Thirty-odd kids.", "A small team of us."),
     ("chess4", .5, "Today's lesson: chess.", None),
     ("chessm", .5, "Somebody wins.", "It's rarely the teacher."),
     ("chess1", .4, "Then everyone holds up", "what they made."),
@@ -67,7 +68,7 @@ async def sunday():
              K.logo_pill(64, 44, dark=True), C.pager(i, n, "#F6EFD8")]
         if i == 1:
             P.append(block([f'<div style="font-family:var(--s);font-style:italic;font-size:150px;line-height:140px;color:#F6EFD8">{b}</div>',
-                            line("a teaching session, start to finish.", "#F6EFD8", 32)], "bottom:90px"))
+                            line("what teaching with us actually looks like.", "#F6EFD8", 34)], "bottom:90px"))
         else:
             txt = f'<span style="font-weight:600">{a}</span>' + (f'<br>{b}' if b else "")
             P.append(f'<div style="position:absolute;left:64px;bottom:90px;max-width:820px;background:rgba(10,10,10,.72);padding:22px 28px;font-family:var(--e);font-size:40px;'
@@ -76,42 +77,39 @@ async def sunday():
 
 # ============================================================ 3. SHIKSHAQ  (lemon, clean, icon-led)
 SHIK = [
-    ("Studying for your exams?<br><i>Start here.</i>", "ShikshAQ: free papers, study material and tutors, for students in Kolkata.", None, "chess1"),
-    ("Past papers,<br><i>free.</i>", "Practise on real question papers.", None, "draw"),
-    ("Study material,<br><i>free.</i>", "Notes for your class and subject, in one place.", None, "onceupon"),
-    ("Need<br><i>a tutor?</i>", "Search near you, by subject, class and area.", None, "stem3"),
-    ("Made for<br><i>your syllabus.</i>", None, None, "chess4"),
-    ("Built by<br><i>AquaTerra.</i>", "Free, because learning shouldn't depend on what you can pay.", None, "stem4"),
-    ("shikshaq.in", "Send it to someone with boards this year.", None, "magic"),
+    ("Exam season?<br><i>Start with the papers.</i>", "ShikshAQ: free papers, study material and tutors, for students in Kolkata.", "books", .45),
+    ("Past papers,<br><i>free.</i>", "Practise on real question papers.", "fable", .5),
+    ("Study material,<br><i>free.</i>", "Notes for your class and subject, in one place.", "art_table", .45),
+    ("Need<br><i>a tutor?</i>", "Search near you, by subject, class and area.", "teach_board", .4),
+    ("Made for<br><i>your syllabus.</i>", "CHIPS", "stem1", .5),
+    ("Built by<br><i>AquaTerra.</i>", "Free. For every student in the city.", "stem4", .4),
+    ("shikshaq.in", "Send it to someone with boards this year.", "stem3", .35),
 ]
 async def shik():
     n = len(SHIK)
-    for i, (hl, ln, icon, ph) in enumerate(SHIK, 1):
-        P = [K.box(0, 0, W, H, f"background:{LEM};", z=0), K.logo_pill(64, 44, dark=True), C.pager(i, n)]
-        parts = [mix(hl, 120 if i != 7 else 140, INK)]
-        if ln: parts.append(line(ln, INK, 34, 880))
-        if i == 5:
-            cs = "".join(f'<div style="padding:14px 30px;border:4px solid #0A0A0A;border-radius:999px;background:#F6EFD8;box-shadow:6px 6px 0 #0A0A0A;font-family:var(--d);font-weight:900;font-size:40px;text-transform:uppercase">{c}</div>'
+    for i, (hl, ln, ph, fy) in enumerate(SHIK, 1):
+        P = [K.box(0, 0, W, H, f"background:{LEM};", z=0),
+             f'<img src="{warm(PH[ph], W, 620, fy)}" style="position:absolute;left:0;top:0;width:{W}px;height:620px;object-fit:cover;z-index:1">',
+             K.box(0, 616, W, 8, "background:#0A0A0A;", z=2), K.logo_pill(64, 44, dark=True), C.pager(i, n, "#F6EFD8")]
+        parts = [mix(hl, 112 if i != 7 else 140, INK)]
+        if ln == "CHIPS":
+            cs = "".join(f'<div style="padding:12px 26px;border:4px solid #0A0A0A;border-radius:999px;background:#F6EFD8;box-shadow:6px 6px 0 #0A0A0A;font-family:var(--d);font-weight:900;font-size:36px;text-transform:uppercase">{c}</div>'
                          for c in ["Class IV to XII", "ICSE", "ISC", "CBSE", "State board"])
-            parts.append(f'<div style="display:flex;flex-wrap:wrap;gap:22px;margin-top:60px">{cs}</div>')
-        P.append(block(parts, "top:170px"))
-        if icon:
-            P.append(f'<div style="position:absolute;left:600px;top:760px;width:400px;height:400px;border-radius:50%;background:#F6EFD8;border:5px solid #0A0A0A;'
-                     f'box-shadow:12px 13px 0 #0A0A0A;display:flex;align-items:center;justify-content:center;z-index:10"><div style="width:230px;height:230px">{K.dd.stamp(icon, INK)}</div></div>')
-        if ph:
-            P.append(f'<div style="position:absolute;left:64px;top:{760 if i == 5 else 700}px;width:952px;height:{500 if i == 5 else 560}px;border:4px solid #0A0A0A;border-radius:30px;overflow:hidden;'
-                     f'box-shadow:12px 13px 0 #0A0A0A;z-index:10"><img src="{warm(PH[ph], 952, 560, .4)}" style="width:100%;height:100%;object-fit:cover;display:block"></div>')
+            parts.append(f'<div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:10px">{cs}</div>')
+        elif ln: parts.append(line(ln, INK, 34, 880))
+        P.append(block(parts, "top:680px"))
+        if i != 7: P.append(f'<div style="position:absolute;right:64px;bottom:56px;font-family:var(--m);font-weight:700;font-size:26px;color:#0A0A0A;z-index:60">shikshaq.in</div>')
         await out(f"C{i:02d}_shikshaq", P, LEM)
 
 # ============================================================ 4. IMPACT POSTS  (single posts, real photo, one number)
 IMPACT = [
-    ("chess1", .4, "3,500+", "children", "in our classrooms.", "Taught by members, one workshop at a time.", TOM),
-    ("plant", .4, "4,000+", "saplings", "in the ground.", "Parks, schools and roadsides across Kolkata.", MINT),
-    ("sund4", .35, "8", "trips", "to the Sundarbans.", "Supplies, relief and health camps.", SKY),
+    ("chess1", .4, "3,500+", "children", "in our classrooms.", "Taught by members since 2021.", TOM),
+    ("plant", .4, "4,000+", "saplings", "in the ground.", "Parks, schools and roadsides, since 2021.", MINT),
+    ("sundarbans", .5, "8", "trips", "to the Sundarbans.", "Supplies, relief and health camps.", SKY),
     ("dog_bhowanipur", .5, "53", "rounds", "of Tails and Treats.", "And the regulars still come running.", LEM),
     ("bananas_group", .45, "15,000+", "bananas", "handed out.", "On the street, to whoever needed one.", LEM),
     ("clothes_pile", .45, "2,500 kg", "of clothes", "and books, passed on.", "Collected, sorted and given away.", PINK),
-    ("sund1", .4, "540+", "drives", "since 2021.", "Every one planned and run by students.", GRAPE),
+    ("sharbat_bananas", .4, "540+", "drives", "since 2021.", "Every one planned and run by students.", GRAPE),
 ]
 async def impact():
     for i, (ph, fy, num, word, rest, ln, col) in enumerate(IMPACT, 1):
@@ -120,6 +118,7 @@ async def impact():
         nums = (f'<div style="display:flex;align-items:baseline;gap:22px;flex-wrap:wrap"><span style="font-family:var(--d);font-weight:900;font-size:210px;line-height:190px;color:{col};'
                 f'letter-spacing:-.03em;-webkit-text-stroke:3px #0A0A0A;text-shadow:8px 8px 0 #0A0A0A">{num}</span>'
                 f'<span style="font-family:var(--s);font-style:italic;font-size:110px;line-height:110px;color:#F6EFD8">{word}</span></div>')
+        P.append(K.box(0, H - 560, W, 560, "background:linear-gradient(180deg,rgba(10,10,10,0),rgba(10,10,10,.7) 35%,rgba(10,10,10,.85));", z=3))
         P.append(block([nums, mix(rest, 70, "#F6EFD8"), line(ln, "#F6EFD8", 32)], "bottom:90px", gap=14))
         await out(f"D{i:02d}_impact", P, INK)
 
