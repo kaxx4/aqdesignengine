@@ -136,3 +136,20 @@ Format: the number sits in the headline sentence, not as a giant numeral alone.
 - D4 "53 rounds" and E5 depend on the round count staying current at posting time.
 - F2 "doctors we partner with": confirm that is how the camps run before posting.
 - C4 "We needed it in school too" is an inference about why ShikshAQ exists. Confirm.
+
+## 5. Design system, dialled down (owner interview, 2026-11-15)
+
+| Question | Owner answer |
+|---|---|
+| What "dial down" means | One look across everything; less designed, more natural; quieter colours |
+| Photo treatment | Stylised: grainy, slightly faded film |
+| Text placement | Mix: on the photo over a dark fade, or on a plain band below it |
+| Headline font | NeutralFace, all caps |
+| Accents | Two, fixed: blue and green (sky `#3DA9FC` main, mint `#1B8A5A` support; teal fails small-type contrast on near-black) |
+| Ground | Near-black with grain |
+| Doodles | Rarely, one small one |
+| Removed | Glass pills, frosted cards, hard shadows, thick outlines, slide counters and tabs |
+
+Build: `scratchpad/gen_campaigns_r4.py`, output in `out/campaigns_r4/`. Two layouts only (`full`, `band`). Sky marks one key word per headline; mint is reserved for the occasional doodle. The logo sits in a plain cream pill with no border or shadow.
+
+Gate note: `buried_text` reports every photo as buried under the dark-fade div. The fade is a `background-image` gradient with transparent stops, and `opaque()` counts any background-image as opaque. That is a false positive. The renders show the photos. Fixing it means teaching `opaque()` to read gradient alpha; it is logged here and not yet encoded.
