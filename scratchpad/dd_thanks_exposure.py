@@ -28,10 +28,12 @@ def rot_box(cx, cy, w, h, deg):
 
 def poster(H):
     story = H > 1350
+    sq = H < 1350
     parts, els = [_pb.photo_ground(dd, W, H, PHOTO, PHOTO_POS)], []
     bx, by, bw = 40, (210 if story else 40), 150
     parts.append(f'<img data-tag="badge" src="{dd.uri("live_badge.png")}" style="position:absolute;left:{bx}px;top:{by}px;width:{bw}px;z-index:20">'); els.append(("badge", bx, by, bw, round(bw * 1005 / 1061)))
     hs = 250 if not story else 260
+    if sq: hs = 210
     sx, sy_ = 1040 - hs, (60 if not story else 220)
     parts.append(f'<div data-tag="sticker" style="position:absolute;left:{sx}px;top:{sy_}px;z-index:12">{_cp.heart(hs, 10)}</div>'); els.append(("sticker", sx, sy_, hs, round(hs * .9)))
 
@@ -40,24 +42,29 @@ def poster(H):
                      f'text-transform:uppercase;white-space:nowrap;{STROKE}{extra}z-index:20">{txt}</div>'); els.append((tag, 40, top, 1000, h))
     size = 215 if story else 200
     hy = 520 if story else 300
-    line("head1", "Thank", hy, size, 700, size)
-    line("head2", "you", hy + round(size * .96), size, 700, size)
-    sub_y = hy + round(size * .96) * 2 + 20
+    if sq:                                   # square: ONE headline line, so the sponsor stack fits 1080
+        size, hy = 148, 262
+        line("head1", "Thank you", hy, size, 700, size)
+        sub_y = hy + size + 14
+    else:
+        line("head1", "Thank", hy, size, 700, size)
+        line("head2", "you", hy + round(size * .96), size, 700, size)
+        sub_y = hy + round(size * .96) * 2 + 20
     line("sub", "to our title sponsor", sub_y, 44, 400, 46)
     # sponsor plaque
     pad = 30
-    lw = 800 if story else 720
+    lw = 800 if story else (620 if sq else 720)
     lh = round(lw * LOGO_AR)
     pw, ph = lw + 2 * pad, lh + 2 * pad
     cx = W // 2
-    py = sub_y + 46 + (50 if story else 36)
+    py = sub_y + 46 + (50 if story else (26 if sq else 36))
     parts.append(f'<div data-tag="plaque" style="position:absolute;left:{cx - pw // 2}px;top:{py}px;width:{pw}px;height:{ph}px;box-sizing:border-box;background:#F4EFE0;border:5px solid #D9B25F;'
                  f'border-radius:20px;box-shadow:12px 14px 0 rgba(0,0,0,.7);transform:rotate({TILT}deg);z-index:15">'
                  f'<img data-tag="logo" src="{LOGO}" style="position:absolute;left:{pad - 5}px;top:{pad - 5}px;width:{lw}px;height:{lh}px;mix-blend-mode:multiply"></div>')
     els.append(("plaque",) + rot_box(cx, py + ph / 2, pw, ph, TILT))
-    nm_y = py + ph + (46 if story else 36)
+    nm_y = py + ph + (46 if story else (30 if sq else 36))
     line("name", "Exposure Institute", nm_y, 40, 700, 42)
-    vw = 300 if story else 250
+    vw = 300 if story else (190 if sq else 250)
     t = vw / 1717; vh = round(991 * t); vx = (W - vw) // 2
     vy = 1450 if story else H - 52 - vh   # story: ends above Instagram's reply-bar zone (y>=1670)
     parts.append(f'<img data-tag="title" src="{dd.uri("title_lockup.png")}" style="position:absolute;left:{round(vx - 265 * t)}px;top:{round(vy - 320 * t)}px;width:{round(2000 * t)}px;z-index:9">')
@@ -68,7 +75,7 @@ def poster(H):
 async def main():
     os.makedirs(OUT, exist_ok=True)
     async with B.session():
-        for name, H in (("feed", 1350), ("story", 1920)):
+        for name, H in (("feed", 1350), ("story", 1920), ("square", 1080)):
             inner, els, bottom = poster(H)
             print(f"[{name}] last element ends at y={bottom} of {H}")
             tp = [("headline", "#fff", "#1a1020", 200, True), ("sub", "#fff", "#1a1020", 44, False), ("name", "#fff", "#1a1020", 40, True)]
