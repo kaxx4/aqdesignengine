@@ -5,7 +5,7 @@ pieces (CAROUSEL_PLAYBOOK) are dark-scrimmed photos with bare logo, accent chips
 lemon for the moon and stars (cream ground rule does not apply on a photo ground). Craft outline/shadow colour is core.outline_of(surface), not ink (an ink shadow vanishes on this ground).
 TEXT COLOUR IS MEASURED, NOT ASSUMED (user: 'texts according to the contrast of the background picture'): the scrimmed background is rebuilt in numpy exactly as the CSS paints it, each text box is sampled at its
 BRIGHTEST 95th-percentile pixel (worst case for light type), and the type colour is picked from cream/white/ink by measured WCAG ratio; the table is printed and asserted. No facts beyond the earlier poster:
-Starry Night = the Christmas carnival fundraiser. Edition, date, venue, roles, deadline, link are NOT supplied; CTA is the AQ convention LINK IN BIO.
+Starry Night = the Christmas carnival fundraiser. Edition, date, venue, roles, deadline, link are NOT supplied; The CTA slot reads LINK HERE (user, 2026-11-21): it is an empty pill sized for an Instagram link sticker, to be covered with the form link when posted.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/aq_starry_recruit_photo.py"""
 import asyncio, base64, io, os, sys, importlib.util
 import numpy as np
@@ -91,7 +91,7 @@ async def main():
         parts.append(box("sub", sx, sub_y, W - M - sx, 120, f'<div style="font-family:var(--e);font-weight:600;font-size:34px;line-height:1.18;color:{hexof(subc)};text-shadow:0 2px 10px rgba(0,0,0,.55)">come run<br>the night<br>with us</div>'))
         y_team_end = y + bh
         # ---- lower block: the photo is the hero in between (hands on the decks, y ~ 760-1180) ----
-        ly = 1160
+        ly = 1140
         parts.append(box("starry", M, ly, 560, starry_h, f'<div style="font-family:var(--s);font-style:italic;font-size:{starry_size:.0f}px;line-height:.9;color:{LEMON};white-space:nowrap;text-shadow:0 3px 14px rgba(0,0,0,.55)">starry</div>'))
         nc, _ = pick("night", M, ly + starry_h + 6, 700, night_h, int(night_size))
         parts.append(box("night", M - 4, ly + starry_h + 6, 700, night_h, f'<div style="font-family:var(--d);font-weight:900;font-size:{night_size:.0f}px;line-height:.86;text-transform:uppercase;color:{hexof(nc)};text-shadow:6px 6px 0 {SKY};white-space:nowrap">NIGHT</div>'))
@@ -104,19 +104,20 @@ async def main():
                          f'<circle cx="50" cy="50" r="46" fill="{LEMON}" stroke="{INK}" stroke-width="3.5" mask="url(#mm)" transform="rotate(-18 50 50)"/></svg>', z=15))
         for i, (kx, ky, ks, kr) in enumerate(((620, ly + 40, 62, -10), (940, ly + 190, 78, 12), (800, ly + 225, 48, 6))):
             parts.append(box(f"dd_star{i}", kx, ky, ks, ks, dd.stamp("star", LEMON, rot=kr, style="clean"), z=14))
-        # CTA row inside the safe zone (ends above y=1670, the reply bar)
-        cy0 = ey + 24 + 44
-        parts.append(box("cta", M, cy0, 340, 76, f'<div style="width:100%;height:100%;background:{SKY};border:4px solid {INK};border-radius:999px;box-shadow:5px 5px 0 {EDGE};box-sizing:border-box;display:flex;align-items:center;justify-content:center;'
-                         f'font-family:var(--m);font-weight:700;font-size:24px;letter-spacing:.1em;color:{INK}">LINK IN BIO</div>', z=12))
-        hc, _ = pick("handle", M + 380, cy0 + 22, 300, 30, 20)
-        parts.append(box("handle", M + 380, cy0 + 22, 300, 30, f'<div style="font-family:var(--m);font-weight:700;font-size:20px;letter-spacing:.05em;color:{hexof(hc)};text-shadow:0 2px 8px rgba(0,0,0,.6)">@ngo.aquaterra</div>'))
+        # LINK SLOT (user, 2026-11-21: 'write link here so we can post the link of the form'): a pill the size of an Instagram link sticker, left clear for it. Ends above the reply bar (y~1670).
+        cy0 = ey + 24 + 44; lw, lh = 600, 96
+        parts.append(box("linkzone", M, cy0, lw, lh, f'<div style="width:100%;height:100%;background:{SKY};border:4px solid {INK};border-radius:999px;box-shadow:6px 6px 0 {EDGE};box-sizing:border-box;display:flex;align-items:center;justify-content:center;'
+                         f'font-family:var(--m);font-weight:700;font-size:30px;letter-spacing:.12em;color:{INK}">LINK HERE</div>', z=12))
+        # the handle moves to the top-right kicker slot so nothing else sits in the link zone
+        hc, _ = pick("handle", W - M - 300, 62, 300, 30, 20)
+        parts.append(box("handle", W - M - 300, 62, 300, 30, f'<div style="font-family:var(--m);font-weight:700;font-size:20px;letter-spacing:.05em;color:{hexof(hc)};text-align:right;text-shadow:0 2px 8px rgba(0,0,0,.6)">@ngo.aquaterra</div>'))
         print("heights: starry", starry_h, "night", night_h, "team_end", y_team_end, "ly", ly)
         print(f"\nTEXT-COLOUR RECEIPT (95th-pct backing pixel under each box)\n{'label':8} {'colour':6} {'ratio':>6} {'floor':>5}  backing")
         for r in receipt: print(f"{r[0]:8} {r[1]:6} {r[2]:>6} {r[3]:>5}  {r[4]}")
-        print("CTA row ends at y =", cy0 + 76, "(reply bar starts ~1670)")
+        print("LINK slot ends at y =", cy0 + lh, "(reply bar starts ~1670)")
         inner = f'<img data-tag="plate" src="{BG_URI}" style="position:absolute;left:0;top:0;width:{W}px;height:{H}px;z-index:0">' + "".join(parts)
         html = B.page(W, H, "#000", inner, grain=False)
-        tp = [("eyebrow", INK, SKY, 18, True), ("team", INK, SKY, 200, True), ("cta", INK, SKY, 24, True)]
+        tp = [("eyebrow", INK, SKY, 18, True), ("team", INK, SKY, 200, True), ("linkzone", INK, SKY, 30, True)]
         for r in receipt:
             tp.append((r[0], {"cream": CREAM, "white": "#FFFFFF", "ink": INK}[r[1]], r[4], 17 if r[0] == "label" else 34, r[0] != "sub"))
         os.makedirs("out/aq_events", exist_ok=True)
