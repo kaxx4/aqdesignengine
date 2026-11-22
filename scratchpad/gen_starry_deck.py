@@ -9,7 +9,7 @@ accent tag, pill stats, 28px frames, one icon set. What differs:
     white box = STARRY NIGHTS.
   * User change 2 (slide 9): the green 'You are next' box is replaced by a Disco Diwali card in the other cards' format: Nov 2026, 600+ guests, Rs 7L raised, 60 Chowringhee Banquets.
   * DERIVED from those (stated, not asked): events become EIGHT, so the totals are Rs 40.3L+ (33.3 + 7) and 4,450+ guests (3,850 + 600); slides 10, 11 and 23 say eight.
-    Disco Diwali 2026 has happened, so slide 12 now shows its RESULT (600+, Rs 7L) instead of 'tentative'; slide 13 is Starry Night with a third column, 'year three'.
+    User changes 3-5 (2026-11-22): slide 12 = DISCO DIWALI, THRICE (third picture slot carries no overlay text; 400+ -> 600+, labels as in the original); slide 13 = STARRY NIGHT, AGAIN with a third box\n    (Dec 2026, 600+ expected) and no picture; slide 15 = DISCO DIWALI, YEAR 3 (pictures and the OCTOBER 2025 chip unchanged).
   * Event-specific copy adapted: date (last week of December, tentative), 600+ expected, 'Starry Night' for 'Disco Diwali', the four reasons (from past Starry Night flyers), tier root.
   * NOT KNOWN, so not invented: the run-of-show times (chips read TIME TBC), the venue ('confirmed shortly'), a 2026 Starry Night flyer (blank slot).
 Contact details live in scratchpad/sponsorship_private/facts.json (git-ignored: the repo is public).
@@ -259,31 +259,39 @@ def s_notoneoff(c):
 
 
 def s_series_diwali(c):
-    """Disco Diwali, again: Disco Diwali 2026 has happened, so the third column is its RESULT (user, 2026-11-22: 600+ guests, Rs 7L raised, 60 Chowringhee Banquets)."""
+    """Disco Diwali, THRICE (user, 2026-11-22). The third picture keeps its slot but carries NO overlay text (the original's 'YOU ARE HERE 2026' and the white date line are removed).
+    The third stat bar is the original's with ONE change: 400+ -> 600+ (still labelled EXPECTED, still NOV 2026, as the user wrote it; slide 9's card says 600+ guests / Rs 7L raised, so
+    EXPECTED now reads stale next to it. Flagged to the user, not changed)."""
     def col(yr, img, stats):
         return (f'<div style="display:flex;flex-direction:column;gap:18px;min-height:0;min-width:0"><div>{K.chip(yr, INK, K.CREAM_ON_DARK, 26)}</div>'
                 f'<div style="flex:1;min-height:0">{img}</div><div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{stats}</div></div>')
     st = lambda a, b: f'<div style="font:900 34px/1 var(--d);text-transform:uppercase">{a}</div><div class="mono" style="font-size:16px;color:{K.MUTE}">{b}</div>'
     c24 = col("Oct 2024", _poster(EVENTS[E_DD24][0], "flyer_dd24_big").replace("aspect-ratio:4/5", "height:100%"), st("350+", "guests") + st("₹1.7L", "raised"))
     c25 = col("Oct 2025", ph(), st("500", "guests") + st("₹4.5L+", "raised"))
-    c26 = col("Nov 2026", ph(), st("600+", "guests") + st("₹7L", "raised"))
+    c26 = col("2026 (tentative)", ph(), st("600+", "expected") + st("Nov", "2026"))
     body = f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;min-height:0">{c24}{c25}{c26}</div>'
-    return S(body, (K.eyebrow("Disco Diwali", INK), K.title("Disco Diwali, *again*")), c)
+    return S(body, (K.eyebrow("Disco Diwali", INK), K.title("Disco Diwali, *thrice*")), c)
 
 
 def s_series_starry(c):
-    """Starry Night: the two past editions plus a third column for this year. 2026 has no flyer yet (blank slot) and no result yet (600+ expected)."""
-    def col(yr, poster, a, a_lab, b, b_col, b_lab, where):
-        stat = lambda v, col_, l: (f'<div><div class="kv" style="font-size:76px;color:{col_}">{v}</div><div class="mono" style="font-size:15px;color:#fff;opacity:.85;margin-top:4px">{l}</div></div>')
+    """Starry Night, AGAIN (user, 2026-11-22). The two past editions keep flyer + chip + stats + venue. The THIRD box replicates them WITHOUT a picture (user): chip DEC 2026, 600+ EXPECTED,
+    and no raised figure or venue (none supplied). The big 600+ takes the picture's height so the column keeps its weight instead of leaving a dead gap above the label."""
+    PW = 380; PH = round(PW * 5 / 4)
+    stat = lambda v, col_, l, sz=76: (f'<div><div class="kv" style="font-size:{sz}px;color:{col_}">{v}</div><div class="mono" style="font-size:15px;color:#fff;opacity:.85;margin-top:4px">{l}</div></div>')
+    def col(yr, poster, a, a_lab, b, b_lab, where):
         return (f'<div style="display:flex;flex-direction:column;gap:16px;min-height:0;min-width:0;align-items:flex-start"><div>{K.chip(yr, INK, K.CREAM_ON_DARK, 24)}</div>'
-                f'<div style="width:380px">{poster}</div><div style="display:flex;gap:34px">{stat(a, "#fff", a_lab)}{stat(b, b_col, b_lab)}</div>'
+                f'<div style="width:{PW}px">{poster}</div><div style="display:flex;gap:34px">{stat(a, "#fff", a_lab)}{stat(b, LM, b_lab)}</div>'
                 f'<div style="font:600 22px/1.3 var(--e);color:#fff">{where}</div></div>')
-    cols = (col("Dec 2024", _poster("flyer_sn24", "flyer_sn24_big"), "550+", "guests", "₹3L", LM, "raised", "Sky Turf, DJ Saif Side")
-            + col("Dec 2025", _poster("flyer_sn25", "flyer_sn25_big"), "550+", "guests", "₹6.7L", LM, "raised", "Sky Turf, DJ Rajiv")
-            + col("Dec 2026", _poster(None), "600+", "expected", "NEXT", LM, "year three", "Last week of December (tentative)"))
+    CARD_H = PH + 16 + 94 + 16 + 29 - 12            # same top and bottom as the other two columns: picture top to the venue line's bottom
+    c26 = (f'<div style="display:flex;flex-direction:column;gap:16px;min-height:0;min-width:0;align-items:flex-start"><div>{K.chip("Dec 2026", INK, K.CREAM_ON_DARK, 24)}</div>'
+           f'<div style="width:480px;height:{CARD_H}px;box-sizing:border-box;background:{INK};border-radius:{K.R_FRAME}px;padding:34px 36px;display:flex;flex-direction:column">'
+           f'<div style="flex:1;display:flex;flex-direction:column;justify-content:center"><div class="kv" style="font-size:150px;color:#fff;line-height:.85">600+</div><div class="mono" style="font-size:16px;color:{LM};margin-top:16px">EXPECTED</div></div>'
+           f'<div style="font:600 24px/1.3 var(--e);color:#fff">Last week of December (tentative)</div></div></div>')
+    cols = (col("Dec 2024", _poster("flyer_sn24", "flyer_sn24_big"), "550+", "guests", "₹3L", "raised", "Sky Turf, DJ Saif Side")
+            + col("Dec 2025", _poster("flyer_sn25", "flyer_sn25_big"), "550+", "guests", "₹6.7L", "raised", "Sky Turf, DJ Rajiv") + c26)
     body = (f'<div style="display:flex;flex-direction:column;gap:26px;width:100%;min-height:0"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:34px;flex:1;min-height:0;align-items:start">{cols}</div>'
             f'<div style="background:{LM};color:{INK};border-radius:999px;padding:18px 40px;font:900 40px/1 var(--d);text-transform:uppercase;align-self:center">Same crowd size. More than double the funds.</div></div>')
-    return S(body, (K.eyebrow("Starry Night", "#fff"), K.title("Starry Night, *year three*")), c)
+    return S(body, (K.eyebrow("Starry Night", "#fff"), K.title("Starry Night, *again*")), c)
 
 
 def s_photo_summer(c):
@@ -291,7 +299,7 @@ def s_photo_summer(c):
 
 
 def s_photo_diwali25(c):
-    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "Disco Diwali, year two", "October 2025", G, spans=[(2, 2), (1, 1), (1, 1)])
+    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "Disco Diwali, year 3", "October 2025", G, spans=[(2, 2), (1, 1), (1, 1)])
 
 
 def s_photo_sports(c):
