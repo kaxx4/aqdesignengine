@@ -260,7 +260,7 @@ def s_events(c):
 
 
 def s_proof(c):
-    pics = [("s10_a.jpg", "45% 42%"), ("s10_b.jpg", "55% 40%"), ("s10_c.jpg", "50% 78%"), ("s10_d.jpg", "50% 72%")]      # slots 10.1-10.4 FILLED (user, 2026-11-26)
+    pics = [("s10_e.jpg", "50% 35%"), ("s10_f.jpg", "42% 45%"), ("s10_g.jpg", "58% 40%"), ("s10_h.jpg", "55% 40%")]      # slots 10.1-10.4 FILLED, second set (user, 2026-11-26); the first set s10_a-d is superseded
     strip = "".join(f'<div style="flex:1;min-width:0;min-height:0">{real(f, fo)}</div>' for f, fo in pics)
     body = (f'<div style="display:flex;flex-direction:column;width:100%;gap:36px;min-height:0"><div style="display:flex;gap:60px;align-items:flex-end">'
             f'<div><div class="kv" style="font-size:250px;color:{G}">{TOTAL_FUNDS}</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:6px">raised (gross) across eight flagship events</div></div>'
