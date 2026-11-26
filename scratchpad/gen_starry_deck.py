@@ -176,9 +176,9 @@ def s_different(c):
              ("heart", "Welfare first", "Net proceeds go directly into funding welfare projects and campaigns.", BL),
              ("megaphone", "Visibility", "A night of visibility with hundreds of Kolkata’s most engaged students on the night, and thousands more in our network.", LM)]
     cards = []
-    for ic, t, d, tone in items:
+    for k, (ic, t, d, tone) in enumerate(items, 1):
         cards.append(f'<div class="card" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">'
-                     f'<div style="height:330px;flex:none;position:relative">{blank(0, r=0)}'
+                     f'<div style="height:330px;flex:none;position:relative">{real(f"dd_different_{k}.jpg", "50% 0%", r=0)}'   # the three Disco Diwali deck photos, cropped from its page 4 (user, 2026-11-26)
                      f'<span class="disc" style="position:absolute;left:34px;bottom:-30px;background:{tone};color:{core.text_on(tone)};width:84px;height:84px;border:6px solid {BL}">{K.icon(ic, 38)}</span></div>'
                      f'<div style="padding:58px 40px 34px"><div style="font:900 50px/1 var(--d);text-transform:uppercase;margin-bottom:16px">{t}</div>'
                      f'<div style="font:400 28px/1.35 var(--e);color:{INK2}">{d}</div></div></div>')
