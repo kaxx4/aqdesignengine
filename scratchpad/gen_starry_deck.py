@@ -237,16 +237,24 @@ def _poster(p, big=None):
 
 
 def s_events(c):
+    """Slide 9, NINE cards (user, 2026-11-26): the eight events plus a STARRY NIGHT 2026 box in the same card format. Nine do not fit the original 4x2, so the grid is 3x3 with the SAME card
+    (150px 4:5 picture, mono date, 24px display name, two stats, venue line). The Oct 2025 Disco Diwali card is FILLED with the original deck's photo (cropped from its page 9; the original
+    used a photo there, not a flyer). Starry Night 2026 is kept OUT of EVENTS on purpose: it has not happened, so the 'eight events' totals elsewhere stay true. It shows 600+ expected and
+    no raised figure, and its picture slot is blank (no 2026 flyer yet)."""
+    dd25 = (f'<div style="width:100%;aspect-ratio:4/5;background-image:url({K.uri(os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", "dd25_card_photo.jpg"))});'
+            f'background-size:cover;background-position:50% 50%;border-radius:16px;box-shadow:0 0 0 1.5px {K.LINE}"></div>')
+    rows = [(dd25 if i == E_DD25 else _poster(p), name, when, [(foot, "guests"), (funds, "raised")], where) for i, (p, name, when, foot, funds, where) in enumerate(EVENTS)]
+    rows.append((_poster(None), "Starry Night", "Dec 2026 · next", [("600+", "expected")], "Last week of December (tentative)"))
     cards = []
-    for p, name, when, foot, funds, where in EVENTS:
+    for poster, name, when, stat_list, where in rows:
         stat = lambda v, l: (f'<div><div class="kv" style="font-size:34px">{v}</div><div class="mono" style="font-size:14px;color:{K.MUTE};margin-top:5px">{l}</div></div>')
-        stats = f'<div style="display:flex;gap:16px;margin:12px 0 10px">{stat(foot, "guests")}{stat(funds, "raised")}</div>'
-        cards.append(K.card(f'<div style="display:flex;gap:18px;height:100%;align-items:center"><div style="width:150px;flex:none">{_poster(p)}</div>'
+        stats = f'<div style="display:flex;gap:16px;margin:12px 0 10px">{"".join(stat(v, l) for v, l in stat_list)}</div>'
+        cards.append(K.card(f'<div style="display:flex;gap:18px;height:100%;align-items:center"><div style="width:150px;flex:none">{poster}</div>'
                             f'<div style="display:flex;flex-direction:column;justify-content:center;min-width:0">'
                             f'<div class="mono" style="font-size:14px;color:{K.MUTE}">{when}</div>'
                             f'<div style="font:900 24px/1 var(--d);text-transform:uppercase;margin-top:6px">{K.esc(name)}</div>{stats}'
                             f'<div style="font:400 17px/1.3 var(--e);color:{INK2}">{K.esc(where)}</div></div></div>', style="padding:18px 20px"))
-    body = (f'<div style="display:flex;flex-direction:column;gap:14px;width:100%;min-height:0"><div style="flex:1;min-height:0">{grid(cards, "repeat(4,1fr)", 2, 20)}</div>'
+    body = (f'<div style="display:flex;flex-direction:column;gap:14px;width:100%;min-height:0"><div style="flex:1;min-height:0">{grid(cards, "repeat(3,1fr)", 3, 20)}</div>'
             f'<div style="font:400 19px var(--e);color:{K.MUTE}">Raised figures are gross, before event costs.</div></div>')
     return S(body, (K.eyebrow("Prominent past events"), K.title("Events people *show up* for")), c)
 
