@@ -289,8 +289,8 @@ def s_series_diwali(c):
                 f'<div style="flex:1;min-height:0">{img}</div><div class="card" style="padding:18px 26px;display:flex;justify-content:space-between;align-items:center">{stats}</div></div>')
     st = lambda a, b: f'<div style="font:900 34px/1 var(--d);text-transform:uppercase">{a}</div><div class="mono" style="font-size:16px;color:{K.MUTE}">{b}</div>'
     c24 = col("Oct 2024", _poster(EVENTS[E_DD24][0], "flyer_dd24_big").replace("aspect-ratio:4/5", "height:100%"), st("350+", "guests") + st("₹1.7L", "raised"))
-    c25 = col("Oct 2025", ph(), st("500", "guests") + st("₹4.5L+", "raised"))
-    c26 = col("2026 (tentative)", ph(), st("600+", "expected") + st("Nov", "2026"))
+    c25 = col("Oct 2025", real("dd25_card_photo.jpg", "50% 50%"), st("500", "guests") + st("₹4.5L+", "raised"))   # the slide-9/11 picture (user, 2026-11-26)
+    c26 = col("2026", real("dd26_discoball.jpg", "50% 55%"), st("600+", "expected") + st("Nov", "2026"))   # user photo; chip no longer says (tentative) (user, 2026-11-26)
     body = f'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;width:100%;min-height:0">{c24}{c25}{c26}</div>'
     return S(body, (K.eyebrow("Disco Diwali", INK), K.title("Disco Diwali, *thrice*")), c)
 
