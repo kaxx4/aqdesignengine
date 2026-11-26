@@ -98,15 +98,15 @@ def grid(children, cols, rows=None, gap=24, style=""):
     return (f'<div style="display:grid;grid-template-columns:{cols};{r}gap:{gap}px;width:100%;height:100%;{style}">' + "".join(children) + "</div>")
 
 
-def bento_photo(items, cols, rows, gap=20):
-    cells = [f'<div style="grid-column:span {cs};grid-row:span {rs};min-height:0;min-width:0">{ph(0, f)}</div>' for _, f, cs, rs in items]
+def bento_photo(items, cols, rows, gap=20, files=None):
+    cells = [f'<div style="grid-column:span {cs};grid-row:span {rs};min-height:0;min-width:0">{real(files[k], f) if files and files[k] else ph(0, f)}</div>' for k, (_, f, cs, rs) in enumerate(items)]
     return grid(cells, cols, rows, gap)
 
 
-def photo_story(c, n_photos, cols, rows, caption, tag, tone=G, spans=None):
+def photo_story(c, n_photos, cols, rows, caption, tag, tone=G, spans=None, files=None):
     """The ONE photo-slide template: a bento of photo slots, a tag chip top-left and a cream caption card overlapping the lower-left."""
     items = [(0, "50% 50%", *(spans[k] if spans else (1, 1))) for k in range(n_photos)]
-    body = (f'<div style="position:relative;width:100%;height:100%">{bento_photo(items, cols, rows)}'
+    body = (f'<div style="position:relative;width:100%;height:100%">{bento_photo(items, cols, rows, files=files)}'
             f'<div style="position:absolute;left:28px;top:28px">{K.chip(tag, tone)}</div>'
             f'<div style="position:absolute;left:28px;bottom:28px;background:{K.BG};border-radius:22px;padding:26px 38px;max-width:880px;color:{K.INK};'
             f'box-shadow:0 18px 40px -20px rgba(0,0,0,.5)">'
@@ -190,11 +190,11 @@ def s_vision(c):
     left = (f'<div style="display:flex;flex-direction:column;justify-content:center;gap:44px;width:1060px">'
             f'<div style="font:900 84px/.98 var(--d);text-transform:uppercase;letter-spacing:-.01em">{t}</div>'
             f'<div style="display:flex;gap:14px;flex-wrap:wrap">{K.chip("1.5K+ community", G)}{K.chip("4000+ kids reached", BL)}{K.chip("80G certified", INK, "#fff")}{K.chip_o("Darpan registered", dark=True)}</div></div>')
-    return S(left + f'<div style="flex:1;margin-left:64px;min-height:0">{ph()}</div>', (K.eyebrow("Our vision", LM),), c)
+    return S(left + f'<div style="flex:1;margin-left:64px;min-height:0">{real("dd_vision.jpg")}</div>', (K.eyebrow("Our vision", LM),), c)   # slot 05.1 FILLED: the Disco Diwali deck's picture
 
 
 def s_welfare(c):
-    return photo_story(c, 3, "1.25fr 1fr 1fr", 2, "Children, welfare and education", "Our work", G, spans=[(2, 2), (1, 1), (1, 1)])
+    return photo_story(c, 3, "1.25fr 1fr 1fr", 2, "Children, welfare and education", "Our work", G, spans=[(2, 2), (1, 1), (1, 1)], files=["dd_welfare_1.jpg", "dd_welfare_2.jpg", "dd_welfare_3.jpg"])   # slots 06.1-3 FILLED: the Disco Diwali deck's pictures
 
 
 def s_impact(c):
