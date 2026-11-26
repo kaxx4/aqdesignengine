@@ -573,7 +573,7 @@ def s_stalls(c):
            ("users", "Connect directly with your audience"), ("target", "Benefit from high footfall at the event"), ("eye", "Showcase your brand to a real audience"), ("megaphone", "Marketing and coverage")]
     tiles = [K.card(f'<span class="disc" style="background:{TONES[i % 3]};color:{core.text_on(TONES[i % 3])};width:64px;height:64px">{K.icon(ic, 30)}</span>'
                     f'<div style="font:600 25px/1.2 var(--e)">{t}</div>', "", "display:flex;align-items:center;gap:20px;padding:18px 26px") for i, (ic, t) in enumerate(ben)]
-    left = f'<div style="width:640px;display:grid;grid-template-rows:1.1fr 1fr 1fr;gap:20px;min-height:0">{ph()}{ph()}{ph()}</div>'
+    left = f'<div style="width:640px;display:grid;grid-template-rows:1.1fr 1fr 1fr;gap:20px;min-height:0">{real("n35_a.jpg", "50% 64%")}{real("n35_b.jpg", "35% 40%")}{real("n35_c.jpg", "55% 38%")}</div>'   # slots 35.1-3 FILLED (user, 2026-11-26), in the order sent
     right = f'<div style="flex:1;margin-left:40px;min-height:0">{grid(tiles, "1fr 1fr", 4, 18)}</div>'
     return S(left + right, (K.eyebrow("Stall space"), K.title("Stall space at the *location*")), c)
 
