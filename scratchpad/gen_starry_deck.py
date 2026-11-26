@@ -85,6 +85,13 @@ def ph(i=0, focus="50% 50%", cap=None, alt="", extra="", dark=False):
     return f'<div class="frame" style="width:100%;height:100%;{extra}">{blank(i, focus, dark=dark)}{cp}</div>'
 
 
+def real(file, focus="50% 50%", r=K.R_FRAME, cap=None):
+    """A FILLED picture slot (same frame and corner as blank()), for the pictures the user has supplied. Takes a file name in engine/assets/img/events/starry-night-2026-11/."""
+    CUR[1] += 1                                    # keep the Photo NN.k numbering of the remaining blanks stable
+    u = K.uri(os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", file))
+    return (f'<div class="frame" style="width:100%;height:100%"><div class="ph" data-tag="photo" role="img" style="background-image:url({u});background-position:{focus};border-radius:{r}px"></div></div>')
+
+
 def grid(children, cols, rows=None, gap=24, style=""):
     cols = cols.replace("1fr", "minmax(0,1fr)")
     r = f"grid-template-rows:repeat({rows},minmax(0,1fr));" if rows else ""
@@ -145,7 +152,7 @@ def s_about(c):
     left = (f'<div style="width:900px;display:flex;flex-direction:column;gap:30px;min-height:0">'
             f'{K.lede("AquaTerra is a student-run, registered NGO based in Kolkata. We power some of the city’s biggest youth-led fundraising events, and net proceeds, after event costs, go back into welfare work across the city.", 30)}'
             f'<div style="flex:1;min-height:0">{kp}</div></div>')
-    return S(left + f'<div style="flex:1;margin-left:56px">{ph()}</div>', (K.eyebrow("About AquaTerra"), K.title("A student-run NGO that *delivers*")), c)
+    return S(left + f'<div style="flex:1;margin-left:56px">{real("team_group_balloons.jpg", "50% 90%")}</div>', (K.eyebrow("About AquaTerra"), K.title("A student-run NGO that *delivers*")), c)   # slot 02.1 FILLED (user, 2026-11-26)
 
 
 def s_glance(c):
