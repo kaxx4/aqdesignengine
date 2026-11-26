@@ -324,6 +324,13 @@ def s_photo_diwali25(c):
     return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "Disco Diwali, year 3", "October 2025", G, spans=[(2, 2), (1, 1), (1, 1)], files=["s15_i.jpg", "s15_j.jpg", "s15_k.jpg"], focus=["60% 6%", "45% 35%", "50% 60%"])   # slots 15.1-3 FILLED (user, 2026-11-26)
 
 
+def s_photo_starry25(c):
+    """NEW slide 16 (user, 2026-11-26): 'copy the template of slide 15 and make one for Starry Nights year 2'. Same photo_story template as slide 15 (large frame left, tag chip, caption card),
+    with THREE small frames on the right (four pictures were supplied, the template holds three). Starry Night 2.0 was Dec 2025 (events list); 'year 2' is the user's wording."""
+    return photo_story(c, 4, "1.4fr 1fr 1fr", 3, "Starry Night, year 2", "December 2025", BL, spans=[(2, 3), (1, 1), (1, 1), (1, 1)],
+                       files=["sn25_d.jpg", "sn25_a.jpg", "sn25_b.jpg", "sn25_c.jpg"], focus=["50% 62%", "45% 30%", "35% 35%", "70% 40%"])
+
+
 def s_photo_sports(c):
     return photo_story(c, 3, "1fr 1fr 1fr", 1, "And not only parties: the sports fest", "TerraThon", BL)
 
@@ -589,11 +596,11 @@ def s_close(c):
     return S(body, (K.eyebrow("Let’s talk"), K.title("Get in *touch*")), c)
 
 
-ORDER = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_notoneoff, s_series_diwali, s_series_starry, s_photo_summer, s_photo_diwali25, s_photo_sports,
+ORDER = [s_cover, s_about, s_glance, s_different, s_vision, s_welfare, s_impact, s_growth, s_events, s_proof, s_notoneoff, s_series_diwali, s_series_starry, s_photo_summer, s_photo_diwali25, s_photo_starry25, s_photo_sports,
          s_sponsors, s_feedback, s_photo_energy, s_flagship, s_demo, s_community, s_reach, s_promote, s_offline, s_run, s_photo_night, s_why, s_tiers, s_photo_tiers, s_matrix, s_partners, s_inkind,
          s_stalls, s_join, s_close]
 TONE_OF = {"s_cover": "black", "s_about": "cream", "s_glance": "purple", "s_different": "black", "s_vision": "orange", "s_welfare": "black", "s_impact": "blue", "s_growth": "purple",
-           "s_events": "cream", "s_proof": "black", "s_notoneoff": "green", "s_series_diwali": "orange", "s_series_starry": "purple", "s_photo_summer": "black", "s_photo_diwali25": "black",
+           "s_events": "cream", "s_proof": "black", "s_notoneoff": "green", "s_series_diwali": "orange", "s_series_starry": "purple", "s_photo_summer": "black", "s_photo_diwali25": "black", "s_photo_starry25": "black",
            "s_photo_sports": "black", "s_sponsors": "cream", "s_feedback": "cream", "s_photo_energy": "black", "s_flagship": "purple", "s_demo": "green", "s_community": "blue", "s_reach": "black",
            "s_promote": "black", "s_offline": "black", "s_run": "black", "s_photo_night": "black", "s_why": "green", "s_tiers": "black", "s_photo_tiers": "black", "s_matrix": "cream",
            "s_partners": "cream", "s_inkind": "cream", "s_stalls": "cream", "s_join": "cream", "s_close": "cream"}
