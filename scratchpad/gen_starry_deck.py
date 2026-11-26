@@ -119,17 +119,18 @@ def moon_sticker(width=190):
 
 
 COVER_SIZE = [124]
-COVER_FOCUS = 72            # vertical focus of the 4:3 photo inside the 16:9 cover (higher = shows more of the lower light strings)
+COVER_SCRIM = (.62, .40, .22)   # left-to-right navy fade so the white title and chips clear contrast on the bright hall photo (measured, see brain/SPONSORSHIP_DECKS.md)
+COVER_FOCUS = 8            # vertical focus of the 4:3 photo inside the 16:9 cover (higher = shows more of the lower light strings)
 
 
 def s_cover(c):
     chips = [("All for charity", G), ("Last week of December (tentative)", LM), ("600+ expected", "outline")]
     chip_html = "".join(K.chip(*ch) if ch[1] != "outline" else f'<span class="chip" style="border:3px solid #fff;color:#fff;font-size:26px">{K.esc(ch[0])}</span>' for ch in chips)
     svg, w, h = moon_sticker(190)
-    CUR[1] += 1                                    # the cover photo is slot 01.1; it is FILLED (user, 2026-11-26: DNG star-light night shot, developed with rawpy, camera white balance)
-    cover_img = K.uri(os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", "cover_star_lights.jpg"))
+    CUR[1] += 1                                    # the cover photo is slot 01.1; it is FILLED (2026-11-26: first the DNG star-light shot, then replaced by the user with the balloons-and-chandeliers hall photo)
+    cover_img = K.uri(os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", "cover_balloons.jpg"))
     body = (f'<div style="position:absolute;inset:0;background:#000 url({cover_img}) 50% {COVER_FOCUS}%/cover no-repeat"></div>'
-            f'<div style="position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.30),rgba(0,0,0,.05) 45%,rgba(0,0,0,.34))"></div>'
+            f'<div style="position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.30),rgba(0,0,0,.05) 45%,rgba(0,0,0,.34)),linear-gradient(90deg,rgba(8,6,30,{COVER_SCRIM[0]}),rgba(8,6,30,{COVER_SCRIM[1]}) 60%,rgba(8,6,30,{COVER_SCRIM[2]}))"></div>'
             f'<div style="position:absolute;inset:34px;border:14px solid #fff;border-radius:46px"></div>'
             f'<div style="position:absolute;left:96px;top:92px;color:#fff;font:900 108px/.9 var(--d);text-transform:uppercase;letter-spacing:-.02em">Sponsorship &amp;<br>partnership<br>proposal</div>'
             f'<div style="position:absolute;right:96px;top:88px;background:#fff;border-radius:999px;padding:14px 30px"><img src="{core.LOGO}" style="height:36px;display:block" alt="AquaTerra"></div>'
