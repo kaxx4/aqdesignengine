@@ -317,7 +317,7 @@ def s_series_starry(c):
 
 
 def s_photo_summer(c):
-    return photo_story(c, 3, "1fr 1fr 1fr", 1, "Summer Sunset: AQ turned five", "June 2026", LM)
+    return photo_story(c, 3, "1fr 1fr 1fr", 1, "Summer Sunset: AQ turned five", "June 2026", LM, files=["dd_summer_1.jpg", "dd_summer_2.jpg", "dd_summer_3.jpg"])   # slots 14.1-3 FILLED: the Disco Diwali deck's pictures
 
 
 def s_photo_diwali25(c):
