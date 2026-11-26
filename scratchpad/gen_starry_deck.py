@@ -103,9 +103,9 @@ def bento_photo(items, cols, rows, gap=20, files=None):
     return grid(cells, cols, rows, gap)
 
 
-def photo_story(c, n_photos, cols, rows, caption, tag, tone=G, spans=None, files=None):
+def photo_story(c, n_photos, cols, rows, caption, tag, tone=G, spans=None, files=None, focus=None):
     """The ONE photo-slide template: a bento of photo slots, a tag chip top-left and a cream caption card overlapping the lower-left."""
-    items = [(0, "50% 50%", *(spans[k] if spans else (1, 1))) for k in range(n_photos)]
+    items = [(0, (focus[k] if focus else "50% 50%"), *(spans[k] if spans else (1, 1))) for k in range(n_photos)]
     body = (f'<div style="position:relative;width:100%;height:100%">{bento_photo(items, cols, rows, files=files)}'
             f'<div style="position:absolute;left:28px;top:28px">{K.chip(tag, tone)}</div>'
             f'<div style="position:absolute;left:28px;bottom:28px;background:{K.BG};border-radius:22px;padding:26px 38px;max-width:880px;color:{K.INK};'
@@ -321,7 +321,7 @@ def s_photo_summer(c):
 
 
 def s_photo_diwali25(c):
-    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "Disco Diwali, year 3", "October 2025", G, spans=[(2, 2), (1, 1), (1, 1)])
+    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "Disco Diwali, year 3", "October 2025", G, spans=[(2, 2), (1, 1), (1, 1)], files=["s15_i.jpg", "s15_j.jpg", "s15_k.jpg"], focus=["60% 6%", "45% 35%", "50% 60%"])   # slots 15.1-3 FILLED (user, 2026-11-26)
 
 
 def s_photo_sports(c):
