@@ -588,7 +588,7 @@ def s_close(c):
     ct, rg = FACTS["contact"], FACTS["reg"]
     qr = K.uri("../terrathon/qr_instagram_ngo_aquaterra.svg")
     row = lambda ic, t: f'<div style="display:flex;align-items:center;gap:20px;font:600 32px var(--e)">{K.icon(ic, 36, K.GREEN_D)}<span>{K.esc(t)}</span></div>'
-    photo_c = f'<div style="width:520px;flex:none">{ph()}</div>'
+    photo_c = f'<div style="width:520px;flex:none">{real("s10_e.jpg", "50% 50%")}</div>'   # slot 37.1 FILLED (user, 2026-11-26): the two volunteers in AquaTerra shirts, same file as slide 10's first photo
     touch = K.card(f'<div class="mono" style="font-size:16px;color:{K.MUTE};margin-bottom:22px">Get in touch</div>'
                    f'<div style="font:900 78px/.95 var(--d);text-transform:uppercase;margin-bottom:10px">{K.esc(ct["name"])}</div><div style="font:600 30px/1.2 var(--e);color:{INK2};margin-bottom:30px">{K.esc(ct["role"])}</div>'
                    f'<div style="display:flex;flex-direction:column;gap:22px">{row("phone", ct["phone"])}{row("insta", ct["insta"])}{row("globe", ct["web"])}{row("mail", ct["mail"])}</div>',
