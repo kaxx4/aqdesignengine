@@ -462,7 +462,7 @@ def s_run(c):
     pics = [("run_f.jpg", "50% 55%"), ("run_g.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("run_i.jpg", "50% 60%"), ("run_j.jpg", "50% 60%")]   # SECOND set (user, 2026-11-26) replaces run_a-e; run_f..j in the order sent
     cards = []
     for k, n in enumerate(steps):
-        inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else blank(0, r=0, dark=True)
+        inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else real("dd_closing_1.jpg", "50% 50%", r=0)   # 6th step: the Disco Diwali deck's closing-moment picture (user, 2026-11-26)
         cards.append(f'<div class="card" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">'
                      f'<div style="flex:1;min-height:0;position:relative">{inner}'
                      f'<div style="position:absolute;left:18px;top:18px">{K.chip("Time TBC", INK, K.CREAM_ON_DARK, size=20)}</div></div>'
@@ -522,7 +522,7 @@ def s_tiers(c):
 
 
 def s_photo_tiers(c):
-    return photo_story(c, 3, "1fr 1fr 1fr", 2, "Your brand, in the middle of it", "On the night", G, spans=[(1, 2), (2, 1), (2, 1)])
+    return photo_story(c, 3, "1fr 1fr 1fr", 2, "Your brand, in the middle of it", "On the night", G, spans=[(1, 2), (2, 1), (2, 1)], files=["dd_night_1.jpg", "dd_night_2.jpg", "dd_night_3.jpg"])   # the Disco Diwali deck's pictures
 
 
 def _check_list(items, dark=False, big=False):
@@ -553,8 +553,8 @@ def s_partners(c):
          ("Media partner", "news", BL, ["Designated stall space at the venue", "Logo on creatives and banners", "Reel made for you, at your store or the event", "5+ stories and interactions", "Your offer posted on AQ’s WhatsApp and Instagram, sent by us", "30+ online reviews", "Offer coupons and business cards"])]
     cards = [K.card(f'<div style="display:flex;align-items:center;gap:18px"><span class="disc" style="background:{t};color:{core.text_on(t)}">{K.icon(ic, 30)}</span>'
                     f'<div style="font:900 40px/1 var(--d);text-transform:uppercase">{n}</div></div>'
-                    f'<div style="margin-top:24px">{_check_list(it, big=True)}</div><div style="flex:1;min-height:120px;margin-top:22px">{ph()}</div>',
-                    "", "display:flex;flex-direction:column;padding:34px 40px") for n, ic, t, it in P]
+                    f'<div style="margin-top:24px">{_check_list(it, big=True)}</div><div style="flex:1;min-height:120px;margin-top:22px">{real(f"dd_partner_{k}.jpg")}</div>',
+                    "", "display:flex;flex-direction:column;padding:34px 40px") for k, (n, ic, t, it) in enumerate(P, 1)]
     return S(grid(cards, "1fr 1fr", None, 28), (K.eyebrow("Partnership offerings"), K.title("Education and media *partners*")), c)
 
 
@@ -564,7 +564,7 @@ def s_inkind(c):
          ("Gift", "gift", BL, ["Logo on creatives and banners", "10+ stories and interactions", "Samples gifted to all winners"])]
     cards = [K.card(f'<div style="display:flex;align-items:center;gap:18px"><span class="disc" style="background:{t};color:{core.text_on(t)}">{K.icon(ic, 30)}</span>'
                     f'<div style="font:900 44px/1 var(--d);text-transform:uppercase">{n}</div></div><div style="margin-top:24px">{_check_list(it, big=True)}</div>'
-                    f'<div style="flex:1;min-height:150px;margin-top:24px">{ph()}</div>', "", "display:flex;flex-direction:column;padding:34px 36px") for n, ic, t, it in P]
+                    f'<div style="flex:1;min-height:150px;margin-top:24px">{real(f"dd_inkind_{k}.jpg")}</div>', "", "display:flex;flex-direction:column;padding:34px 36px") for k, (n, ic, t, it) in enumerate(P, 1)]
     return S(grid(cards, "1fr 1fr 1fr", None, 24), (K.eyebrow("In-kind"), K.title("Other in-kind *partnerships*")), c)
 
 
@@ -579,7 +579,7 @@ def s_stalls(c):
 
 
 def s_join(c):
-    cells = [f'<div style="min-height:0">{ph()}</div>' for _ in range(5)]
+    cells = [f'<div style="min-height:0">{real(f"dd_join_{k}.jpg")}</div>' for k in range(1, 6)]   # the Disco Diwali deck\'s five pictures
     body = (f'<div style="position:relative;width:100%;height:100%">{grid(cells, "repeat(5,1fr)", None, 18)}'
             f'<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:{G};color:{INK};border-radius:80px;padding:40px 96px;'
             f'box-shadow:0 30px 60px -30px rgba(0,0,0,.6)"><div style="font:900 190px/.9 var(--d);text-transform:uppercase;text-align:center">Join<br>us</div></div></div>')
