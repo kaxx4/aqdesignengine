@@ -332,7 +332,7 @@ def s_photo_starry25(c):
 
 
 def s_photo_sports(c):
-    return photo_story(c, 3, "1fr 1fr 1fr", 1, "And not only parties: the sports fest", "TerraThon", BL)
+    return photo_story(c, 3, "1fr 1fr 1fr", 1, "And not only parties: the sports fest", "TerraThon", BL, files=["dd_sports_1.jpg", "dd_sports_2.jpg", "dd_sports_3.jpg"])   # the Disco Diwali deck's pictures (user, 2026-11-26)
 
 
 def s_sponsors(c):
@@ -363,14 +363,16 @@ def s_feedback(c):
 
 
 def s_photo_energy(c):
-    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "The party the city talks about", "Starry Night", LM, spans=[(2, 2), (1, 1), (1, 1)])
+    return photo_story(c, 3, "1.4fr 1fr 1fr", 2, "The party the city talks about", "Disco Diwali", LM, spans=[(2, 2), (1, 1), (1, 1)], files=["dd_energy_1.jpg", "dd_energy_2.jpg", "dd_energy_3.jpg"])   # the Disco Diwali deck's pictures; the tag says DISCO DIWALI because they ARE Disco Diwali photos (user, 2026-11-26)
 
 
 def s_flagship(c):
     feats = [("Food and sales stalls", G), ("A Christmas carnival night", LM), ("The party: a DJ-led night", BL), ("Neon bands and surprises", G)]
-    cards = [f'<div class="card dk" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column"><div style="flex:1;min-height:0">{blank(0, r=0, dark=True)}</div>'
+    tile = ["dd_reasons_1.jpg", "sn25_d.jpg", "dd_reasons_3.jpg", "s10_a.jpg"]     # tiles 1 and 3 are the Disco Diwali deck's (their captions match); 2 and 4 would contradict the Starry Night captions (a Diwali arch under 'A Christmas carnival night'), so they use the user's Starry Night photos
+    tfocus = ["50% 50%", "50% 62%", "50% 50%", "45% 42%"]
+    cards = [f'<div class="card dk" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column"><div style="flex:1;min-height:0">{real(tile[k], tfocus[k], r=0)}</div>'
              f'<div style="padding:22px 28px;display:flex;align-items:center;gap:16px"><span style="width:16px;height:16px;border-radius:50%;background:{t};flex:none"></span>'
-             f'<div style="font:900 34px/1.02 var(--d);text-transform:uppercase">{n}</div></div></div>' for n, t in feats]
+             f'<div style="font:900 34px/1.02 var(--d);text-transform:uppercase">{n}</div></div></div>' for k, (n, t) in enumerate(feats)]
     left = (f'<div style="width:620px;display:flex;flex-direction:column;justify-content:space-between;min-height:0">'
             f'<div><div class="kv" style="font-size:230px;color:{G}">600+</div><div style="font:600 34px/1.2 var(--e);color:#D8D3C2;margin-top:8px">expected at the Starry Night party</div></div>'
             f'<div class="card dk" style="padding:24px 30px;display:flex;flex-direction:column;gap:18px">'
@@ -410,7 +412,7 @@ def s_community(c):
             f'<div style="display:flex;align-items:flex-end;gap:26px"><div class="kv" style="font-size:140px">18</div>'
             f'<div style="font:600 32px/1.2 var(--e);padding-bottom:18px">leading Kolkata schools in the AQ community</div></div>'
             f'<div style="display:flex;flex-wrap:wrap;gap:12px">{chips}</div></div>')
-    right = f'<div style="width:640px;margin-left:48px;display:grid;grid-template-rows:1.2fr 1fr;gap:22px;min-height:0">{ph()}<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;min-height:0">{ph()}{ph()}</div></div>'
+    right = f'<div style="width:640px;margin-left:48px;display:grid;grid-template-rows:1.2fr 1fr;gap:22px;min-height:0">{real("dd_school_1.jpg")}<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;min-height:0">{real("dd_school_2.jpg")}{real("dd_school_3.jpg")}</div></div>'
     return S(left + right, (K.eyebrow("Community"), K.title("Where our *students* come from")), c)
 
 
@@ -431,9 +433,9 @@ def s_promote(c):
           ("insta", "Instagram reels and posts", "A year-round content engine: reels, posts and stories, with our event pages and partner collabs.", BL),
           ("megaphone", "Website and offline marketing", "The website, plus marketing stunts and events that put Starry Night in front of students before the poster does.", LM)]
     cards = []
-    for ic, t, d, tone in ch:
+    for k, (ic, t, d, tone) in enumerate(ch, 1):
         cards.append(f'<div class="card" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">'
-                     f'<div style="height:300px;flex:none;position:relative">{blank(0, r=0)}'
+                     f'<div style="height:300px;flex:none;position:relative">{real(f"dd_promote_{k}.jpg", "50% 30%", r=0)}'
                      f'<span class="disc" style="position:absolute;left:34px;bottom:-30px;background:{tone};color:{core.text_on(tone)};width:84px;height:84px;border:6px solid {BL}">{K.icon(ic, 38)}</span></div>'
                      f'<div style="padding:58px 40px 34px"><div style="font:900 44px/1.02 var(--d);text-transform:uppercase;margin-bottom:16px">{t}</div>'
                      f'<div style="font:400 27px/1.35 var(--e);color:{INK2}">{d}</div></div></div>')
@@ -445,7 +447,7 @@ def s_offline(c):
             f'{K.lede("The party is the finale. In the weeks before it we are on the ground: school visits, stalls and pop-up stunts that turn students into guests, and guests into your audience.", 29)}'
             f'<ul class="ck">{"".join(f"<li>{K.icon(i, 30, K.GREEN_D)}<span>{t_}</span></li>" for i, t_ in [("school", "School visits and class networks"), ("store", "Pop-up stalls and brand activations"), ("megaphone", "Marketing stunts and events")])}</ul></div>')
     right = (f'<div style="flex:1;margin-left:48px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:22px;min-height:0">'
-             f'<div style="grid-row:span 2">{ph(dark=True)}</div>{ph(dark=True)}{ph(dark=True)}</div>')
+             f'<div style="grid-row:span 2">{real("dd_ground_1.jpg")}</div>{real("dd_ground_2.jpg")}{real("dd_ground_3.jpg")}</div>')
     return S(left + right, (K.eyebrow("Offline engagement"), K.title("We are on the *ground* too")), c)
 
 
