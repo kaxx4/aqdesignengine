@@ -209,7 +209,7 @@ def s_growth(c):
                               f'<div class="kv" style="font-size:150px;margin-bottom:12px">{v}</div><div style="font:600 28px/1.25 var(--e)">{l}</div></div>')
     left = grid([big("5M+", "impressions across social media and marketing", G), big("5+", "marketing verticals running all year", LM),
                  big("112", "projects completed in 2025 alone", BL), big("500+", "projects since 2021: a five-year record of delivering", G)], "1fr 1fr", 2, 24, "width:1040px")
-    right = f'<div style="flex:1;margin-left:40px;display:grid;grid-template-rows:1fr 1fr;gap:24px;min-height:0">{ph()}{ph()}</div>'
+    right = f'<div style="flex:1;margin-left:40px;display:grid;grid-template-rows:1fr 1fr;gap:24px;min-height:0">{real("dj_decks_2.jpg", "50% 62%")}{real("summer_five_banner.jpg", "50% 60%")}</div>'   # slots 08.1 / 08.2 FILLED (user, 2026-11-26)
     return S(left + right, (K.eyebrow("Track record"), K.title("A five-year record of *delivering*")), c)
 
 
