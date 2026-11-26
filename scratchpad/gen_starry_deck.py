@@ -474,7 +474,9 @@ def s_run(c):
 
 
 def s_photo_night(c):
-    return photo_story(c, 3, "1fr 1.4fr 1fr", 2, "Every corner worth a photo", "On the night", BL, spans=[(1, 1), (2, 2), (1, 1)])
+    # user, 2026-11-26: five files, FOUR distinct photos (the two IMG_3824 HEICs are byte-identical pixels), so a four-frame layout: large crowd (caption card sits on it, not on faces), two upright frames, one wide frame
+    return photo_story(c, 4, "1fr 1fr 1fr 1fr", 2, "Every corner worth a photo", "On the night", BL, spans=[(2, 2), (1, 1), (1, 1), (2, 1)],
+                       files=["n28_d.jpg", "n28_b.jpg", "n28_c.jpg", "n28_a.jpg"], focus=["50% 62%", "50% 30%", "50% 45%", "50% 50%"])
 
 
 def s_why(c):
