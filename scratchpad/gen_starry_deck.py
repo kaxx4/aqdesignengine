@@ -214,7 +214,7 @@ def s_growth(c):
 
 
 # (flyer asset or None, name, when, guests, raised, where). Chronological; funds are GROSS. EIGHT flagship events now: Disco Diwali Nov 2026 is the 8th (user, 2026-11-22).
-DD26_FLYER = os.path.join(ROOT, "training_samples", "disco_diwali", "ref_announce_2026.png")
+DD26_FLYER = os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", "dd26_poster.jpg")   # the user-supplied Disco Diwali 2026 poster (red mask, diya ground), Instagram UI icons inpainted out (2026-11-26)
 EVENTS = [
     ("flyer_dd24", "Disco Diwali", "Oct 2024", "350+", "₹1.7L", "Orbit Crystal"),
     ("flyer_sn24", "The Starry Night", "Dec 2024", "550+", "₹3L", "Sky Turf, DJ Saif Side"),
