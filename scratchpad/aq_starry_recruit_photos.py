@@ -6,7 +6,7 @@ CONTRAST IS SOLVED, NOT TUNED: the layout is computed FIRST from measured type, 
 photo pixels under that box (97th-percentile brightest pixel, the worst case for light type), plateaued over the box and eased out over 120px, and merged with the photo's own base scrim. Text colour is then picked
 from cream/white/ink by measured ratio and printed as a receipt; lemon 'starry' is asserted too. A photo that cannot be made legible below alpha .9 stops the build instead of shipping.
 Facts: Starry Night = the Christmas carnival fundraiser; edition, date, venue, roles, deadline, link NOT supplied and not printed.
-Photos (consent unconfirmed: all three show guests, several apparent minors): A crowd under star lights (user, pasted), B photobooth strips 'Starry Night 2.0 / All for charity' (user, pasted), C crowd under net + star lights (user HEIC).
+Photos (consent unconfirmed: all four show guests, several apparent minors): A crowd under star lights (user, pasted), B photobooth strips 'Starry Night 2.0 / All for charity' (user, pasted), C crowd under net + star lights (user HEIC), D second DJ-decks photo (hands, torso in a printed tee, blurred guests behind).
 Run: PYTHONIOENCODING=utf-8 python scratchpad/aq_starry_recruit_photos.py [a|b|c ...]   -> out/aq_events/starry_recruit_{a,b,c}.png"""
 import asyncio, base64, io, os, sys, importlib.util
 import numpy as np
@@ -27,6 +27,7 @@ PHOTOS = {
     "a": dict(file="crowd_star_lights.jpg", ax=.5, lift=1.35, base=[(0, .30), (1000, .22), (1920, .50)], ly=1105),
     "b": dict(file="photobooth_strips.jpg", ax=.5, lift=1.0, base=[(0, .40), (900, .28), (1920, .55)], ly=1105),
     "c": dict(file="photo_c.jpg", ax=.5, lift=1.0, base=[(0, .42), (900, .26), (1920, .60)], ly=1105),
+    "d": dict(file="dj_decks_2.jpg", ax=.5, lift=1.0, base=[(0, .40), (900, .26), (1920, .58)], ly=1105),     # second DJ-decks photo (user, 2026-11-26): projector glare at the upper right
 }
 HEADROOM = 1.55; PCT = 97
 def lin(c): c = c / 255.0; return np.where(c <= .04045, c / 12.92, ((c + .055) / 1.055) ** 2.4)
