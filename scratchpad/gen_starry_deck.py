@@ -270,7 +270,9 @@ def s_proof(c):
 
 
 def s_notoneoff(c):
-    posters = "".join(f'<div style="flex:1;min-width:0">{_poster(e[0])}</div>' for e in EVENTS)
+    dd25 = (f'<div style="width:100%;aspect-ratio:4/5;background-image:url({K.uri(os.path.join(ROOT, "engine", "assets", "img", "events", "starry-night-2026-11", "dd25_card_photo.jpg"))});'
+            f'background-size:cover;background-position:50% 50%;border-radius:16px;box-shadow:0 0 0 1.5px {K.LINE}"></div>')      # Disco Diwali 2025: the slide-9 picture (user, 2026-11-26)
+    posters = "".join(f'<div style="flex:1;min-width:0">{dd25 if i == E_DD25 else _poster(e[0])}</div>' for i, e in enumerate(EVENTS))
     body = (f'<div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;min-height:0">'
             f'<div><div style="font:900 220px/.88 var(--d);text-transform:uppercase;letter-spacing:-.02em">Not a <span class="tg" style="background:{BL};color:#fff">one-off</span></div>'
             f'<div style="font:600 38px/1.25 var(--e);margin-top:26px;max-width:1400px">Eight flagship events. Disco Diwali three times. Starry Night twice, and now a third. Every one of them for charity.</div></div>'
