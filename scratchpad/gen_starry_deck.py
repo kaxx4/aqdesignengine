@@ -456,15 +456,20 @@ RUN = ["Decor and venue setup", "Stall setup", "Setup done, stalls go live", "Re
 
 
 def s_run(c):
+    """Run of show (slide 27 since the new slide 16). User, 2026-11-26: the dhol box is removed (here that is the 'Opening' step, the dhol entry and opening of the original) and the supplied pictures
+    go in, in the order given. SIX steps remain, FIVE pictures were supplied, so the sixth ('Closing moment') keeps a labelled blank. The House rules card spans two columns on row 2 so the 4x2 grid has no hole."""
+    steps = [n for n in RUN if n != "Opening"]
+    pics = [("run_a.jpg", "50% 35%"), ("run_b.jpg", "50% 45%"), ("run_c.jpg", "40% 40%"), ("run_d.jpg", "50% 30%"), ("run_e.jpg", "50% 62%")]
     cards = []
-    for n in RUN:
+    for k, n in enumerate(steps):
+        inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else blank(0, r=0, dark=True)
         cards.append(f'<div class="card" data-tag="card" style="padding:0;overflow:hidden;display:flex;flex-direction:column">'
-                     f'<div style="flex:1;min-height:0;position:relative">{blank(0, r=0, dark=True)}'
+                     f'<div style="flex:1;min-height:0;position:relative">{inner}'
                      f'<div style="position:absolute;left:18px;top:18px">{K.chip("Time TBC", INK, K.CREAM_ON_DARK, size=20)}</div></div>'
                      f'<div style="padding:20px 26px 24px;font:900 30px/1.02 var(--d);text-transform:uppercase;min-height:104px">{n}</div></div>')
-    cards.append(f'<div class="card dk" data-tag="card" style="padding:30px 30px;display:flex;flex-direction:column;justify-content:space-between">'
+    cards.append(f'<div class="card dk" data-tag="card" style="grid-column:span 2;padding:30px 40px;display:flex;flex-direction:column;justify-content:space-between">'
                  f'<span class="disc" style="background:{G};color:{INK}">{K.icon("shield", 30)}</span><div><div class="mono" style="font-size:16px;color:#A7A292">House rules</div>'
-                 f'<div style="font:900 40px/1.02 var(--d);text-transform:uppercase;margin-top:10px">No alcohol at the event.</div><div style="font:600 28px/1.25 var(--e);margin-top:12px">Under-18 entry allowed.</div></div></div>')
+                 f'<div style="font:900 52px/1.02 var(--d);text-transform:uppercase;margin-top:10px">No alcohol at the event.</div><div style="font:600 32px/1.25 var(--e);margin-top:12px">Under-18 entry allowed.</div></div></div>')
     return S(grid(cards, "repeat(4,1fr)", 2, 22), (K.eyebrow("Run of show"), K.title("The day, *hour* by hour")), c)
 
 
