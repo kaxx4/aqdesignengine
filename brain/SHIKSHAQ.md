@@ -25,6 +25,7 @@ and was not scraped).
 | A carousel from real photos | `brain/CAROUSEL_PLAYBOOK.md` for the mechanics, but ONLY this module's tokens, fonts, panels | AQ's logo treatment, doodles and photo scrims do not apply |
 | A CAROUSEL (5 slides, 1080x1350) | `sk.poster` per slide + `sk.render_carousel` | start from `scratchpad/shik_carousel_exam_practice.py`; `sk.slide_header`, `sk.index_tag`, `sk.swipe_arrow`, a contact sheet of every slide |
 | Remaking another brand's poster in this language | keep the MECHANISM, rebuild it from the builders with Shikshaq content | worked examples: `scratchpad/shik_remakes.py` (a chat bubble, a tabbed teaser card, a flipped scene) |
+| A WEEK of posts (Mon/Wed/Fri 19:30 IST, captions, alt text, hashtags) | `scratchpad/shik_week_2026w49.py` | the planner's vetted copy (`addons/shikshaq/brain/pillars.json`), its caption and hashtag rules, the engine's gate; writes `week.md`. Nothing is posted |
 | A deck (16:9 slides) | not built | use this module's tokens and panel grammar; say so |
 
 Never route Shikshaq through `engine.generate`, `core.ACCENTS`, `core.LOGO`, `doodles.py`, `shapes.sticker`
@@ -224,7 +225,7 @@ over a line of copy was invisible to the text-collision check until `ART-ON-TEXT
 When the site changes: re-copy `src/index.css`, `tailwind.config.ts`, `src/lib/subject-palette.ts` and the `ui/` components
 named in `engine/assets/shikshaq/source/` from the Shikshaq repo, run `python engine/shikshaq.py selftest`. It names every
 drifted token. Update `sk.C`, the `PAIRS` map if a variable was renamed, and `FACTS` (re-read the live counts, set `asOf`).
-Then `python scratchpad/test_shikshaq.py` (155 assertions).
+Then `python scratchpad/test_shikshaq.py` (160 assertions).
 
 ## 12. NOT VERIFIED `[?]`
 

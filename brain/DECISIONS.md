@@ -1417,3 +1417,10 @@ The `story_ref` layout is the approved design for bulk stories; ten were generat
 - **Built:** 16 characters in `engine/shikshaq.py` (`CHARACTERS`, `character`, `character_ok`, `CHAR_PALETTE`) in the campaign's flat vocabulary; palette limited to the site's own colours; a measured ground-safety check; a review sheet; 57 new assertions (155 total). Section 5a of `brain/SHIKSHAQ.md` states the system.
 - **Found by looking:** the compass's crossbar read as a frown under its face, the ruler's mouth hung off its edge, the backpack's mouth merged into the pocket line; all fixed in the drawings.
 - **Known weakest pairing:** the terracotta cup on orange (the owner chose to approve as drawn); `character_ok` reports it so a build can avoid it.
+
+### Shikshaq: the first week of posts (2026-11-27, same session)
+- **Asked and answered:** week Mon 30 Nov, Wed 2 Dec, Fri 4 Dec at 19:30 IST (the cadence confirmed 2026-10-05); themes papers, trust, teachers; paper count **655** (the site shows 655 and 661; asked each time).
+- **Built:** `scratchpad/shik_week_2026w49.py` renders three feed posts (Mon "Real papers. Real schools." with 655 and three real covers; Wed "Zero middlemen." with a large rupee zero; Fri "157 teachers. One search." with subject and board counts) and writes `week.md` (captions, alt text, hashtags, times). Copy is the planner's vetted bank; caption, alt and hashtag formats follow `addons/shikshaq`; every string passes `copy_gate`; the layout gate and a look ran on each PNG.
+- **Why the Python engine and not the Node planner:** the planner's live facts need Supabase (not reachable here) and its dry run carries stale sample figures (147 teachers, 1,487 papers). Figures here are the ones read off the live data on 2026-11-27, dated in `FACTS`.
+- **Nothing is posted.** The output is a reviewable folder. Counts should be re-read on the day if the week slips.
+- `test_shikshaq.py` now 160 assertions.

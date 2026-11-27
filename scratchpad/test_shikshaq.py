@@ -292,4 +292,14 @@ ok(all(sk.character_ok(n, sk.C["card"]) for n in sk.CHARACTERS), "every characte
 rc, outp = run([sys.executable, "scratchpad/shik_characters_sheet.py"])
 ok(rc == 0 and outp.strip().endswith("CLEAN"), "the character sheet renders and passes the gate")
 
+# ── the week of three posts (planner rules: headline <= 40, caption <= 900, <= 8 tags, 19:30 IST, nothing posted) ──────
+rc, outp = run([sys.executable, "scratchpad/shik_week_2026w49.py"])
+ok(rc == 0 and outp.strip().endswith("CLEAN"), "the week of three posts runs and every PNG passes the gate")
+wk = open("out/shikshaq/2026-W49/week.md", encoding="utf-8").read()
+ok(len([l for l in wk.splitlines() if l.startswith("## ") and "19:30 IST" in l]) == 3 and all(d in wk for d in ("2026-11-30", "2026-12-02", "2026-12-04")), "week.md schedules Mon 30 Nov, Wed 2 Dec and Fri 4 Dec at 19:30 IST")
+ok("Paper count **655** confirmed by the owner" in wk and "Nothing is posted automatically" in wk, "week.md records the confirmed paper count and that nothing is posted automatically")
+tag_lines = [l for l in wk.splitlines() if l.startswith("Hashtags (")]
+ok(len(tag_lines) == 3 and all(int(l.split("(")[1].split(")")[0]) <= 8 for l in tag_lines), "every post has at most 8 hashtags")
+ok(len([f for f in os.listdir("out/shikshaq/2026-W49") if f[:2] in ("01", "02", "03") and f.endswith(".png")]) == 3 and os.path.exists("out/shikshaq/2026-W49/_week.png"), "three PNGs and a contact sheet are written")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

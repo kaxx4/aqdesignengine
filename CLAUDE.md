@@ -894,7 +894,7 @@ drifted: old text ramp and orange-deep). When the site changes, refresh the snap
   `test_recreation.py` (47) ·
   `test_stylebank.py` (64) · `test_buried_text.py` (29) · `test_repo_hygiene.py` (30) · `test_runqueue.py` (22) ·
   `test_dispatch.py` (25)** —
-  **482 assertions total across 16 files, all verified passing 2026-09-23**. **Plus `test_shikshaq.py` (155), the Shikshaq format module, verified passing 2026-11-27**; it runs the module's gate against fixtures reproducing real bugs and EXECUTES the worked examples and scaffolds as shipped. `test_repo_hygiene.py`
+  **482 assertions total across 16 files, all verified passing 2026-09-23**. **Plus `test_shikshaq.py` (160), the Shikshaq format module, verified passing 2026-11-27**; it runs the module's gate against fixtures reproducing real bugs and EXECUTES the worked examples and scaffolds as shipped. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.
