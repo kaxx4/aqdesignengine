@@ -461,7 +461,12 @@ def s_run(c):
     steps = [n for n in RUN if n != "Opening"]
     # box 1 decor (user, 2026-11-27); boxes 2, 4, 5, 6 from the user's 2026-11-27 list "first picture in box 2, 3rd in box 4, 4th in box 5, 6th in box 6". Only FIVE pictures arrived, so the order is
     # pasted-first (1 Pristine Edge, 2 table students [unused], 3 Meetcute, then the HEICs 4 = IMG_3824_2, 5 = IMG_3817_2) and "6th" is read as the LAST one (5). Box 3 keeps run_h.
-    pics = [("run_decor.jpg", "50% 40%"), ("r27_p1.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("r27_p3.jpg", "50% 45%"), ("r27_h1.jpg", "50% 70%"), ("r27_h2.jpg", "50% 75%")]
+    pics = [("run_decor.jpg", "50% 40%"),            # box 1 Decor and venue setup (user, 2026-11-27)
+            ("r3_1.jpg", "50% 62%"),                  # box 2 Stall setup: Pristine Edge stall pair (3rd set, 2026-11-27, picture 1)
+            ("r3_3.jpg", "50% 42%"),                  # box 3 Setup done, stalls go live: Meetcute Cafe chef (picture 3)
+            ("r3_2.jpg", "40% 40%"),                  # box 4 Registrations open: three students (picture 2)
+            ("r3_4.jpg", "50% 62%"),                  # box 5 Main DJ set: crowd under the star-light net (picture 4)
+            ("r3_5.jpg", "50% 62%")]                  # box 6 Closing moment: crowd, arm raised (picture 5; the user wrote '6th picture', five were sent)
     cards = []
     for k, n in enumerate(steps):
         inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else real("dd_closing_1.jpg", "50% 50%", r=0)   # 6th step: the Disco Diwali deck's closing-moment picture (user, 2026-11-26)
