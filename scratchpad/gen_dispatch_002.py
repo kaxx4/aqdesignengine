@@ -69,13 +69,15 @@ from PIL import Image
 for key, fn, box in (("mag", "1.jpg", (0, 0, 977, 325)), ("chat", "2.jpg", (0, 12, 1206, 405))):
     buf = io.BytesIO(); Image.open(IMG + fn).convert("RGB").crop(box).save(buf, "JPEG", quality=92)
     D.core.PHOTOS[key] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+# the masthead card is near-square, so it gets the UNCROPPED screenshot (a 3:1 band crop shows fragments)
+D.core.PHOTOS["mag_full"] = "data:image/jpeg;base64," + base64.b64encode(open(IMG + "1.jpg", "rb").read()).decode()
 
 BRIEF = {
     "issue": "02",
     "kicker": "this week at aq",
     "dateline": "27 nov 2026",
     "tagline": "what's / moving",
-    "cover_photo": "mag",
+    "cover_photo": "mag_full",
     "handle": "@ngo.aquaterra",
     "site": "ngoaquaterra.com",
     "story_cta": "swipe for all three.",
@@ -94,17 +96,21 @@ BRIEF = {
         {
             "dept": "events",
             "chip": "starry nights",
-            "head": "when is starry nights",
-            "line": ("starry nights is happening again this year and everyone is asking when. "
-                     "no date is out yet, and honestly, we want to know too."),
+            "head": "everyone's asking about starry nights",
+            "line": ("people are already asking whether starry nights is happening, and it is. "
+                     "there is no date yet, so follow aq.live for updates."),
             "photo": "chat",
         },
         {
             "dept": "welfare",
             "chip": "dog drives",
-            "head": "winter means dog drives",
-            "line": ("it is winter, which makes it the right time for dog drives, and the "
-                     "welfare team is continuing to start them."),
+            "head": "time for dog drives",
+            "line": ("winter is the perfect time for dog drives. spend time with the dogs, give "
+                     "them the care they need, then get a treat at sharma or kona dukaan."),
+            "story": ("now that winter is here, it is the perfect time to organise dog drives. "
+                      "spend some time with the dogs, help give them the care they need, and "
+                      "make a difference in their day. and of course, no dog drive is complete "
+                      "without a post-drive treat stop at sharma or kona dukaan."),
         },
     ],
 }

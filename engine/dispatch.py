@@ -685,6 +685,23 @@ async def _story_cover(brief):
     edge = core.outline_of(core.INK)
     cw = W_STORY - 2 * M - 10                    # minus the shadow's reach
     card_tags = []
+    # R11 THE INDEX HEAD IS FITTED, NOT TRUSTED. The row is nowrap at 44px, so a
+    # five-word head ("EVERYONE'S ASKING ABOUT STARRY NIGHTS") ran 239px past its
+    # card and the last word fell off the canvas edge (DISPATCH no. 02). The type is
+    # measured, and shrunk to the row's width down to IX_MIN; below that the head is
+    # a content problem and raises, the same stance as the poster's row solver.
+    IX_SIZE, IX_MIN = 44, 28
+    ix_tw = (M + cw - 26) - (M + 22 + 64 + 26)
+    ixm = await B.measure_text([_mt(it["head"].upper(), "d", IX_SIZE, lh=1.05) for it in items],
+                               W_STORY, H_STORY)
+    ix_size = []
+    for n, (it, m) in enumerate(zip(items, ixm), 1):
+        sz = min(IX_SIZE, int(IX_SIZE * ix_tw / max(m["text_w"], 1)))
+        if sz < IX_MIN:
+            raise BriefError(
+                "item %d head %r is too long for the cover index row even at %dpx. "
+                "Shorten it." % (n, it["head"], IX_MIN))
+        ix_size.append(sz)
     for i, it in enumerate(items):
         acc = accent(it["dept"])
         tint = tint_of(acc)
@@ -718,11 +735,11 @@ async def _story_cover(brief):
         tp.append(("ixchip%d" % i, chip_fg, tint, 15, True))
         inner.append(
             f'<div class="measure" data-tag="ix{i}" style="position:absolute;top:{iy + 46}px;'
-            f'left:{tx}px;width:{tw}px;font-family:var(--d);font-weight:900;font-size:44px;'
+            f'left:{tx}px;width:{tw}px;font-family:var(--d);font-weight:900;font-size:{ix_size[i]}px;'
             f'letter-spacing:-.01em;line-height:1.05;color:var(--ink);white-space:nowrap;'
             f'z-index:9">{it["head"].upper()}</div>')
         els.append(("ix%d" % i, tx, iy + 46, tw, 48))
-        tp.append(("ix%d" % i, core.INK, tint, 44, True))
+        tp.append(("ix%d" % i, core.INK, tint, ix_size[i], True))
         iy += step
 
     _story_footer(inner, els, tp, brief, True,
