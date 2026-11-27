@@ -97,8 +97,8 @@ BRIEF = {
             "dept": "events",
             "chip": "starry nights",
             "head": "is starry nights happening? \U0001F440",
-            "line": ("the dms are flooded with people asking about the dates, and even we want "
-                     "to know! stay tuned and follow @aq.lives for updates."),
+            "line": ("The DMs are flooded with people asking us about the dates, and you know "
+                     "what? EVEN I WANT TO KNOW!! Stay tuned and follow @aq.lives for updates!"),
             "photo": "chat",
         },
         {
