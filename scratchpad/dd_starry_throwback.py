@@ -37,8 +37,8 @@ FW, FH, PAD, FOOT = 200, 246, 12, 40        # print frame, photo inset, polaroid
 STEP_X, STEP_Y, TOP = 176, 142, 176
 
 
-def photo_uri(i):
-    im = Image.open(os.path.join(SRC, f"{i:02d}.jpg")).convert("RGB"); im.thumbnail((620, 620))
+def photo_uri(i, px=620):
+    im = Image.open(os.path.join(SRC, f"{i:02d}.jpg")).convert("RGB"); im.thumbnail((px, px))
     b = io.BytesIO(); im.save(b, "JPEG", quality=84)
     return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
 
@@ -107,4 +107,5 @@ async def main():
         await B.render(B.page(W, H, "#000", inner, grain=False), out, W, H, elements=els, containers=("tree",), bleed_tags=("plate",), crop_tags=("plate", "frame"),
                        page_bg="#000", collision_ignore=[])
     print("done ->", out)
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
