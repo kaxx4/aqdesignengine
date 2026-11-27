@@ -56,7 +56,7 @@ D = load("dispatch")
 B = load("build")
 prev = load("preview")
 
-OUT = "out/dispatch/no02"
+OUT = "out/dispatch/no07"
 
 # USER-SUPPLIED PHOTOS (adaptation, recorded): the two screenshots were handed over
 # by the issue's author, so they are real, not fabricated. dispatch only accepts keys
@@ -73,7 +73,7 @@ for key, fn, box in (("mag", "1.jpg", (0, 0, 977, 325)), ("chat", "2.jpg", (0, 1
 D.core.PHOTOS["mag_full"] = "data:image/jpeg;base64," + base64.b64encode(open(IMG + "1.jpg", "rb").read()).decode()
 
 BRIEF = {
-    "issue": "02",
+    "issue": "07",
     "kicker": "this week at aq",
     "dateline": "27 nov 2026",
     "tagline": "what's / moving",
@@ -81,7 +81,7 @@ BRIEF = {
     "handle": "@ngo.aquaterra",
     "site": "ngoaquaterra.com",
     "story_cta": "swipe for all three.",
-    "wa_signoff": ("if your team did something that isn't here, reply and it goes in no. 03."),
+    "wa_signoff": ("if your team did something that isn't here, reply and it goes in no. 08."),
     "ig_signoff": ("not in the volunteer group yet? dm us."),
     "tags": ["#aquaterra", "#kolkata", "#studentrun"],
     "items": [
@@ -96,9 +96,9 @@ BRIEF = {
         {
             "dept": "events",
             "chip": "starry nights",
-            "head": "everyone's asking about starry nights",
-            "line": ("people are already asking whether starry nights is happening, and it is. "
-                     "there is no date yet, so follow aq.live for updates."),
+            "head": "is starry nights happening? \U0001F440",
+            "line": ("the dms are flooded with people asking about the dates, and even we want "
+                     "to know! stay tuned and follow @aq.lives for updates."),
             "photo": "chat",
         },
         {
