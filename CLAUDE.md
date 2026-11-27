@@ -35,6 +35,24 @@ addition. Do this automatically; do not wait to be asked each time.
 > produce one. The session that dispatched you owns it. (A Sonnet agent hit this exact conflict and
 > correctly flagged it instead of guessing; that is the right move, and now it has an answer.)
 
+**STANDING RULE: SHIKSHAQ IS NOT AQ (user directive, 2026-11-27).** Whenever an ask names Shikshaq or
+Shikshak (the Kolkata tuition-teacher directory and past-paper library, shikshaq.in), design it in the
+Shikshaq language, with NONE of AQ's palette, fonts, doodles, logo treatment or craft layer. Do this before
+choosing Workflow A, B or C:
+
+> 1. Read `brain/SHIKSHAQ.md` in full (the route table, tokens, layout grammar, gate, open decisions).
+> 2. Build with `engine/shikshaq.py` (`import shikshaq as sk`): `sk.poster(...)`, the section builders, `sk.doc(...)`.
+>    Start from `scratchpad/shik_landing_example.py`, `scratchpad/shik_poster_example.py`, or
+>    `python engine/shikshaq.py scaffold poster|page <name>`.
+> 3. Every number comes from `sk.FACTS` and the copy passes `sk.copy_gate`. Render through `sk.render`
+>    (the measured gate), then LOOK at the PNG (section 3 still binds).
+> 4. A flaw that is a general class becomes a rule in `engine/shikshaq.py` plus an assertion in
+>    `scratchpad/test_shikshaq.py` (section 8 still binds). Never patch one output.
+
+The weekly three-post Instagram plan lives in `addons/shikshaq/` (Node). The `shikshaq-design` skill
+(`.claude/skills/`) routes here. Routing a Shikshaq ask through `engine.generate`, `core.ACCENTS`,
+`core.LOGO` or `doodles.py` is the failure this rule exists to prevent.
+
 ---
 
 ## 0. TABLE OF CONTENTS
@@ -769,6 +787,15 @@ Each row is a flaw caught by eye during the 44-sample pass, now guarded by rule.
 | A WhatsApp group DP is a SQUARE the app crops to a CIRCLE: the first build's date ran off both edges of the circle and a square canvas inherited a NEGATIVE height shift from the 1350 baseline (`dh = 1080 - 1350`), which pushed the title and mask on top of each other | Disco Diwali launch pack | every DP text box is asserted inside r=540; a shift applies only to a canvas TALLER than the baseline |
 | A test compared tuple fields on the wrong axes (`x < x + h`), so it reported nothing real inside the link-sticker zone while a listing showed every neighbour was clear. The failing assertion was the test's own bug | Disco Diwali launch pack | element tuples are `(label, x, y, w, h)`: x-overlap uses `[1]`/`[3]`, y-overlap `[2]`/`[4]`. A failing assertion gets its cause found before either side is edited |
 
+| A page 425px wide in a 390px viewport: a horizontal scroller inside a grid cell forced the column open (shipped in a demo build; every static check was silent) | Shikshaq demo, 2026-11-27 | `shikshaq.py` gate `OVERFLOW-X` (names the widest elements and the fix: `min-width:0` on the grid item). Any format with a scrolling page should measure `scrollWidth` against `clientWidth` |
+| A mascot (SVG) landing on a line of copy passed the text-vs-text collision check, because art is not text | Shikshaq demo, 2026-11-27 | `shikshaq.py` gate `ART-ON-TEXT` (art clipped by an overflow:hidden parent counts only where visible) |
+| A text collision reported between a numbered heading's ordinal and its own line: the check measured the padded BLOCK box, not the glyphs | Shikshaq, 2026-11-27 | collision and clip checks measure a Range over the element's OWN text nodes, not `getBoundingClientRect()` of the block |
+| A format module's token copy drifted from the source site (old text ramp, old brand-deep) and nothing noticed, so output went quietly off-brand | Node Shikshaq addon, found 2026-11-27 | `shikshaq.verify_tokens()` recomputes every token from a vendored snapshot of the site's own CSS and names the drift; the test breaks a token on purpose to prove the check bites |
+| A "fonts loaded" check false-failed on a page that never used a face (browsers skip unused fonts) | Shikshaq, 2026-11-27 | check only faces actually used, and reject any off-brand face on a text leaf |
+| A shipped scaffold failed its own gate (it omitted a declaration the worked example carried) | Shikshaq, 2026-11-27 | `test_shikshaq.py` EXECUTES every scaffold as shipped, the same lesson as `test_repo_hygiene.py` and the section 6 template |
+| A brand's spec table said a colour was "dark" (white text) while its code MEASURED the contrast and chose ink: a hand-typed white tile on a green was 2.72:1 | Shikshaq, 2026-11-27 | `shikshaq.palette_from_seed` ports the measured rule; never read a "dark" flag, measure |
+| A brand's own signature (heavy orange display type on bone) measures 2.42:1 and no owner ruling covers it | Shikshaq, 2026-11-27 | allowed only when declared (`data-accent-display`), only at 28px or more and bold, and reported on every render; recorded as open decision D1 in `brain/SHIKSHAQ.md` |
+
 Collision AUTO-nudge is encoded: `layout.collision_nudge` repositions the later-placed element of a
 colliding pair away from the earlier (anchor) one, opt-in via `preflight(..., auto_nudge=True)`.
 Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISIONS.md`.)
@@ -785,10 +812,10 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
     gate) · `preview.py` (pixel critique) · `ref_metrics.py` / `metrics.py` (metric targets) ·
     `reconcile.py` (headless DOM measurement) · `rhythm.py` (8px snap) · `tex.py` (textures) · **`dispatch.py`** (the DISPATCH
     internal-roundup series: one WhatsApp poster + one message + N stories from one brief) ·
-    **`discodiwali.py`** (the Disco Diwali poster family: ink-ground format module, 11 kinds x feed/story/square x 5 directions x 7 type treatments x 4 layouts) ·
+    **`discodiwali.py`** (the Disco Diwali poster family: ink-ground format module, 11 kinds x feed/story/square x 5 directions x 7 type treatments x 4 layouts) · **`shikshaq.py`** (the Shikshaq design language: verified tokens, subject palette generator, section builders, `poster()`, measured gate, copy gate, scaffolds; assets in `engine/assets/shikshaq/`) ·
     `whitespace.py` · `engine.py` (Workflow A: ARCHETYPES + self-correction) · `archetypes.py`
     (geometry for pending archetypes).
-- `brain/` — the full reasoning: **`DISCO_DIWALI.md`** (the Disco Diwali format: assets, skeleton, rules, directions, quickstart; assets in `engine/assets/disco_diwali/`, references in `training_samples/disco_diwali/`), **`TERRATHON.md`** (the TerraThon fest format: skeleton, rules, palette, sticker kit; assets in `engine/assets/terrathon/`, references in `training_samples/terrathon/`), `TASTE.md`, `VISUAL_REVIEW.md` (looking-gate protocol), `ENGINE.md`,
+- `brain/` — the full reasoning: **`SHIKSHAQ.md`** (the Shikshaq language as an engine format: route table, tokens, page archetypes, gate, deviations and open decisions; site source and design docs vendored in `brain/shikshaq_source/`, live reference screens in `training_samples/shikshaq/`), **`DISCO_DIWALI.md`** (the Disco Diwali format: assets, skeleton, rules, directions, quickstart; assets in `engine/assets/disco_diwali/`, references in `training_samples/disco_diwali/`), **`TERRATHON.md`** (the TerraThon fest format: skeleton, rules, palette, sticker kit; assets in `engine/assets/terrathon/`, references in `training_samples/terrathon/`), `TASTE.md`, `VISUAL_REVIEW.md` (looking-gate protocol), `ENGINE.md`,
   `ENGINE_STATE.md`, `DECISIONS.md` (standing rulings + every encoded fix), `INSPIRATION.md`
   (reference teardowns), `RECREATION_AUDIT.md` (per-sample composition descriptions + outcomes),
   `RECREATION_PROGRESS.md` (44-row status table), `AUDIT.md`, **`DISPATCH_PLAYBOOK.md`** (the weekly internal
@@ -832,6 +859,10 @@ Self-test: `scratchpad/test_collision_nudge.py`. (Session 9; see `brain/DECISION
 brand (not AQ): weekly three-post planner, bento templates, copy and layout gates. It is NOT a Workflow A or
 B path and shares no code with `engine/`. Read `addons/shikshaq/README_ADDON.md` and its `brain/BRAIN.md`
 before touching it. Its source of truth lives outside this repo.
+**Update (2026-11-27).** The Shikshaq design language is now ALSO an engine module, `engine/shikshaq.py`, for
+posters, stories, pages and anything else (see the STANDING RULE at the top and `brain/SHIKSHAQ.md`). The Node addon
+remains the home of the WEEKLY PLANNER; its `src/tokens.mjs` was synced to the Python module on 2026-11-27 (it had
+drifted: old text ramp and orange-deep). When the site changes, refresh the snapshot per `brain/SHIKSHAQ.md` section 11.
 
 ## 12. CURRENT STATE / WHAT'S PENDING (honest — full detail in `brain/ENGINE_STATE.md`)
 - Workflow A: 3 archetypes fully self-correcting (`number_hero`, `radial_orbit`, `giant_type`);
@@ -861,7 +892,7 @@ before touching it. Its source of truth lives outside this repo.
   `test_recreation.py` (47) ·
   `test_stylebank.py` (64) · `test_buried_text.py` (29) · `test_repo_hygiene.py` (30) · `test_runqueue.py` (22) ·
   `test_dispatch.py` (25)** —
-  **482 assertions total across 16 files, all verified passing 2026-09-23**. `test_repo_hygiene.py`
+  **482 assertions total across 16 files, all verified passing 2026-09-23**. **Plus `test_shikshaq.py` (80), the Shikshaq format module, verified passing 2026-11-27**; it runs the module's gate against fixtures reproducing real bugs and EXECUTES the worked examples and scaffolds as shipped. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

@@ -1,10 +1,11 @@
-// Shikshaq tokens for posters. Values mirror src/index.css and
+// Shikshaq tokens for posters. Synced to engine/shikshaq.py on 2026-11-27 (secondary #6F675F, orangeDeep #A35200: the
+// site darkened its text ramp on 2026-11-06 and uses hsl(30 100% 32%) for brand-deep). Values mirror src/index.css and
 // src/lib/subject-palette.ts. If the site changes, change them here too;
 // selftest.mjs compares them against the live source files.
 export const C = {
   page: '#F9F5F1', card: '#FCFAF7', muted: '#F0EAE2', hairline: '#E7DFD5',
-  ink: '#1F1F1F', prose: '#4A443E', secondary: '#7B736B', panel: '#1B1A18',
-  orange: '#FF8000', orangeDeep: '#B35900', orangeTint: '#FFF4E8',
+  ink: '#1F1F1F', prose: '#4A443E', secondary: '#6F675F', panel: '#1B1A18',
+  orange: '#FF8000', orangeDeep: '#A35200', orangeTint: '#FFF4E8',
   indigo: '#4351FF', indigoDeep: '#2E3AD6', indigoTint: '#EDEEFF',
   mint: '#E3F7EC', mintSolid: '#34B268', peach: '#FCECDE',
 };
@@ -25,7 +26,7 @@ export const SUBJECT_SEEDS = {
 };
 export function subjectPalette(name) {
   const seed = SUBJECT_SEEDS[name];
-  if (!seed) return { tint: C.muted, solid: C.secondary, text: C.ink, meta: C.secondary, badgeText: '#FFFFFF' };
+  if (!seed) return { tint: C.muted, solid: '#7B736B', text: C.ink, meta: '#7B736B', badgeText: '#FFFFFF' };
   const { h, s, l, dark } = seed;
   return { tint: hslToHex(h, s, 93), solid: hslToHex(h, s, l), text: hslToHex(h, 45, 26),
            meta: hslToHex(h, 28, 34), badgeText: dark ? '#FFFFFF' : C.ink };
