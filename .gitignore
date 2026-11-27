@@ -61,3 +61,6 @@ engine/assets/sponsorship/
 training_samples/sponsorship_deck/
 scratchpad/sponsorship_private/
 out/decks/
+
+# drive_fetch.py caches each scraped Drive folder page here; regenerable, never source
+.claude/skills/aq-photo-carousel/scripts/.drive_cache/
