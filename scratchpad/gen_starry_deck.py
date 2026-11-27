@@ -459,7 +459,8 @@ def s_run(c):
     """Run of show (slide 27 since the new slide 16). User, 2026-11-26: the dhol box is removed (here that is the 'Opening' step, the dhol entry and opening of the original) and the supplied pictures
     go in, in the order given. SIX steps remain, FIVE pictures were supplied, so the sixth ('Closing moment') keeps a labelled blank. The House rules card spans two columns on row 2 so the 4x2 grid has no hole."""
     steps = [n for n in RUN if n != "Opening"]
-    pics = [("run_f.jpg", "50% 55%"), ("run_g.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("run_i.jpg", "50% 60%"), ("run_j.jpg", "50% 60%")]   # SECOND set (user, 2026-11-26) replaces run_a-e; run_f..j in the order sent
+    pics = [("run_decor.jpg", "50% 40%"),   # box 1 "Decor and venue setup": the user's tree-decorating photo (2026-11-27), replaces run_f
+             ("run_g.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("run_i.jpg", "50% 60%"), ("run_j.jpg", "50% 60%")]   # SECOND set (user, 2026-11-26) replaces run_a-e; run_f..j in the order sent
     cards = []
     for k, n in enumerate(steps):
         inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else real("dd_closing_1.jpg", "50% 50%", r=0)   # 6th step: the Disco Diwali deck's closing-moment picture (user, 2026-11-26)
