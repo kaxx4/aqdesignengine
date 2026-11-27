@@ -16,6 +16,12 @@ Repo: https://github.com/kaxx4/aqdesignengine — clone or locate the local chec
 isn't already the working directory. Nothing in this engine works without the actual `engine/`
 Python modules and the embedded brand assets in `engine/core.py`.
 
+## Is the brand Shikshaq? Stop. Use the other skill.
+
+If the ask names **Shikshaq / Shikshak** (the tuition-teacher and past-papers site), this engine's AQ palette, fonts,
+doodles and craft layer do NOT apply. Use the `shikshaq-design` skill, `brain/SHIKSHAQ.md` and `engine/shikshaq.py`.
+Check this BEFORE choosing a workflow below.
+
 ## The one non-negotiable principle
 
 **Every poster must be a direct outcome of the engine's rules.** If a piece's quality depends on
