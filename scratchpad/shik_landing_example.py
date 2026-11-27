@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.join(os.getcwd(), "engine"))
 import shikshaq as sk
 
 F = sk.FACTS
+P = sk.need("papers")   # asked each time (owner ruling 2026-11-27): export SHIKSHAQ_PAPERS=N after asking
 st, bt = F["subject_teachers"], F["board_teachers"]
 sp = F["sample_papers"]
 
@@ -17,7 +18,7 @@ copy = ["That paper you keep avoiding?", "Read it today.", "Every board, every c
         "Free past papers: ICSE, CBSE and ISC, read as questions with marks, chapters and figures. The first two questions need no account.",
         "Tell us the subject", "Subject, class and your area. Three taps, no account needed.",
         "No fees, no middleman, no commission.", "We list teachers, verify who they say they are, then get out of the way.",
-        f"{F['teachers']} verified teachers listed", f"{F['papers']} past papers, free to read", "Class 10 Maths"]
+        f"{F['teachers']} verified teachers listed", f"{P} past papers, free to read", "Class 10 Maths"]
 errs, warns = sk.copy_gate(copy)
 assert not errs, errs
 
@@ -43,7 +44,7 @@ body = (
                      ("chat", "Message on WhatsApp", "Talk to the teacher directly. Shikshaq never sits in the middle.")],
                     copy[6])
     + sk.stats_section("05", "No commission.", sk.mark("Ever."), copy[7],
-                       [(F["teachers"], "verified teachers listed", "teachers"), (F["papers"], "past papers, free to read", "papers"),
+                       [(F["teachers"], "verified teachers listed", "teachers"), (P, "past papers, free to read", "papers"),
                         ("₹0", "commission taken from a fee", "mint")])
     + sk.eyes_section("Still deciding?", "We’re watching out for you.", "Fill in the blanks and we’ll take you straight there.",
                       f"Show {F['teachers']} teachers")

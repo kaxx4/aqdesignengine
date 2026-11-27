@@ -42,9 +42,11 @@ choosing Workflow A, B or C:
 
 > 1. Read `brain/SHIKSHAQ.md` in full (the route table, tokens, layout grammar, gate, open decisions).
 > 2. Build with `engine/shikshaq.py` (`import shikshaq as sk`): `sk.poster(...)`, the section builders, `sk.doc(...)`.
->    Start from `scratchpad/shik_landing_example.py`, `scratchpad/shik_poster_example.py`, or
+>    Start from `scratchpad/shik_landing_example.py`, `scratchpad/shik_poster_example.py`, `scratchpad/shik_carousel_exam_practice.py`
+>    (a 5-slide carousel), `scratchpad/shik_remakes.py` (another brand's poster remade in the language), or
 >    `python engine/shikshaq.py scaffold poster|page <name>`.
-> 3. Every number comes from `sk.FACTS` and the copy passes `sk.copy_gate`. Render through `sk.render`
+> 3. Every number comes from `sk.FACTS` and the copy passes `sk.copy_gate`. **The paper count is ASKED EACH TIME** (owner ruling:
+>    the site shows 655 and 661): ask, then `sk.confirm("papers", N)`; `sk.need("papers")` raises until you do. Render through `sk.render`
 >    (the measured gate), then LOOK at the PNG (section 3 still binds).
 > 4. A flaw that is a general class becomes a rule in `engine/shikshaq.py` plus an assertion in
 >    `scratchpad/test_shikshaq.py` (section 8 still binds). Never patch one output.
@@ -892,7 +894,7 @@ drifted: old text ramp and orange-deep). When the site changes, refresh the snap
   `test_recreation.py` (47) ·
   `test_stylebank.py` (64) · `test_buried_text.py` (29) · `test_repo_hygiene.py` (30) · `test_runqueue.py` (22) ·
   `test_dispatch.py` (25)** —
-  **482 assertions total across 16 files, all verified passing 2026-09-23**. **Plus `test_shikshaq.py` (80), the Shikshaq format module, verified passing 2026-11-27**; it runs the module's gate against fixtures reproducing real bugs and EXECUTES the worked examples and scaffolds as shipped. `test_repo_hygiene.py`
+  **482 assertions total across 16 files, all verified passing 2026-09-23**. **Plus `test_shikshaq.py` (98), the Shikshaq format module, verified passing 2026-11-27**; it runs the module's gate against fixtures reproducing real bugs and EXECUTES the worked examples and scaffolds as shipped. `test_repo_hygiene.py`
   EXECUTES the §6 template and requires it to pass its own gate — the copy-paste
   skeleton carried a dead path for months precisely because nobody ever ran it.. All in `scratchpad/`.
   Run them before trusting the gate stack.

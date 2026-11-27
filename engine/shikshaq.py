@@ -292,7 +292,10 @@ FACTS = {
     "asOf": "2026-11-27",
     "source": "shikshaqkanitest production deployment (same Supabase project as shikshaq.in), "
               "read in a real browser. Re-read before publishing: counts move weekly.",
-    "teachers": 157, "papers": 655, "commission": 0, "free_questions": 2,
+    "teachers": 157, "papers": None, "commission": 0, "free_questions": 2,
+    # OWNER RULING 2026-11-27: the paper count is ASKED EACH TIME. The site disagrees with itself, so no figure is
+    # hardcoded. need("papers") raises until confirm("papers", N) (or env SHIKSHAQ_PAPERS) records the owner's answer.
+    "papers_candidates": {"655": "home hero, About, Auth", "661": "Browse cross-sell card"},
     "subject_teachers": {"Maths": 61, "English": 43, "Hindi": 34, "Chemistry": 32, "Biology": 30,
                          "Accounts": 26, "Computers": 11, "Psychology": 6},
     "board_teachers": {"ICSE": 155, "CBSE": 149, "IGCSE": 55, "IB": 38, "State": 75},
@@ -306,14 +309,38 @@ FACTS = {
     ],
     # Disagreements found between surfaces. A figure on this list needs one source chosen before use.
     "known_inconsistencies": [
-        "papers: 655 on the home hero, About and Auth; 661 on the Browse cross-sell card (2026-11-27).",
+        "papers: 655 on the home hero, About and Auth; 661 on the Browse cross-sell card (2026-11-27). Owner ruled: ASK EACH TIME.",
         "papers: the admin database holds far more rows than the 655 the public site counts as live.",
     ],
 }
 
+PAPERS_ASK = ("the paper count is ASKED EACH TIME (owner ruling, 2026-11-27): the site shows 655 on the home hero, About and "
+              "Auth and 661 on the Browse card. Ask the owner which to use, or read the live site, then "
+              "sk.confirm('papers', N) (or set SHIKSHAQ_PAPERS=N). Do not guess.")
+
+
+def need(key):
+    """A fact that must be CONFIRMED before use. Raises (naming the question to ask) instead of returning a stale figure."""
+    v = FACTS.get(key)
+    if v is None:
+        raise ShikshaqError(PAPERS_ASK if key == "papers" else f"fact {key!r} is not confirmed: ask the owner or read the live site")
+    return v
+
+
+def confirm(key, value, source="owner, this session"):
+    """Record an answer for a fact that is asked each time. It lasts for this process only."""
+    FACTS[key] = value
+    FACTS.setdefault("confirmed", {})[key] = source
+    return value
+
+
+if os.environ.get("SHIKSHAQ_PAPERS"):
+    confirm("papers", int(os.environ["SHIKSHAQ_PAPERS"]), "env SHIKSHAQ_PAPERS")
+
+
 _BANNED = [
     (re.compile(r"[\u2014\u2013]"), "em or en dash (site rule: none in copy)"),
-    (re.compile(r"\b(guarantee[ds]?|cheapest|best (teacher|tutor)s?|top[- ]rated|number one|#1|100%)\b", re.I),
+    (re.compile(r"\b(guarantee[ds]?|cheapest|best (teacher|tutor)s?|top[- ]rated|number one)\b|#1|(?<![\w.])100\s*%", re.I),
      "unprovable superlative"),
     (re.compile(r"\b(thousands|lakhs?|millions?|trusted by|loved by|most popular|everyone)\b", re.I),
      "unsourced social proof"),
@@ -359,7 +386,10 @@ def copy_gate(strings, facts=None, extra_ok=(), today=None):
             raw = m.group(0).lstrip("\u20B9")
             ctx = re.search(r"Class(es)? (%s)\b|\b%s (Class|step)|IV to XII|\b(19|20)\d\d\b" % (re.escape(raw), re.escape(raw)), s)
             if raw not in ok and raw.replace(",", "") not in ok and not ctx:
-                errors.append(f"number {raw!r} does not trace to a fact: {s[:70]!r}")
+                if raw in facts.get("papers_candidates", {}) and facts.get("papers") is None:
+                    errors.append(f"number {raw!r} is an UNCONFIRMED paper count: " + PAPERS_ASK)
+                else:
+                    errors.append(f"number {raw!r} does not trace to a fact: {s[:70]!r}")
     try:
         age = ((today or datetime.date.today()) - datetime.date.fromisoformat(facts["asOf"])).days
         if age > 14:
@@ -497,13 +527,14 @@ p{text-wrap:pretty}
 .avatar i{font-style:normal;font-size:.34em;letter-spacing:0}
 .forks{display:flex;flex-direction:column}@media(min-width:900px){.forks{flex-direction:row}.forks .fork{flex:1}}
 .fork{position:relative;padding:22px;overflow:hidden;min-height:176px;display:flex;flex-direction:column;justify-content:space-between;border-radius:30px}
-@media(min-width:900px){.fork{padding:28px;min-height:0}}
+@media(min-width:900px){.fork{padding:100px 28px 28px;min-height:0}}   /* the nav pill overlays the top 72px of the first panels: reserve it INSIDE the panel (the live site's NavReserve) */
+.fork .sticker{top:14px;right:16px}@media(min-width:900px){.fork .sticker{top:86px}}
 .fork .lab{font-size:13px;color:var(--text2);margin-top:22px}
 .fork .big{font-family:'Archivo';font-size:25px;font-weight:800;letter-spacing:-.045em;line-height:1.05;margin-top:2px;max-width:58%}
 @media(min-width:900px){.fork .big{max-width:none}}
 .fork.peach .big b{color:var(--orange-deep)}.fork.lav .big b{color:var(--indigo-deep)}.fork .big span{font-weight:400}
 .mascot{position:absolute;right:-14px;bottom:-26px;width:132px;height:132px}
-@media(min-width:900px){.mascot{width:170px;height:170px;right:18px;bottom:auto;top:50%;transform:translateY(-50%)}.fork.lav .mascot{top:auto;bottom:-30px;transform:none;width:120px;height:120px;right:16px}}
+@media(min-width:900px){.mascot{width:170px;height:170px;right:18px;bottom:auto;top:58%;transform:translateY(-50%)}.fork.lav .mascot{top:auto;bottom:-30px;transform:none;width:120px;height:120px;right:16px}}
 .nav{position:absolute;top:12px;left:12px;right:12px;height:56px;border-radius:999px;background:var(--card);box-shadow:0 8px 28px -6px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 20px;z-index:5}
 .nav img{height:28px}.nav .links,.nav .cta{display:none}
 .burger{width:40px;height:40px;border-radius:50%;background:var(--muted);box-shadow:var(--ring);display:grid;place-items:center}
@@ -529,6 +560,16 @@ p{text-wrap:pretty}
 .foot .small{margin-top:28px;font-size:13px;color:rgba(249,245,241,.6);max-width:60ch}
 .wordmark{font-family:'Archivo';font-weight:900;font-stretch:125%;font-size:17.2vw;letter-spacing:-.05em;line-height:.8;text-align:center;color:var(--page);margin-top:30px;height:12.6vw;overflow:hidden;white-space:nowrap}
 @media(min-width:900px){.wordmark{font-size:min(17.2vw,290px);height:min(12.6vw,212px)}}
+
+.mark.papers{background:var(--indigo);color:#fff}.mark.mint{background:var(--mint-solid);color:var(--ink)}
+.pchip{display:inline-flex;align-items:center;border-radius:999px;font-weight:800;white-space:nowrap;box-shadow:var(--ring-card)}
+.pchip.bone{background:var(--card);color:var(--ink)}.pchip.dark{background:var(--panel);color:var(--page)}
+.pchip.orange{background:var(--orange);color:var(--ink)}.pchip.indigo{background:var(--indigo);color:#fff}
+.pchip.dash{background:transparent;color:inherit;box-shadow:none;border:3px dashed currentColor}
+.cardrow{display:flex;align-items:center;justify-content:space-between;gap:24px}
+/* the site's own graph-paper grounds (index.css device I) */
+.grid-paper-fine{--grid-line-color:rgba(31,31,31,.07);background-image:repeating-linear-gradient(0deg,var(--grid-line-color) 0 1px,transparent 1px 12px),repeating-linear-gradient(90deg,var(--grid-line-color) 0 1px,transparent 1px 12px)}
+.grid-paper-ruled{--grid-line-color:rgba(31,31,31,.09);background-image:repeating-linear-gradient(0deg,var(--grid-line-color) 0 1px,transparent 1px 28px)}
 /* poster furniture */
 .p{position:relative;overflow:hidden;background:var(--page)}
 .pp{position:absolute;border-radius:64px;overflow:hidden}
@@ -676,7 +717,7 @@ def fork(kind, label, bold, plain, sticker_text=None):
     mode = "teachers" if kind == "teachers" else "papers"
     bg = "peach" if mode == "teachers" else "lav"
     tile = f'<div class="tile {"o" if mode == "teachers" else "i"}">{icon("people" if mode == "teachers" else "book", 20)}</div>'
-    st = sticker(sticker_text, 4, style="top:14px;right:16px") if sticker_text else ""
+    st = sticker(sticker_text, 4) if sticker_text else ""
     return (f'<div class="fork {bg}" style="background:{MODES[mode]["tint"]}">{st}<div>{tile}<p class="lab">{label}</p>'
             f'<p class="big"><b>{bold}</b> <span>{plain}</span></p></div>'
             f'{mascot("orange" if mode == "teachers" else "indigo")}</div>')
@@ -758,6 +799,97 @@ def emph(text):
     return f"<em>{text}</em>"
 
 
+def sun(size=160, fill="#FFC700"):
+    """The campaign's burst: a spiky sun with squinting happy eyes (ported from addons/shikshaq/campaign/characters.mjs)."""
+    import math
+    d = ""
+    for i in range(28):
+        a = i / 28.0 * math.pi * 2
+        r = 41 if i % 2 else 49
+        d += ("L" if i else "M") + f"{50 + r * math.cos(a):.1f} {50 + r * math.sin(a):.1f}"
+    face = ('<path d="M30 44 L40 49 L30 54" stroke="#1F1F1F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+            '<path d="M70 44 L60 49 L70 54" stroke="#1F1F1F" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+            '<path d="M40 62 Q50 70 60 62" stroke="#1F1F1F" stroke-width="4" fill="none" stroke-linecap="round"/>')
+    return (f'<svg width="{size}" height="{size}" viewBox="0 0 100 100" aria-hidden="true" data-art><path d="{d}Z" fill="{fill}"/>{face}</svg>')
+
+
+def lobe(size=160, fill="#5B7BD9"):
+    """The campaign's four-lobe X with a face (ported from characters.mjs)."""
+    l = lambda a: f'<ellipse cx="50" cy="50" rx="15" ry="46" fill="{fill}" transform="rotate({a} 50 50)"/>'
+    face = ('<circle cx="38" cy="48" r="5" fill="#1F1F1F"/><circle cx="62" cy="48" r="5" fill="#1F1F1F"/>'
+            '<path d="M40 60 Q50 68 60 60" stroke="#1F1F1F" stroke-width="4.5" fill="none" stroke-linecap="round"/>')
+    return (f'<svg width="{size}" height="{size}" viewBox="0 0 100 100" aria-hidden="true" data-art>{l(45)}{l(135)}'
+            f'<circle cx="50" cy="50" r="22" fill="{fill}"/>{face}</svg>')
+
+
+def art(html, style):
+    """Position decorative art. Marked data-art so the gate keeps it off the words."""
+    return f'<div data-art style="position:absolute;{style}">{html}</div>'
+
+
+def place(html, style):
+    """Position a TEXT-BEARING object (a chip, a badge). Unlike art(), it is not decorative, so the gate treats its words as words."""
+    return f'<div style="position:absolute;{style}">{html}</div>'
+
+
+def pchip(text, tilt=0, tone="bone", size=40, extra=""):
+    """A poster-scale chip/sticker (inline, not absolute). tone: bone|dark|orange|indigo|dash."""
+    if not -9 <= tilt <= 9:
+        raise ShikshaqError(f"chip tilt {tilt}: the language allows -9 to 9 degrees")
+    return (f'<span class="pchip {tone}" style="height:{int(size*1.7)}px;padding:0 {int(size*.7)}px;font-size:{size}px;'
+            f'transform:rotate({tilt}deg);{extra}">{text}</span>')
+
+
+def swipe_arrow(color="currentColor", w=190):
+    """The carousel 'next' cue: one long drawn arrow."""
+    return (f'<svg width="{w}" height="40" viewBox="0 0 190 40" fill="none" stroke="{color}" stroke-width="5" stroke-linecap="round" '
+            f'stroke-linejoin="round" aria-hidden="true" data-art><path d="M6 21 C60 17 110 24 180 20"/><path d="M158 6 L182 20 L158 34"/></svg>')
+
+
+def index_tag(i, n, color=None):
+    c = f"color:{color};" if color else ""
+    return f'<span class="eyelab" style="font-size:26px;{c}">{i:02d} / {n:02d}</span>'
+
+
+def slide_header(i, n, on_dark=False, color=None):
+    """Logo left, index right: the carousel's constant top row. The logo goes white on dark only."""
+    return (f'<div style="display:flex;justify-content:space-between;align-items:center">{logo(on_dark, 56)}'
+            f'{index_tag(i, n, color)}</div>')
+
+
+def contact_sheet(files, out, cols=None, cell=360):
+    """One image of every slide side by side, judged like a feed grid (the carousel's looking gate)."""
+    from PIL import Image
+    ims = [Image.open(f).convert("RGB") for f in files]
+    cols = cols or len(ims)
+    h = int(cell * ims[0].height / ims[0].width)
+    rows = (len(ims) + cols - 1) // cols
+    sheet = Image.new("RGB", (cols * (cell + 16) + 16, rows * (h + 16) + 16), (237, 231, 223))
+    for k, im in enumerate(ims):
+        sheet.paste(im.resize((cell, h)), (16 + (k % cols) * (cell + 16), 16 + (k // cols) * (h + 16)))
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    sheet.save(out)
+    return out
+
+
+async def render_carousel(slides, out_dir, name, W=1080, H=1350, scale=1, copy=None):
+    """Render a list of slide HTML bodies (each from sk.poster) through ONE browser, gate each, and write a contact sheet.
+    copy: every visible string in the carousel; it must pass copy_gate or this raises before anything is drawn."""
+    if copy is not None:
+        errs, warns = copy_gate(copy)
+        for w in warns:
+            print("[copy] note:", w)
+        if errs:
+            raise ShikshaqError("copy gate failed:\n  " + "\n  ".join(errs))
+    results = []
+    async with session() as s:
+        for k, body in enumerate(slides, 1):
+            html = doc(body, kind="poster", W=W, H=H, title=f"{name} {k}/{len(slides)}")
+            results.append(await s.render(html, os.path.join(out_dir, f"{name}-{k:02d}.png"), W, H, kind="poster", scale=scale, name=f"{name}-{k:02d}"))
+    contact_sheet([r.png for r in results], os.path.join(out_dir, f"{name}-sheet.png"))
+    return results
+
+
 def doc(body, kind="page", W=None, H=None, title="Shikshaq", extra_css=""):
     """Wrap a body in a full HTML document. kind='poster' fixes the canvas to W x H and the gate measures
     against it; kind='page' is a normal scrolling page measured against the viewport."""
@@ -807,16 +939,22 @@ GATE_JS = r"""
    let base={r:249,g:245,b:241,a:1};for(let i=layers.length-1;i>=0;i--)base=over(layers[i],base);return base};
  const root=document.querySelector('.p')||document.body;
  const vis=el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return r.width>0&&r.height>0&&cs.display!=='none'&&cs.visibility!=='hidden'};
+ // a leaf's layout box in the frame of a transformed ancestor (null if the offset chain does not reach it)
+ const local=(el,T)=>{let x=0,y=0,e=el;while(e&&e!==T){x+=e.offsetLeft;y+=e.offsetTop;e=e.offsetParent}
+   return e===T?{left:x,top:y,right:x+el.offsetWidth,bottom:y+el.offsetHeight}:null};
  const leaves=[];
  root.querySelectorAll('*').forEach(el=>{
    if(/^(STYLE|SCRIPT|SVG|PATH|svg)$/i.test(el.tagName)||el.closest('[data-deco]')||el.closest('svg'))return;
    const own=[...el.childNodes].some(n=>n.nodeType===3&&n.textContent.trim());
    if(!own||!vis(el))return;
    // GLYPH box: union of the element's OWN text nodes, not its block box (a padded block is not text)
-   let u=null;[...el.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).forEach(n=>{const rg=document.createRange();rg.selectNodeContents(n);
-     const q=rg.getBoundingClientRect();if(q.width>0)u=u?{left:Math.min(u.left,q.left),right:Math.max(u.right,q.right),top:Math.min(u.top,q.top),bottom:Math.max(u.bottom,q.bottom)}:{left:q.left,right:q.right,top:q.top,bottom:q.bottom}});
+   // one rect per LINE of the element's own text (a paragraph's union box is mostly air beside a short last line)
+   let u=null;const rs=[];[...el.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim()).forEach(n=>{const rg=document.createRange();rg.selectNodeContents(n);
+     [...rg.getClientRects()].forEach(q=>{if(q.width>1&&q.height>1){rs.push({left:q.left,right:q.right,top:q.top,bottom:q.bottom});
+       u=u?{left:Math.min(u.left,q.left),right:Math.max(u.right,q.right),top:Math.min(u.top,q.top),bottom:Math.max(u.bottom,q.bottom)}:{left:q.left,right:q.right,top:q.top,bottom:q.bottom}}})});
    if(!u)return;u.width=u.right-u.left;u.height=u.bottom-u.top;
-   leaves.push({el,r:u,txt:el.textContent.trim().slice(0,28)});
+   let T=null;for(let a=el.parentElement;a&&a!==root;a=a.parentElement){const tf=getComputedStyle(a).transform;if(tf&&tf!=='none'){T=a;break}}
+   leaves.push({el,r:u,rs,T,txt:el.textContent.trim().slice(0,28)});
  });
  // S9 horizontal overflow (pages)
  if(kind==='page'){const de=document.documentElement;
@@ -853,14 +991,34 @@ GATE_JS = r"""
  // text-on-text collisions
  for(let i=0;i<leaves.length;i++)for(let j=i+1;j<leaves.length;j++){const a=leaves[i],b=leaves[j];
    if(a.el.contains(b.el)||b.el.contains(a.el))continue;
-   const ox=Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left),oy=Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top);
-   if(ox>8&&oy>8)out.push(['HARD','COLLISION "'+a.txt+'" x "'+b.txt+'" ('+Math.round(ox)+'x'+Math.round(oy)+')'])}
+   if(a.T&&a.T===b.T){const A=local(a.el,a.T),B=local(b.el,b.T);
+     if(A&&B){const ox=Math.min(A.right,B.right)-Math.max(A.left,B.left),oy=Math.min(A.bottom,B.bottom)-Math.max(A.top,B.top);
+       if(ox>8&&oy>8)out.push(['HARD','COLLISION "'+a.txt+'" x "'+b.txt+'" ('+Math.round(ox)+'x'+Math.round(oy)+', measured in the tilted group\'s own frame)']);continue}}
+   let hit=null;a.rs.forEach(p=>b.rs.forEach(q=>{const ox=Math.min(p.right,q.right)-Math.max(p.left,q.left),oy=Math.min(p.bottom,q.bottom)-Math.max(p.top,q.top);
+     if(ox>8&&oy>8&&(!hit||ox*oy>hit[0]*hit[1]))hit=[ox,oy]}));
+   if(hit)out.push(['HARD','COLLISION "'+a.txt+'" x "'+b.txt+'" ('+Math.round(hit[0])+'x'+Math.round(hit[1])+')'])}
+ // TEXT-COVERED: a line of type partly painted over by an unrelated opaque object (a pill sitting on the last line of a paragraph).
+ // Walk the paint stack at 9 points per line; elements above the text that have an opaque fill and are not its ancestor/descendant hide it.
+ leaves.forEach(l=>{if(l.el.closest('[data-crop]'))return;let worst=null;
+   l.rs.forEach(q=>{let hidden=0,seen=0,by=null;
+     for(let i=0;i<3;i++)for(let j=0;j<3;j++){const x=q.left+(q.right-q.left)*(i+.5)/3,y=q.top+(q.bottom-q.top)*(j+.5)/3;
+       const st=document.elementsFromPoint(x,y),it=st.findIndex(e=>e===l.el||l.el.contains(e));if(it===-1)continue;seen++;
+       const cover=st.slice(0,it).find(e=>{if(e.contains(l.el)||l.el.contains(e)||e.closest('svg')||e.dataset&&e.dataset.deco!==undefined)return false;
+         const cs=getComputedStyle(e);return rgb(cs.backgroundColor).a>.9||cs.backgroundImage!=='none'});
+       if(cover){hidden++;by=cover}}
+     if(seen&&hidden/seen>=.25&&(!worst||hidden>worst.h))worst={h:hidden,n:seen,by}});
+   if(worst)out.push(['HARD','TEXT-COVERED "'+l.txt+'" is '+Math.round(100*worst.h/worst.n)+'% hidden under '+worst.by.tagName.toLowerCase()+'.'+String(worst.by.className).split(' ')[0]+(worst.by.textContent.trim()?' "'+worst.by.textContent.trim().slice(0,22)+'"':'')])});
  // ART-ON-TEXT: a mascot or other art that lands on type (art clipped by an overflow:hidden parent only counts where it is visible)
  root.querySelectorAll('svg.mascot,[data-art]').forEach(sv=>{let r=sv.getBoundingClientRect();
    for(let a=sv.parentElement;a&&a!==document.body;a=a.parentElement){if(/hidden|clip/.test(getComputedStyle(a).overflow)){const q=a.getBoundingClientRect();
      r={left:Math.max(r.left,q.left),right:Math.min(r.right,q.right),top:Math.max(r.top,q.top),bottom:Math.min(r.bottom,q.bottom)}}}
-   leaves.forEach(l=>{const ox=Math.min(r.right,l.r.right)-Math.max(r.left,l.r.left),oy=Math.min(r.bottom,l.r.bottom)-Math.max(r.top,l.r.top);
-     if(ox>8&&oy>8)out.push(['HARD','ART-ON-TEXT art lands on "'+l.txt+'" ('+Math.round(ox)+'x'+Math.round(oy)+')'])})});
+   leaves.forEach(l=>{if(sv.contains(l.el))return;let hit=null;l.rs.forEach(q=>{const ox=Math.min(r.right,q.right)-Math.max(r.left,q.left),oy=Math.min(r.bottom,q.bottom)-Math.max(r.top,q.top);
+       if(ox>8&&oy>8&&(!hit||ox*oy>hit[0]*hit[1]))hit=[ox,oy,(Math.max(r.left,q.left)+Math.min(r.right,q.right))/2,(Math.max(r.top,q.top)+Math.min(r.bottom,q.bottom))/2]});
+     if(hit){ // art peeking from BEHIND an opaque panel is covered, not landing: walk the paint stack at the overlap
+       const st=document.elementsFromPoint(hit[2],hit[3]),ia=st.findIndex(e=>sv.contains(e));
+       const opaque=e=>{const cs=getComputedStyle(e);const c=rgb(cs.backgroundColor);return (c.a>.9||cs.backgroundImage!=='none')&&!sv.contains(e)};
+       const covered=ia===-1||st.slice(0,ia).some(opaque);
+       if(!covered)out.push(['HARD','ART-ON-TEXT art lands on "'+l.txt+'" ('+Math.round(hit[0])+'x'+Math.round(hit[1])+')'])}})});
  // 44px targets on anything declared interactive
  document.querySelectorAll('[data-tap]').forEach(e=>{if(!vis(e))return;const r=e.getBoundingClientRect();
    if(Math.min(r.width,r.height)<43.5)out.push(['HARD','TAP-TARGET '+Math.round(r.width)+'x'+Math.round(r.height)+' < 44 on "'+e.textContent.trim().slice(0,20)+'"'])});
@@ -954,7 +1112,8 @@ import shikshaq as sk
 
 W, H = sk.SIZES["feed"]
 F = sk.FACTS
-headline = [f"{{F['papers']}} board papers.", "Free to read."]
+P = sk.need("papers")          # asked each time: raises with the question until sk.confirm("papers", N) or SHIKSHAQ_PAPERS=N
+headline = [f"{{P}} board papers.", "Free to read."]
 errs, warns = sk.copy_gate(headline + ["First 2 questions need no account"])
 assert not errs, errs
 
@@ -982,7 +1141,7 @@ body = (sk.nav()
         + sk.hero("Board exams \\u00b7 ICSE, CBSE, ISC", "That paper you keep avoiding?", "Read it today.",
                   counts=[(f"Maths \\u00b7 {{F['subject_teachers']['Maths']}}", "Maths")], quick=["Class 10", "Maths"])
         + sk.stats_section("05", "No commission.", sk.mark("Ever."), "The fee you agree is the fee they keep.",
-                           [(F["teachers"], "verified teachers listed", "teachers"), (F["papers"], "past papers, free to read", "papers")])
+                           [(F["teachers"], "verified teachers listed", "teachers"), (sk.need("papers"), "past papers, free to read", "papers")])
         + sk.footer("Shikshaq is " + sk.emph("verified teachers") + " in Kolkata.", small="Free to search, free to contact."))
 for w, h, tag in ((390, 844, "m"), (1280, 800, "d")):
     html = sk.doc(body, kind="page", title="{name}")

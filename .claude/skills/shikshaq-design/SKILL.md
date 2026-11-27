@@ -18,13 +18,15 @@ thick outlines or hard offset shadows apply. Using them is the failure this skil
    - page / screen / section: `engine/shikshaq.py` section builders, start from `scratchpad/shik_landing_example.py`
    - poster / story / square: `sk.poster([...])`, start from `scratchpad/shik_poster_example.py`, or
      `python engine/shikshaq.py scaffold poster|page <name>` (a starter that already passes the gate)
+   - a carousel: `scratchpad/shik_carousel_exam_practice.py` (`sk.render_carousel` gates every slide and writes a contact sheet)
+   - a reference poster to remake: keep the MECHANISM, rebuild it with Shikshaq content (`scratchpad/shik_remakes.py`); never copy another brand's photos, art or wording
    - the weekly three-post Instagram plan: `addons/shikshaq/` (Node)
-3. Use `sk.FACTS` for every number. If a figure is missing or older than 14 days, read the live site (or ask) and update
+3. Use `sk.FACTS` for every number. **The paper count is ASKED EACH TIME** (owner ruling 2026-11-27; the site shows 655 and 661): ask which, then `sk.confirm("papers", N)`. If a figure is missing or older than 14 days, read the live site (or ask) and update
    `FACTS`; never write a plausible number. Check `FACTS.known_inconsistencies` first.
 4. Run the copy through `sk.copy_gate`, render through `sk.render` (the measured gate), fix what it names.
 5. **Look at the PNG** (the Read tool shows it). The numeric gate passed visibly wrong posters during the build.
 6. If the flaw is a general class, encode it as a rule in `engine/shikshaq.py` plus an assertion in
-   `scratchpad/test_shikshaq.py` (80 assertions), and note it in `brain/SHIKSHAQ.md` section 10. Never patch one output.
+   `scratchpad/test_shikshaq.py` (98 assertions), and note it in `brain/SHIKSHAQ.md` section 10. Never patch one output.
 
 ## Hard rules (each is checked, not hoped for)
 

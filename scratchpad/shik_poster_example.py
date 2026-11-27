@@ -11,8 +11,9 @@ import shikshaq as sk
 
 W, H = sk.SIZES["feed"]
 F = sk.FACTS
+P = sk.need("papers")   # asked each time (owner ruling 2026-11-27): export SHIKSHAQ_PAPERS=N after asking
 sp = F["sample_papers"]
-line1, line2 = f"{F['papers']} board papers.", "Free to read."
+line1, line2 = f"{P} board papers.", "Free to read."
 sticker_txt = f"First {F['free_questions']} questions need no account"
 copy = [line1, line2, sticker_txt, "Read the paper before it reads you.", "Browse past papers", "Free to read. Always."]
 errs, warns = sk.copy_gate(copy)

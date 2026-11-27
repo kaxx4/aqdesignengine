@@ -9,7 +9,11 @@ and built (2026-11-27), or a rule the site itself states:
   * white-ish type on a pale card, an em dash, a 38px "button", a mascot landing on a headline
   * a numbered heading's ordinal reported as colliding with its line (a padded BLOCK is not text)
   * the site's own heavy-orange-on-bone payoff measures 2.42:1: it passes ONLY when declared
-  * counts that disagree between surfaces (655 vs 661) are recorded, not silently picked
+  * counts that disagree between surfaces (655 vs 661) are recorded, and the OWNER RULED (2026-11-27) that the paper count
+    is ASKED EACH TIME: need("papers") raises until it is confirmed
+  * a pill sat on the last line of a paragraph and the gate said CLEAN (TEXT-COVERED); rotated text read as colliding with
+    its own neighbours (AABB of a tilted line); a mascot peeking from behind a panel read as 'landing' on the text over it;
+    a paragraph's union box counted the empty space beside its short last line (per-LINE boxes)
 
 Run:  PYTHONIOENCODING=utf-8 python scratchpad/test_shikshaq.py
 """
@@ -77,15 +81,27 @@ ok(sk.palette_from_key("") == sk.FALLBACK_PALETTE, "palette_from_key of nothing 
 
 # ── facts + copy gate ───────────────────────────────────────────────────────────────────────
 F = sk.FACTS
-ok(F["teachers"] == 157 and F["papers"] == 655 and F["commission"] == 0, "facts carry the figures read off the live data")
+ok(F["teachers"] == 157 and F["commission"] == 0, "facts carry the figures read off the live data")
+ok(F["papers"] is None, "the paper count is NOT hardcoded: the owner ruled it is asked each time (the site shows 655 and 661)")
+try:
+    sk.need("papers"); asked = False
+except sk.ShikshaqError as e:
+    asked = "ASKED EACH TIME" in str(e) and "661" in str(e)
+ok(asked, "need('papers') raises, and the message carries the question to ask (655 vs 661)")
 ok(len(F["known_inconsistencies"]) >= 1 and "661" in F["known_inconsistencies"][0], "the 655-vs-661 disagreement between surfaces is RECORDED")
-e, _ = sk.copy_gate(["655 board papers.", "Free to read."]); ok(e == [], "a number that IS a fact passes")
+e, _ = sk.copy_gate(["655 board papers."]); ok(any("UNCONFIRMED paper count" in x for x in e), "an UNCONFIRMED candidate paper count fails with the question, not a generic message")
+sk.confirm("papers", 655)
+e, _ = sk.copy_gate(["655 board papers.", "Free to read."]); ok(e == [], "once the owner confirms, that figure passes")
+e, _ = sk.copy_gate(["661 board papers."]); ok(any("does not trace" in x for x in e), "the OTHER candidate still fails once one is confirmed")
+sk.FACTS["papers"] = None; sk.FACTS.get("confirmed", {}).pop("papers", None)
 e, _ = sk.copy_gate(["700 board papers."]); ok(any("does not trace" in x for x in e), "an invented number fails")
 e, _ = sk.copy_gate(["Class 10 Maths", "ICSE 2026"]); ok(e == [], "a class numeral in context and a year pass")
 e, _ = sk.copy_gate(["Free to read — always"]); ok(any("dash" in x for x in e), "an em dash fails (site rule)")
 e, _ = sk.copy_gate(["Free – always"]); ok(any("dash" in x for x in e), "an en dash fails too")
 e, _ = sk.copy_gate(["Trusted by thousands of parents"]); ok(len(e) >= 1, "unsourced social proof fails")
 e, _ = sk.copy_gate(["The best teacher in Kolkata"]); ok(any("superlative" in x for x in e), "an unprovable superlative fails")
+e, _ = sk.copy_gate(["100% free!"]); ok(any("superlative" in x for x in e), "'100% free!' is caught AS a superlative (\\b after % never matched, so it only failed as an untraceable number)")
+e, _ = sk.copy_gate(["Class 100 papers", "Number #1 site"]); ok(len(e) == 1 and "#1" in e[0], "'Class 100' is not a '100%' claim, but '#1' is")
 _, w = sk.copy_gate(["ok"], today=datetime.date(2027, 3, 1)); ok(any("days old" in x for x in w), "facts older than 14 days WARN")
 _, w = sk.copy_gate(["ok"], today=datetime.date(2026, 11, 28)); ok(w == [], "fresh facts do not warn")
 
@@ -114,6 +130,8 @@ ok(len([f for f in os.listdir("training_samples/shikshaq") if f.endswith(".jpg")
 ok("font-stretch:62% 125%" in sk.font_css() and "base64," in sk.font_css(), "fonts are EMBEDDED with the Archivo width axis, no network")
 
 # ── the GATE: each fixture is a bug that really shipped, run through a real browser ─────────
+os.environ["SHIKSHAQ_PAPERS"] = "655"   # stands in for the owner's answer; examples import a fresh shikshaq that reads it
+
 def page(body, extra=""):
     return sk.doc(body, kind="page", extra_css=extra)
 
@@ -162,6 +180,27 @@ async def gate_tests():
         await g("nofont", "<!doctype html><body><p style='font-size:30px'>hello</p></body>", 390, 400, "page")
         # the padded-block ordinal must NOT read as a collision with its own line
         await g("numbered", page('<section class="panel bone"><div class="wrap">%s</div></section>' % sk.numbered_heading("02", "Or go straight", "to the subject")), 390, 844, "page")
+
+        # per-LINE boxes: a mascot/tick right of a SHORT last line is not on the text (a paragraph's union box is mostly air)
+        para = ('<div style="position:relative;width:700px;padding:20px"><p style="font-size:34px;line-height:1.4">'
+                'This is a long paragraph of body copy that wraps onto several lines and ends short.</p>%s</div>')
+        await g("perline", poster(para % sk.art(sk.sun(80), "right:40px;bottom:14px")), 1080, 600, "poster")
+        # art peeking from BEHIND an opaque panel is covered, not landing
+        behind = ('<div style="position:relative;padding:60px"><div data-art style="position:absolute;left:150px;top:30px;z-index:0">%s</div>'
+                  '<div style="position:relative;z-index:2;background:var(--mint);border-radius:60px;padding:40px"><p style="font-size:60px">Can you explain this?</p></div></div>' % sk.mascot("orange", cls="", size=200))
+        await g("art_behind", poster(behind), 1080, 600, "poster")
+        # a pill sitting on the last line of a paragraph
+        covered = ('<div style="position:relative;padding:40px"><p style="font-size:34px;line-height:1.4;width:600px">On WhatsApp, free. Shikshaq never sits in the middle of it.</p>'
+                   '<span class="pill wa" style="position:absolute;left:40px;top:100px;height:84px">Message on WhatsApp</span></div>')
+        await g("text_covered", poster(covered), 1080, 600, "poster")
+        # tilted card: lines of one rotated group do not collide with each other...
+        tilted = ('<div style="position:absolute;left:200px;top:120px;width:700px;transform:rotate(-9deg);background:var(--card);padding:40px;border-radius:30px">'
+                  '<div style="font-size:90px;font-weight:800;line-height:1">We cannot show</div><div style="font-size:90px;font-weight:800;line-height:1;margin-top:6px">you yet.</div>'
+                  '<p style="font-size:34px;margin-top:20px">More subjects are on the way.</p></div>')
+        await g("tilted", poster(tilted), 1080, 600, "poster")
+        # ...but a REAL overlap inside the tilted group still does
+        tilted_bad = tilted.replace('margin-top:6px', 'margin-top:-60px')
+        await g("tilted_bad", poster(tilted_bad), 1080, 600, "poster")
         # the two worked examples must come out clean at both sizes
         ex = _load_example("shik_landing_example")
         a, b = await ex.main()
@@ -191,6 +230,11 @@ ok(R["accent_declared"].clean and any("ACCENT-DISPLAY" in m for m in R["accent_d
 ok(has(R["accent_small"], "CONTRAST"), "the accent-display exception does not stretch down to 20px type")
 ok(has(R["nofont"], "FONT-FALLBACK"), "a document that never embeds Archivo/Geist fails (every word would be in a fallback face)")
 ok(R["numbered"].clean and not any("COLLISION" in m for m in R["numbered"].hard), "a numbered heading's ordinal does not collide with its own line (glyph boxes, not block boxes)")
+ok(R["perline"].clean, "per-LINE boxes: art beside a short last line is not 'on' the paragraph (a union box counted the air)")
+ok(R["art_behind"].clean, "art peeking from behind an opaque panel is covered, not landing on the text above it")
+ok(has(R["text_covered"], "TEXT-COVERED"), "a pill sitting on a paragraph's last line is caught (the gate said CLEAN before this check)")
+ok(R["tilted"].clean, "lines of one TILTED card do not collide with each other (AABB of a rotated line over-reports)")
+ok(has(R["tilted_bad"], "COLLISION") and "tilted group" in " ".join(R["tilted_bad"].hard), "...but a REAL overlap inside the tilted group is still caught, and says how it was measured")
 ok(R["landing_m"].clean and R["landing_d"].clean, "the landing-page worked example is CLEAN at 390 and 1280")
 
 # ── the poster example and the scaffolds must run clean, as shipped ─────────────────────────
@@ -208,5 +252,21 @@ for kind in ("poster", "page"):
     os.remove(f"scratchpad/shik__selftest_{kind}.py")
 rc, outp = run([sys.executable, "engine/shikshaq.py", "selftest"])
 ok(rc == 0, "the CLI selftest agrees with the module")
+
+# ── carousel path, remakes, and the new builders ────────────────────────────────────────────
+ok(raises(lambda: sk.pchip("x", tilt=12)), "a chip tilted beyond 9 degrees is refused")
+ok('data-art' in sk.sun(100) and 'data-art' in sk.lobe(100) and 'data-art' in sk.swipe_arrow(), "decorative characters and the swipe arrow are marked data-art for the gate")
+ok('data-art' not in sk.place(sk.pchip("hi"), "left:0"), "place() is for TEXT-bearing objects and is NOT marked as art")
+try:
+    asyncio.run(sk.render_carousel([], "out/shikshaq", "_t", copy=["100% free!", "Free \u2014 always"]))
+    refused = False
+except sk.ShikshaqError as e:
+    refused = "copy gate failed" in str(e) and "superlative" in str(e)
+ok(refused, "render_carousel refuses a carousel whose copy breaks the gate ('100% free!', a dash) before drawing anything")
+for script, label in (("scratchpad/shik_carousel_exam_practice.py", "the 5-slide carousel remake"), ("scratchpad/shik_remakes.py", "the three poster remakes")):
+    rc, outp = run([sys.executable, script])
+    ok(rc == 0 and outp.strip().endswith("CLEAN"), f"{label} runs and reports CLEAN")
+ok(os.path.exists("out/shikshaq/exam-practice-sheet.png"), "the carousel writes a contact sheet to judge slides side by side")
+
 
 print(f"\nALL {N} ASSERTIONS PASSED")

@@ -23,7 +23,9 @@ and was not scraped).
 | A feed poster, story, square | `engine/shikshaq.py` `sk.poster([...])` + `sk.doc(kind="poster")` | start from `scratchpad/shik_poster_example.py`, or `python engine/shikshaq.py scaffold poster <name>` |
 | The WEEKLY three-post Instagram plan with captions | `addons/shikshaq/` (Node) | planner, ledger rotation, caption gates. Its tokens were synced to this module on 2026-11-27 |
 | A carousel from real photos | `brain/CAROUSEL_PLAYBOOK.md` for the mechanics, but ONLY this module's tokens, fonts, panels | AQ's logo treatment, doodles and photo scrims do not apply |
-| A deck | not built | use this module's tokens and panel grammar; say so |
+| A CAROUSEL (5 slides, 1080x1350) | `sk.poster` per slide + `sk.render_carousel` | start from `scratchpad/shik_carousel_exam_practice.py`; `sk.slide_header`, `sk.index_tag`, `sk.swipe_arrow`, a contact sheet of every slide |
+| Remaking another brand's poster in this language | keep the MECHANISM, rebuild it from the builders with Shikshaq content | worked examples: `scratchpad/shik_remakes.py` (a chat bubble, a tabbed teaser card, a flipped scene) |
+| A deck (16:9 slides) | not built | use this module's tokens and panel grammar; say so |
 
 Never route Shikshaq through `engine.generate`, `core.ACCENTS`, `core.LOGO`, `doodles.py`, `shapes.sticker`
 or `build.page`. Those are AQ. A pink star on a Shikshaq poster is the failure this document exists to prevent.
@@ -101,7 +103,11 @@ use: rough = error, meh = zero results, fine = neutral empty, good = confirmatio
 dark only, never recoloured), `sticker` (tilt -9 to 9, one per card, a third of a grid at most, never on a face), `mark`
 (marker highlight), `eyebrow`, `numbered_heading`, `cat_tile`, `board_row`, `cover`, `stat`, `pill`, `chip`.
 Sections: `nav`, `hero`, `fork`, `category_section`, `papers_slab`, `steps_slab`, `stats_section`, `eyes_section`,
-`footer`, `poster`, `doc`. Compose them; do not re-derive them.
+`footer`, `poster`, `doc`. Characters and poster furniture: `sun` and `lobe` (the campaign's burst and four-lobe, ported from
+`addons/shikshaq/campaign/characters.mjs`), `pchip` (a poster-scale chip, tilt -9 to 9), `swipe_arrow`, `index_tag`,
+`slide_header`. Positioning: `art()` for DECORATIVE svg (marked `data-art`, the gate keeps it off the words) and `place()` for
+TEXT-bearing objects (a chip, a badge). Mixing them up is the commonest misuse: a chip wrapped in `art()` reads as art on its own
+words. Compose them; do not re-derive them.
 
 Rules inside the builders: ink on orange, never white. Chips never tilt. Buttons are pills at 44px. Eyebrow and ordinal
 labels use the TERTIARY text colour, not the site's quaternary (see section 9, deviation D2).
@@ -127,6 +133,10 @@ ancestor), `OFF-CANVAS` (posters), `COLLISION` (text on text, measured on GLYPH 
 mascot or `[data-art]` landing on words), `TAP-TARGET` (anything `data-tap` under 44px), `TINY-TEXT` (under 11px on a page,
 20px on a poster), `SAME-HUE`, `SATURATED-SEAMS`, `FONT-FALLBACK` (every word is Archivo or Geist and whichever is used
 loaded), `DASH`.
+Also hard: `TEXT-COVERED` (a line of type partly painted over by an unrelated opaque object: the paint stack is walked at 9 points
+per line), and `ART-ON-TEXT` ignores art that is covered by an opaque panel above it (a mascot peeking from behind a bubble).
+Measuring rules: text is boxed PER LINE (a paragraph's union box counts the air beside a short last line); text inside a TILTED
+group is compared in the group's own frame (the axis-aligned box of a rotated line over-reports).
 INFO (printed every time, never silent): `ACCENT-DISPLAY`, the one orange seam.
 
 Declaring intent, never silencing: `data-accent-display` (the site's heavy orange payoff, section 9 D1), `data-crop` (a
@@ -143,7 +153,8 @@ over a line of copy was invisible to the text-collision check until `ART-ON-TEXT
 
 1. Name the job: a parent reaching a teacher, or a student reading a paper. That chooses the MODE.
 2. Take the facts you need from `sk.FACTS`. If the figure is missing or older than 14 days, ask for it or read the live
-   site; never write a plausible number. Note `FACTS.known_inconsistencies` (655 vs 661 papers) before using a count.
+   site; never write a plausible number. **The paper count is ASKED EACH TIME** (D5): ask which of 655 or 661, then
+   `sk.confirm("papers", N)`. Note `FACTS.known_inconsistencies` before using any count.
 3. `python engine/shikshaq.py scaffold poster|page <name>`, or copy a worked example. Compose from the builders.
 4. Copy through `copy_gate`. Render. Read every gate line. Fix the cause in the builder or stylesheet if it is a class of
    bug (`CLAUDE.md` section 8), not the one output.
@@ -152,18 +163,19 @@ over a line of copy was invisible to the text-collision check until `ART-ON-TEXT
 
 ## 9. DEVIATIONS FROM THE SITE AND OPEN DECISIONS (do not "fix" these silently)
 
-- **D1 (open, owner has not ruled).** The site's signature heavy orange payoff on bone (`#FF8000` on `#FCFAF7`) measures
+- **D1 (RULED 2026-11-27: allow it, declared and reported).** The site's signature heavy orange payoff on bone (`#FF8000` on `#FCFAF7`) measures
   **2.42:1**, under the 3:1 large-text floor. The live hero does it at 29px on mobile and 58px on desktop. The engine
   allows it ONLY when declared with `data-accent-display`, only at 28px or more and bold, and prints it on every render.
-  The compliant alternative is `--orange-deep` (`#A35200`), which looks brown. Someone should decide.
-- **D2 (deliberate).** The site's quaternary text `#8A8279` (labels, ordinals) is 3.49:1 and the site records it as "a
+  The compliant alternative is `--orange-deep` (`#A35200`), which looks brown; the owner chose to keep the site's look.
+- **D2 (RULED 2026-11-27: keep the darker grey).** The site's quaternary text `#8A8279` (labels, ordinals) is 3.49:1 and the site records it as "a
   small step under the floor". The engine uses tertiary `#776F67` (4.55:1) for eyebrows and ordinals, visually near-identical.
 - **D3 (deliberate).** Small label text on an indigo or orange slab is solid white or full ink, not a translucent tint, which
   measured 3.5:1 and 3.8:1.
 - **D4 (fact).** `brand-deep` is `hsl(30 100% 32%)` = `#A35200`. The site's comment says `#A35100`, and the Node addon carried
   `#B35900` from before the 32% change (the addon was synced to `#A35200` on 2026-11-27, as was its secondary text `#6F675F`). The engine computes it from the HSL, which is what renders.
-- **D5 (open).** Paper counts disagree between surfaces: 655 (home hero, About, Auth) vs 661 (Browse cross-sell), on 2026-11-27.
-  The engine uses 655 and records the disagreement.
+- **D5 (RULED 2026-11-27: ask each time).** Paper counts disagree between surfaces: 655 (home hero, About, Auth) vs 661 (Browse
+  cross-sell). The engine hardcodes NEITHER: `sk.need("papers")` raises, naming the question, until `sk.confirm("papers", N)` (or
+  `SHIKSHAQ_PAPERS=N`) records the owner's answer for that run. Copy containing 655 or 661 fails `copy_gate` as an UNCONFIRMED count.
 - **D6 (info).** The site's design docs call the thick-outline `.sticker` a core device, but it ships almost nowhere. The
   shipped sticker is a tilted pill. Thick outlines survive mainly on empty-state icon tiles. Do not carry AQ's outline and hard
   shadow into Shikshaq.
@@ -182,17 +194,24 @@ over a line of copy was invisible to the text-collision check until `ART-ON-TEXT
 | `poster()` panels did not carry their fill class, so label colours did not switch on indigo | the class rides along |
 | The scaffold shipped without `data-accent-display` and failed its own gate | the test EXECUTES every scaffold as shipped |
 | `<i>` used as a button element rendered its label italic | `.pill` sets `font-style:normal` |
-| Counts disagreed between surfaces and one was quietly picked | recorded in `FACTS.known_inconsistencies` |
+| Counts disagreed between surfaces and one was quietly picked | recorded in `FACTS.known_inconsistencies`, and the paper count is ASKED EACH TIME (`need`/`confirm`) |
+| A pill sat on the last line of a paragraph and the gate said CLEAN | `TEXT-COVERED` walks the paint stack under each text line |
+| The "Free" sticker on the desktop fork was hidden under the nav pill (invisible by eye in the first demo build; found by `TEXT-COVERED`) | the first panels reserve the nav's 72px INSIDE the panel, like the live site's `NavReserve` |
+| A paragraph's union box counted the empty space beside its short last line, so a tick beside it "collided" | per-LINE boxes |
+| Lines of a tilted card read as colliding with each other (the axis-aligned box of a rotated line) | in-plane comparison in the tilted group's own frame; a real overlap there still fails |
+| A mascot peeking from behind an opaque panel read as landing on the text above it | the gate walks the paint stack and skips art that is covered |
+| A chip wrapped in the decorative-art helper read as art landing on its own words | `place()` for text-bearing objects, `art()` for decoration |
+| `100% free!` failed only as an untraceable number: `\b` never matches after `%`, so the superlative rule never fired | `(?<![\w.])100\s*%` |
 
 ## 11. REFRESHING THE SNAPSHOT
 
 When the site changes: re-copy `src/index.css`, `tailwind.config.ts`, `src/lib/subject-palette.ts` and the `ui/` components
 named in `engine/assets/shikshaq/source/` from the Shikshaq repo, run `python engine/shikshaq.py selftest`. It names every
 drifted token. Update `sk.C`, the `PAIRS` map if a variable was renamed, and `FACTS` (re-read the live counts, set `asOf`).
-Then `python scratchpad/test_shikshaq.py` (80 assertions).
+Then `python scratchpad/test_shikshaq.py` (98 assertions).
 
 ## 12. NOT VERIFIED `[?]`
 
 shikshaq.in itself (the test deployment may lag it), signed-in screens (dashboards, checker, HOD desk, admin, games),
 real-device performance, the exact EyesPanel blink and gyro behaviour (the engine's eyes follow the pointer only), the bottom
-navigation pill (specified here, not built), whether the blur on later teacher cards for signed-out visitors is a deliberate gate.
+navigation pill (specified here, not built), a 16:9 deck (the carousel path is built, the deck is not), whether the blur on later teacher cards for signed-out visitors is a deliberate gate.
