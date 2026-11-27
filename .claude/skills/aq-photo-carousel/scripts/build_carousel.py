@@ -60,8 +60,11 @@ def footer(loc, date):
             f'<span style="opacity:.75;font-weight:500">&middot; {loc} &middot; {date}</span></div>')
 
 
-def scrim_bottom(h=260, tint=None):
-    layers = 'linear-gradient(to top,rgba(0,0,0,.72),rgba(0,0,0,0))'
+def scrim_bottom(h=260, tint=None, a=.72):
+    # a heavy scrim HOLDS its opacity under the type block; a plain 0->a ramp is ~a/3 where a cover
+    # title sits, which left white type on white cheesecakes (DD 3.0 groups cover)
+    layers = (f'linear-gradient(to top,rgba(0,0,0,{a}) 0%,rgba(0,0,0,{a*.82:.2f}) 42%,rgba(0,0,0,0))'
+              if a > .8 else f'linear-gradient(to top,rgba(0,0,0,{a}),rgba(0,0,0,0))')
     if tint:
         layers = f'linear-gradient(to top,{tint}4D,transparent 65%), ' + layers
     return f'<div style="position:absolute;bottom:0;left:0;right:0;height:{h}px;background:{layers};z-index:10"></div>'
@@ -89,7 +92,7 @@ def caption(txt, accent):
 
 def sticker(txt, accent, x, y, rot=-4):
     ink = core.text_on(accent)
-    return (f'<span style="position:absolute;left:{x}px;top:{y}px;z-index:9;transform:rotate({rot}deg);'
+    return (f'<span style="position:absolute;left:{x}px;top:{y}px;z-index:11;transform:rotate({rot}deg);'
             f'font-family:var(--m);font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;'
             f'color:{ink};background:{accent};border:2.5px solid var(--ink);border-radius:999px;'
             f'padding:6px 14px;box-shadow:3px 3px 0 var(--ink);white-space:nowrap">{txt}</span>')
@@ -151,11 +154,14 @@ def slide_accent(seed):
     return A[COOL_ORDER[seed % len(COOL_ORDER)]]
 
 
-def filler_from_vision(photo_path, slide_seed, n=4, exclude=None):
+def filler_from_vision(photo_path, slide_seed, n=4, exclude=None, override=None):
     """Doodle scatter whose POSITIONS are measured (vision) and whose kind/colour/size/rotation
     are derived from slide_seed. Returns (html, bboxes)."""
-    spots, info = vision.plan_spots_relaxed(photo_path, W, H, n=n, exclude=exclude,
-                                            seed=slide_seed, want=2)
+    if override:   # (x, y, size, local_luminance), measured off a render, for slides vision starves on
+        spots = [dict(x=x, y=y, size=sz, lum=lum, dark_bg=lum < 128) for (x, y, sz, lum) in override]
+    else:
+        spots, info = vision.plan_spots_relaxed(photo_path, W, H, n=n, exclude=exclude,
+                                                seed=slide_seed, want=2)
     html, boxes, pts = "", [], []
     for i, s in enumerate(spots):
         kind = VOCAB[(slide_seed * 3 + i * 5) % len(VOCAB)]
@@ -187,14 +193,18 @@ EXCLUDE = [(40, 30, 380, 100),          # logo wordmark
            (0, H - 300, W, 300)]        # caption + index tag + footer scrim
 
 
+COVER_EXCLUDE = [(40, 108, 560, 44),      # eyebrow line under the logo
+                 (0, 900, W, 450)]        # title + subhead block
+
+
 async def render_cover(proj, photo, out_dir, total, seed=0):
     accent = slide_accent(seed)
-    fillers, fboxes = filler_from_vision(photo, seed, n=4, exclude=EXCLUDE)
+    fillers, fboxes = filler_from_vision(photo, seed, n=4, exclude=EXCLUDE + COVER_EXCLUDE)
     inner = (full_bleed_photo(photo_b64(photo))
-             + scrim_top(340, tint=accent) + scrim_bottom(500, tint=accent)
+             + scrim_top(340, tint=accent) + scrim_bottom(640, tint=accent, a=.86)
              + logo_pill()
              + (f'<div style="position:absolute;top:120px;left:{M}px;z-index:20;font-family:var(--m);'
-                f'font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:{accent};'
+                f'font-weight:700;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.94);'
                 f'display:flex;align-items:center;gap:10px;text-shadow:0 2px 6px rgba(0,0,0,.5)">'
                 f'<span style="width:10px;height:10px;border-radius:50%;background:{accent}"></span>'
                 f'{proj["loc"].upper()} &middot; {proj["date_label"]}</div>')
@@ -214,15 +224,15 @@ async def render_cover(proj, photo, out_dir, total, seed=0):
     await B.render(html, f"{out_dir}/1_cover.png", W, H)
 
 
-async def render_slide(proj, photo, idx, total, out_dir, cap, seed, stick=None, extra_exclude=None):
+async def render_slide(proj, photo, idx, total, out_dir, cap, seed, stick=None, extra_exclude=None, override=None):
     accent = slide_accent(seed)
     # extra_exclude: per-photo no-go boxes. vision's skin veto protects faces, but HAIR is dark
     # and smooth, so it scores as low-busy background and a doodle can land on a child's head
     # (caught on smile_notes_mba 01.jpg). Until that's a measured rule, name the box explicitly.
     ex = EXCLUDE + list(extra_exclude or [])
-    fillers, fboxes = filler_from_vision(photo, seed, n=4, exclude=ex)
+    fillers, fboxes = filler_from_vision(photo, seed, n=4, exclude=ex, override=override)
     inner = (full_bleed_photo(photo_b64(photo))
-             + scrim_bottom(280 if cap else 170, tint=accent)
+             + scrim_bottom(340 if cap else 200, tint=accent, a=.84)
              + logo_pill() + dots(total, idx - 1, accent=accent) + fillers)
     if stick:
         # stickers go in the guaranteed-dark bottom scrim band (playbook rule 3) — never
@@ -335,7 +345,7 @@ async def build(proj, version="v1"):
     i = 0
     for i, (fn, cap, stick) in enumerate(proj["slides"], start=1):
         await render_slide(proj, f"{src}/{fn}", i, total, out_dir, cap, base_seed + i, stick,
-                           extra_exclude=extra.get(fn))
+                           extra_exclude=extra.get(fn), override=proj.get('spots_override', {}).get(fn))
     for j, (kicker, hero, body) in enumerate(types, start=i + 1):
         await render_type_slide(proj, j, total, out_dir, kicker, hero, body, base_seed + j)
     print(f"  -> {out_dir}  ({total} slides)")

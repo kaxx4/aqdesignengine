@@ -115,6 +115,22 @@ and is now either an encoded rule or a standing instruction.
     because the run was filtered for the wrong keyword. `preflight` prints `ISSUES:` — grep for
     that, or don't filter at all.
 
+## Failure classes found in the DD 3.0 batch (2026-11, stalls + groups + Starry Night throwback)
+20. **A sticker at z-index 9 sits UNDER the z-index 10 scrim**, so every sticker rendered dimmed and
+    `measure_dom` reported each as BURIED 9/9. That advisory was real here, not noise. Stickers are z 11.
+21. **Eyebrow type in the slide accent vanishes into its own tinted scrim** (violet on purple, teal on
+    green). Eyebrow is white; the accent lives on the dot only. `core.on_dark` cannot fix this, because
+    it measures against pure ink and the real ground is a tinted photo.
+22. **A linear scrim ramp is ~a/3 where a cover title sits.** Heavy scrims (a > .8) now hold opacity to
+    42% height. Cover also excludes the eyebrow strip and the title block from doodle placement.
+23. **Excluding hair can starve vision to zero** on frames that are almost all heads. Measured hair boxes
+    plus `spots_override` (hand-placed on the wall, measured on a 100px grid) is the honest answer, not
+    loosening the exclude. Starved slides are listed in the job file with the reason.
+24. **A Drive folder can be link-private to the scraper but readable through the connector.**
+    `drive_fetch.py` returning 0 is not proof the folder is empty: check with the Drive connector.
+    Also: `drive_fetch.listing` only reads Image/Video/PDF/File tooltips, so folders whose children
+    are SUBFOLDERS (Stalls, DJ, Decor) list as empty. Walk subfolders via the connector.
+
 ## Batch-of-many operating notes (for the 20-30 run)
 - **One slug per event/post**, versioned the normal way (`out/versions/<slug>/vN/`). Don't reuse
   `slide_seed` values in a way that makes every post's rotation identical — vary the STARTING
