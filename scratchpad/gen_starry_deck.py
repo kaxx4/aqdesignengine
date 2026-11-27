@@ -459,8 +459,9 @@ def s_run(c):
     """Run of show (slide 27 since the new slide 16). User, 2026-11-26: the dhol box is removed (here that is the 'Opening' step, the dhol entry and opening of the original) and the supplied pictures
     go in, in the order given. SIX steps remain, FIVE pictures were supplied, so the sixth ('Closing moment') keeps a labelled blank. The House rules card spans two columns on row 2 so the 4x2 grid has no hole."""
     steps = [n for n in RUN if n != "Opening"]
-    pics = [("run_decor.jpg", "50% 40%"),   # box 1 "Decor and venue setup": the user's tree-decorating photo (2026-11-27), replaces run_f
-             ("run_g.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("run_i.jpg", "50% 60%"), ("run_j.jpg", "50% 60%")]   # SECOND set (user, 2026-11-26) replaces run_a-e; run_f..j in the order sent
+    # box 1 decor (user, 2026-11-27); boxes 2, 4, 5, 6 from the user's 2026-11-27 list "first picture in box 2, 3rd in box 4, 4th in box 5, 6th in box 6". Only FIVE pictures arrived, so the order is
+    # pasted-first (1 Pristine Edge, 2 table students [unused], 3 Meetcute, then the HEICs 4 = IMG_3824_2, 5 = IMG_3817_2) and "6th" is read as the LAST one (5). Box 3 keeps run_h.
+    pics = [("run_decor.jpg", "50% 40%"), ("r27_p1.jpg", "50% 30%"), ("run_h.jpg", "50% 45%"), ("r27_p3.jpg", "50% 45%"), ("r27_h1.jpg", "50% 70%"), ("r27_h2.jpg", "50% 75%")]
     cards = []
     for k, n in enumerate(steps):
         inner = real(pics[k][0], pics[k][1], r=0) if k < len(pics) else real("dd_closing_1.jpg", "50% 50%", r=0)   # 6th step: the Disco Diwali deck's closing-moment picture (user, 2026-11-26)
