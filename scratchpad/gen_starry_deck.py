@@ -336,12 +336,20 @@ def s_photo_sports(c):
 
 
 def s_sponsors(c):
+    """Past sponsors. 30 logo tiles in the original's 6x5 grid; Exposure (user, 2026-11-27) makes 31, which tiles no grid evenly, so: 8 columns x 4 rows (32 cells) with Exposure's very wide logo on a
+    DOUBLE-width tile (2 cells) = exactly 32. Same tile (paper card, 1.5px keyline, 20px radius). The squarer cells would crop the 2:1 logo images with cover, so they are 'contain'-fitted;
+    the Exposure JPG has a white ground, so it is multiply-blended into the paper tile like the poster logo on the Disco Diwali thank-you."""
+    def edge_bg(n):          # the logo image's own top-edge colour, so the contain-fit letterbox blends instead of showing a seam
+        im = Image.open(os.path.join(ASSET, f"logo_{n:02d}.png")).convert("RGB"); w, h = im.size
+        r, g, b = (sum(v) // 8 for v in zip(*[im.getpixel((w // 2 + dx, 3)) for dx in (-60, -40, -20, 0, 20, 40, 60, 80)]))
+        return f"rgb({r},{g},{b})"
     tiles = []
     for n in range(1, 31):
-        dk = n in (16, 23)
-        tiles.append(f'<div style="background:{"#16181C" if dk else K.PAPER};border:1.5px solid {K.LINE};border-radius:20px;overflow:hidden">'
-                     f'<img src="{asset_uri(f"logo_{n:02d}")}" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>')
-    return S(grid(tiles, "repeat(6,1fr)", 5, 16), (K.eyebrow("Trusted by"), K.title("Past *sponsors*")), c)
+        tiles.append(f'<div style="background:{edge_bg(n)};border:1.5px solid {K.LINE};border-radius:20px;overflow:hidden">'
+                     f'<img src="{asset_uri(f"logo_{n:02d}")}" style="width:100%;height:100%;object-fit:contain;display:block;transform:scale(1.06)" alt=""></div>')
+    tiles.append(f'<div style="grid-column:span 2;background:{K.PAPER};border:1.5px solid {K.LINE};border-radius:20px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:22px 34px">'
+                 f'<img src="{asset_uri(os.path.join(ASSET, "logo_31_exposure.png"))}" style="width:100%;max-height:100%;object-fit:contain;display:block;mix-blend-mode:multiply" alt="Exposure"></div>')
+    return S(grid(tiles, "repeat(8,1fr)", 4, 16), (K.eyebrow("Trusted by"), K.title("Past *sponsors*")), c)
 
 
 QUOTES = [("q_redbull", "Delivered exactly what they had promised to perfection."),
