@@ -103,7 +103,7 @@ use: rough = error, meh = zero results, fine = neutral empty, good = confirmatio
 dark only, never recoloured), `sticker` (tilt -9 to 9, one per card, a third of a grid at most, never on a face), `mark`
 (marker highlight), `eyebrow`, `numbered_heading`, `cat_tile`, `board_row`, `cover`, `stat`, `pill`, `chip`.
 Sections: `nav`, `hero`, `fork`, `category_section`, `papers_slab`, `steps_slab`, `stats_section`, `eyes_section`,
-`footer`, `poster`, `doc`. Characters and poster furniture: `sun` and `lobe` (the campaign's burst and four-lobe, ported from
+`footer`, `poster`, `doc`. The CHARACTER SET (16 school objects, section 5a): `character(name, size, rot)`, `character_ok(name, ground)`, `CHARACTERS`, `CHAR_PALETTE`. Poster furniture: `sun` and `lobe` (the campaign's burst and four-lobe, ported from
 `addons/shikshaq/campaign/characters.mjs`), `pchip` (a poster-scale chip, tilt -9 to 9), `swipe_arrow`, `index_tag`,
 `slide_header`. Positioning: `art()` for DECORATIVE svg (marked `data-art`, the gate keeps it off the words) and `place()` for
 TEXT-bearing objects (a chip, a badge). Mixing them up is the commonest misuse: a chip wrapped in `art()` reads as art on its own
@@ -111,6 +111,22 @@ words. Compose them; do not re-derive them.
 
 Rules inside the builders: ink on orange, never white. Chips never tilt. Buttons are pills at 44px. Eyebrow and ordinal
 labels use the TERTIARY text colour, not the site's quaternary (see section 9, deviation D2).
+
+## 5a. THE CHARACTER SET (16 school objects; the owner approved the first four and asked for the rest, 2026-11-27)
+
+`sk.character(name, size=160, rot=None)` returns an inline svg (decorative, `data-art`). The 16: pencil, star, kulhad (chai cup), warning,
+book, backpack, ruler, calculator, clock, bulb, globe, trophy, notebook, cap, flask, compass. Each has a note on what it MEANS in
+`sk.CHARACTERS` (a trophy is a milestone, never a claim about results). The review sheet is `scratchpad/shik_characters_sheet.py`.
+
+The system, so a seventeenth follows it: a flat body, two ink dots (r 3.4, 12 apart) and one round-capped mouth (3.4), no outline, no
+gradient, no shadow; COLOUR only from `sk.CHAR_PALETTE` (the site's own colours: blob moods, the burst yellow, subject solids, brand
+orange and indigo, the warm neutrals; the test fails any other hex); a tilt of its own in `CHARACTERS`; the warning sign carries a mark
+(a sign, not a creature). They are shapes, not mascots: no names, no stories. The orange mascot, the blobs, the burst and the lobe stay
+the brand's characters; these are props for a scene.
+
+**Ground safety is measured, not guessed.** `sk.character_ok(name, ground)` compares the character's silhouette colour with the ground
+(floor 1.5:1). The review sheet shows it as a red ring. Known losses: the terracotta cup on orange; the ink calculator and cap on the dark
+panel; the yellow pencil, bulb, trophy and warning on mint; the teal star on orange. Every character holds on bone, which is the default.
 
 ## 6. PAGE ARCHETYPES (panel sequences)
 
@@ -208,7 +224,7 @@ over a line of copy was invisible to the text-collision check until `ART-ON-TEXT
 When the site changes: re-copy `src/index.css`, `tailwind.config.ts`, `src/lib/subject-palette.ts` and the `ui/` components
 named in `engine/assets/shikshaq/source/` from the Shikshaq repo, run `python engine/shikshaq.py selftest`. It names every
 drifted token. Update `sk.C`, the `PAIRS` map if a variable was renamed, and `FACTS` (re-read the live counts, set `asOf`).
-Then `python scratchpad/test_shikshaq.py` (98 assertions).
+Then `python scratchpad/test_shikshaq.py` (155 assertions).
 
 ## 12. NOT VERIFIED `[?]`
 

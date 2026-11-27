@@ -1411,3 +1411,9 @@ The `story_ref` layout is the approved design for bulk stories; ten were generat
 - **Next builds chosen:** a real Shikshaq post (a five-slide carousel the owner supplied, remade in the language) and a carousel path. A 16:9 deck was NOT built; the carousel path (`render_carousel`, `slide_header`, `index_tag`, `swipe_arrow`, contact sheet) was.
 - **Remakes:** the owner supplied three further references (a chat bubble as a table, a tabbed teaser card over a photo strip, an upside-down scene). Rebuilt as `scratchpad/shik_remakes.py`: mechanism kept, content Shikshaq's own, no other brand's photos, art or wording, hand-lettered doodles replaced by the site's graph paper and mascots. The carousel's "100% free!" became "Free to read" (the site's own copy rule bans "100%").
 - **Gate additions found while building these:** `TEXT-COVERED`, per-line boxes, in-plane comparison inside tilted groups, covered-art, `place()` vs `art()`, a regex fix for "100%". `TEXT-COVERED` found a real bug in the first landing page: the desktop "Free" sticker was hidden under the nav pill.
+
+### Shikshaq: the character set (2026-11-27, same session)
+- **Owner:** "Add a school-object set" for the carousel's pencil, star, chai cup and warning triangle, approved as drawn, then "draw more icons and create a full set".
+- **Built:** 16 characters in `engine/shikshaq.py` (`CHARACTERS`, `character`, `character_ok`, `CHAR_PALETTE`) in the campaign's flat vocabulary; palette limited to the site's own colours; a measured ground-safety check; a review sheet; 57 new assertions (155 total). Section 5a of `brain/SHIKSHAQ.md` states the system.
+- **Found by looking:** the compass's crossbar read as a frown under its face, the ruler's mouth hung off its edge, the backpack's mouth merged into the pocket line; all fixed in the drawings.
+- **Known weakest pairing:** the terracotta cup on orange (the owner chose to approve as drawn); `character_ok` reports it so a build can avoid it.

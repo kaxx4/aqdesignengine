@@ -269,4 +269,27 @@ for script, label in (("scratchpad/shik_carousel_exam_practice.py", "the 5-slide
 ok(os.path.exists("out/shikshaq/exam-practice-sheet.png"), "the carousel writes a contact sheet to judge slides side by side")
 
 
+# ── the character set: 16 school objects, one system ────────────────────────────────────────
+import re as _re
+ok(len(sk.CHARACTERS) == 16, "the character set has 16 members (the 4 approved plus 12 more)")
+APPROVED = {"pencil", "star", "kulhad", "warning"}
+ok(APPROVED <= set(sk.CHARACTERS), "the four characters the owner approved are in the set")
+for name in sk.CHARACTERS:
+    svg = sk.character(name, 120)
+    cols = {c.upper() for c in _re.findall(r"#[0-9A-Fa-f]{6}", svg)}
+    ok(cols <= sk.CHAR_PALETTE, f"{name}: every colour is from the site's own palette (off-palette: {sorted(cols - sk.CHAR_PALETTE)})")
+    dots = _re.findall(r'<circle[^>]*r="(\d(?:\.\d)?)"[^>]*fill="#1F1F1F"', svg) + _re.findall(r'<circle[^>]*fill="#1F1F1F"[^>]*r="(\d(?:\.\d)?)"', svg)
+    eyes = [d for d in dots if 2.5 <= float(d) <= 3.5] + len(_re.findall(r'stroke="#1F1F1F" stroke-width="3\.4" fill="none" stroke-linecap="round" stroke-linejoin="round"', svg)) * [0] \
+        if name == "kulhad" else [d for d in dots if 2.5 <= float(d) <= 3.5]
+    ok(name in ("warning", "kulhad") or len(eyes) >= 2, f"{name}: has the two-dot face (the sign has a mark, the cup's eyes are arcs)")
+    ok("data-art" in svg, f"{name}: marked data-art so the gate keeps it off the words")
+ok(raises(lambda: sk.character("dragon")), "an unknown character is refused")
+ok(sk.character("pencil", 100).count("rotate(-18deg)") == 1 and "rotate(0deg)" in sk.character("pencil", 100, rot=0), "a character carries its own tilt, and rot= overrides it")
+ok(not sk.character_ok("kulhad", sk.C["orange"]), "character_ok: the terracotta cup is LOST on orange (the weakest pairing the owner was warned about)")
+ok(sk.character_ok("pencil", sk.C["card"]) and sk.character_ok("pencil", sk.C["indigo"]), "character_ok: the yellow pencil holds on bone and on indigo")
+ok(not sk.character_ok("cap", sk.C["panel"]) and not sk.character_ok("calculator", sk.C["panel"]), "character_ok: the ink characters are lost on the dark panel")
+ok(all(sk.character_ok(n, sk.C["card"]) for n in sk.CHARACTERS), "every character is distinguishable on a bone card (the default ground)")
+rc, outp = run([sys.executable, "scratchpad/shik_characters_sheet.py"])
+ok(rc == 0 and outp.strip().endswith("CLEAN"), "the character sheet renders and passes the gate")
+
 print(f"\nALL {N} ASSERTIONS PASSED")

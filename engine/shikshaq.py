@@ -827,6 +827,170 @@ def art(html, style):
     return f'<div data-art style="position:absolute;{style}">{html}</div>'
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SCHOOL-OBJECT CHARACTERS: a full set of 16, one system (owner approved the first four 2026-11-27 and asked for the rest).
+# The vocabulary is the campaign's (addons/shikshaq/campaign/characters.mjs): a flat body, two dots, one mouth, no outlines, no
+# gradients, no shadows. COLOUR comes ONLY from CHAR_PALETTE (the site's own colours: blob moods, the burst yellow, the subject
+# solids, brand orange and indigo, the warm neutrals). They are shapes, not mascots: no names, no stories. Faces: dots are INK,
+# r 3.4, 12 apart; the mouth is a 3.4 round-capped stroke. The warning sign is a SIGN, so it carries a mark, not a face.
+# ─────────────────────────────────────────────────────────────────────────────
+_INK = "#1F1F1F"
+CHAR_PALETTE = {
+    _INK, "#FFFFFF", "#FFC700", "#EFA063", "#FCECDE", "#F0EAE2", "#D8CFC4", "#E3F7EC", "#3FAFA8", "#C68B39", "#604724",
+    "#4775D1", "#D74242", "#9F53C6", "#34B268", "#46B9B9", "#F2A15A", "#FF8000", "#4351FF", "#D14545", "#9B4FC4",
+}
+
+
+def _csvg(size, inner, rot=0):
+    return (f'<svg width="{size}" height="{size}" viewBox="0 0 100 100" aria-hidden="true" data-art '
+            f'style="overflow:visible;transform:rotate({rot}deg)">{inner}</svg>')
+
+
+def _cface(cx, cy, gap=12, r=3.4, mouth="smile", sw=3.4):
+    m = {"smile": f"M{cx-6} {cy+9} Q{cx} {cy+16} {cx+6} {cy+9}", "flat": f"M{cx-6} {cy+11} L{cx+6} {cy+11}",
+         "smirk": f"M{cx-6} {cy+10} Q{cx+1} {cy+16} {cx+7} {cy+8}"}[mouth]
+    return (f'<circle cx="{cx-gap/2}" cy="{cy}" r="{r}" fill="{_INK}"/><circle cx="{cx+gap/2}" cy="{cy}" r="{r}" fill="{_INK}"/>'
+            f'<path d="{m}" stroke="{_INK}" stroke-width="{sw}" fill="none" stroke-linecap="round"/>')
+
+
+def _stroke(d, color=_INK, w=4, cap="round"):
+    return f'<path d="{d}" stroke="{color}" stroke-width="{w}" fill="none" stroke-linecap="{cap}" stroke-linejoin="round"/>'
+
+
+def _ch_pencil():
+    return (f'<rect x="34" y="20" width="32" height="56" fill="#FFC700"/><rect x="34" y="8" width="32" height="14" rx="7" fill="#EFA063"/>'
+            f'<rect x="34" y="20" width="32" height="7" fill="#F0EAE2"/><polygon points="34,76 66,76 50,96" fill="#FCECDE"/>'
+            f'<polygon points="44.5,87 55.5,87 50,96" fill="{_INK}"/>' + _cface(50, 47))
+
+
+def _ch_star():
+    import math
+    pts = " ".join(f"{50 + (46 if i % 2 == 0 else 22) * math.cos(-math.pi / 2 + i * math.pi / 5):.1f},"
+                   f"{54 + (46 if i % 2 == 0 else 22) * math.sin(-math.pi / 2 + i * math.pi / 5):.1f}" for i in range(10))
+    return (f'<polygon points="{pts}" fill="#3FAFA8" stroke="#3FAFA8" stroke-width="9" stroke-linejoin="round"/>'
+            + _stroke("M36 47 L45 50", w=3.4) + _cface(50, 54, mouth="smirk"))
+
+
+def _ch_kulhad():
+    steam = "".join(_stroke(f"M{x} 30 q-5 -6 0 -12 q5 -6 0 -12", "#D8CFC4", 3.2) for x in (38, 50, 62))
+    return (steam + '<path d="M24 38 H76 L69 86 Q68 90 64 90 H36 Q32 90 31 86 Z" fill="#C68B39"/><ellipse cx="50" cy="38" rx="26" ry="6.5" fill="#604724"/>'
+            + _stroke("M41 62 q4 -5 8 0", w=3.4) + _stroke("M53 62 q4 -5 8 0", w=3.4) + _stroke("M44 70 Q50.5 76 57 70", w=3.4))
+
+
+def _ch_warning():
+    return ('<polygon points="50,14 90,82 10,82" fill="#FFC700" stroke="#FFC700" stroke-width="10" stroke-linejoin="round"/>'
+            + _stroke("M50 38 L50 60", w=6) + f'<circle cx="50" cy="71" r="4" fill="{_INK}"/>')
+
+
+def _ch_book():
+    return ('<rect x="24" y="12" width="52" height="76" rx="6" fill="#4775D1"/><rect x="70" y="16" width="8" height="68" rx="2" fill="#F0EAE2"/>'
+            '<polygon points="58,12 66,12 66,36 62,31 58,36" fill="#D74242"/><rect x="33" y="24" width="20" height="6" rx="3" fill="#F0EAE2"/>' + _cface(48, 54))
+
+
+def _ch_backpack():
+    return (f'{_stroke("M42 28 v-8 q8 -8 16 0 v8", w=4.5)}<rect x="22" y="40" width="7" height="30" rx="3.5" fill="{_INK}"/><rect x="71" y="40" width="7" height="30" rx="3.5" fill="{_INK}"/>'
+            '<rect x="26" y="26" width="48" height="62" rx="20" fill="#F2A15A"/><rect x="33" y="60" width="34" height="22" rx="8" fill="#C68B39"/>'
+            + _stroke("M35 63 H65", w=3) + _cface(50, 39))
+
+
+def _ch_ruler():
+    ticks = "".join(_stroke(f"M{14 + i * 7.2:.1f} 33 v{9 if i % 5 == 0 else 5}", w=2.6, cap="butt") for i in range(11))
+    return ('<rect x="8" y="31" width="84" height="38" rx="6" fill="#46B9B9"/>' + ticks + _cface(50, 50, r=3.2, mouth="smile", sw=3.2))
+
+
+def _ch_calculator():
+    cols = [["#FF8000", "#FFC700", "#3FAFA8"], ["#D8CFC4"] * 3, ["#D8CFC4", "#D8CFC4", "#F2A15A"]]
+    btn = "".join(f'<circle cx="{36 + c * 14}" cy="{52 + r * 13}" r="4.6" fill="{cols[r][c]}"/>' for r in range(3) for c in range(3))
+    return (f'<rect x="22" y="8" width="56" height="84" rx="10" fill="{_INK}"/><rect x="28" y="14" width="44" height="26" rx="5" fill="#E3F7EC"/>'
+            + _cface(50, 24, gap=12, r=3, sw=3).replace("Q50 37", "Q50 35") + btn)
+
+
+def _ch_clock():
+    return (f'<circle cx="26" cy="22" r="11" fill="#FFC700"/><circle cx="74" cy="22" r="11" fill="#FFC700"/>{_stroke("M30 84 l-5 7 M70 84 l5 7", w=4.5)}'
+            '<circle cx="50" cy="54" r="34" fill="#D74242"/><circle cx="50" cy="54" r="27" fill="#F0EAE2"/>'
+            + _stroke("M50 31 v5 M73 54 h-5 M50 77 v-5 M27 54 h5", w=2.8, cap="butt") + _cface(50, 50, gap=14, mouth="smile"))
+
+
+def _ch_bulb():
+    rays = "".join(_stroke(f"M{50 + 36 * __import__('math').cos(a):.1f} {40 + 36 * __import__('math').sin(a):.1f} L{50 + 44 * __import__('math').cos(a):.1f} {40 + 44 * __import__('math').sin(a):.1f}", "#FFC700", 4)
+                    for a in [__import__('math').radians(d) for d in (-150, -120, -90, -60, -30)])
+    return (rays + '<circle cx="50" cy="42" r="28" fill="#FFC700"/><polygon points="38,62 62,62 60,74 40,74" fill="#FFC700"/>'
+            '<rect x="39" y="72" width="22" height="16" rx="4" fill="#D8CFC4"/>' + _stroke("M40 79 H60 M41 84 H59", w=2.6) + _cface(50, 40))
+
+
+def _ch_globe():
+    return ('<circle cx="50" cy="46" r="32" fill="#4775D1"/><path d="M26 34 q7 -12 19 -6 q4 8 -6 12 q-9 3 -13 -6z" fill="#34B268"/>'
+            '<path d="M61 58 q10 -4 14 5 q-2 10 -12 8 q-6 -6 -2 -13z" fill="#34B268"/>'
+            f'<rect x="47" y="76" width="6" height="10" fill="{_INK}"/><rect x="34" y="84" width="32" height="7" rx="3.5" fill="{_INK}"/>' + _cface(50, 46))
+
+
+def _ch_trophy():
+    return (_stroke("M28 22 H18 Q13 22 13 28 Q13 42 28 46", "#FFC700", 6) + _stroke("M72 22 H82 Q87 22 87 28 Q87 42 72 46", "#FFC700", 6)
+            + '<path d="M28 14 H72 V40 Q72 62 50 64 Q28 62 28 40 Z" fill="#FFC700"/><rect x="44" y="62" width="12" height="14" fill="#C68B39"/>'
+            '<rect x="30" y="74" width="40" height="14" rx="4" fill="#C68B39"/>' + _cface(50, 34))
+
+
+def _ch_notebook():
+    rings = "".join(f'<rect x="17" y="{16 + i * 13}" width="16" height="5.5" rx="2.75" fill="{_INK}"/>' for i in range(6))
+    return ('<rect x="24" y="10" width="58" height="80" rx="8" fill="#9F53C6"/>' + rings + '<rect x="40" y="26" width="34" height="38" rx="8" fill="#F0EAE2"/>'
+            '<rect x="40" y="72" width="34" height="4" rx="2" fill="#F0EAE2"/><rect x="40" y="80" width="22" height="4" rx="2" fill="#F0EAE2"/>' + _cface(57, 42, gap=11, r=3.2, sw=3.2))
+
+
+def _ch_cap():
+    return ('<path d="M24 42 v22 Q24 82 50 82 Q76 82 76 64 v-22 L50 56 Z" fill="#4351FF"/>'
+            f'<polygon points="50,12 95,33 50,54 5,33" fill="{_INK}"/>' + _stroke("M86 36 v26", "#FFC700", 3.8) + '<circle cx="86" cy="65" r="4.6" fill="#FFC700"/>'
+            + _cface(50, 66, gap=12, r=3.2, sw=3.2))
+
+
+def _ch_flask():
+    return ('<path d="M42 10 H58 V34 L82 80 Q87 90 74 90 H26 Q13 90 18 80 L42 34 Z" fill="#34B268"/><rect x="38" y="6" width="24" height="7" rx="3.5" fill="#D8CFC4"/>'
+            '<circle cx="66" cy="74" r="3.4" fill="#E3F7EC"/><circle cx="31" cy="82" r="2.6" fill="#E3F7EC"/>' + _cface(50, 68, gap=13, mouth="smile"))
+
+
+def _ch_compass():
+    return (_stroke("M50 24 L26 84", "#F2A15A", 9) + _stroke("M50 24 L74 84", "#C68B39", 9)
+            + f'<polygon points="21.5,82 30,86 24,96" fill="{_INK}"/><polygon points="70,86 78.5,82 76,96" fill="{_INK}"/>'
+            f'<circle cx="50" cy="9" r="5" fill="{_INK}"/><circle cx="50" cy="26" r="14" fill="#FFC700"/>' + _cface(50, 24, gap=8, r=2.6, sw=2.8).replace("Q50 38", "Q50 37"))
+
+
+# name -> (builder, default tilt, silhouette colour (what the shape IS against a ground), note)
+CHARACTERS = {
+    "pencil":     (_ch_pencil, -18, "#FFC700", "practice, drafts, the first mark"),
+    "star":       (_ch_star, 8, "#3FAFA8", "praise, a top mark, a highlight"),
+    "kulhad":     (_ch_kulhad, 0, "#C68B39", "a break, chai, calm before a paper"),
+    "warning":    (_ch_warning, -6, "#FFC700", "heads up, a note before you start (a sign: no face)"),
+    "book":       (_ch_book, 6, "#4775D1", "reading, a subject, a syllabus"),
+    "backpack":   (_ch_backpack, 0, "#F2A15A", "school day, being ready"),
+    "ruler":      (_ch_ruler, -20, "#46B9B9", "measuring, geometry, accuracy"),
+    "calculator": (_ch_calculator, 8, _INK, "maths, numbers, checking"),
+    "clock":      (_ch_clock, 4, "#D74242", "time, timed practice, a deadline"),
+    "bulb":       (_ch_bulb, 0, "#FFC700", "an idea, understanding, a tip"),
+    "globe":      (_ch_globe, -8, "#4775D1", "geography, the wider world"),
+    "trophy":     (_ch_trophy, 0, "#FFC700", "a result, a milestone (never a claim about results)"),
+    "notebook":   (_ch_notebook, -6, "#9F53C6", "notes, revision, homework"),
+    "cap":        (_ch_cap, 8, _INK, "graduation, qualifications (the logo's own cap)"),
+    "flask":      (_ch_flask, 6, "#34B268", "science, trying things out"),
+    "compass":    (_ch_compass, 0, "#F2A15A", "geometry, direction, finding your way"),
+}
+
+
+def character(name, size=160, rot=None):
+    """One school-object character as inline svg (decorative: data-art). rot defaults to the character's own tilt."""
+    if name not in CHARACTERS:
+        raise ShikshaqError(f"character {name!r}: one of {sorted(CHARACTERS)}")
+    fn, tilt, _, _ = CHARACTERS[name]
+    return _csvg(size, fn(), tilt if rot is None else rot)
+
+
+def character_ok(name, ground, floor=1.5):
+    """Is this character's silhouette colour distinguishable from this ground? (measured, floor 1.5:1).
+    The cup (terracotta) is lost on orange, ink characters on the dark panel, yellow ones on bone cards' lightest tints, etc."""
+    if name not in CHARACTERS:
+        raise ShikshaqError(f"character {name!r}: one of {sorted(CHARACTERS)}")
+    return contrast(CHARACTERS[name][2], ground) >= floor
+
+
+
 def place(html, style):
     """Position a TEXT-BEARING object (a chip, a badge). Unlike art(), it is not decorative, so the gate treats its words as words."""
     return f'<div style="position:absolute;{style}">{html}</div>'
