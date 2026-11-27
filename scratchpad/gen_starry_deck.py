@@ -529,7 +529,8 @@ def s_tiers(c):
 
 
 def s_photo_tiers(c):
-    return photo_story(c, 3, "1fr 1fr 1fr", 2, "Your brand, in the middle of it", "On the night", G, spans=[(1, 2), (2, 1), (2, 1)], files=["dd_night_1.jpg", "dd_night_2.jpg", "dd_night_3.jpg"])   # the Disco Diwali deck's pictures
+    return photo_story(c, 4, "1fr 1fr 1fr 1fr", 2, "Your brand, in the middle of it", "On the night", G, spans=[(1, 2), (2, 1), (1, 2), (2, 1)],
+                       files=["n31_c.jpg", "n31_a.jpg", "n31_d.jpg", "n31_b.jpg"], focus=["32% 40%", "40% 40%", "58% 40%", "42% 40%"])   # user, 2026-11-27: FOUR pictures, so the 3-frame bento became tall | wide over wide | tall; placed by fit (the two upright crops take the single faces)
 
 
 def _check_list(items, dark=False, big=False):
