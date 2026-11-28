@@ -1,0 +1,11 @@
+# Faceted Light
+
+Faceted Light is the belief that gratitude can be drawn the way an instrument records a phenomenon: patiently, in repeated units, each one measured against the next. A single sphere is divided into hundreds of identical tiles, and meaning accumulates in the small differences between them. Nothing is decorated. Every mark is a reading.
+
+Space is held in a strict circle on a quiet field. The ground is near-black with a cool undertone, so light has somewhere to arrive from. The sphere sits slightly above centre, and the vast dark around it is not emptiness but the unexposed part of the plate. A ring of hairline ticks and a second ring of stepped values frame the form like a lens barrel, giving the viewer a scale to read the object against. Margins are generous and identical on every side, as though the sheet were cut to hold exactly one observation.
+
+Colour is a ladder, not a palette. A single warm metal runs from ember to pale gold across the tiles, and every tile is placed on that ladder by its distance from one invisible source of light. One tile alone departs from the ladder and carries a saturated red, the only colour that is not earned by position. It is the single deliberate exception, and it is placed with the exactness of a specimen mount. The restraint is the point: the work is cohesive because almost everything obeys one rule.
+
+Typography is a whisper in the manner of a laboratory plate. A thin mono face sets tiny labels, plate numbers and stepped values, all aligned to the same baseline grid, all small enough that they read as texture first and language second. One italic serif phrase is allowed to breathe near the foot of the sheet. No text overlaps anything, and nothing approaches an edge.
+
+Every tile, tick and numeral should feel meticulously crafted, the product of countless hours and deep expertise, placed by someone at the absolute top of their field. Spacing is the result of painstaking refinement; alignments are the quiet evidence of master-level execution. The finished sheet should reward sustained looking: from a distance a luminous sphere, up close a dense, patient system, and only on the longest look a single red facet that was always there.
