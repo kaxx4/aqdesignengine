@@ -1,5 +1,5 @@
 """Reel covers (1080x1920) from two supplied photos: the photo full bleed, nothing else but four copper stickers, one in each corner.
-No text, logo or branding on the cover. Stickers sit in the corners of the 4:5 grid crop (y 285..1635) so they survive the profile-grid crop.
+No text, logo or branding on the cover. Stickers sit in the EXTREME corners of the full canvas (14px in). The 4:5 profile-grid crop (y 285..1635) cuts the top and bottom pair; the reel itself shows them.
 Cover A (crowd): heart / star / diya / calendar.  Cover B (tree): star / diya / heart / pin.  Sticker art: sample_outputs/disco_diwali_stickers/ (rotation baked in, no drop shadow in the PNG; one is added here).
 CONSENT: the crowd photo shows apparent minors and there is no consent record. Check before posting.
 Run: PYTHONIOENCODING=utf-8 python scratchpad/reel_covers_stickers.py"""
@@ -10,7 +10,7 @@ def load(n):
     s = importlib.util.spec_from_file_location(n, os.path.join(ED, n + ".py")); m = importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 B = load("build")
 from PIL import Image
-W, H = 1080, 1920; SAFE_T, SAFE_B, EDGE = 285, 1635, 28
+W, H = 1080, 1920; SAFE_T, SAFE_B, EDGE = 14, H - 14, 14
 OUT = os.path.join(ROOT, "out", "reel_covers")
 def uri(img):
     b = io.BytesIO(); img.save(b, "PNG" if img.mode == "RGBA" else "JPEG", **({} if img.mode == "RGBA" else {"quality": 92}))
