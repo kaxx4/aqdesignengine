@@ -1396,3 +1396,31 @@ through.
 
 ## Bulk story design approved (2026-10-13)
 The `story_ref` layout is the approved design for bulk stories; ten were generated (`sample_outputs/disco_diwali_bulk/`). It supersedes `story_launch` for batches. `story_launch` stays for the link-sticker-zone variant.
+
+## Shikshaq as an engine format (2026-11-27)
+- **Brief (user):** "Whatever I want to take from the Shikshaq code base, copy it to the AQ design engine, so every time I say design something for Shikshaq you can use this design language without fail."
+- **What was taken** (read-only from `kushalsethia/Shikshaq` commit `766e43b`): `index.css`, `tailwind.config.ts`, `subject-palette.ts`, the `ui/` components that define the language, the five design docs, the Archivo and Geist variable fonts, the logo. Vendored in `engine/assets/shikshaq/` and `brain/shikshaq_source/`. Nothing in the engine reads the Shikshaq repo at run time.
+- **What was built:** `engine/shikshaq.py` (verified tokens, the site's subject generator ported 1:1, section builders, `poster()`, a measured gate, a copy gate, scaffolds), `brain/SHIKSHAQ.md`, the `shikshaq-design` skill, a STANDING RULE at the top of `CLAUDE.md`, `scratchpad/test_shikshaq.py` (98 assertions after the same-session additions below), two worked examples, and 34 live reference screens in `training_samples/shikshaq/`.
+- **Routing:** the weekly Instagram planner stays in the Node addon (`addons/shikshaq/`); everything else (pages, posters, stories, carousels, decks) goes through the Python module. The addon's tokens had drifted (pre-2026-11-06 text ramp, `#B35900` orange-deep) and were synced; its 29 assertions still pass.
+- **How the language was learned:** every public route read in a real browser at 390 and 1280px against real data. shikshaq.in sits behind a Vercel bot checkpoint (HTTP 429); it was NOT scraped past it. The owner's own test deployment `shikshaqkanitest` (same code, same Supabase project) was read through the connected Vercel account.
+- **Rulings made here that the owner should confirm:** (D1) heavy orange display type on bone measures 2.42:1; allowed only when declared and reported every render. (D2) eyebrow and ordinal labels use tertiary `#776F67`, not the site's quaternary `#8A8279` (3.49:1). (S10) at most ONE orange/indigo seam per page: the design docs say never adjacent, the live home does it once. (D5) paper counts disagree between surfaces (655 vs 661); the engine uses 655 and records it.
+- **Not built:** the bottom-nav pill, the EyesPanel blink and gyro, a deck path, signed-in and internal screens (checker, HOD desk, admin, games).
+
+### Shikshaq: owner rulings and additions (2026-11-27, same session)
+- **Rulings (asked, answered):** (D1) heavy orange display type on bone is allowed, declared and reported on every render. (D2) eyebrows and ordinals keep the darker grey `#776F67`. (D5) the paper count is ASKED EACH TIME: the engine hardcodes neither 655 nor 661, `sk.need("papers")` raises until `sk.confirm("papers", N)`.
+- **Next builds chosen:** a real Shikshaq post (a five-slide carousel the owner supplied, remade in the language) and a carousel path. A 16:9 deck was NOT built; the carousel path (`render_carousel`, `slide_header`, `index_tag`, `swipe_arrow`, contact sheet) was.
+- **Remakes:** the owner supplied three further references (a chat bubble as a table, a tabbed teaser card over a photo strip, an upside-down scene). Rebuilt as `scratchpad/shik_remakes.py`: mechanism kept, content Shikshaq's own, no other brand's photos, art or wording, hand-lettered doodles replaced by the site's graph paper and mascots. The carousel's "100% free!" became "Free to read" (the site's own copy rule bans "100%").
+- **Gate additions found while building these:** `TEXT-COVERED`, per-line boxes, in-plane comparison inside tilted groups, covered-art, `place()` vs `art()`, a regex fix for "100%". `TEXT-COVERED` found a real bug in the first landing page: the desktop "Free" sticker was hidden under the nav pill.
+
+### Shikshaq: the character set (2026-11-27, same session)
+- **Owner:** "Add a school-object set" for the carousel's pencil, star, chai cup and warning triangle, approved as drawn, then "draw more icons and create a full set".
+- **Built:** 16 characters in `engine/shikshaq.py` (`CHARACTERS`, `character`, `character_ok`, `CHAR_PALETTE`) in the campaign's flat vocabulary; palette limited to the site's own colours; a measured ground-safety check; a review sheet; 57 new assertions (155 total). Section 5a of `brain/SHIKSHAQ.md` states the system.
+- **Found by looking:** the compass's crossbar read as a frown under its face, the ruler's mouth hung off its edge, the backpack's mouth merged into the pocket line; all fixed in the drawings.
+- **Known weakest pairing:** the terracotta cup on orange (the owner chose to approve as drawn); `character_ok` reports it so a build can avoid it.
+
+### Shikshaq: the first week of posts (2026-11-27, same session)
+- **Asked and answered:** week Mon 30 Nov, Wed 2 Dec, Fri 4 Dec at 19:30 IST (the cadence confirmed 2026-10-05); themes papers, trust, teachers; paper count **655** (the site shows 655 and 661; asked each time).
+- **Built:** `scratchpad/shik_week_2026w49.py` renders three feed posts (Mon "Real papers. Real schools." with 655 and three real covers; Wed "Zero middlemen." with a large rupee zero; Fri "157 teachers. One search." with subject and board counts) and writes `week.md` (captions, alt text, hashtags, times). Copy is the planner's vetted bank; caption, alt and hashtag formats follow `addons/shikshaq`; every string passes `copy_gate`; the layout gate and a look ran on each PNG.
+- **Why the Python engine and not the Node planner:** the planner's live facts need Supabase (not reachable here) and its dry run carries stale sample figures (147 teachers, 1,487 papers). Figures here are the ones read off the live data on 2026-11-27, dated in `FACTS`.
+- **Nothing is posted.** The output is a reviewable folder. Counts should be re-read on the day if the week slips.
+- `test_shikshaq.py` now 160 assertions.
